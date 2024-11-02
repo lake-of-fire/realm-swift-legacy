@@ -145,9 +145,9 @@ let package = Package(
         .watchOS(.v4)
     ],
     products: [
-        .library(
-            name: "RealmLegacy",
-            targets: ["RealmLegacy"]),
+//        .library(
+//            name: "RealmLegacy",
+//            targets: ["RealmLegacy"]),
         .library(
             name: "RealmSwiftLegacy",
             targets: ["RealmLegacy", "RealmSwiftLegacy"]),

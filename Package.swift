@@ -137,7 +137,7 @@ func runCommand() -> String {
 }
 
 let package = Package(
-    name: "Realm",
+    name: "RealmLegacy",
     platforms: [
         .macOS(.v10_13),
         .iOS(.v11),
@@ -146,14 +146,14 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "Realm",
+            name: "RealmLegacy",
             targets: ["Realm"]),
         .library(
-            name: "RealmSwift",
+            name: "RealmSwiftLegacy",
             targets: ["Realm", "RealmSwift"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/realm/realm-core.git", exact: coreVersion)
+        .package(url: "https://github.com/lake-of-fire/realm-core.git", branch: "legacy")
     ],
     targets: [
       .target(

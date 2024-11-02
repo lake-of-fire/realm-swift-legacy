@@ -18,7 +18,7 @@
 
 import Foundation
 import Realm
-import RealmSwift
+import RealmSwiftLegacy
 import XCTest
 
 class ObjectiveCSupportTests: TestCase {
@@ -63,7 +63,7 @@ class ObjectiveCSupportTests: TestCase {
         XCTAssert(rlmRealm.isKind(of: RLMRealm.self))
         XCTAssertEqual(rlmRealm.allObjects("SwiftObject").count, 1)
 
-        let sortDescriptor: RealmSwift.SortDescriptor = "property"
+        let sortDescriptor: RealmSwiftLegacy.SortDescriptor = "property"
         XCTAssertEqual(sortDescriptor.keyPath,
                        ObjectiveCSupport.convert(object: sortDescriptor).keyPath,
                        "SortDescriptor.keyPath must be equal to RLMSortDescriptor.keyPath")

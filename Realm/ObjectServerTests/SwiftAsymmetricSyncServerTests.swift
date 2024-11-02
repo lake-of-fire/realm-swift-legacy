@@ -19,11 +19,11 @@
 #if os(macOS)
 import Realm
 import Realm.Private
-import RealmSwift
+import RealmSwiftLegacy
 import XCTest
 
 #if canImport(RealmTestSupport)
-import RealmSwiftSyncTestSupport
+import RealmSwiftLegacySyncTestSupport
 import RealmSyncTestSupport
 import RealmTestSupport
 #endif

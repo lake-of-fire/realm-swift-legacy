@@ -17,13 +17,13 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import XCTest
-import RealmSwift
+import RealmSwiftLegacy
 import Realm
 import Realm.Dynamic
 import Foundation
 
 #if canImport(RealmSwiftTestSupport)
-import RealmSwiftTestSupport
+import RealmSwiftLegacyTestSupport
 #endif
 
 @discardableResult

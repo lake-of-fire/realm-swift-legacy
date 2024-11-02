@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import UIKit
-import RealmSwift
+import RealmSwiftLegacy
 
 class Repository: Object {
     @objc dynamic var identifier = ""

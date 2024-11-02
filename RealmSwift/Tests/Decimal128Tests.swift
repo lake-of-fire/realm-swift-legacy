@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import XCTest
-import RealmSwift
+import RealmSwiftLegacy
 
 class Decimal128Tests: TestCase {
 

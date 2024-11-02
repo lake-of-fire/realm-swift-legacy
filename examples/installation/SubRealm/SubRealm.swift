@@ -16,7 +16,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-import RealmSwift
+import RealmSwiftLegacy
 
 public class TestObject: Object {
     @Persisted public var name: String

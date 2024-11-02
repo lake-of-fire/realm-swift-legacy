@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import Foundation
-import RealmSwift
+import RealmSwiftLegacy
 
 final class DemoObject: Object {
     @Persisted var uuid: UUID

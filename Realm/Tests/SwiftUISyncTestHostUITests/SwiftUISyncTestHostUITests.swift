@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import XCTest
-import RealmSwift
+import RealmSwiftLegacy
 
 class SwiftUISyncUITests: SwiftSyncTestCase {
     override func tearDown() {

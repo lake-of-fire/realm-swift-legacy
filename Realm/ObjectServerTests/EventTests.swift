@@ -18,12 +18,12 @@
 
 import Combine
 import Foundation
-import RealmSwift
+import RealmSwiftLegacy
 import XCTest
 
 #if canImport(RealmTestSupport)
-import RealmSwiftSyncTestSupport
-import RealmSwiftTestSupport
+import RealmSwiftLegacySyncTestSupport
+import RealmSwiftLegacyTestSupport
 import RealmSyncTestSupport
 import RealmTestSupport
 #endif

@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import XCTest
-import RealmSwift
+import RealmSwiftLegacy
 
 var pkCounter = 0
 func nextPrimaryKey() -> Int {

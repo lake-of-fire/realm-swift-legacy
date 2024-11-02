@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import XCTest
-import RealmSwift
+import RealmSwiftLegacy
 
 // This file is generated from a template. Do not edit directly.
 // swiftlint:disable large_tuple vertical_parameter_alignment

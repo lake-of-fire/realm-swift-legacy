@@ -18,7 +18,7 @@
 
 import Foundation
 import Realm
-import RealmSwift
+import RealmSwiftLegacy
 import XCTest
 
 #if canImport(RealmTestSupport)

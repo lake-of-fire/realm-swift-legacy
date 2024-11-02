@@ -19,7 +19,7 @@
 import XCTest
 import Combine
 import Realm.Private
-import RealmSwift
+import RealmSwiftLegacy
 
 class CombineIdentifiableObject: Object, ObjectKeyIdentifiable {
     @objc dynamic var value = 0

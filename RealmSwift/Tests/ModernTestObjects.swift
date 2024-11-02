@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import Foundation
-import RealmSwift
+import RealmSwiftLegacy
 import Realm
 
 class ModernAllTypesObject: Object {

@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import UIKit
-import RealmSwift
+import RealmSwiftLegacy
 
 class Dog: Object {
     @Persisted var name: String

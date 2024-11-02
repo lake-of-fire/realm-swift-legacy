@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import XCTest
-import RealmSwift
+import RealmSwiftLegacy
 
 class ThreadSafeReferenceTests: TestCase {
     /// Resolve a thread-safe reference confirming that you can't resolve it a second time.

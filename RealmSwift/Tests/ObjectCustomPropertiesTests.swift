@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import XCTest
-@_spi(RealmSwiftPrivate) import RealmSwift
+@_spi(RealmSwiftPrivate) import RealmSwiftLegacy
 
 final class ObjectCustomPropertiesTests: TestCase {
     override func tearDown() {

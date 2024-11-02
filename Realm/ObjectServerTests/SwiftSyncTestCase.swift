@@ -20,12 +20,12 @@
 
 import Combine
 import XCTest
-import RealmSwift
+import RealmSwiftLegacy
 
 #if canImport(RealmTestSupport)
 import RealmTestSupport
 import RealmSyncTestSupport
-import RealmSwiftTestSupport
+import RealmSwiftLegacyTestSupport
 #endif
 
 public func randomString(_ length: Int) -> String {

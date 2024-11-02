@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import SwiftUI
-import RealmSwift
+import RealmSwiftLegacy
 import Combine
 
 class SwiftPerson: Object, ObjectKeyIdentifiable {
@@ -199,7 +199,7 @@ class LoginHelper: ObservableObject {
 
     func login(email: String, password: String, completion: @escaping (User) -> Void) {
         Logger.shared.level = .all
-        let app = RealmSwift.App(id: ProcessInfo.processInfo.environment["app_id"]!, configuration: appConfig)
+        let app = RealmSwiftLegacy.App(id: ProcessInfo.processInfo.environment["app_id"]!, configuration: appConfig)
         app.login(credentials: .emailPassword(email: email, password: password))
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { result in
@@ -213,12 +213,12 @@ class LoginHelper: ObservableObject {
     }
 
     func logout() {
-        let app = RealmSwift.App(id: ProcessInfo.processInfo.environment["app_id"]!, configuration: appConfig)
+        let app = RealmSwiftLegacy.App(id: ProcessInfo.processInfo.environment["app_id"]!, configuration: appConfig)
         app.currentUser?.logOut { _ in }
     }
 
     func logoutAllUsers() {
-        let app = RealmSwift.App(id: ProcessInfo.processInfo.environment["app_id"]!, configuration: appConfig)
+        let app = RealmSwiftLegacy.App(id: ProcessInfo.processInfo.environment["app_id"]!, configuration: appConfig)
         for (_, user) in app.allUsers {
             user.logOut { _ in }
         }

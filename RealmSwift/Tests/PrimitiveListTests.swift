@@ -16,7 +16,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-import RealmSwift
+import RealmSwiftLegacy
 import XCTest
 
 #if canImport(RealmTestSupport)

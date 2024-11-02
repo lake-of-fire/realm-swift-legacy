@@ -19,7 +19,7 @@
 #if SCHEMA_VERSION_1
 
 import Foundation
-import RealmSwift
+import RealmSwiftLegacy
 
 // MARK: - Schema
 

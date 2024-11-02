@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import UIKit
-import RealmSwift
+import RealmSwiftLegacy
 
 class Place: Object {
     @objc dynamic var postalCode: String?

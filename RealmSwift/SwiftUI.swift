@@ -1117,7 +1117,7 @@ public protocol BoundCollection {
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension BoundCollection {
     private func write(_ block: (Value) -> Void) where Value: ThreadConfined {
-        RealmSwift.write(wrappedValue, block)
+        RealmSwiftLegacy.write(wrappedValue, block)
     }
 }
 

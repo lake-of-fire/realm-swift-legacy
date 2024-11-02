@@ -18,7 +18,7 @@
 
 import XCTest
 import Realm
-import RealmSwift
+import RealmSwiftLegacy
 
 class SwiftBSONTests: XCTestCase {
     private func testBSONRoundTrip<T>(_ value: T,

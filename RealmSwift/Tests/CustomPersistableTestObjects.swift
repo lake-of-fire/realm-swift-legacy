@@ -16,7 +16,7 @@
 //
 
 import Foundation
-import RealmSwift
+import RealmSwiftLegacy
 
 protocol TrivialCustomPersistable: CustomPersistable {
     var value: PersistedType { get set }

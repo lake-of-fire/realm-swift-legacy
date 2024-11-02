@@ -17,11 +17,11 @@
  ////////////////////////////////////////////////////////////////////////////
 
 import SwiftUI
-import RealmSwift
+import RealmSwiftLegacy
 
 class Series: Object {
     @Persisted var title: String
-    @Persisted var episodes: RealmSwift.List<Movie>
+    @Persisted var episodes: RealmSwiftLegacy.List<Movie>
 }
 
 class Movie: Object {

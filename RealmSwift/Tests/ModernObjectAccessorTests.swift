@@ -18,7 +18,7 @@
 
 import XCTest
 import Realm.Private
-import RealmSwift
+import RealmSwiftLegacy
 import Foundation
 
 class ModernObjectAccessorTests: TestCase {

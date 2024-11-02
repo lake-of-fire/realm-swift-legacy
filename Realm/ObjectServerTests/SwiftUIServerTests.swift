@@ -16,13 +16,13 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-import RealmSwift
+import RealmSwiftLegacy
 import XCTest
 import SwiftUI
 import Combine
 
 #if canImport(RealmTestSupport)
-import RealmSwiftSyncTestSupport
+import RealmSwiftLegacySyncTestSupport
 import RealmSyncTestSupport
 #endif
 

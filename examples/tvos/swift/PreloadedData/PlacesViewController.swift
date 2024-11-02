@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import UIKit
-import RealmSwift
+import RealmSwiftLegacy
 
 class PlacesViewController: UITableViewController, UITextFieldDelegate {
     @IBOutlet weak var searchField: UITextField!

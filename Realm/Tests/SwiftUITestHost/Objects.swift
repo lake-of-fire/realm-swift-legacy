@@ -16,7 +16,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-import RealmSwift
+import RealmSwiftLegacy
 import Foundation
 
 class Reminder: EmbeddedObject, ObjectKeyIdentifiable {
@@ -44,7 +44,7 @@ class Reminder: EmbeddedObject, ObjectKeyIdentifiable {
 class ReminderList: Object, ObjectKeyIdentifiable {
     @Persisted var name = "New List"
     @Persisted var icon = "list.bullet"
-    @Persisted var reminders = RealmSwift.List<Reminder>()
+    @Persisted var reminders = RealmSwiftLegacy.List<Reminder>()
     var firstLetter: String {
         guard let char = name.first else {
             return ""

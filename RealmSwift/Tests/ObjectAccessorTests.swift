@@ -18,7 +18,7 @@
 
 import XCTest
 import Realm.Private
-import RealmSwift
+import RealmSwiftLegacy
 import Foundation
 
 @available(*, deprecated) // Silence deprecation warnings for RealmOptional

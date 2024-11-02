@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import XCTest
-import RealmSwift
+import RealmSwiftLegacy
 import class Realm.Private.RLMRealmConfiguration
 
 class RealmConfigurationTests: TestCase {

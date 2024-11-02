@@ -18,7 +18,7 @@
 
 import XCTest
 import Realm
-import RealmSwift
+import RealmSwiftLegacy
 
 class RealmPropertyObject: Object {
     var optionalIntValue = RealmProperty<Int?>()

@@ -17,16 +17,16 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #if DEBUG
-    @testable import RealmSwift
+    @testable import RealmSwiftLegacy
 #else
-    import RealmSwift
+    import RealmSwiftLegacy
 #endif
 import Foundation
 import Realm
 import XCTest
 
 #if canImport(RealmSwiftTestSupport)
-import RealmSwiftTestSupport
+import RealmSwiftLegacyTestSupport
 #endif
 
 @available(*, deprecated) // Silence deprecation warnings for RealmOptional

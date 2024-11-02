@@ -22,9 +22,9 @@ import Realm.Dynamic
 import Foundation
 
 #if DEBUG
-    @testable import RealmSwift
+    @testable import RealmSwiftLegacy
 #else
-    import RealmSwift
+    import RealmSwiftLegacy
 #endif
 
 @available(*, deprecated) // Silence deprecation warnings for RealmOptional

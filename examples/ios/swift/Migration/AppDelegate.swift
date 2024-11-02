@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import UIKit
-import RealmSwift
+import RealmSwiftLegacy
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

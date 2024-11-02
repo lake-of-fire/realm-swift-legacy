@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import Foundation
-import RealmSwift
+import RealmSwiftLegacy
 
 public class SwiftPerson: Object {
     @Persisted(primaryKey: true) public var _id: ObjectId

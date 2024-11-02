@@ -5,7 +5,7 @@
 //: 3) If the Playground didn't already run press the ▶︎ button at the bottom
 
 import Foundation
-import RealmSwift
+import RealmSwiftLegacy
 
 //: I. Define the data entities
 

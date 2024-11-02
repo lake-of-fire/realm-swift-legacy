@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import Foundation
-import RealmSwift
+import RealmSwiftLegacy
 import XCTest
 
 final public class WatchTestUtility: ChangeEventDelegate {

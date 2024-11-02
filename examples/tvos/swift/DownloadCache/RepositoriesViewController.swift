@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import UIKit
-import RealmSwift
+import RealmSwiftLegacy
 
 class RepositoriesViewController: UICollectionViewController, UITextFieldDelegate {
     @IBOutlet weak var sortOrderControl: UISegmentedControl!

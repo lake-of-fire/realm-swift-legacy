@@ -18,10 +18,10 @@
 
 import XCTest
 import Realm
-import RealmSwift
+import RealmSwiftLegacy
 
 #if canImport(RealmSwiftTestSupport)
-import RealmSwiftTestSupport
+import RealmSwiftLegacyTestSupport
 #endif
 
 class AnyRealmTypeObject: Object {

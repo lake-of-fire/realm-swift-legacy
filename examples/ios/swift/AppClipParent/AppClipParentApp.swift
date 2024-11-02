@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import SwiftUI
-import RealmSwift
+import RealmSwiftLegacy
 
 @main
 struct AppClipParentApp: SwiftUI.App {

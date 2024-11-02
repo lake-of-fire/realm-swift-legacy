@@ -17,10 +17,10 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import SwiftUI
-import RealmSwift
+import RealmSwiftLegacy
 
 struct ContentView: View {
-    @ObservedObject var objects: RealmSwift.List<DemoObject>
+    @ObservedObject var objects: RealmSwiftLegacy.List<DemoObject>
 
     var body: some View {
         Section(header: Button("Add Object", action: addObject)) {

@@ -17,16 +17,16 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import XCTest
-import RealmSwift
+import RealmSwiftLegacy
 import SwiftUI
 import Combine
 
 class SwiftUIObject: Object, ObjectKeyIdentifiable {
-    @Persisted var list: RealmSwift.List<SwiftBoolObject>
-    @Persisted var stringList: RealmSwift.List<SwiftStringObject>
+    @Persisted var list: RealmSwiftLegacy.List<SwiftBoolObject>
+    @Persisted var stringList: RealmSwiftLegacy.List<SwiftStringObject>
     @Persisted var set: RealmSwift.MutableSet<SwiftBoolObject>
     @Persisted var map: Map<String, SwiftBoolObject?>
-    @Persisted var primitiveList: RealmSwift.List<Int>
+    @Persisted var primitiveList: RealmSwiftLegacy.List<Int>
     @Persisted var primitiveSet: RealmSwift.MutableSet<Int>
     @Persisted var primitiveMap: Map<String, Int>
     @Persisted var str = "foo"
@@ -46,7 +46,7 @@ class UIElementsProjection: Projection<SwiftUIObject>, ObjectKeyIdentifiable {
 class EmbeddedTreeSwiftUIObject1: EmbeddedObject, EmbeddedTreeObject, ObjectKeyIdentifiable {
     @objc dynamic var value = 0
     @objc dynamic var child: EmbeddedTreeObject2?
-    let children = RealmSwift.List<EmbeddedTreeObject2>()
+    let children = RealmSwiftLegacy.List<EmbeddedTreeObject2>()
 }
 
 private let inMemoryIdentifier = "swiftui-tests"

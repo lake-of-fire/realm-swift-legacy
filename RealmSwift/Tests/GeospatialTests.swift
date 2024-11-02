@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import XCTest
-import RealmSwift
+import RealmSwiftLegacy
 import Realm.Private
 
 // Template `EmbeddedObject` for storing GeoPoints in Realm.

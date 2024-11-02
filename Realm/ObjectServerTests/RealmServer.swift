@@ -18,11 +18,11 @@
 
 import Foundation
 import Realm.Private
-import RealmSwift
+import RealmSwiftLegacy
 import XCTest
 
 #if canImport(RealmSwiftTestSupport)
-import RealmSwiftTestSupport
+import RealmSwiftLegacyTestSupport
 import RealmSyncTestSupport
 #endif
 

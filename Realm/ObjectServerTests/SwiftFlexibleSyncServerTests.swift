@@ -17,16 +17,16 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #if os(macOS)
-import RealmSwift
+import RealmSwiftLegacy
 import XCTest
 import Combine
 
 #if canImport(RealmTestSupport)
-import RealmSwiftSyncTestSupport
+import RealmSwiftLegacySyncTestSupport
 import RealmSyncTestSupport
 import RealmTestSupport
 import SwiftUI
-import RealmSwiftTestSupport
+import RealmSwiftLegacyTestSupport
 #endif
 
 @available(macOS 13.0, *)

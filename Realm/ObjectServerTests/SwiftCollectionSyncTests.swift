@@ -17,11 +17,11 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import Realm
-import RealmSwift
+import RealmSwiftLegacy
 import XCTest
 
 #if canImport(RealmTestSupport)
-import RealmSwiftSyncTestSupport
+import RealmSwiftLegacySyncTestSupport
 import RealmSyncTestSupport
 import RealmTestSupport
 #endif

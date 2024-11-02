@@ -18,14 +18,14 @@
 
 import SwiftUI
 import Combine
-import RealmSwift
+import RealmSwiftLegacy
 
 class Contact: Object, ObjectKeyIdentifiable {
     @Persisted(primaryKey: true) var _id: String
     @Persisted var name: String = ""
     @Persisted var lastName: String = ""
     @Persisted var email: String = ""
-    @Persisted var phones: RealmSwift.List<PhoneNumber>
+    @Persisted var phones: RealmSwiftLegacy.List<PhoneNumber>
     @Persisted var birthdate: Date = Date()
     @Persisted var notes: String = ""
 
@@ -108,7 +108,7 @@ class LoginHelper: ObservableObject {
     var cancellables = Set<AnyCancellable>()
 
     func login(email: String, password: String, completion: @escaping () -> Void) {
-        let app = RealmSwift.App(id: appId)
+        let app = RealmSwiftLegacy.App(id: appId)
         app.login(credentials: Credentials.emailPassword(email: email, password: password))
             .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { _ in

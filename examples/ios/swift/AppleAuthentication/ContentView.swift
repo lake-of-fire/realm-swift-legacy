@@ -18,7 +18,7 @@
 
 import SwiftUI
 import AuthenticationServices
-import RealmSwift
+import RealmSwiftLegacy
 
 /// Your Atlas App Services app ID
 let appId = "your-app-id"

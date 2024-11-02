@@ -21,7 +21,7 @@ import Realm
 import os.log
 
 #if BUILDING_REALM_SWIFT_TESTS
-import RealmSwift
+import RealmSwiftLegacy
 #endif
 
 // MARK: Internal Helpers

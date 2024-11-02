@@ -19,12 +19,12 @@
 import Foundation
 import Realm
 import Realm.Dynamic
-import RealmSwift
+import RealmSwiftLegacy
 import XCTest
 
 #if canImport(RealmTestSupport)
 import RealmTestSupport
-import RealmSwiftTestSupport
+import RealmSwiftLegacyTestSupport
 #endif
 
 func inMemoryRealm(_ inMememoryIdentifier: String) -> Realm {

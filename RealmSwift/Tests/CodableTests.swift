@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import XCTest
-import RealmSwift
+import RealmSwiftLegacy
 
 @available(*, deprecated) // Silence deprecation warnings for RealmOptional
 final class CodableObject: Object, Codable {

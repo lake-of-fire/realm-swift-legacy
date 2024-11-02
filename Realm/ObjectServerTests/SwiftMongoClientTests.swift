@@ -19,14 +19,14 @@
 #if os(macOS)
 
 import Combine
-import RealmSwift
+import RealmSwiftLegacy
 import XCTest
 
 #if canImport(RealmTestSupport)
-import RealmSwiftSyncTestSupport
+import RealmSwiftLegacySyncTestSupport
 import RealmSyncTestSupport
 import RealmTestSupport
-import RealmSwiftTestSupport
+import RealmSwiftLegacyTestSupport
 #endif
 
 // MARK: - SwiftMongoClientTests

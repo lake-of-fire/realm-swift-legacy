@@ -18,12 +18,12 @@
 
 import XCTest
 import Realm
-import RealmSwift
+import RealmSwiftLegacy
 import Foundation
 import os.lock
 
 #if canImport(RealmSwiftTestSupport)
-import RealmSwiftTestSupport
+import RealmSwiftLegacyTestSupport
 #endif
 
 private var dynamicDefaultSeed = 0

@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import RealmSwift
+import RealmSwiftLegacy
 
 class ___FILEBASENAMEASIDENTIFIER___: Object {
     

@@ -20,14 +20,14 @@
 
 import Realm
 import Realm.Private
-import RealmSwift
+import RealmSwiftLegacy
 import XCTest
 
 #if canImport(RealmTestSupport)
-import RealmSwiftSyncTestSupport
+import RealmSwiftLegacySyncTestSupport
 import RealmSyncTestSupport
 import RealmTestSupport
-import RealmSwiftTestSupport
+import RealmSwiftLegacyTestSupport
 #endif
 
 // Uses admin API to toggle recovery mode on the baas server

@@ -153,12 +153,12 @@ let package = Package(
             targets: ["Realm", "RealmSwift"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/lake-of-fire/realm-core.git", branch: "legacy")
+        .package(url: "https://github.com/lake-of-fire/realm-core-legacy.git", branch: "legacy")
     ],
     targets: [
       .target(
             name: "Realm",
-            dependencies: [.product(name: "RealmCore", package: "realm-core")],
+            dependencies: [.product(name: "RealmCoreLegacy", package: "realm-core-legacy")],
             path: ".",
             exclude: [
                 "CHANGELOG.md",

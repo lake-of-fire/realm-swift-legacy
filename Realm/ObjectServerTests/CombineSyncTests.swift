@@ -19,8 +19,8 @@
 #if os(macOS)
 
 import Combine
-import Realm
-import Realm.Private
+import RealmLegacy
+import RealmLegacy.Private
 import RealmSwiftLegacy
 import XCTest
 

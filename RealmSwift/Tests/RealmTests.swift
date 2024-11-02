@@ -22,7 +22,7 @@
     import RealmSwiftLegacy
 #endif
 import Foundation
-import Realm
+import RealmLegacy
 import XCTest
 
 #if canImport(RealmSwiftTestSupport)

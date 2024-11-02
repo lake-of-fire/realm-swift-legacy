@@ -20,8 +20,8 @@ import Foundation
 
 import SwiftUI
 import Combine
-import Realm
-import Realm.Private
+import RealmLegacy
+import RealmLegacy.Private
 
 private func write<Value>(_ value: Value, _ block: (Value) -> Void) where Value: ThreadConfined {
     let thawed = value.realm == nil ? value : value.thaw() ?? value

@@ -18,8 +18,8 @@
 
 #if os(macOS) && swift(>=5.8)
 
-import Realm
-import Realm.Private
+import RealmLegacy
+import RealmLegacy.Private
 import RealmSwiftLegacy
 import XCTest
 

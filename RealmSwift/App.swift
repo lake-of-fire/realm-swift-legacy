@@ -19,8 +19,8 @@
 import AuthenticationServices
 import Combine
 import Foundation
-import Realm
-import Realm.Private
+import RealmLegacy
+import RealmLegacy.Private
 
 /**
 An object representing the Realm App configuration

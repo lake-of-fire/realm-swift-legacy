@@ -18,8 +18,8 @@
 
 import Combine
 import Foundation
-import Realm
-import Realm.Private
+import RealmLegacy
+import RealmLegacy.Private
 
 /// An enum representing different states for the Subscription Set.
 @frozen public enum SyncSubscriptionState: Equatable {

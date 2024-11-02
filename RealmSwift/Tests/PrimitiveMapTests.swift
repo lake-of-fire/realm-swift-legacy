@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import XCTest
-import Realm
+import RealmLegacy
 import RealmSwiftLegacy
 
 // swiftlint:disable cyclomatic_complexity

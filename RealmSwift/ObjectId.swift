@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import Foundation
-import Realm
+import RealmLegacy
 
 /**
  A 12-byte (probably) unique object identifier.

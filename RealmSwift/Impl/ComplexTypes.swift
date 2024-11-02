@@ -16,8 +16,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-import Realm
-import Realm.Private
+import RealmLegacy
+import RealmLegacy.Private
 
 extension Object: SchemaDiscoverable, _PersistableInsideOptional, _DefaultConstructible {
     public typealias PersistedType = Object

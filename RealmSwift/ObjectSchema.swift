@@ -17,8 +17,8 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import Foundation
-import Realm
-import Realm.Private
+import RealmLegacy
+import RealmLegacy.Private
 
 /**
  This class represents Realm model object schemas.

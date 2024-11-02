@@ -17,8 +17,8 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import XCTest
-import Realm
-import Realm.Private
+import RealmLegacy
+import RealmLegacy.Private
 
 #if canImport(RealmTestSupport)
 import RealmTestSupport

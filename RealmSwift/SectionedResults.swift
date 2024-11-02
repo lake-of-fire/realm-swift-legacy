@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import Foundation
-import Realm
+import RealmLegacy
 
 /**
  `RealmSectionedResult` defines properties and methods which are common between

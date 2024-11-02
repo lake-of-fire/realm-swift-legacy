@@ -18,7 +18,7 @@
 
 import XCTest
 import RealmSwiftLegacy
-import Realm
+import RealmLegacy
 import Realm.Dynamic
 import Foundation
 

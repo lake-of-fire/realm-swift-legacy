@@ -18,8 +18,8 @@
 
 #if os(macOS)
 
-import Realm
-import Realm.Private
+import RealmLegacy
+import RealmLegacy.Private
 import RealmSwiftLegacy
 import XCTest
 

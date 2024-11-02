@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import XCTest
-import Realm
+import RealmLegacy
 import RealmSwiftLegacy
 
 class SwiftBSONTests: XCTestCase {

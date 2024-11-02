@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import Foundation
-import Realm
+import RealmLegacy
 
 /// A type which can be bridged to and from Objective-C.
 ///

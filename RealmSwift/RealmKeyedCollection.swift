@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import Foundation
-import Realm
+import RealmLegacy
 
 /**
  A homogenous key-value collection of `Object`s which can be retrieved, filtered, sorted, and operated upon.

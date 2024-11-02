@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import Foundation
-import Realm
+import RealmLegacy
 
 // RealmCollectionImpl implements all of the RealmCollection protocol except for
 // description and single-element subscript. description actually varies between

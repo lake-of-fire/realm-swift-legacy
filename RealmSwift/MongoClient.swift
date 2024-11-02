@@ -18,8 +18,8 @@
 
 import Combine
 import Foundation
-import Realm
-import Realm.Private
+import RealmLegacy
+import RealmLegacy.Private
 
 /**
  * The `MongoClient` enables reading and writing on a MongoDB database via the Realm Cloud service.

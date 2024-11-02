@@ -16,8 +16,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-import Realm
-import Realm.Private
+import RealmLegacy
+import RealmLegacy.Private
 
 // Get a pointer to the given property's ivar on the object. This is similar to
 // object_getIvar() but returns a pointer to the value rather than the value.

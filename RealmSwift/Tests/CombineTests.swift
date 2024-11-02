@@ -18,7 +18,7 @@
 
 import XCTest
 import Combine
-import Realm.Private
+import RealmLegacy.Private
 import RealmSwiftLegacy
 
 class CombineIdentifiableObject: Object, ObjectKeyIdentifiable {

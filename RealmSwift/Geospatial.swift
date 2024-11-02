@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import CoreLocation
-import Realm
+import RealmLegacy
 
 /**
  A struct that represents the coordinates of a point formed by a latitude and a longitude value.

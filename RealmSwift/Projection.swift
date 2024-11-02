@@ -16,8 +16,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-import Realm
-import Realm.Private
+import RealmLegacy
+import RealmLegacy.Private
 import Combine
 
 private protocol AnyProjected {

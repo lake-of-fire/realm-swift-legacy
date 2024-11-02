@@ -16,8 +16,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-import Realm
-import Realm.Private
+import RealmLegacy
+import RealmLegacy.Private
 
 // An opaque identifier for each property on a class. Happens to currently be
 // the property's index in the object schema, but that's not something that any

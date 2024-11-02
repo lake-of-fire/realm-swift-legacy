@@ -18,7 +18,7 @@
 
 import XCTest
 import RealmSwiftLegacy
-import Realm.Private
+import RealmLegacy.Private
 
 private func mapValues<T>(_ values: [T]) -> [String: T] {
     var map = [String: T]()

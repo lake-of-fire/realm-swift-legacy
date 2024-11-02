@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import XCTest
-import Realm.Private
+import RealmLegacy.Private
 import RealmSwiftLegacy
 import Foundation
 

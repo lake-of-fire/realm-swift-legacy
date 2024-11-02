@@ -16,7 +16,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-import Realm
+import RealmLegacy
 
 /// A protocol describing types that can parameterize a `RealmOptional`.
 public protocol RealmOptionalType: _ObjcBridgeable {

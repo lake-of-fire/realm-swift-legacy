@@ -17,8 +17,8 @@
 ////////////////////////////////////////////////////////////////////////////
 
 import Foundation
-import Realm.Dynamic
-import Realm.Private
+import RealmLegacy.Dynamic
+import RealmLegacy.Private
 import XCTest
 
 #if canImport(RealmTestSupport)

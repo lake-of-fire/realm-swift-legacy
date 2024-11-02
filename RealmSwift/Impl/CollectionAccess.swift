@@ -16,7 +16,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-import Realm
+import RealmLegacy
 
 private func isSameCollection(_ lhs: RLMCollection, _ rhs: Any) -> Bool {
     // Managed isEqual checks if they're backed by the same core field, so it does exactly what we need

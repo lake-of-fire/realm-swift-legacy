@@ -18,7 +18,7 @@
 
 import Foundation
 import RealmSwiftLegacy
-import Realm
+import RealmLegacy
 
 class ModernAllTypesObject: Object {
     @Persisted(primaryKey: true) var pk: ObjectId

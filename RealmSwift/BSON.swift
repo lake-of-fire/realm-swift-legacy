@@ -16,7 +16,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-import Realm
+import RealmLegacy
 
 /// A tag protocol which marks types that can be used as the partition value
 /// for synchronized Realms.

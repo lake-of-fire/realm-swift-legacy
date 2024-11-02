@@ -16,8 +16,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-import Realm
-import Realm.Private
+import RealmLegacy
+import RealmLegacy.Private
 
 /// @Persisted is used to declare properties on Object subclasses which should be
 /// managed by Realm.

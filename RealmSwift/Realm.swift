@@ -43,7 +43,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
  done, trying to use the same instance in multiple blocks dispatch to the same
  queue may fail as queues are not always run on the same thread.
  */
-@frozen public struct Realm {
+@frozen public struct RealmLegacy {
 
     // MARK: Properties
 

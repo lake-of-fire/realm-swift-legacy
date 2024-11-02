@@ -618,7 +618,7 @@ class SwiftUITests: TestCase {
         object.int += 1
         XCTAssertEqual(hit, 1)
         XCTAssertNotNil(object.observationInfo)
-        let realm = try Realm()
+        let realm = try RealmLegacy()
         try realm.write {
             realm.add(object)
         }
@@ -672,7 +672,7 @@ class SwiftUITests: TestCase {
         projection.counter += 1
         XCTAssertEqual(hit, 1)
         XCTAssertNotNil(projection.rootObject.observationInfo)
-        let realm = try Realm()
+        let realm = try RealmLegacy()
         try realm.write {
             realm.add(projection.rootObject)
         }

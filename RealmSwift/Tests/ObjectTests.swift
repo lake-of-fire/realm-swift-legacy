@@ -53,7 +53,7 @@ class ObjectTests: TestCase {
         let standalone = SwiftStringObject()
         XCTAssertNil(standalone.realm)
 
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         var persisted: SwiftStringObject!
         try! realm.write {
             persisted = realm.create(SwiftStringObject.self)
@@ -65,7 +65,7 @@ class ObjectTests: TestCase {
 
         dispatchSyncNewThread {
             autoreleasepool {
-                XCTAssertNotEqual(try! Realm(), persisted.realm!)
+                XCTAssertNotEqual(try! RealmLegacy(), persisted.realm!)
             }
         }
     }
@@ -114,7 +114,7 @@ class ObjectTests: TestCase {
         let object = SwiftObject()
         XCTAssertFalse(object.isInvalidated)
 
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             realm.add(object)
             XCTAssertFalse(object.isInvalidated)
@@ -128,9 +128,9 @@ class ObjectTests: TestCase {
     }
 
     func testInvalidatedWithCustomObjectClasses() {
-        var config = Realm.Configuration.defaultConfiguration
+        var config = RealmLegacy.Configuration.defaultConfiguration
         config.objectTypes = [SwiftObject.self, SwiftBoolObject.self]
-        let realm = try! Realm(configuration: config)
+        let realm = try! RealmLegacy(configuration: config)
 
         let object = SwiftObject()
         XCTAssertFalse(object.isInvalidated)
@@ -163,7 +163,7 @@ class ObjectTests: TestCase {
         assertMatches(renamedObject.description, "LinkToSwiftRenamedProperties1 \\{\n\tlinkA = SwiftRenamedProperties1 \\{\n\t\tpropA = 0;\n\t\tpropB = ;\n\t\\};\n\tlinkB = \\(null\\);\n\tarray1 = List<SwiftRenamedProperties1> <0x[0-9a-f]+> \\(\n\t\n\t\\);\n\tset1 = MutableSet<SwiftRenamedProperties1> <0x[0-9a-f]+> \\(\n\t\n\t\\);\n\\}")
         assertMatches(renamedObject.linkA!.linking1.description, "LinkingObjects<LinkToSwiftRenamedProperties1> <0x[0-9a-f]+> \\(\n\n\\)")
 
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write { realm.add(renamedObject) }
         assertMatches(renamedObject.description, "LinkToSwiftRenamedProperties1 \\{\n\tlinkA = SwiftRenamedProperties1 \\{\n\t\tpropA = 0;\n\t\tpropB = ;\n\t\\};\n\tlinkB = \\(null\\);\n\tarray1 = List<SwiftRenamedProperties1> <0x[0-9a-f]+> \\(\n\t\n\t\\);\n\tset1 = MutableSet<SwiftRenamedProperties1> <0x[0-9a-f]+> \\(\n\t\n\t\\);\n\\}")
         assertMatches(renamedObject.linkA!.linking1.description, "LinkingObjects<LinkToSwiftRenamedProperties1> <0x[0-9a-f]+> \\(\n\t\\[0\\] LinkToSwiftRenamedProperties1 \\{\n\t\tlinkA = SwiftRenamedProperties1 \\{\n\t\t\tpropA = 0;\n\t\t\tpropB = ;\n\t\t\\};\n\t\tlinkB = \\(null\\);\n\t\tarray1 = List<SwiftRenamedProperties1> <0x[0-9a-f]+> \\(\n\t\t\n\t\t\\);\n\t\tset1 = MutableSet<SwiftRenamedProperties1> <0x[0-9a-f]+> \\(\n\t\t\n\t\t\\);\n\t\\}\n\\)")
@@ -293,7 +293,7 @@ class ObjectTests: TestCase {
             XCTAssertNotEqual(obj1.binaryCol, obj2.binaryCol)
         }
         assertDifferentPropertyValues(SwiftDynamicDefaultObject(), SwiftDynamicDefaultObject())
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             assertDifferentPropertyValues(realm.create(SwiftDynamicDefaultObject.self),
                                           realm.create(SwiftDynamicDefaultObject.self))
@@ -325,7 +325,7 @@ class ObjectTests: TestCase {
         }
 
         test(SwiftObject())
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             test(realm.create(SwiftObject.self))
             let addedObj = SwiftObject()
@@ -353,7 +353,7 @@ class ObjectTests: TestCase {
         }
 
         test(SwiftOptionalObject())
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             test(realm.create(SwiftOptionalObject.self))
             let addedObj = SwiftOptionalObject()
@@ -397,7 +397,7 @@ class ObjectTests: TestCase {
         }
 
         test(SwiftListObject())
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             test(realm.create(SwiftListObject.self))
             let addedObj = SwiftListObject()
@@ -439,7 +439,7 @@ class ObjectTests: TestCase {
         }
 
         test(SwiftMutableSetObject())
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             test(realm.create(SwiftMutableSetObject.self))
             let addedObj = SwiftMutableSetObject()
@@ -459,7 +459,7 @@ class ObjectTests: TestCase {
         let dog = SwiftDogObject()
         let owner = SwiftOwnerObject(value: ["owner name", dog])
         test(dog)
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             test(realm.create(SwiftOwnerObject.self, value: owner).dog!)
             realm.add(owner)
@@ -695,7 +695,7 @@ class ObjectTests: TestCase {
         }
         let enumerated = Locked(false)
         autoreleasepool {
-            let configuration = Realm.Configuration(schemaVersion: 1, migrationBlock: { migration, _ in
+            let configuration = RealmLegacy.Configuration(schemaVersion: 1, migrationBlock: { migration, _ in
                 migration.enumerateObjects(ofType: SwiftObject.className()) { _, newObject in
                     if let newObject = newObject {
                         block(newObject, migration)
@@ -723,8 +723,8 @@ class ObjectTests: TestCase {
         }
 
         setAndTestAllTypes(setter, getter: getter, object: SwiftObject())
-        try! Realm().write {
-            let persistedObject = try! Realm().create(SwiftObject.self)
+        try! RealmLegacy().write {
+            let persistedObject = try! RealmLegacy().create(SwiftObject.self)
             self.setAndTestAllTypes(setter, getter: getter, object: persistedObject)
         }
     }
@@ -743,8 +743,8 @@ class ObjectTests: TestCase {
         }
 
         setAndTestAllTypes(setter, getter: getter, object: SwiftObject())
-        try! Realm().write {
-            let persistedObject = try! Realm().create(SwiftObject.self)
+        try! RealmLegacy().write {
+            let persistedObject = try! RealmLegacy().create(SwiftObject.self)
             self.setAndTestAllTypes(setter, getter: getter, object: persistedObject)
         }
     }
@@ -762,7 +762,7 @@ class ObjectTests: TestCase {
     }
 
     func testDynamicList() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let arrayObject = SwiftArrayPropertyObject()
         let str1 = SwiftStringObject()
         let str2 = SwiftStringObject()
@@ -779,7 +779,7 @@ class ObjectTests: TestCase {
     }
 
     func testDynamicMutableSet() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let setObject = SwiftMutableSetPropertyObject()
         let str1 = SwiftStringObject()
         let str2 = SwiftStringObject()
@@ -802,7 +802,7 @@ class ObjectTests: TestCase {
     }
 
     func testObjectiveCTypeProperties() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         var object: SwiftObjectiveCTypesObject!
         let now = NSDate()
         let data = "fizzbuzz".data(using: .utf8)! as Data as NSData
@@ -826,7 +826,7 @@ class ObjectTests: TestCase {
     }
 
     func testDeleteObservedObject() throws {
-        let realm = try Realm()
+        let realm = try RealmLegacy()
         realm.beginWrite()
         let object0 = realm.create(SwiftIntObject.self, value: [0])
         let object1 = realm.create(SwiftIntObject.self, value: [0])
@@ -861,7 +861,7 @@ class ObjectTests: TestCase {
     }
 
     func createObject(_ value: Int = 0) throws -> SwiftObject {
-        let realm = try Realm()
+        let realm = try RealmLegacy()
         return try realm.write {
             realm.create(SwiftObject.self, value: ["intCol": value])
         }
@@ -989,7 +989,7 @@ class ObjectTests: TestCase {
 
         let token = object.observe(expectChange("intCol", 1, 2))
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             try! realm.write {
                 realm.objects(SwiftObject.self).first!.intCol = 2
             }
@@ -1006,7 +1006,7 @@ class ObjectTests: TestCase {
         // Expect notification for "intCol" keyPath when "intCol" is modified
         let token = object.observe(keyPaths: ["intCol"], expectChange("intCol", 123, 2))
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             try! realm.write {
                 realm.objects(SwiftObject.self).first!.intCol = 2
             }
@@ -1027,7 +1027,7 @@ class ObjectTests: TestCase {
         }
 
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             try! realm.write {
                 let first = realm.objects(SwiftObject.self).first!
                 first.intCol += 1
@@ -1039,14 +1039,14 @@ class ObjectTests: TestCase {
     }
 
     func testListPropertyNotifications() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let object = realm.create(SwiftRecursiveObject.self)
         try! realm.commitWrite()
 
         let token = object.observe(expectChange("objects", Int?.none, Int?.none))
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             try! realm.write {
                 let obj = realm.objects(SwiftRecursiveObject.self).first!
                 obj.objects.append(obj)
@@ -1058,7 +1058,7 @@ class ObjectTests: TestCase {
     }
 
     func testListPropertyKeyPathNotifications() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let employee = realm.create(SwiftEmployeeObject.self)
         let company = realm.create(SwiftCompanyObject.self)
@@ -1156,7 +1156,7 @@ class ObjectTests: TestCase {
     }
 
     func testLinkPropertyKeyPathNotifications1() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let person = realm.create(SwiftOwnerObject.self)
         let dog = realm.create(SwiftDogObject.self)
@@ -1173,7 +1173,7 @@ class ObjectTests: TestCase {
     }
 
     func testLinkPropertyKeyPathNotifications2() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let person = realm.create(SwiftOwnerObject.self)
         let dog = realm.create(SwiftDogObject.self)
@@ -1191,7 +1191,7 @@ class ObjectTests: TestCase {
     }
 
     func testLinkPropertyKeyPathNotifications3() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let person = realm.create(SwiftOwnerObject.self)
         let dog = realm.create(SwiftDogObject.self)
@@ -1212,7 +1212,7 @@ class ObjectTests: TestCase {
     }
 
     func testLinkPropertyKeyPathNotifications4() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let person = realm.create(SwiftOwnerObject.self)
         let dog = realm.create(SwiftDogObject.self)
@@ -1233,7 +1233,7 @@ class ObjectTests: TestCase {
     }
 
     func testBacklinkPropertyKeyPathNotifications1() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let person = realm.create(SwiftOwnerObject.self)
         let dog = realm.create(SwiftDogObject.self)
@@ -1254,7 +1254,7 @@ class ObjectTests: TestCase {
     }
 
     func testBacklinkPropertyKeyPathNotifications2() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let person = realm.create(SwiftOwnerObject.self)
         let dog = realm.create(SwiftDogObject.self)
@@ -1275,7 +1275,7 @@ class ObjectTests: TestCase {
     }
 
     func testBacklinkPropertyKeyPathNotifications3() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let person = realm.create(SwiftOwnerObject.self)
         let dog = realm.create(SwiftDogObject.self)
@@ -1293,7 +1293,7 @@ class ObjectTests: TestCase {
     }
 
     func testBacklinkPropertyKeyPathNotifications4() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let person = realm.create(SwiftOwnerObject.self)
         let dog = realm.create(SwiftDogObject.self)
@@ -1312,7 +1312,7 @@ class ObjectTests: TestCase {
     }
 
     func testBacklinkPropertyKeyPathNotifications5() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let person = realm.create(SwiftOwnerObject.self)
         let dog = realm.create(SwiftDogObject.self)
@@ -1331,14 +1331,14 @@ class ObjectTests: TestCase {
 }
 
     func testMutableSetPropertyNotifications() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let object = realm.create(SwiftRecursiveObject.self)
         try! realm.commitWrite()
 
         let token = object.observe(expectChange("objectSet", Int?.none, Int?.none))
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             try! realm.write {
                 let obj = realm.objects(SwiftRecursiveObject.self).first!
                 obj.objectSet.insert(obj)
@@ -1350,7 +1350,7 @@ class ObjectTests: TestCase {
     }
 
     func testOptionalPropertyNotifications() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let object = SwiftOptionalDefaultValuesObject()
         try! realm.write {
             realm.add(object)
@@ -1358,7 +1358,7 @@ class ObjectTests: TestCase {
 
         var token = object.observe(expectChange("optIntCol", 1, 2))
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             try! realm.write {
                 realm.objects(SwiftOptionalDefaultValuesObject.self).first!.optIntCol.value = 2
             }
@@ -1369,7 +1369,7 @@ class ObjectTests: TestCase {
 
         token = object.observe(expectChange("optIntCol", 2, Int?.none))
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             try! realm.write {
                 realm.objects(SwiftOptionalDefaultValuesObject.self).first!.optIntCol.value = nil
             }
@@ -1380,7 +1380,7 @@ class ObjectTests: TestCase {
 
         token = object.observe(expectChange("optIntCol", Int?.none, 3))
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             try! realm.write {
                 realm.objects(SwiftOptionalDefaultValuesObject.self).first!.optIntCol.value = 3
             }
@@ -1391,7 +1391,7 @@ class ObjectTests: TestCase {
     }
 
     func testOptionalPropertyKeyPathNotifications() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let object = SwiftOptionalDefaultValuesObject()
         try! realm.write {
             realm.add(object)
@@ -1400,7 +1400,7 @@ class ObjectTests: TestCase {
         // Expect notification for change on observed path
         var token = object.observe(keyPaths: ["optIntCol"], expectChange("optIntCol", 1, 2))
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             try! realm.write {
                 realm.objects(SwiftOptionalDefaultValuesObject.self).first!.optIntCol.value = 2
             }
@@ -1412,7 +1412,7 @@ class ObjectTests: TestCase {
         // Expect no notification for change outside of observed path
         token = object.observe(keyPaths: ["optStringCol"], expectChange("optIntCol", 2, 3, true)) // Passing true inverts expectation
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             try! realm.write {
                 realm.objects(SwiftOptionalDefaultValuesObject.self).first!.optIntCol.value = 3
             }
@@ -1424,7 +1424,7 @@ class ObjectTests: TestCase {
         // Expect notification for change from value to nil on observed path
         token = object.observe(keyPaths: ["optIntCol"], expectChange("optIntCol", 3, Int?.none))
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             try! realm.write {
                 realm.objects(SwiftOptionalDefaultValuesObject.self).first!.optIntCol.value = nil
             }
@@ -1436,7 +1436,7 @@ class ObjectTests: TestCase {
         // Expect notification for change from nil to value on observed path
         token = object.observe(keyPaths: ["optIntCol"], expectChange("optIntCol", Int?.none, 2))
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             try! realm.write {
                 realm.objects(SwiftOptionalDefaultValuesObject.self).first!.optIntCol.value = 2
             }
@@ -1447,7 +1447,7 @@ class ObjectTests: TestCase {
     }
 
     func testObserveOnDifferentQueue() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let object = realm.create(SwiftIntObject.self, value: [1])
         try! realm.commitWrite()
@@ -1471,7 +1471,7 @@ class ObjectTests: TestCase {
     }
 
     func testObserveKeyPathOnDifferentQueue() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let object = realm.create(SwiftObject.self)
         object.intCol = 1
@@ -1497,7 +1497,7 @@ class ObjectTests: TestCase {
     }
 
     func testInvalidateObserverOnDifferentQueueBeforeRegistration() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let object = realm.create(SwiftIntObject.self, value: [1])
         try! realm.commitWrite()
@@ -1614,7 +1614,7 @@ class ObjectTests: TestCase {
         let obj = try createObject()
         let ex = Locked(expectation(description: "got next"))
         let task = Task { @CustomGlobalActor in
-            let realm = try await Realm(actor: CustomGlobalActor.shared)
+            let realm = try await RealmLegacy(actor: CustomGlobalActor.shared)
             let obj = realm.objects(SwiftObject.self).first!
             var value = 0
             for try await change in changesetPublisher(obj).values {
@@ -1688,7 +1688,7 @@ class ObjectTests: TestCase {
                 group.addTask { @CustomGlobalActor in
                     waitingForRealm.withLock { $0 += 1 }
                     // can throw due to cancellation
-                    guard let realm = try? await Realm(actor: CustomGlobalActor.shared) else {
+                    guard let realm = try? await RealmLegacy(actor: CustomGlobalActor.shared) else {
                         waitingForRealm.withLock { $0 -= 1 }
                         return NotificationToken()
                     }
@@ -1717,7 +1717,7 @@ class ObjectTests: TestCase {
     // MARK: Equality Tests
 
     func testEqualityForObjectTypeWithPrimaryKey() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let pk = "123456"
 
         let testObject = SwiftPrimaryStringObject()
@@ -1750,7 +1750,7 @@ class ObjectTests: TestCase {
     }
 
     func testEqualityForObjectTypeWithoutPrimaryKey() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let pk = "123456"
         XCTAssertNil(SwiftStringObject.primaryKey())
 
@@ -1774,7 +1774,7 @@ class ObjectTests: TestCase {
     }
 
     func testEqualityForFrozenObjectTypeWithoutPrimaryKey() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let testObject = try! realm.write {
             realm.create(SwiftStringObject.self)
         }
@@ -1785,7 +1785,7 @@ class ObjectTests: TestCase {
     }
 
     func testRetrievingObjectWithRuntimeType() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
 
         let unmanagedStringObject = SwiftPrimaryStringObject()
         unmanagedStringObject.stringCol = UUID().uuidString
@@ -1807,7 +1807,7 @@ class ObjectTests: TestCase {
     }
 
     func testRetrievingObjectsWithRuntimeType() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
 
         let unmanagedStringObject = SwiftStringObject()
         unmanagedStringObject.stringCol = "foo"
@@ -1832,7 +1832,7 @@ class ObjectTests: TestCase {
         let obj = SwiftStringObject()
         XCTAssertFalse(obj.isFrozen)
 
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write { realm.add(obj) }
         XCTAssertFalse(obj.isFrozen)
 
@@ -1849,7 +1849,7 @@ class ObjectTests: TestCase {
         let obj = SwiftStringObject()
         XCTAssertFalse(obj.isFrozen)
 
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             realm.add(obj)
         }
@@ -1861,7 +1861,7 @@ class ObjectTests: TestCase {
     }
 
     func testFreezeDynamicObject() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             realm.create(SwiftObject.self, value: ["arrayCol": [[true]], "setCol": [[true]]])
         }
@@ -1874,7 +1874,7 @@ class ObjectTests: TestCase {
     }
 
     func testFreezeAllPropertyTypes() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let (obj, optObj, listObj) = try! realm.write {
             return (
                 realm.create(SwiftObject.self, value: [
@@ -1986,7 +1986,7 @@ class ObjectTests: TestCase {
     }
 
     func testThaw() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let obj = try! realm.write {
             realm.create(SwiftBoolObject.self, value: ["boolCol": true])
         }
@@ -2008,7 +2008,7 @@ class ObjectTests: TestCase {
     }
 
     func testThawDeleted() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let obj = try! realm.write {
             realm.create(SwiftBoolObject.self, value: ["boolCol": true])
         }
@@ -2022,7 +2022,7 @@ class ObjectTests: TestCase {
     }
 
     func testThawPreviousVersion() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let obj = try! realm.write {
             realm.create(SwiftBoolObject.self, value: ["boolCol": true])
         }
@@ -2039,21 +2039,21 @@ class ObjectTests: TestCase {
     }
 
     func testThawUpdatedOnDifferentThread() {
-        let obj = try! Realm().write {
-            try! Realm().create(SwiftBoolObject.self, value: ["boolCol": true])
+        let obj = try! RealmLegacy().write {
+            try! RealmLegacy().create(SwiftBoolObject.self, value: ["boolCol": true])
         }
         let frozen = obj.freeze()
         let thawed = frozen.thaw()!
         let tsr = ThreadSafeReference(to: thawed)
 
         dispatchSyncNewThread {
-            let resolved = try! Realm().resolve(tsr)!
-            try! Realm().write({ resolved.boolCol = false })
+            let resolved = try! RealmLegacy().resolve(tsr)!
+            try! RealmLegacy().write({ resolved.boolCol = false })
         }
 
         XCTAssert(frozen.thaw()!.boolCol)
         XCTAssert(thawed.boolCol)
-        try! Realm().refresh()
+        try! RealmLegacy().refresh()
         XCTAssertFalse(frozen.thaw()!.boolCol)
         XCTAssertFalse(thawed.boolCol)
     }

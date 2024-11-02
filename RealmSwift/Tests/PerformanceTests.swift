@@ -99,7 +99,7 @@ class SwiftPerformanceTests: TestCase {
         }
     }
 
-    private func copyRealmToTestPath(_ realm: Realm) -> Realm {
+    private func copyRealmToTestPath(_ realm: RealmLegacy) -> Realm {
         do {
             try FileManager.default.removeItem(at: testRealmURL())
         } catch let error as NSError {
@@ -416,13 +416,13 @@ class SwiftPerformanceTests: TestCase {
     func testRealmCreationCached() {
         var realm: Realm!
         dispatchSyncNewThread {
-            realm = try! Realm()
+            realm = try! RealmLegacy()
         }
 
         measure {
             for _ in 0..<2500 {
                 autoreleasepool {
-                    _ = try! Realm()
+                    _ = try! RealmLegacy()
                 }
             }
         }
@@ -433,7 +433,7 @@ class SwiftPerformanceTests: TestCase {
         measure {
             for _ in 0..<500 {
                 autoreleasepool {
-                    _ = try! Realm()
+                    _ = try! RealmLegacy()
                 }
             }
         }
@@ -447,12 +447,12 @@ class SwiftPerformanceTests: TestCase {
     func testSyncRealmCacheLookup() {
         var config = RLMDummyUser().configuration(partitionValue: "")
         config.objectTypes = []
-        let realm = try! Realm(configuration: config)
+        let realm = try! RealmLegacy(configuration: config)
 
         measure {
             for _ in 0..<1250 {
                 autoreleasepool {
-                    _ = try! Realm(configuration: config)
+                    _ = try! RealmLegacy(configuration: config)
                 }
             }
         }
@@ -465,13 +465,13 @@ class SwiftPerformanceTests: TestCase {
         config.objectTypes = []
         var realm: Realm!
         dispatchSyncNewThread {
-            realm = try! Realm(configuration: config)
+            realm = try! RealmLegacy(configuration: config)
         }
 
         measure {
             for _ in 0..<1250 {
                 autoreleasepool {
-                    _ = try! Realm(configuration: config)
+                    _ = try! RealmLegacy(configuration: config)
                 }
             }
         }
@@ -484,16 +484,16 @@ class SwiftPerformanceTests: TestCase {
         config.objectTypes = []
         var realm: Realm!
         dispatchSyncNewThread {
-            realm = try! Realm(configuration: config)
+            realm = try! RealmLegacy(configuration: config)
         }
 
         measure {
             DispatchQueue.concurrentPerform(iterations: 50) { _ in
                 autoreleasepool {
-                    let realm = try! Realm(configuration: config)
+                    let realm = try! RealmLegacy(configuration: config)
                     for _ in 0..<25 {
                         autoreleasepool {
-                            _ = try! Realm(configuration: config)
+                            _ = try! RealmLegacy(configuration: config)
                         }
                     }
                     realm.invalidate()
@@ -509,14 +509,14 @@ class SwiftPerformanceTests: TestCase {
         config.objectTypes = []
         var realm: Realm!
         dispatchSyncNewThread {
-            realm = try! Realm(configuration: config)
+            realm = try! RealmLegacy(configuration: config)
         }
 
         measure {
             DispatchQueue.concurrentPerform(iterations: 50) { _ in
                 for _ in 0..<25 {
                     autoreleasepool {
-                        _ = try! Realm(configuration: config)
+                        _ = try! RealmLegacy(configuration: config)
                     }
                 }
             }
@@ -648,7 +648,7 @@ class SwiftPerformanceTests: TestCase {
     // MARK: - Legacy object creation helpers
 
     func createObjects<T: Object>(_ type: T.Type, _ create: (T, Int) -> Void) -> Realm {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             for value in 0..<10000 {
                 let obj = T()
@@ -969,7 +969,7 @@ class SwiftSyncRealmPerformanceTests: TestCase {
         App.resetAppCache()
     }
 
-    var config: Realm.Configuration {
+    var config: RealmLegacy.Configuration {
         var config = RLMDummyUser().configuration(partitionValue: "")
         config.objectTypes = []
         return config
@@ -977,12 +977,12 @@ class SwiftSyncRealmPerformanceTests: TestCase {
 
     func testSyncRealmCacheLookup() {
         let config = self.config
-        let realm = try! Realm(configuration: config)
+        let realm = try! RealmLegacy(configuration: config)
 
         measure {
             for _ in 0..<1250 {
                 autoreleasepool {
-                    _ = try! Realm(configuration: config)
+                    _ = try! RealmLegacy(configuration: config)
                 }
             }
         }
@@ -997,13 +997,13 @@ class SwiftSyncRealmPerformanceTests: TestCase {
             // Open on a different thread so that the test hits the path where
             // the cache lookup is a miss but there's a cached Realm on a
             // different thread
-            realm = try! Realm(configuration: config)
+            realm = try! RealmLegacy(configuration: config)
         }
 
         measure {
             for _ in 0..<1250 {
                 autoreleasepool {
-                    _ = try! Realm(configuration: config)
+                    _ = try! RealmLegacy(configuration: config)
                 }
             }
         }
@@ -1013,17 +1013,17 @@ class SwiftSyncRealmPerformanceTests: TestCase {
 
     func testSyncRealmMultithreadedCacheLookup() {
         let config = self.config
-        let realm = try! Realm(configuration: config)
+        let realm = try! RealmLegacy(configuration: config)
 
         measure {
             DispatchQueue.concurrentPerform(iterations: 50) { _ in
                 autoreleasepool {
                     // Ideally we wouldn't measure this and would only measure
                     // the cache lookups but that'd be much more difficult to set up
-                    let realm = try! Realm(configuration: config)
+                    let realm = try! RealmLegacy(configuration: config)
                     for _ in 0..<25 {
                         autoreleasepool {
-                            _ = try! Realm(configuration: config)
+                            _ = try! RealmLegacy(configuration: config)
                         }
                     }
                     realm.invalidate()
@@ -1036,13 +1036,13 @@ class SwiftSyncRealmPerformanceTests: TestCase {
 
     func testSyncRealmMultithreadedCreationCached() {
         let config = self.config
-        let realm = try! Realm(configuration: config)
+        let realm = try! RealmLegacy(configuration: config)
 
         measure {
             DispatchQueue.concurrentPerform(iterations: 50) { _ in
                 for _ in 0..<25 {
                     autoreleasepool {
-                        _ = try! Realm(configuration: config)
+                        _ = try! RealmLegacy(configuration: config)
                     }
                 }
             }
@@ -1053,7 +1053,7 @@ class SwiftSyncRealmPerformanceTests: TestCase {
 }
 
 class SwiftFlexibleSyncRealmPerformanceTests: SwiftSyncRealmPerformanceTests {
-    override var config: Realm.Configuration {
+    override var config: RealmLegacy.Configuration {
         var config = RLMDummyUser().flexibleSyncConfiguration()
         config.objectTypes = []
         return config

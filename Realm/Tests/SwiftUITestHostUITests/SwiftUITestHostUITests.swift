@@ -30,9 +30,9 @@ class SwiftUITests: XCTestCase {
         // the realm must be created before app launch otherwise we will not have
         // write permissions
         let realmPath = URL(string: "\(FileManager.default.temporaryDirectory)\(UUID())")!
-        let configuration = Realm.Configuration(fileURL: realmPath)
-        _ = try Realm.deleteFiles(for: configuration)
-        self.realm = try! Realm(configuration: configuration)
+        let configuration = RealmLegacy.Configuration(fileURL: realmPath)
+        _ = try RealmLegacy.deleteFiles(for: configuration)
+        self.realm = try! RealmLegacy(configuration: configuration)
 
         app.launchEnvironment = [
             "REALM_PATH": realmPath.absoluteString
@@ -44,7 +44,7 @@ class SwiftUITests: XCTestCase {
         self.realm.invalidate()
         let config = realm.configuration
         self.realm = nil
-        XCTAssertTrue(try Realm.deleteFiles(for: config))
+        XCTAssertTrue(try RealmLegacy.deleteFiles(for: config))
     }
 
     private func deleteString(for string: String) -> String {
@@ -402,7 +402,7 @@ class SwiftUITests: XCTestCase {
         // has been changed.
         // Expect 2 cells now displaying "changed".
         // Expect two sections as another `ReminderList` has
-        // been inserted into the Realm.
+        // been inserted into the RealmLegacy.
         if #available(iOS 16, *) {
             let sectionHeader1 = app.collectionViews.children(matching: .cell).element(boundBy: 0)
             XCTAssert(sectionHeader1.staticTexts["A"].exists)
@@ -486,7 +486,7 @@ class SwiftUITests: XCTestCase {
         // has been changed.
         // Expect 2 cells now displaying "changed".
         // Expect two sections as another `ReminderList` has
-        // been inserted into the Realm.
+        // been inserted into the RealmLegacy.
         if #available(iOS 16, *) {
             let sectionHeader1 = app.collectionViews.children(matching: .cell).element(boundBy: 0)
             XCTAssert(sectionHeader1.staticTexts["A"].exists)

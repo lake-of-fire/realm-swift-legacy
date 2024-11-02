@@ -335,7 +335,7 @@ extension MongoCollection {
             if let o = objectId.map(ObjectiveCSupport.convert), let objectId = o {
                 completion(.success(objectId))
             } else {
-                completion(.failure(error ?? Realm.Error.callFailed))
+                completion(.failure(error ?? RealmLegacy.Error.callFailed))
             }
         }
     }
@@ -352,7 +352,7 @@ extension MongoCollection {
             if let objectIds = objectIds?.compactMap(ObjectiveCSupport.convert) {
                 completion(.success(objectIds))
             } else {
-                completion(.failure(error ?? Realm.Error.callFailed))
+                completion(.failure(error ?? RealmLegacy.Error.callFailed))
             }
         }
     }
@@ -370,7 +370,7 @@ extension MongoCollection {
             if let bson = documents?.map(ObjectiveCSupport.convert) {
                 completion(.success(bson))
             } else {
-                completion(.failure(error ?? Realm.Error.callFailed))
+                completion(.failure(error ?? RealmLegacy.Error.callFailed))
             }
         }
     }
@@ -407,7 +407,7 @@ extension MongoCollection {
             if let bson = documents?.map(ObjectiveCSupport.convert) {
                 completion(.success(bson))
             } else {
-                completion(.failure(error ?? Realm.Error.callFailed))
+                completion(.failure(error ?? RealmLegacy.Error.callFailed))
             }
         }
     }
@@ -477,7 +477,7 @@ extension MongoCollection {
             if let updateResult = updateResult {
                 completion(.success(updateResult))
             } else {
-                completion(.failure(error ?? Realm.Error.callFailed))
+                completion(.failure(error ?? RealmLegacy.Error.callFailed))
             }
         }
     }
@@ -498,7 +498,7 @@ extension MongoCollection {
             if let updateResult = updateResult {
                 completion(.success(updateResult))
             } else {
-                completion(.failure(error ?? Realm.Error.callFailed))
+                completion(.failure(error ?? RealmLegacy.Error.callFailed))
             }
         }
     }

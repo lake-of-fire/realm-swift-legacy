@@ -284,7 +284,7 @@ class MutableSetTests: TestCase {
     }
 
     func testValueForKey() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             for value in [1, 2] {
                 let setObject = SwiftMutableSetOfSwiftObject()
@@ -331,7 +331,7 @@ class MutableSetTests: TestCase {
 
     @available(*, deprecated) // Silence deprecation warnings for RealmOptional
     func testValueForKeyOptional() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             for value in [1, 2] {
                 let setObject = SwiftMutableSetOfSwiftOptionalObject()
@@ -512,7 +512,7 @@ class MutableSetNewlyAddedTests: MutableSetTests {
 
     override func createSetWithLinks() -> SwiftMutableSetOfSwiftObject {
         let set = SwiftMutableSetOfSwiftObject()
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write { realm.add(set) }
 
         XCTAssertNotNil(set.realm)
@@ -532,7 +532,7 @@ class MutableSetNewlyCreatedTests: MutableSetTests {
     }
 
     override func createSetWithLinks() -> SwiftMutableSetOfSwiftObject {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let set = realm.create(SwiftMutableSetOfSwiftObject.self)
         try! realm.commitWrite()
@@ -555,7 +555,7 @@ class MutableSetRetrievedTests: MutableSetTests {
     }
 
     override func createSetWithLinks() -> SwiftMutableSetOfSwiftObject {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         realm.create(SwiftMutableSetOfSwiftObject.self)
         try! realm.commitWrite()

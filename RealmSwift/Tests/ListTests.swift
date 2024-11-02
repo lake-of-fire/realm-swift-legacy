@@ -483,7 +483,7 @@ class ListTests: TestCase {
     }
 
     func testValueForKey() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             for value in [1, 2] {
                 let listObject = SwiftListOfSwiftObject()
@@ -530,7 +530,7 @@ class ListTests: TestCase {
 
     @available(*, deprecated) // Silence deprecation warnings for RealmOptional
     func testValueForKeyOptional() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             for value in [1, 2] {
                 let listObject = SwiftListOfSwiftOptionalObject()
@@ -692,7 +692,7 @@ class ListNewlyAddedTests: ListTests {
 
     override func createArrayWithLinks() -> SwiftListOfSwiftObject {
         let array = SwiftListOfSwiftObject()
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write { realm.add(array) }
 
         XCTAssertNotNil(array.realm)
@@ -702,7 +702,7 @@ class ListNewlyAddedTests: ListTests {
     override func createEmbeddedArray() -> List<EmbeddedTreeObject1> {
         let parent = EmbeddedParentObject()
         let list = parent.array
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write { realm.add(parent) }
         return list
     }
@@ -720,7 +720,7 @@ class ListNewlyCreatedTests: ListTests {
     }
 
     override func createArrayWithLinks() -> SwiftListOfSwiftObject {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let array = realm.create(SwiftListOfSwiftObject.self)
         try! realm.commitWrite()
@@ -730,7 +730,7 @@ class ListNewlyCreatedTests: ListTests {
     }
 
     override func createEmbeddedArray() -> List<EmbeddedTreeObject1> {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         return try! realm.write {
             realm.create(EmbeddedParentObject.self).array
         }
@@ -750,7 +750,7 @@ class ListRetrievedTests: ListTests {
     }
 
     override func createArrayWithLinks() -> SwiftListOfSwiftObject {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         realm.create(SwiftListOfSwiftObject.self)
         try! realm.commitWrite()
@@ -761,7 +761,7 @@ class ListRetrievedTests: ListTests {
     }
 
     override func createEmbeddedArray() -> List<EmbeddedTreeObject1> {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             realm.create(EmbeddedParentObject.self)
         }

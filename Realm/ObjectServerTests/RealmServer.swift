@@ -1209,7 +1209,7 @@ public class RealmServer: NSObject {
         completion(.success(schemaProperties.compactMap { $0.key }))
     }
 
-    public func triggerClientReset(_ appId: String, _ realm: Realm) throws {
+    public func triggerClientReset(_ appId: String, _ realm: RealmLegacy) throws {
         let session = try XCTUnwrap(session)
         let appServerId = try retrieveAppServerId(appId)
         let ident = RLMGetClientFileIdent(ObjectiveCSupport.convert(object: realm))

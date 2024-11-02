@@ -141,7 +141,7 @@ struct MainView: View {
         }
     }
 
-    func getConfigurationForUser(_ user: User) -> Realm.Configuration {
+    func getConfigurationForUser(_ user: User) -> RealmLegacy.Configuration {
         var configuration = user.configuration(partitionValue: partitionValue!)
         configuration.encryptionKey = getKey()
         return configuration

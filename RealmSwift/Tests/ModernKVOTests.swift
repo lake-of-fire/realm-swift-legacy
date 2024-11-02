@@ -24,7 +24,7 @@ class ModernKVOTests: TestCase {
 
     override func setUp() {
         super.setUp()
-        realm = try! Realm()
+        realm = try! RealmLegacy()
         realm.beginWrite()
     }
 

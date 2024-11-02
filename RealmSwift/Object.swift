@@ -95,7 +95,7 @@ extension Object: _RealmCollectionValueInsideOptional {
      When passing in an `Array` as the `value` argument, all properties must be present, valid and in the same order as
      the properties defined in the model.
 
-     Call `add(_:)` on a `Realm` instance to add an unmanaged object into that Realm.
+     Call `add(_:)` on a `Realm` instance to add an unmanaged object into that RealmLegacy.
 
      - parameter value:  The value used to populate the object.
      */
@@ -107,9 +107,9 @@ extension Object: _RealmCollectionValueInsideOptional {
     // MARK: Properties
 
     /// The Realm which manages the object, or `nil` if the object is unmanaged.
-    public var realm: Realm? {
+    public var realm: RealmLegacy? {
         if let rlmReam = RLMObjectBaseRealm(self) {
-            return Realm(rlmReam)
+            return RealmLegacy(rlmReam)
         }
         return nil
     }
@@ -122,7 +122,7 @@ extension Object: _RealmCollectionValueInsideOptional {
     /// Indicates if the object can no longer be accessed because it is now invalid.
     ///
     /// An object can no longer be accessed if the object has been deleted from the Realm that manages it, or if
-    /// `invalidate()` is called on that Realm. This property is key-value observable.
+    /// `invalidate()` is called on that RealmLegacy. This property is key-value observable.
     @objc dynamic open override var isInvalidated: Bool { return super.isInvalidated }
 
     /// A human-readable description of the object.
@@ -500,7 +500,7 @@ extension Object: _RealmCollectionValueInsideOptional {
      Returns a list of `DynamicObject`s for a given property name.
 
      - warning:  This method is useful only in specialized circumstances, for example, when building
-     components that integrate with Realm. If you are simply building an app on Realm, it is
+     components that integrate with RealmLegacy. If you are simply building an app on Realm, it is
      recommended to use instance variables or cast the values returned from key-value coding.
 
      - parameter propertyName: The name of the property.
@@ -523,7 +523,7 @@ extension Object: _RealmCollectionValueInsideOptional {
      Returns a set of `DynamicObject`s for a given property name.
 
      - warning:  This method is useful only in specialized circumstances, for example, when building
-     components that integrate with Realm. If you are simply building an app on Realm, it is
+     components that integrate with RealmLegacy. If you are simply building an app on Realm, it is
      recommended to use instance variables or cast the values returned from key-value coding.
 
      - parameter propertyName: The name of the property.
@@ -546,7 +546,7 @@ extension Object: _RealmCollectionValueInsideOptional {
      Returns a map of `DynamicObject`s for a given property name.
 
      - warning:  This method is useful only in specialized circumstances, for example, when building
-     components that integrate with Realm. If you are simply building an app on Realm, it is
+     components that integrate with RealmLegacy. If you are simply building an app on Realm, it is
      recommended to use instance variables or cast the values returned from key-value coding.
 
      - parameter propertyName: The name of the property.
@@ -597,7 +597,7 @@ extension Object: ThreadConfined {
 
      The frozen copy is an immutable object which contains the same data as this
      object currently contains, but will not update when writes are made to the
-     containing Realm. Unlike live objects, frozen objects can be accessed from any
+     containing RealmLegacy. Unlike live objects, frozen objects can be accessed from any
      thread.
 
      - warning: Holding onto a frozen object for an extended period while performing write
@@ -665,7 +665,7 @@ extension Object: ThreadConfined {
      One or more of the properties of the object have been changed.
      */
     case change(_: T, _: [PropertyChange])
-    /// The object has been deleted from the Realm.
+    /// The object has been deleted from the RealmLegacy.
     case deleted
 
     internal init(object: T?, names: [String]?, oldValues: [Any]?, newValues: [Any]?) {

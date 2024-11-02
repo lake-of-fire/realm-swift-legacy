@@ -33,7 +33,7 @@ class RepositoriesViewController: UICollectionViewController, UITextFieldDelegat
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         token = realm.observe { [weak self] _, _ in
             self?.reloadData()
         }
@@ -54,7 +54,7 @@ class RepositoriesViewController: UICollectionViewController, UITextFieldDelegat
                 let repositories = try JSONSerialization.jsonObject(with: data!, options: []) as! [String: AnyObject]
                 let items = repositories["items"] as! [[String: AnyObject]]
 
-                let realm = try Realm()
+                let realm = try RealmLegacy()
                 try realm.write {
                     for item in items {
                         let repository = Repository()
@@ -96,7 +96,7 @@ class RepositoriesViewController: UICollectionViewController, UITextFieldDelegat
     }
 
     func reloadData() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         results = realm.objects(Repository.self)
         if let text = searchField.text, !text.isEmpty {
             results = results?.filter("name contains[c] %@", text)

@@ -28,8 +28,8 @@ struct AppClipParentApp: SwiftUI.App {
     }
 
     private func demoObjects() -> DemoObjects {
-        let config = Realm.Configuration(fileURL: FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Constants.groupId)!.appendingPathComponent("default.realm"))
-        let realm = try! Realm(configuration: config)
+        let config = RealmLegacy.Configuration(fileURL: FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Constants.groupId)!.appendingPathComponent("default.realm"))
+        let realm = try! RealmLegacy(configuration: config)
 
         if let demoObjects = realm.object(ofType: DemoObjects.self, forPrimaryKey: 0) {
             return demoObjects

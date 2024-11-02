@@ -24,7 +24,7 @@ import RealmTestSupport
 #endif
 
 class BaseSectionedResultsTests: RLMTestCaseBase {
-    var realm: Realm?
+    var realm: RealmLegacy?
     var obj: ModernAllTypesObject?
 
     override func tearDown() {
@@ -38,11 +38,11 @@ class BaseSectionedResultsTests: RLMTestCaseBase {
 }
 
 class BasePrimitiveSectionedResultsTests<TestData: SectionedResultsTestData>: RLMTestCaseBase {
-    var realm: Realm?
+    var realm: RealmLegacy?
     var obj: ModernAllTypesObject?
 
     override func setUp() {
-        realm = try! Realm(configuration: .init(inMemoryIdentifier: "BasePrimitiveSectionedResultsTests",
+        realm = try! RealmLegacy(configuration: .init(inMemoryIdentifier: "BasePrimitiveSectionedResultsTests",
                                                 objectTypes: [ModernAllTypesObject.self]))
         obj = TestData.setupObject()
         try! realm?.write {
@@ -141,7 +141,7 @@ class BasePrimitiveSectionedResultsTests<TestData: SectionedResultsTestData>: RL
 // swiftlint:disable:next type_name
 class BaseOptionalPrimitiveSectionedResultsTests<TestData: OptionalSectionedResultsTestData>: BaseSectionedResultsTests {
     override func setUp() {
-        realm = try! Realm(configuration: .init(inMemoryIdentifier: "BaseOptionalPrimitiveSectionedResultsTests",
+        realm = try! RealmLegacy(configuration: .init(inMemoryIdentifier: "BaseOptionalPrimitiveSectionedResultsTests",
                                                 objectTypes: [ModernAllTypesObject.self]))
         obj = TestData.setupObject()
         try! realm?.write {
@@ -276,7 +276,7 @@ extension ModernAllTypesProjection {
 }
 
 class SectionedResultsTestsBase: RLMTestCaseBase {
-    func createObjects(_ r: Realm? = nil) -> Realm {
+    func createObjects(_ r: RealmLegacy? = nil) -> Realm {
         let o1 = ModernAllTypesObject()
         o1.stringCol = "banana"
         o1.arrayString.append(objectsIn: ["banana", "box", "apple", "chalk"])
@@ -287,7 +287,7 @@ class SectionedResultsTestsBase: RLMTestCaseBase {
         o3.stringCol = "apple"
         let o4 = ModernAllTypesObject()
         o4.stringCol = "chalk"
-        let realm = try! r ?? Realm(configuration: .init(inMemoryIdentifier: "sectioned results test"))
+        let realm = try! r ?? RealmLegacy(configuration: .init(inMemoryIdentifier: "sectioned results test"))
         try! realm.write {
             realm.deleteAll()
             realm.add([o1, o2, o3, o4])

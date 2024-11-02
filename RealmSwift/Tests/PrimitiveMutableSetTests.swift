@@ -20,7 +20,7 @@ import XCTest
 import RealmSwiftLegacy
 
 class PrimitiveMutableSetTestsBase<O: ObjectFactory, V: SetValueFactory>: TestCase {
-    var realm: Realm?
+    var realm: RealmLegacy?
     var obj: V.SetRoot!
     var obj2: V.SetRoot!
     var mutableSet: MutableSet<V>!

@@ -40,9 +40,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController = UIViewController()
         window?.makeKeyAndVisible()
 
-        _ = try! Realm.deleteFiles(for: Realm.Configuration.defaultConfiguration)
+        _ = try! RealmLegacy.deleteFiles(for: RealmLegacy.Configuration.defaultConfiguration)
 
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             realm.create(Person.self, value: ["John", [["Fido", 1]]])
             realm.create(Person.self, value: ["Mary", [["Rex", 2]]])

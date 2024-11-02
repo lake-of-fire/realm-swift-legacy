@@ -232,7 +232,7 @@ public protocol RealmCollection: RealmCollectionBase, Equatable where Iterator =
     // MARK: Properties
 
     /// The Realm which manages the collection, or `nil` for unmanaged collections.
-    var realm: Realm? { get }
+    var realm: RealmLegacy? { get }
 
     /**
      Indicates if the collection can no longer be accessed.
@@ -632,7 +632,7 @@ public protocol RealmCollection: RealmCollectionBase, Equatable where Iterator =
      Returns a frozen (immutable) snapshot of this collection.
 
      The frozen copy is an immutable collection which contains the same data as this collection
-    currently contains, but will not update when writes are made to the containing Realm. Unlike
+    currently contains, but will not update when writes are made to the containing RealmLegacy. Unlike
     live collections, frozen collections can be accessed from any thread.
 
      - warning: This method cannot be called during a write transaction, or when the containing
@@ -1836,7 +1836,7 @@ public struct ProjectedCollection<Element>: RandomAccessCollection, CustomString
         backingCollection.endIndex
     }
     /// The Realm which manages the object.
-    public var realm: Realm? {
+    public var realm: RealmLegacy? {
         backingCollection.realm
     }
     /// Indicates if the collection can no longer be accessed.

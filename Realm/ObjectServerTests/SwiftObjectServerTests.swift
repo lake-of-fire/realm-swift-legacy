@@ -145,13 +145,13 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
         var config = createUser(for: app).configuration(partitionValue: .null)
         config.objectTypes = [SwiftPerson.self]
 
-        let realm = try Realm(configuration: config)
+        let realm = try RealmLegacy(configuration: config)
         checkCount(expected: 0, realm, SwiftPerson.self)
 
         try autoreleasepool {
             var config = createUser(for: app).configuration(partitionValue: .null)
             config.objectTypes = [SwiftPerson.self]
-            let realm = try Realm(configuration: config)
+            let realm = try RealmLegacy(configuration: config)
             try realm.write {
                 realm.add(SwiftPerson(firstName: "Ringo", lastName: "Starr"))
                 realm.add(SwiftPerson(firstName: "John", lastName: "Lennon"))
@@ -415,7 +415,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
         let config = try configuration()
         let pathOnDisk = ObjectiveCSupport.convert(object: config).pathOnDisk
         XCTAssertFalse(FileManager.default.fileExists(atPath: pathOnDisk))
-        Realm.asyncOpen(configuration: config) { result in
+        RealmLegacy.asyncOpen(configuration: config) { result in
             switch result {
             case .success(let realm):
                 self.checkCount(expected: SwiftSyncTestCase.bigObjectCount, realm, SwiftHugeSyncObject.self)
@@ -445,7 +445,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
         let pathOnDisk = ObjectiveCSupport.convert(object: config).pathOnDisk
         XCTAssertEqual(pathOnDisk, config.fileURL!.path)
         XCTAssertFalse(FileManager.default.fileExists(atPath: pathOnDisk))
-        Realm.asyncOpen(configuration: config) { result in
+        RealmLegacy.asyncOpen(configuration: config) { result in
             switch result {
             case .success(let realm):
                 self.checkCount(expected: SwiftSyncTestCase.bigObjectCount, realm, SwiftHugeSyncObject.self)
@@ -484,8 +484,8 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
             }
             ex.fulfill()
         }
-        Realm.asyncOpen(configuration: config, callback: completion)
-        let task = Realm.asyncOpen(configuration: config, callback: completion)
+        RealmLegacy.asyncOpen(configuration: config, callback: completion)
+        let task = RealmLegacy.asyncOpen(configuration: config, callback: completion)
         queue.sync { task.cancel() }
         waitForExpectations(timeout: 10.0, handler: nil)
     }
@@ -496,7 +496,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
         let ex1 = expectation(description: "async open")
         let ex2 = expectation(description: "download progress")
         let config = try configuration()
-        let task = Realm.asyncOpen(configuration: config) { result in
+        let task = RealmLegacy.asyncOpen(configuration: config) { result in
             XCTAssertNotNil(try? result.get())
             ex1.fulfill()
         }
@@ -510,7 +510,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
         waitForExpectations(timeout: 10.0, handler: nil)
     }
 
-    func config(baseURL: String, transport: RLMNetworkTransport, syncTimeouts: SyncTimeoutOptions? = nil) throws -> Realm.Configuration {
+    func config(baseURL: String, transport: RLMNetworkTransport, syncTimeouts: SyncTimeoutOptions? = nil) throws -> RealmLegacy.Configuration {
         let appId = try RealmServer.shared.createApp(types: [])
         let appConfig = AppConfiguration(baseURL: baseURL, transport: transport, syncTimeouts: syncTimeouts)
         let app = App(id: appId, configuration: appConfig)
@@ -533,7 +533,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
         autoreleasepool {
             proxy.delay = 1.0
             let ex = expectation(description: "async open")
-            Realm.asyncOpen(configuration: config) { result in
+            RealmLegacy.asyncOpen(configuration: config) { result in
                 let realm = try? result.get()
                 XCTAssertNotNil(realm)
                 realm?.syncSession?.suspend()
@@ -551,7 +551,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
         autoreleasepool {
             proxy.delay = 3.0
             let ex = expectation(description: "async open")
-            Realm.asyncOpen(configuration: config) { result in
+            RealmLegacy.asyncOpen(configuration: config) { result in
                 guard case .failure(let error) = result else {
                     XCTFail("Did not fail: \(result)")
                     return
@@ -590,14 +590,14 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
 
     func testDNSError() throws {
         let config = try config(baseURL: "http://localhost:9090", transport: LocationOverrideTransport(wsHostname: "ws://invalid.com:9090"))
-        Realm.asyncOpen(configuration: config).awaitFailure(self, timeout: 40) { error in
+        RealmLegacy.asyncOpen(configuration: config).awaitFailure(self, timeout: 40) { error in
             assertSyncError(error, .connectionFailed, "Failed to connect to sync: Host not found (authoritative)")
         }
     }
 
     func testTLSError() throws {
         let config = try config(baseURL: "http://localhost:9090", transport: LocationOverrideTransport(wsHostname: "wss://localhost:9090"))
-        Realm.asyncOpen(configuration: config).awaitFailure(self) { error in
+        RealmLegacy.asyncOpen(configuration: config).awaitFailure(self) { error in
             assertSyncError(error, .tlsHandshakeFailed, "TLS handshake failed: SecureTransport error: record overflow (-9847)")
         }
     }
@@ -680,7 +680,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
         XCTAssertFalse(blockCalled.value)
         var config = user.configuration(partitionValue: name)
         config.objectTypes = [SwiftPerson.self]
-        _ = try Realm(configuration: config)
+        _ = try RealmLegacy(configuration: config)
 
         waitForExpectations(timeout: 10.0, handler: nil)
     }
@@ -761,7 +761,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
         // Try to open a Realm with the user; this will cause our errorHandler block defined above to be fired.
         var config = user.configuration(partitionValue: name)
         config.objectTypes = [SwiftPerson.self]
-        _ = try Realm(configuration: config)
+        _ = try RealmLegacy(configuration: config)
         wait(for: [ex], timeout: 20.0)
     }
 
@@ -929,10 +929,10 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
     // MARK: Seed file path
 
     func testSeedFilePathOpenLocalToSync() throws {
-        var config = Realm.Configuration()
+        var config = RealmLegacy.Configuration()
         config.fileURL = RLMTestRealmURL()
         config.objectTypes = [SwiftHugeSyncObject.self]
-        let realm = try Realm(configuration: config)
+        let realm = try RealmLegacy(configuration: config)
         try realm.write {
             for _ in 0..<SwiftSyncTestCase.bigObjectCount {
                 realm.add(SwiftHugeSyncObject.create())
@@ -952,7 +952,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
         syncConfig.objectTypes = [SwiftHugeSyncObject.self]
 
         // Open the realm and immediately check data
-        let destinationRealm = try Realm(configuration: syncConfig)
+        let destinationRealm = try RealmLegacy(configuration: syncConfig)
         checkCount(expected: SwiftSyncTestCase.bigObjectCount, destinationRealm, SwiftHugeSyncObject.self)
 
         try destinationRealm.write {
@@ -966,7 +966,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
         // user1 creates and writeCopies a realm to be opened by another user
         var config = try configuration()
         config.objectTypes = [SwiftHugeSyncObject.self]
-        let realm = try Realm(configuration: config)
+        let realm = try RealmLegacy(configuration: config)
         try realm.write {
             for _ in 0..<SwiftSyncTestCase.bigObjectCount {
                 realm.add(SwiftHugeSyncObject.create())
@@ -987,7 +987,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
         destinationConfig.fileURL = originalFilePath
 
         // Open the realm and immediately check data
-        let destinationRealm = try Realm(configuration: destinationConfig)
+        let destinationRealm = try RealmLegacy(configuration: destinationConfig)
         checkCount(expected: SwiftSyncTestCase.bigObjectCount, destinationRealm, SwiftHugeSyncObject.self)
 
         try destinationRealm.write {
@@ -1003,7 +1003,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
         var syncConfig = user1.configuration(partitionValue: name)
         syncConfig.objectTypes = [SwiftHugeSyncObject.self]
 
-        let syncRealm = try Realm(configuration: syncConfig)
+        let syncRealm = try RealmLegacy(configuration: syncConfig)
 
         try syncRealm.write {
             syncRealm.add(SwiftHugeSyncObject.create())
@@ -1011,19 +1011,19 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
         waitForUploads(for: syncRealm)
         checkCount(expected: 1, syncRealm, SwiftHugeSyncObject.self)
 
-        var exportConfig = Realm.Configuration()
+        var exportConfig = RealmLegacy.Configuration()
         exportConfig.fileURL = seedURL
         exportConfig.objectTypes = [SwiftHugeSyncObject.self]
-        // Export for use as a local Realm.
+        // Export for use as a local RealmLegacy.
         try syncRealm.writeCopy(configuration: exportConfig)
 
-        var localConfig = Realm.Configuration()
+        var localConfig = RealmLegacy.Configuration()
         localConfig.seedFilePath = seedURL
         localConfig.fileURL = RLMDefaultRealmURL()
         localConfig.objectTypes = [SwiftHugeSyncObject.self]
         localConfig.schemaVersion = 1
 
-        let realm = try Realm(configuration: localConfig)
+        let realm = try RealmLegacy(configuration: localConfig)
         try realm.write {
             for _ in 0..<SwiftSyncTestCase.bigObjectCount {
                 realm.add(SwiftHugeSyncObject.create())
@@ -1039,7 +1039,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
         // user1 creates and writeCopies a realm to be opened by another user
         var config = try configuration()
         config.objectTypes = [SwiftHugeSyncObject.self]
-        let syncedRealm = try Realm(configuration: config)
+        let syncedRealm = try RealmLegacy(configuration: config)
         try syncedRealm.write {
             for _ in 0..<SwiftSyncTestCase.bigObjectCount {
                 syncedRealm.add(SwiftHugeSyncObject.create())
@@ -1054,7 +1054,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
         try syncedRealm.writeCopy(configuration: destinationConfig)
 
         // Open the realm and immediately check data
-        let destinationRealm = try Realm(configuration: destinationConfig)
+        let destinationRealm = try RealmLegacy(configuration: destinationConfig)
         checkCount(expected: SwiftSyncTestCase.bigObjectCount, destinationRealm, SwiftHugeSyncObject.self)
 
         // Create an object in the destination realm which does not exist in the original realm.
@@ -1087,21 +1087,21 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
     }
 
     func testWriteCopyLocalRealmToSync() throws {
-        var localConfig = Realm.Configuration()
+        var localConfig = RealmLegacy.Configuration()
         localConfig.objectTypes = [SwiftPerson.self]
         localConfig.fileURL = realmURLForFile("test.realm")
 
         var syncConfig = try configuration()
         syncConfig.objectTypes = [SwiftPerson.self]
 
-        let localRealm = try Realm(configuration: localConfig)
+        let localRealm = try RealmLegacy(configuration: localConfig)
         try localRealm.write {
             localRealm.add(SwiftPerson(firstName: "John", lastName: "Doe"))
         }
 
         try localRealm.writeCopy(configuration: syncConfig)
 
-        let syncedRealm = try Realm(configuration: syncConfig)
+        let syncedRealm = try RealmLegacy(configuration: syncConfig)
         XCTAssertEqual(syncedRealm.objects(SwiftPerson.self).count, 1)
         waitForDownloads(for: syncedRealm)
 
@@ -1118,7 +1118,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
     func testWriteCopySynedRealmToLocal() throws {
         var syncConfig = try configuration()
         syncConfig.objectTypes = [SwiftPerson.self]
-        let syncedRealm = try Realm(configuration: syncConfig)
+        let syncedRealm = try RealmLegacy(configuration: syncConfig)
         waitForDownloads(for: syncedRealm)
 
         try syncedRealm.write {
@@ -1127,7 +1127,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
         waitForUploads(for: syncedRealm)
         XCTAssertEqual(syncedRealm.objects(SwiftPerson.self).count, 1)
 
-        var localConfig = Realm.Configuration()
+        var localConfig = RealmLegacy.Configuration()
         localConfig.objectTypes = [SwiftPerson.self]
         localConfig.fileURL = realmURLForFile("test.realm")
         // `realm_id` will be removed in the local realm, so we need to bump
@@ -1136,7 +1136,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
 
         try syncedRealm.writeCopy(configuration: localConfig)
 
-        let localRealm = try Realm(configuration: localConfig)
+        let localRealm = try RealmLegacy(configuration: localConfig)
         try localRealm.write {
             localRealm.add(SwiftPerson(firstName: "John", lastName: "Doe"))
         }
@@ -1154,21 +1154,21 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
         let conflictingObjectId = ObjectId.generate()
         let person = SwiftPerson(firstName: "Foo", lastName: "Bar")
         person._id = conflictingObjectId
-        let initialRealm = try Realm(configuration: initialSyncConfig)
+        let initialRealm = try RealmLegacy(configuration: initialSyncConfig)
         try initialRealm.write {
             initialRealm.add(person)
             initialRealm.add(SwiftPerson(firstName: "Foo2", lastName: "Bar2"))
         }
         waitForUploads(for: initialRealm)
 
-        var localConfig = Realm.Configuration()
+        var localConfig = RealmLegacy.Configuration()
         localConfig.objectTypes = [SwiftPerson.self]
         localConfig.fileURL = realmURLForFile("test.realm")
 
         var syncConfig = try configuration()
         syncConfig.objectTypes = [SwiftPerson.self]
 
-        let localRealm = try Realm(configuration: localConfig)
+        let localRealm = try RealmLegacy(configuration: localConfig)
         // `person2` will override what was previously stored on the server.
         let person2 = SwiftPerson(firstName: "John", lastName: "Doe")
         person2._id = conflictingObjectId
@@ -1179,7 +1179,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
 
         try localRealm.writeCopy(configuration: syncConfig)
 
-        let syncedRealm = try Realm(configuration: syncConfig)
+        let syncedRealm = try RealmLegacy(configuration: syncConfig)
         waitForDownloads(for: syncedRealm)
         XCTAssertTrue(syncedRealm.objects(SwiftPerson.self).count == 3)
 
@@ -1200,7 +1200,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
     func testWriteCopyFailBeforeSynced() throws {
         var user1Config = try configuration()
         user1Config.objectTypes = [SwiftPerson.self]
-        let user1Realm = try Realm(configuration: user1Config)
+        let user1Realm = try RealmLegacy(configuration: user1Config)
         // Suspend the session so that changes cannot be uploaded
         user1Realm.syncSession?.suspend()
         try user1Realm.write {
@@ -1212,7 +1212,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
         let pathOnDisk = ObjectiveCSupport.convert(object: user2Config).pathOnDisk
         XCTAssertFalse(FileManager.default.fileExists(atPath: pathOnDisk))
 
-        let realm = try Realm(configuration: user1Config)
+        let realm = try RealmLegacy(configuration: user1Config)
         realm.syncSession?.suspend()
         try realm.write {
             realm.add(SwiftPerson())
@@ -1307,7 +1307,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
 
         // Imagine this is v1 of an app with just 2 classes, `SwiftMissingObject`
         // did not exist when this version was shipped,
-        // but v2 managed to sync `SwiftMissingObject` to this Realm.
+        // but v2 managed to sync `SwiftMissingObject` to this RealmLegacy.
         var config = createUser().configuration(partitionValue: name)
         config.objectTypes = [SwiftAnyRealmValueObject.self, SwiftPerson.self]
         let realm = try openRealm(configuration: config)

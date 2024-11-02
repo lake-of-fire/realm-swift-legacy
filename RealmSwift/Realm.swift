@@ -47,7 +47,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
 
     // MARK: Properties
 
-    /// The `Schema` used by the Realm.
+    /// The `Schema` used by the RealmLegacy.
     public var schema: Schema { return Schema(rlmRealm.schema) }
 
     /// The `Configuration` value that was used to create the `Realm` instance.
@@ -59,7 +59,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
     // MARK: Initializers
 
     /**
-     Obtains an instance of the default Realm.
+     Obtains an instance of the default RealmLegacy.
 
      The default Realm is persisted as *default.realm* under the *Documents* directory of your Application on iOS, and
      in your application's *Application Support* directory on OS X.
@@ -74,7 +74,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      - throws: An `NSError` if the Realm could not be initialized.
      */
     public init(queue: DispatchQueue? = nil) throws {
-        _ = Realm.initMainActor
+        _ = RealmLegacy.initMainActor
         let rlmRealm = try RLMRealm(configuration: RLMRealmConfiguration.rawDefault(), queue: queue)
         self.init(rlmRealm)
     }
@@ -82,7 +82,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
     /**
      Obtains a `Realm` instance with the given configuration.
 
-     - parameter configuration: A configuration value to use when creating the Realm.
+     - parameter configuration: A configuration value to use when creating the RealmLegacy.
      - parameter queue: An optional dispatch queue to confine the Realm to. If
                         given, this Realm instance can be used from within
                         blocks dispatched to the given queue rather than on the
@@ -91,7 +91,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      - throws: An `NSError` if the Realm could not be initialized.
      */
     public init(configuration: Configuration, queue: DispatchQueue? = nil) throws {
-        _ = Realm.initMainActor
+        _ = RealmLegacy.initMainActor
         let rlmRealm = try RLMRealm(configuration: configuration.rlmConfiguration, queue: queue)
         self.init(rlmRealm)
     }
@@ -104,7 +104,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      - throws: An `NSError` if the Realm could not be initialized.
      */
     public init(fileURL: URL) throws {
-        _ = Realm.initMainActor
+        _ = RealmLegacy.initMainActor
         let configuration = RLMRealmConfiguration.default()
         configuration.fileURL = fileURL
         self.init(try RLMRealm(configuration: configuration))
@@ -130,7 +130,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      The Realm passed to the callback function is confined to the callback
      queue as if `Realm(configuration:queue:)` was used.
 
-     - parameter configuration: A configuration object to use when opening the Realm.
+     - parameter configuration: A configuration object to use when opening the RealmLegacy.
      - parameter callbackQueue: The dispatch queue on which the callback should be run.
      - parameter callback:      A callback block. If the Realm was successfully opened, an
                                 it will be passed in as an argument.
@@ -139,14 +139,14 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      - returns: A task object which can be used to observe or cancel the async open.
      */
     @discardableResult
-    public static func asyncOpen(configuration: Realm.Configuration = .defaultConfiguration,
+    public static func asyncOpen(configuration: RealmLegacy.Configuration = .defaultConfiguration,
                                  callbackQueue: DispatchQueue = .main,
-                                 callback: @escaping (Result<Realm, Swift.Error>) -> Void) -> AsyncOpenTask {
+                                 callback: @escaping (Result<RealmLegacy, Swift.Error>) -> Void) -> AsyncOpenTask {
         return AsyncOpenTask(rlmTask: RLMRealm.asyncOpen(with: configuration.rlmConfiguration, callbackQueue: callbackQueue, callback: { rlmRealm, error in
-            if let realm = rlmRealm.flatMap(Realm.init) {
+            if let realm = rlmRealm.flatMap(RealmLegacy.init) {
                 callback(.success(realm))
             } else {
-                callback(.failure(error ?? Realm.Error.callFailed))
+                callback(.failure(error ?? RealmLegacy.Error.callFailed))
             }
         }))
     }
@@ -163,13 +163,13 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      The Realm passed to the publisher is confined to the callback
      queue as if `Realm(configuration:queue:)` was used.
 
-     - parameter configuration: A configuration object to use when opening the Realm.
+     - parameter configuration: A configuration object to use when opening the RealmLegacy.
      - parameter callbackQueue: The dispatch queue on which the AsyncOpenTask should be run.
      - returns: A publisher. If the Realm was successfully opened, it will be received by the subscribers.
                 Otherwise, a `Swift.Error` describing what went wrong will be passed upstream instead.
      */
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-    public static func asyncOpen(configuration: Realm.Configuration = .defaultConfiguration) -> RealmPublishers.AsyncOpenPublisher {
+    public static func asyncOpen(configuration: RealmLegacy.Configuration = .defaultConfiguration) -> RealmPublishers.AsyncOpenPublisher {
         return RealmPublishers.AsyncOpenPublisher(configuration: configuration)
     }
 
@@ -181,7 +181,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      invoked. This task object can be used to observe the state of the download
      or to cancel it. This should be used instead of trying to observe the
      download via the sync session as the sync session itself is created
-     asynchronously, and may not exist yet when Realm.asyncOpen() returns.
+     asynchronously, and may not exist yet when RealmLegacy.asyncOpen() returns.
      */
     @frozen public struct AsyncOpenTask {
         internal let rlmTask: RLMAsyncOpenTask
@@ -272,7 +272,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
     }
 
     /**
-     Begins a write transaction on the Realm.
+     Begins a write transaction on the RealmLegacy.
 
      Only one write transaction can be open at a time for each Realm file. Write
      transactions cannot be nested, and trying to begin a write transaction on a
@@ -525,7 +525,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
     }
 
     /**
-     Adds an unmanaged object to this Realm.
+     Adds an unmanaged object to this RealmLegacy.
 
      If an object with the same primary key already exists in this Realm, it is updated with the property values from
      this object as specified by the `UpdatePolicy` selected. The update policy must be `.error` for objects with no
@@ -536,14 +536,14 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      the `update:` parameter is propagated to those adds.
 
      The object to be added must either be an unmanaged object or a valid object which is already managed by this
-     Realm. Adding an object already managed by this Realm is a no-op, while adding an object which is managed by
+     RealmLegacy. Adding an object already managed by this Realm is a no-op, while adding an object which is managed by
      another Realm or which has been deleted from any Realm (i.e. one where `isInvalidated` is `true`) is an error.
 
      To copy a managed object from one Realm to another, use `create()` instead.
 
      - warning: This method may only be called during a write transaction.
 
-     - parameter object: The object to be added to this Realm.
+     - parameter object: The object to be added to this RealmLegacy.
      - parameter update: What to do if an object with the same primary key already exists. Must be `.error` for objects
      without a primary key.
      */
@@ -561,17 +561,17 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
     }
 
     /**
-     Adds all the objects in a collection into the Realm.
+     Adds all the objects in a collection into the RealmLegacy.
 
      - see: `add(_:update:)`
 
      - warning: This method may only be called during a write transaction.
 
-     - parameter objects: A sequence which contains objects to be added to the Realm.
+     - parameter objects: A sequence which contains objects to be added to the RealmLegacy.
      - parameter update: How to handle
      without a primary key.
      - parameter update: How to handle objects in the collection with a primary key that already exists in this
-     Realm. Must be `.error` for object types without a primary key.
+     RealmLegacy. Must be `.error` for object types without a primary key.
      */
     public func add<S: Sequence>(_ objects: S, update: UpdatePolicy = .error) where S.Iterator.Element: Object {
         for obj in objects {
@@ -589,7 +589,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      must be present, valid and in the same order as the properties defined in the model.
 
      If the object type does not have a primary key or no object with the specified primary key
-     already exists, a new object is created in the Realm. If an object already exists in the Realm
+     already exists, a new object is created in the RealmLegacy. If an object already exists in the Realm
      with the specified primary key and the update policy is `.modified` or `.all`, the existing
      object will be updated and a reference to that object will be returned.
 
@@ -621,7 +621,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
 
     /**
      This method is useful only in specialized circumstances, for example, when building
-     components that integrate with Realm. If you are simply building an app on Realm, it is
+     components that integrate with RealmLegacy. If you are simply building an app on Realm, it is
      recommended to use the typed method `create(_:value:update:)`.
 
      Creates or updates an object with the given class name and adds it to the `Realm`, populating
@@ -634,7 +634,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      must be present, valid and in the same order as the properties defined in the model.
 
      If the object type does not have a primary key or no object with the specified primary key
-     already exists, a new object is created in the Realm. If an object already exists in the Realm
+     already exists, a new object is created in the RealmLegacy. If an object already exists in the Realm
      with the specified primary key and the update policy is `.modified` or `.all`, the existing
      object will be updated and a reference to that object will be returned.
 
@@ -670,7 +670,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
     // MARK: Deleting objects
 
     /**
-     Deletes an object from the Realm. Once the object is deleted it is considered invalidated.
+     Deletes an object from the RealmLegacy. Once the object is deleted it is considered invalidated.
 
      - warning: This method may only be called during a write transaction.
 
@@ -681,7 +681,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
     }
 
     /**
-     Deletes zero or more objects from the Realm.
+     Deletes zero or more objects from the RealmLegacy.
 
      Do not pass in a slice to a `Results` or any other auto-updating Realm collection
      type (for example, the type returned by the Swift `suffix(_:)` standard library
@@ -702,7 +702,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
     }
 
     /**
-     Deletes zero or more objects from the Realm.
+     Deletes zero or more objects from the RealmLegacy.
 
      - warning: This method may only be called during a write transaction.
 
@@ -715,7 +715,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
     }
 
     /**
-     Deletes zero or more objects from the Realm.
+     Deletes zero or more objects from the RealmLegacy.
 
      - warning: This method may only be called during a write transaction.
 
@@ -728,7 +728,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
     }
 
     /**
-     Deletes zero or more objects from the Realm.
+     Deletes zero or more objects from the RealmLegacy.
 
      - warning: This method may only be called during a write transaction.
 
@@ -741,7 +741,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
     }
 
     /**
-     Deletes all objects from the Realm.
+     Deletes all objects from the RealmLegacy.
 
      - warning: This method may only be called during a write transaction.
      */
@@ -752,7 +752,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
     // MARK: Object Retrieval
 
     /**
-     Returns all objects of the given type stored in the Realm.
+     Returns all objects of the given type stored in the RealmLegacy.
 
      - parameter type: The type of the objects to be returned.
 
@@ -764,10 +764,10 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
 
     /**
      This method is useful only in specialized circumstances, for example, when building
-     components that integrate with Realm. If you are simply building an app on Realm, it is
+     components that integrate with RealmLegacy. If you are simply building an app on Realm, it is
      recommended to use the typed method `objects(type:)`.
 
-     Returns all objects for a given class name in the Realm.
+     Returns all objects for a given class name in the RealmLegacy.
 
      - parameter typeName: The class name of the objects to be returned.
      - returns: All objects for the given class name as dynamic objects
@@ -779,7 +779,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
     }
 
     /**
-     Retrieves the single instance of a given object type with the given primary key from the Realm.
+     Retrieves the single instance of a given object type with the given primary key from the RealmLegacy.
 
      This method requires that `primaryKey()` be overridden on the given object class.
 
@@ -798,7 +798,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
 
     /**
      This method is useful only in specialized circumstances, for example, when building
-     components that integrate with Realm. If you are simply building an app on Realm, it is
+     components that integrate with RealmLegacy. If you are simply building an app on Realm, it is
      recommended to use the typed method `objectForPrimaryKey(_:key:)`.
 
      Get a dynamic object with the given class name and primary key.
@@ -902,7 +902,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
 
      - warning: This function is not safe to call from async functions, which
                 should use ``asyncRefresh`` instead.
-     - returns: Whether there were any updates for the Realm. Note that `true`
+     - returns: Whether there were any updates for the RealmLegacy. Note that `true`
                 may be returned even if no data actually changed.
      */
     @discardableResult
@@ -918,7 +918,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
     }
 
     /**
-     Returns a frozen (immutable) snapshot of this Realm.
+     Returns a frozen (immutable) snapshot of this RealmLegacy.
 
      A frozen Realm is an immutable snapshot view of a particular version of a Realm's data. Unlike
      normal Realm instances, it does not live-update to reflect writes made to the Realm, and can be
@@ -931,25 +931,25 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      transaction on the Realm may result in the Realm file growing to large sizes. See
      `Realm.Configuration.maximumNumberOfActiveVersions` for more information.
      */
-    public func freeze() -> Realm {
-        return isFrozen ? self : Realm(rlmRealm.freeze())
+    public func freeze() -> RealmLegacy {
+        return isFrozen ? self : RealmLegacy(rlmRealm.freeze())
     }
 
     /**
-     Returns a live (mutable) reference of this Realm.
+     Returns a live (mutable) reference of this RealmLegacy.
 
      All objects and collections read from the returned Realm reference will no longer be frozen.
      Will return self if called on a Realm that is not already frozen.
      */
-    public func thaw() -> Realm {
-        return isFrozen ? Realm(rlmRealm.thaw()) : self
+    public func thaw() -> RealmLegacy {
+        return isFrozen ? RealmLegacy(rlmRealm.thaw()) : self
     }
 
     /**
      Returns a frozen (immutable) snapshot of the given object.
 
      The frozen copy is an immutable object which contains the same data as the given object
-     currently contains, but will not update when writes are made to the containing Realm. Unlike
+     currently contains, but will not update when writes are made to the containing RealmLegacy. Unlike
      live objects, frozen objects can be accessed from any thread.
 
      - warning: Holding onto a frozen object for an extended period while performing write
@@ -975,7 +975,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
 
      The frozen copy is an immutable collection which contains the same data as the given
      collection currently contains, but will not update when writes are made to the containing
-     Realm. Unlike live collections, frozen collections can be accessed from any thread.
+     RealmLegacy. Unlike live collections, frozen collections can be accessed from any thread.
 
      - warning: This method cannot be called during a write transaction, or when the Realm is read-only.
      - warning: Holding onto a frozen collection for an extended period while performing write
@@ -989,11 +989,11 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
     // MARK: Invalidation
 
     /**
-     Invalidates all `Object`s, `Results`, `LinkingObjects`, and `List`s managed by the Realm.
+     Invalidates all `Object`s, `Results`, `LinkingObjects`, and `List`s managed by the RealmLegacy.
 
      A Realm holds a read lock on the version of the data accessed by it, so
      that changes made to the Realm on different threads do not modify or delete the
-     data seen by this Realm. Calling this method releases the read lock,
+     data seen by this RealmLegacy. Calling this method releases the read lock,
      allowing the space used on disk to be reused by later write transactions rather
      than growing the file. This method should be called before performing long
      blocking operations on a background thread on which you previously read data
@@ -1001,7 +1001,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
 
      All `Object`, `Results` and `List` instances obtained from this `Realm` instance on the current thread are
      invalidated. `Object`s and `Array`s cannot be used. `Results` will become empty. The Realm itself remains valid,
-     and a new read transaction is implicitly begun the next time data is read from the Realm.
+     and a new read transaction is implicitly begun the next time data is read from the RealmLegacy.
 
      Calling this method multiple times in a row without reading any data from the
      Realm, or before ever reading any data from the Realm, is a no-op.
@@ -1041,7 +1041,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
 
      - throws: An `NSError` if the copy could not be written.
      */
-    public func writeCopy(configuration: Realm.Configuration) throws {
+    public func writeCopy(configuration: RealmLegacy.Configuration) throws {
         try rlmRealm.writeCopy(for: configuration.rlmConfiguration)
     }
 
@@ -1051,7 +1051,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      For non-synchronized, non-in-memory Realms, this is equivalent to
      `FileManager.default.fileExists(atPath:)`. For synchronized Realms, it
      takes care of computing the actual path on disk based on the server,
-     virtual path, and user as is done when opening the Realm.
+     virtual path, and user as is done when opening the RealmLegacy.
 
      @param config A Realm configuration to check the existence of.
      @return true if the Realm file for the given configuration exists on disk, false otherwise.
@@ -1092,7 +1092,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
 
 // MARK: Sync Subscriptions
 
-extension Realm {
+extension RealmLegacy {
     /**
      Returns an instance of `SyncSubscriptionSet`, representing the active subscriptions
      for this realm, which can be used to add/remove/update and search flexible sync subscriptions.
@@ -1108,13 +1108,13 @@ extension Realm {
 
 // MARK: Asymmetric Sync
 
-extension Realm {
+extension RealmLegacy {
     /**
      Creates an Asymmetric object, which will be synced unidirectionally and
      cannot be queried locally. Only objects which inherit from `AsymmetricObject`
      can be created using this method.
 
-     Objects created using this method will not be added to the Realm.
+     Objects created using this method will not be added to the RealmLegacy.
 
      - warning: This method may only be called during a write transaction.
 
@@ -1129,17 +1129,17 @@ extension Realm {
 
 // MARK: Equatable
 
-extension Realm: Equatable {
+extension RealmLegacy: Equatable {
     /// Returns whether two `Realm` instances are equal.
-    public static func == (lhs: Realm, rhs: Realm) -> Bool {
+    public static func == (lhs: RealmLegacy, rhs: RealmLegacy) -> Bool {
         return lhs.rlmRealm == rhs.rlmRealm
     }
 }
 
 // MARK: Notifications
 
-extension Realm {
-    /// A notification indicating that changes were made to a Realm.
+extension RealmLegacy {
+    /// A notification indicating that changes were made to a RealmLegacy.
     @frozen public enum Notification: String {
         /**
          This notification is posted when the data in a Realm has changed.
@@ -1159,32 +1159,32 @@ extension Realm {
 
          Realms with autorefresh disabled should normally install a handler for this notification which calls
          `refresh()` after doing some work. Refreshing the Realm is optional, but not refreshing the Realm may lead to
-         large Realm files. This is because an extra copy of the data must be kept for the stale Realm.
+         large Realm files. This is because an extra copy of the data must be kept for the stale RealmLegacy.
          */
         case refreshRequired = "RLMRealmRefreshRequiredNotification"
     }
 }
 
 /// The type of a block to run for notification purposes when the data in a Realm is modified.
-public typealias NotificationBlock = (_ notification: Realm.Notification, _ realm: Realm) -> Void
+public typealias NotificationBlock = (_ notification: RealmLegacy.Notification, _ realm: RealmLegacy) -> Void
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-private func shouldAsyncOpen(_ configuration: Realm.Configuration,
-                             _ downloadBeforeOpen: Realm.OpenBehavior) -> Bool {
+private func shouldAsyncOpen(_ configuration: RealmLegacy.Configuration,
+                             _ downloadBeforeOpen: RealmLegacy.OpenBehavior) -> Bool {
     switch downloadBeforeOpen {
     case .never:
         return false
     case .once:
-        return !Realm.fileExists(for: configuration)
+        return !RealmLegacy.fileExists(for: configuration)
     case .always:
         return true
     }
 }
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-extension Realm {
+extension RealmLegacy {
     /// Options for when to download all data from the server before opening
-    /// a synchronized Realm.
+    /// a synchronized RealmLegacy.
     @frozen public enum OpenBehavior: Sendable {
         /// Immediately return the Realm as if the synchronous initializer was
         /// used. If this is the first time that the Realm has been opened on
@@ -1193,7 +1193,7 @@ extension Realm {
         /// background.
         case never
         /// Always open the Realm asynchronously and download all data from the
-        /// server before returning the Realm. This mode will fail to open the
+        /// server before returning the RealmLegacy. This mode will fail to open the
         /// Realm if the device is currently offline.
         case always
         /// Open the Realm asynchronously the first time it is opened on the
@@ -1216,19 +1216,19 @@ extension Realm {
      state on a background thread. For local Realms, this means that migrations
      will be run in the background, and for synchronized Realms all data will
      be downloaded from the server before the Realm is returned.
-     - parameter configuration: A configuration object to use when opening the Realm.
+     - parameter configuration: A configuration object to use when opening the RealmLegacy.
      - parameter downloadBeforeOpen: When opening the Realm should first download
      all data from the server.
      - throws: An `NSError` if the Realm could not be initialized.
-     - returns: An open Realm.
+     - returns: An open RealmLegacy.
      */
     @MainActor
-    public init(configuration: Realm.Configuration = .defaultConfiguration,
+    public init(configuration: RealmLegacy.Configuration = .defaultConfiguration,
                 downloadBeforeOpen: OpenBehavior = .never) async throws {
         let scheduler = RLMScheduler.dispatchQueue(.main)
         let rlmRealm = try await openRealm(configuration: configuration, scheduler: scheduler,
                                            actor: MainActor.shared, downloadBeforeOpen: downloadBeforeOpen)
-        self = Realm(rlmRealm.wrappedValue)
+        self = RealmLegacy(rlmRealm.wrappedValue)
     }
 
 #if swift(>=5.8)
@@ -1251,24 +1251,24 @@ extension Realm {
      detection (by passing `-Xfrontend -enable-actor-data-race-checks` to the
      compiler) is strongly recommended.
 
-     - parameter configuration: A configuration object to use when opening the Realm.
+     - parameter configuration: A configuration object to use when opening the RealmLegacy.
      - parameter actor: The actor to confine this Realm to. The actor can be
      either a local actor or a global actor. The calling function does not need
      to be isolated to the actor passed in, but if it is not it will not be
-     able to use the returned Realm.
+     able to use the returned RealmLegacy.
      - parameter downloadBeforeOpen: When opening the Realm should first download
      all data from the server.
      - throws: An `NSError` if the Realm could not be initialized.
                `CancellationError` if the task is cancelled.
-     - returns: An open Realm.
+     - returns: An open RealmLegacy.
      */
-    public init<A: Actor>(configuration: Realm.Configuration = .defaultConfiguration,
+    public init<A: Actor>(configuration: RealmLegacy.Configuration = .defaultConfiguration,
                           actor: A,
                           downloadBeforeOpen: OpenBehavior = .never) async throws {
         let scheduler = RLMScheduler.actor(actor, invoke: actor.invoke, verify: await actor.verifier())
         let rlmRealm = try await openRealm(configuration: configuration, scheduler: scheduler,
                                             actor: actor, downloadBeforeOpen: downloadBeforeOpen)
-        self = Realm(rlmRealm.wrappedValue)
+        self = RealmLegacy(rlmRealm.wrappedValue)
     }
 
     /**
@@ -1364,7 +1364,7 @@ extension Realm {
 
      - warning: This function is only supported for main thread and
                 actor-isolated Realms.
-     - returns: Whether there were any updates for the Realm. Note that `true`
+     - returns: Whether there were any updates for the RealmLegacy. Note that `true`
                 may be returned even if no data actually changed.
      */
     @discardableResult
@@ -1386,10 +1386,10 @@ extension Realm {
 }
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-private func openRealm<A: Actor>(configuration: Realm.Configuration,
+private func openRealm<A: Actor>(configuration: RealmLegacy.Configuration,
                                  scheduler: RLMScheduler,
                                  actor: isolated A,
-                                 downloadBeforeOpen: Realm.OpenBehavior
+                                 downloadBeforeOpen: RealmLegacy.OpenBehavior
 ) async throws -> Unchecked<RLMRealm> {
     let scheduler = RLMScheduler.actor(actor, invoke: actor.invoke, verify: actor.verifier())
     let rlmConfiguration = configuration.rlmConfiguration
@@ -1397,7 +1397,7 @@ private func openRealm<A: Actor>(configuration: Realm.Configuration,
     // If we already have a cached Realm for this actor, just reuse it
     // If this Realm is open but with a different scheduler, open it synchronously.
     // The overhead of dispatching to a different thread and back is more expensive
-    // than the fast path of obtaining a new instance for an already open Realm.
+    // than the fast path of obtaining a new instance for an already open RealmLegacy.
     var realm = RLMGetCachedRealm(rlmConfiguration, scheduler)
     if realm == nil, let cachedRealm = RLMGetAnyCachedRealm(rlmConfiguration) {
         try withExtendedLifetime(cachedRealm) {

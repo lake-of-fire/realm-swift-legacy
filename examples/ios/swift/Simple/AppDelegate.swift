@@ -38,7 +38,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.rootViewController = UIViewController()
         window?.makeKeyAndVisible()
 
-        _ = try! Realm.deleteFiles(for: Realm.Configuration.defaultConfiguration)
+        _ = try! RealmLegacy.deleteFiles(for: RealmLegacy.Configuration.defaultConfiguration)
 
         // Create a standalone object
         let mydog = Dog()
@@ -49,7 +49,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         print("Name of dog: \(mydog.name)")
 
         // Realms are used to group data together
-        let realm = try! Realm() // Create realm pointing to default file
+        let realm = try! RealmLegacy() // Create realm pointing to default file
 
         // Save your object
         realm.beginWrite()
@@ -76,7 +76,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Multi-threading
         DispatchQueue.global().async {
             autoreleasepool {
-                let otherRealm = try! Realm()
+                let otherRealm = try! RealmLegacy()
                 let otherResults = otherRealm.objects(Dog.self).filter("name contains 'Rex'")
                 print("Number of dogs \(otherResults.count)")
             }

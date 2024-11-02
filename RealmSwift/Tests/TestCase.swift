@@ -18,7 +18,7 @@
 
 import Foundation
 import RealmLegacy
-import Realm.Dynamic
+import RealmLegacy.Dynamic
 import RealmSwiftLegacy
 import XCTest
 
@@ -28,7 +28,7 @@ import RealmSwiftLegacyTestSupport
 #endif
 
 func inMemoryRealm(_ inMememoryIdentifier: String) -> Realm {
-    return try! Realm(configuration: Realm.Configuration(inMemoryIdentifier: inMememoryIdentifier))
+    return try! RealmLegacy(configuration: RealmLegacy.Configuration(inMemoryIdentifier: inMememoryIdentifier))
 }
 
 class TestCase: RLMTestCaseBase, @unchecked Sendable {
@@ -38,10 +38,10 @@ class TestCase: RLMTestCaseBase, @unchecked Sendable {
     let queue = DispatchQueue(label: "background")
 
     @discardableResult
-    func realmWithTestPath(configuration: Realm.Configuration = Realm.Configuration()) -> Realm {
+    func realmWithTestPath(configuration: RealmLegacy.Configuration = RealmLegacy.Configuration()) -> Realm {
         var configuration = configuration
         configuration.fileURL = testRealmURL()
-        return try! Realm(configuration: configuration)
+        return try! RealmLegacy(configuration: configuration)
     }
 
     override class func tearDown() {
@@ -60,8 +60,8 @@ class TestCase: RLMTestCaseBase, @unchecked Sendable {
         try! FileManager.default.createDirectory(at: URL(fileURLWithPath: testDir, isDirectory: true),
                                                      withIntermediateDirectories: true, attributes: nil)
 
-        let config = Realm.Configuration(fileURL: defaultRealmURL())
-        Realm.Configuration.defaultConfiguration = config
+        let config = RealmLegacy.Configuration(fileURL: defaultRealmURL())
+        RealmLegacy.Configuration.defaultConfiguration = config
 
         exceptionThrown = false
         autoreleasepool { super.invokeTest() }
@@ -135,7 +135,7 @@ class TestCase: RLMTestCaseBase, @unchecked Sendable {
     }
 }
 
-extension Realm {
+extension RealmLegacy {
     @discardableResult
     public func create<T: Object>(_ type: T.Type, value: [String: Any], update: UpdatePolicy = .error) -> T {
         return create(type, value: value as Any, update: update)

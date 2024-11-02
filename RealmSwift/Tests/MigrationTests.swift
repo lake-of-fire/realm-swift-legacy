@@ -19,7 +19,7 @@
 import XCTest
 import RealmSwiftLegacy
 import RealmLegacy
-import Realm.Dynamic
+import RealmLegacy.Dynamic
 import Foundation
 
 #if canImport(RealmSwiftTestSupport)
@@ -46,9 +46,9 @@ private func dynamicRealm(_ fileURL: URL) -> RLMRealm {
 
 class MigrationTests: TestCase {
     private func createDefaultRealm() throws {
-        let config = Realm.Configuration(fileURL: defaultRealmURL())
+        let config = RealmLegacy.Configuration(fileURL: defaultRealmURL())
         try autoreleasepool {
-            _ = try Realm(configuration: config)
+            _ = try RealmLegacy(configuration: config)
         }
         XCTAssertEqual(0, try schemaVersionAtURL(config.fileURL!))
     }
@@ -57,7 +57,7 @@ class MigrationTests: TestCase {
                                block: MigrationBlock? = nil,
                                validation: ((Realm, RLMSchema) -> Void)? = nil) throws {
         let didRun = Locked(false)
-        let config = Realm.Configuration(fileURL: testRealmURL(), schemaVersion: schemaVersion,
+        let config = RealmLegacy.Configuration(fileURL: testRealmURL(), schemaVersion: schemaVersion,
             migrationBlock: { migration, oldSchemaVersion in
                 if let block = block {
                     block(migration, oldSchemaVersion)
@@ -78,29 +78,29 @@ class MigrationTests: TestCase {
                     let schema = autoreleasepool {
                         dynamicRealm(testRealmURL()).schema
                     }
-                    validation(try Realm(configuration: .init(fileURL: testRealmURL(), schemaVersion: schemaVersion)), schema)
+                    validation(try RealmLegacy(configuration: .init(fileURL: testRealmURL(), schemaVersion: schemaVersion)), schema)
                 }
             }
-            XCTAssertTrue(try Realm.deleteFiles(for: config))
+            XCTAssertTrue(try RealmLegacy.deleteFiles(for: config))
         }
 
         try withTestFile {
-            _ = try Realm(configuration: config)
+            _ = try RealmLegacy(configuration: config)
         }
         try withTestFile {
-            try Realm.performMigration(for: config)
+            try RealmLegacy.performMigration(for: config)
         }
         try withTestFile {
-            let old = Realm.Configuration.defaultConfiguration
+            let old = RealmLegacy.Configuration.defaultConfiguration
             defer {
-                Realm.Configuration.defaultConfiguration = old
+                RealmLegacy.Configuration.defaultConfiguration = old
             }
-            Realm.Configuration.defaultConfiguration = config
-            _ = try Realm()
+            RealmLegacy.Configuration.defaultConfiguration = config
+            _ = try RealmLegacy()
         }
         try withTestFile {
             let ex = expectation(description: "did async open")
-            Realm.asyncOpen(configuration: config) { _ in
+            RealmLegacy.asyncOpen(configuration: config) { _ in
                 ex.fulfill()
             }
             wait(for: [ex], timeout: 2.0)
@@ -116,16 +116,16 @@ class MigrationTests: TestCase {
             try schemaVersionAtURL(defaultRealmURL())
         }
 
-        _ = try! Realm()
+        _ = try! RealmLegacy()
         XCTAssertEqual(0, try! schemaVersionAtURL(defaultRealmURL()),
                        "Initial version should be 0")
 
         do {
             _ = try schemaVersionAtURL(URL(fileURLWithPath: "/dev/null"))
             XCTFail("Expected .filePermissionDenied or .fileAccess, but no error was raised")
-        } catch Realm.Error.filePermissionDenied {
+        } catch RealmLegacy.Error.filePermissionDenied {
             // Success!
-        } catch Realm.Error.fileAccess {
+        } catch RealmLegacy.Error.fileAccess {
             // Success!
         } catch {
             XCTFail("Expected .filePermissionDenied or .fileAccess, got \(error)")
@@ -167,7 +167,7 @@ class MigrationTests: TestCase {
 
         try autoreleasepool {
             // add object
-            let realm = try Realm()
+            let realm = try RealmLegacy()
             try realm.write {
                 realm.create(SwiftStringObject.self, value: ["string"])
             }
@@ -192,7 +192,7 @@ class MigrationTests: TestCase {
         }
 
         try autoreleasepool {
-            let realm = try Realm()
+            let realm = try RealmLegacy()
             try realm.write {
                 realm.create(SwiftArrayPropertyObject.self, value: ["string", [["array"]], [[2]]])
                 realm.create(SwiftMutableSetPropertyObject.self, value: ["string", [["set"]], [[2]]])
@@ -224,7 +224,7 @@ class MigrationTests: TestCase {
 
     func testBasicTypesInEnumerate() throws {
         try autoreleasepool {
-            let realm = try Realm()
+            let realm = try RealmLegacy()
             try realm.write {
                 realm.add(SwiftObject())
             }
@@ -272,7 +272,7 @@ class MigrationTests: TestCase {
 
     func testAnyInEnumerate() throws {
         try autoreleasepool {
-            let realm = try Realm()
+            let realm = try RealmLegacy()
             try realm.write {
                 realm.add(SwiftObject())
             }
@@ -281,7 +281,7 @@ class MigrationTests: TestCase {
         var version = UInt64(1)
         func write(_ value: @autoclosure () -> AnyRealmValue, test: @escaping @Sendable (Any?, Any?) -> Void) throws {
             try autoreleasepool {
-                let realm = try Realm()
+                let realm = try RealmLegacy()
                 try realm.write {
                     realm.objects(SwiftObject.self).first!.anyCol.value = value()
                 }
@@ -343,7 +343,7 @@ class MigrationTests: TestCase {
     @available(*, deprecated) // Silence deprecation warnings for RealmOptional
     func testOptionalsInEnumerate() throws {
         try autoreleasepool {
-            let realm = try Realm()
+            let realm = try RealmLegacy()
             try realm.write {
                 realm.add(SwiftOptionalObject())
             }
@@ -385,7 +385,7 @@ class MigrationTests: TestCase {
         }
 
         try autoreleasepool {
-            let realm = try Realm()
+            let realm = try RealmLegacy()
             try realm.write {
                 let soo = realm.objects(SwiftOptionalObject.self).first!
                 soo.optNSStringCol = "NSString"
@@ -443,7 +443,7 @@ class MigrationTests: TestCase {
 
     func testEnumerateObjectsAfterDeleteObjects() throws {
         try autoreleasepool {
-            let realm = try Realm()
+            let realm = try RealmLegacy()
             try realm.write {
                 realm.create(SwiftStringObject.self, value: ["1"])
                 realm.create(SwiftStringObject.self, value: ["2"])
@@ -560,7 +560,7 @@ class MigrationTests: TestCase {
 
     func testEnumerateObjectsAfterDeleteInsertObjects() throws {
         try autoreleasepool {
-            let realm = try Realm()
+            let realm = try RealmLegacy()
             try realm.write {
                 realm.create(SwiftStringObject.self, value: ["1"])
                 realm.create(SwiftStringObject.self, value: ["2"])
@@ -684,7 +684,7 @@ class MigrationTests: TestCase {
 
     func testEnumerateObjectsAfterDeleteData() throws {
         try autoreleasepool {
-            let realm = try Realm()
+            let realm = try RealmLegacy()
             try realm.write {
                 realm.create(SwiftStringObject.self, value: ["1"])
                 realm.create(SwiftStringObject.self, value: ["2"])
@@ -734,7 +734,7 @@ class MigrationTests: TestCase {
 
     func testDelete() throws {
         try autoreleasepool {
-            let realm = try Realm()
+            let realm = try RealmLegacy()
             try realm.write {
                 realm.create(SwiftStringObject.self, value: ["string1"])
                 realm.create(SwiftStringObject.self, value: ["string2"])
@@ -806,7 +806,7 @@ class MigrationTests: TestCase {
     // test getting/setting all property types
     func testMigrationObject() throws {
         try autoreleasepool {
-            let realm = try Realm()
+            let realm = try RealmLegacy()
             let nulledMapObj = SwiftBoolObject(value: [false])
             try realm.write {
                 let object = SwiftObject()
@@ -1090,7 +1090,7 @@ class MigrationTests: TestCase {
 
     func testCollectionAccess() throws {
         try autoreleasepool {
-            let realm = try Realm()
+            let realm = try RealmLegacy()
             try realm.write {
                 realm.add(ModernAllTypesObject())
             }
@@ -1207,7 +1207,7 @@ class MigrationTests: TestCase {
 
     func testMigrationObjectSchema() throws {
         let properties: [Property] = autoreleasepool {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             return try! realm.write {
                 let obj = SwiftObject()
                 realm.add(obj)
@@ -1239,10 +1239,10 @@ class MigrationTests: TestCase {
             realmWithSingleClassProperties(defaultRealmURL(), className: "SwiftEmployeeObject", properties: [prop])
         }
 
-        let config = Realm.Configuration(fileURL: defaultRealmURL(),
+        let config = RealmLegacy.Configuration(fileURL: defaultRealmURL(),
                                          objectTypes: [SwiftEmployeeObject.self])
         assertFails(.schemaMismatch) {
-            try Realm(configuration: config)
+            try RealmLegacy(configuration: config)
         }
     }
 
@@ -1253,19 +1253,19 @@ class MigrationTests: TestCase {
             realmWithSingleClassProperties(defaultRealmURL(), className: "SwiftEmployeeObject", properties: [prop])
         }
 
-        var config = Realm.Configuration(fileURL: defaultRealmURL(), objectTypes: [SwiftEmployeeObject.self])
+        var config = RealmLegacy.Configuration(fileURL: defaultRealmURL(), objectTypes: [SwiftEmployeeObject.self])
         config.migrationBlock = { _, _ in
             XCTFail("Migration block should not be called")
         }
         config.deleteRealmIfMigrationNeeded = true
 
         assertSucceeds {
-            _ = try Realm(configuration: config)
+            _ = try RealmLegacy(configuration: config)
         }
     }
 
     func testDeleteRealmIfMigrationNeeded() throws {
-        try autoreleasepool { _ = try Realm(fileURL: defaultRealmURL()) }
+        try autoreleasepool { _ = try RealmLegacy(fileURL: defaultRealmURL()) }
 
         let objectSchema = RLMObjectSchema(forObjectClass: SwiftEmployeeObject.self)
         objectSchema.properties = Array(objectSchema.properties[0..<1])
@@ -1281,18 +1281,18 @@ class MigrationTests: TestCase {
         class_replaceMethod(metaClass, #selector(RLMObjectBase.sharedSchema), imp, "@@:")
 
         assertFails(.schemaMismatch) {
-            try Realm()
+            try RealmLegacy()
         }
 
         let migrationBlock: MigrationBlock = { _, _ in
             XCTFail("Migration block should not be called")
         }
-        let config = Realm.Configuration(fileURL: defaultRealmURL(),
+        let config = RealmLegacy.Configuration(fileURL: defaultRealmURL(),
                                          migrationBlock: migrationBlock,
                                          deleteRealmIfMigrationNeeded: true)
 
         assertSucceeds {
-            _ = try Realm(configuration: config)
+            _ = try RealmLegacy(configuration: config)
         }
 
         class_replaceMethod(metaClass, #selector(RLMObjectBase.sharedSchema), originalImp!, "@@:")
@@ -1300,7 +1300,7 @@ class MigrationTests: TestCase {
 
     func testObjectWithCustomColumnNames() throws {
         try autoreleasepool {
-            let realm = try Realm()
+            let realm = try RealmLegacy()
             try realm.write {
                 let object = ModernCustomObject()
                 object.intCol = 123
@@ -1379,7 +1379,7 @@ class MigrationTests: TestCase {
 
     func testCustomColumnDataAfterMigrationRealm() throws {
         try autoreleasepool {
-            let realm = try Realm()
+            let realm = try RealmLegacy()
             try realm.write {
                 let object = ModernCustomObject()
                 object.intCol = 123
@@ -1397,9 +1397,9 @@ class MigrationTests: TestCase {
             }
         }
 
-        let config = Realm.Configuration(fileURL: defaultRealmURL(),
+        let config = RealmLegacy.Configuration(fileURL: defaultRealmURL(),
                                          schemaVersion: 1)
-        let realm = try Realm(configuration: config)
+        let realm = try RealmLegacy(configuration: config)
         XCTAssertEqual(realm.objects(ModernCustomObject.self).count, 2)
     }
 

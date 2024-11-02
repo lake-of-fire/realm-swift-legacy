@@ -48,7 +48,7 @@ class CollectionSyncTestCase: SwiftSyncTestCase {
         [SwiftCollectionSyncObject.self, SwiftPerson.self]
     }
 
-    func write(_ fn: (Realm) -> Void) throws {
+    func write(_ fn: (RealmLegacy) -> Void) throws {
         try super.write(fn)
         waitForDownloads(for: readRealm)
     }

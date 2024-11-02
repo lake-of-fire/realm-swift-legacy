@@ -157,7 +157,7 @@ class AnyRealmValueObjectTests: TestCase {
         let objectId = ObjectId.generate()
         let decimal = Decimal128(floatLiteral: 12345.6789)
 
-        let tests: ((Realm?) -> Void) = { (realm: Realm?) in
+        let tests: ((RealmLegacy?) -> Void) = { (realm: RealmLegacy?) in
             self.testVariation(object: o, value: .int(123), keyPath: \.intValue, expected: 123, realm: realm)
             self.testVariation(object: o, value: .float(123.456), keyPath: \.floatValue, expected: 123.456, realm: realm)
             self.testVariation(object: o, value: .string("hello there"), keyPath: \.stringValue, expected: "hello there", realm: realm)
@@ -221,7 +221,7 @@ class AnyRealmValueObjectTests: TestCase {
                                              value: AnyRealmValue,
                                              keyPath: KeyPath<AnyRealmValue, T?>,
                                              expected: T,
-                                             realm: Realm?) {
+                                             realm: RealmLegacy?) {
         realm?.beginWrite()
         object.anyValue.value = value
         try! realm?.commitWrite()
@@ -238,7 +238,7 @@ class AnyRealmValueObjectTests: TestCase {
 // MARK: - List tests
 
 class AnyRealmValueListTestsBase<O: ObjectFactory, V: AnyValueFactory>: TestCase {
-    var realm: Realm?
+    var realm: RealmLegacy?
     var obj: ModernAllTypesObject!
     var array: List<AnyRealmValue>!
     var values: [AnyRealmValue]!
@@ -566,7 +566,7 @@ class ManagedAnyRealmValueListTests: TestCase {
 // MARK: - Set tests
 
 class AnyRealmValueSetTestsBase<O: ObjectFactory, V: AnyValueFactory>: TestCase {
-    var realm: Realm?
+    var realm: RealmLegacy?
     var obj: ModernAllTypesObject!
     var obj2: ModernAllTypesObject!
     var mutableSet: MutableSet<AnyRealmValue>!
@@ -873,7 +873,7 @@ class ManagedAnyRealmValueMutableSetTests: TestCase {
 // MARK: - Map tests
 
 class AnyRealmValueMapTestsBase<O: ObjectFactory, V: AnyValueFactory>: TestCase {
-    var realm: Realm?
+    var realm: RealmLegacy?
     var obj: ModernAllTypesObject!
     var map: Map<String, AnyRealmValue>!
     var values: [(key: String, value: AnyRealmValue)]!

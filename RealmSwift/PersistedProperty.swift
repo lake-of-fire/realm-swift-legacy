@@ -20,7 +20,7 @@ import RealmLegacy
 import RealmLegacy.Private
 
 /// @Persisted is used to declare properties on Object subclasses which should be
-/// managed by Realm.
+/// managed by RealmLegacy.
 ///
 /// Example of usage:
 /// ```
@@ -55,7 +55,7 @@ import RealmLegacy.Private
 ///     var incomingLinks: LinkingObjects<OtherModel>
 ///
 ///     // Properties which are not marked with @Persisted will
-///     // be ignored entirely by Realm.
+///     // be ignored entirely by RealmLegacy.
 ///     var ignoredProperty = true
 /// }
 /// ```
@@ -80,13 +80,13 @@ import RealmLegacy.Private
 ///  Bool, an empty string/data, and a new random value for UUID and ObjectID.
 ///  List and MutableSet properties *should not* be defined by setting them to a
 ///  default value of an empty List/MutableSet. Doing so will work, but will
-///  result in worse performance when accessing objects managed by a Realm.
+///  result in worse performance when accessing objects managed by a RealmLegacy.
 ///  Similarly, ObjectID properties *should not* be initialized to
 ///  `ObjectID.generate()`, as doing so will result in extra ObjectIDs being
-///  generated and then discarded when reading from a Realm.
+///  generated and then discarded when reading from a RealmLegacy.
 ///
 ///  If a class has at least one @Persisted property, all other properties will be
-///  ignored by Realm. This means that they will not be persisted and will not
+///  ignored by RealmLegacy. This means that they will not be persisted and will not
 ///  be usable in queries and other operations such as sorting and aggregates
 ///  which require a managed property.
 ///

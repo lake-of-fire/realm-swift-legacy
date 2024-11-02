@@ -26,13 +26,13 @@ protocol ObjectFactory {
 }
 struct ManagedObjectFactory: ObjectFactory {
     static func get<T: Object>() -> T {
-        let config = Realm.Configuration(inMemoryIdentifier: "test",
+        let config = RealmLegacy.Configuration(inMemoryIdentifier: "test",
                                          objectTypes: [ModernAllTypesObject.self,
                                                        ModernCollectionsOfEnums.self,
                                                        ModernEmbeddedObject.self,
                                                        CustomPersistableCollections.self,
                                                        SwiftStringObject.self])
-        let realm = try! Realm(configuration: config)
+        let realm = try! RealmLegacy(configuration: config)
         if !realm.isInWriteTransaction {
             realm.beginWrite()
         }

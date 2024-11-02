@@ -32,7 +32,7 @@ internal protocol RealmCollectionImpl: RealmCollection where Index == Int, SubSe
     init(collection: RLMCollection)
 }
 extension RealmCollectionImpl {
-    public var realm: Realm? { collection.realm.map(Realm.init) }
+    public var realm: RealmLegacy? { collection.realm.map(RealmLegacy.init) }
     public var isInvalidated: Bool { collection.isInvalidated }
     public var count: Int { Int(collection.count) }
 
@@ -206,7 +206,7 @@ internal func with<A: Actor, Value: ThreadConfined, Return: Sendable>(
             return nil
         }
         let scheduler = RLMScheduler.actor(actor, invoke: actor.invoke, verify: actor.verifier())
-        let realm = Realm(try! RLMRealm(configuration: config.wrappedValue, confinedTo: scheduler))
+        let realm = RealmLegacy(try! RLMRealm(configuration: config.wrappedValue, confinedTo: scheduler))
         guard let value = tsr.resolve(in: realm) else {
             return nil
         }

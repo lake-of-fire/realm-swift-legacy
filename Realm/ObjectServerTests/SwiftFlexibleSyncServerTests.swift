@@ -31,7 +31,7 @@ import RealmSwiftLegacyTestSupport
 
 @available(macOS 13.0, *)
 class SwiftFlexibleSyncTests: SwiftSyncTestCase {
-    override func configuration(user: User) -> Realm.Configuration {
+    override func configuration(user: User) -> RealmLegacy.Configuration {
         user.flexibleSyncConfiguration()
     }
 
@@ -50,15 +50,15 @@ class SwiftFlexibleSyncTests: SwiftSyncTestCase {
     }
 
     func testGetSubscriptionsWhenLocalRealm() throws {
-        var configuration = Realm.Configuration.defaultConfiguration
+        var configuration = RealmLegacy.Configuration.defaultConfiguration
         configuration.objectTypes = [SwiftPerson.self]
-        let realm = try Realm(configuration: configuration)
+        let realm = try RealmLegacy(configuration: configuration)
         assertThrows(realm.subscriptions)
     }
 
     // FIXME: Using `assertThrows` within a Server test will crash on tear down
     func skip_testGetSubscriptionsWhenPbsRealm() throws {
-        let realm = try Realm(configuration: createUser().configuration(partitionValue: name))
+        let realm = try RealmLegacy(configuration: createUser().configuration(partitionValue: name))
         assertThrows(realm.subscriptions)
     }
 
@@ -894,7 +894,7 @@ class SwiftFlexibleSyncTests: SwiftSyncTestCase {
             })
         })
         config.objectTypes = [SwiftPerson.self, SwiftTypesSyncObject.self]
-        let realm = try Realm(configuration: config)
+        let realm = try RealmLegacy(configuration: config)
         let subscriptions = realm.subscriptions
         XCTAssertEqual(subscriptions.count, 1)
 
@@ -925,7 +925,7 @@ class SwiftFlexibleSyncTests: SwiftSyncTestCase {
         autoreleasepool {
             proxy.delay = 3.0
             let ex = expectation(description: "async open")
-            Realm.asyncOpen(configuration: config) { result in
+            RealmLegacy.asyncOpen(configuration: config) { result in
                 guard case .failure(let error) = result else {
                     XCTFail("Did not fail: \(result)")
                     return

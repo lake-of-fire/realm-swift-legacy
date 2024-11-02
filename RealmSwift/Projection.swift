@@ -27,7 +27,7 @@ private protocol AnyProjected {
 // MARK: Projection
 
 /// ``@Projected`` is used to declare properties on ``Projection`` protocols which should be
-/// managed by Realm.
+/// managed by RealmLegacy.
 ///
 /// Example of usage:
 /// ```swift
@@ -704,7 +704,7 @@ extension Projection: ThreadConfined where Root: ThreadConfined {
      Unmanaged objects are not confined to a thread and cannot be passed to methods expecting a
      `ThreadConfined` object.
      */
-    public var realm: Realm? {
+    public var realm: RealmLegacy? {
         rootObject.realm
     }
 
@@ -723,7 +723,7 @@ extension Projection: ThreadConfined where Root: ThreadConfined {
     /**
      Returns a frozen snapshot of this object.
      Unlike normal Realm live objects, the frozen copy can be read from any thread, and the values
-     read will never update to reflect new writes to the Realm. Frozen collections can be queried
+     read will never update to reflect new writes to the RealmLegacy. Frozen collections can be queried
      like any other Realm collection. Frozen objects cannot be mutated, and cannot be observed for
      change notifications.
      Unmanaged Realm objects cannot be frozen.

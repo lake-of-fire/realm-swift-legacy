@@ -20,7 +20,7 @@ import Foundation
 import RealmLegacy
 
 /**
- `Schema` instances represent collections of model object schemas managed by a Realm.
+ `Schema` instances represent collections of model object schemas managed by a RealmLegacy.
 
  When using Realm, `Schema` instances allow performing migrations and introspecting the database's schema.
 
@@ -33,7 +33,7 @@ import RealmLegacy
     internal let rlmSchema: RLMSchema
 
     /**
-     An array of `ObjectSchema`s for all object types in the Realm.
+     An array of `ObjectSchema`s for all object types in the RealmLegacy.
 
      This property is intended to be used during migrations for dynamic introspection.
      */

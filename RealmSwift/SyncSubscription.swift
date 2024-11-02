@@ -27,7 +27,7 @@ import RealmLegacy.Private
     /// queries at the time the subscription set was updated. The server is now in a steady-state
     /// synchronization mode where it will stream update as they come.
     case complete
-    /// The subscription encountered an error and synchronization is paused for this Realm. You can
+    /// The subscription encountered an error and synchronization is paused for this RealmLegacy. You can
     /// still use the current subscription set to write a subscription.
     case error(Error)
     /// The subscription is persisted locally but not yet processed by the server, which means

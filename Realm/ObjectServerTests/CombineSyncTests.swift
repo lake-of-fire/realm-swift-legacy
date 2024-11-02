@@ -274,7 +274,7 @@ class CombineSyncTests: SwiftSyncTestCase {
             .flatMap { @Sendable (user: User) in
                 var config = user.configuration(partitionValue: self.name)
                 config.objectTypes = [SwiftHugeSyncObject.self]
-                return Realm.asyncOpen(configuration: config)
+                return RealmLegacy.asyncOpen(configuration: config)
             }
             .tryMap { realm in
                 try realm.write {
@@ -298,7 +298,7 @@ class CombineSyncTests: SwiftSyncTestCase {
             .flatMap { @Sendable user in
                 var config = user.configuration(partitionValue: self.name)
                 config.objectTypes = [SwiftHugeSyncObject.self]
-                return Realm.asyncOpen(configuration: config).onProgressNotification {
+                return RealmLegacy.asyncOpen(configuration: config).onProgressNotification {
                     if $0.isTransferComplete {
                         progressEx.fulfill()
                     }
@@ -312,13 +312,13 @@ class CombineSyncTests: SwiftSyncTestCase {
 
     func testAsyncOpenStandaloneCombine() throws {
         try autoreleasepool {
-            let realm = try Realm()
+            let realm = try RealmLegacy()
             try realm.write {
                 (0..<10000).forEach { _ in realm.add(SwiftPerson(firstName: "Charlie", lastName: "Bucket")) }
             }
         }
 
-        Realm.asyncOpen().await(self) { realm in
+        RealmLegacy.asyncOpen().await(self) { realm in
             XCTAssertEqual(realm.objects(SwiftPerson.self).count, 10000)
         }
     }
@@ -631,7 +631,7 @@ class CombineFlexibleSyncTests: SwiftSyncTestCase {
         [SwiftPerson.self, SwiftTypesSyncObject.self]
     }
 
-    override func configuration(user: User) -> Realm.Configuration {
+    override func configuration(user: User) -> RealmLegacy.Configuration {
         user.flexibleSyncConfiguration()
     }
 
@@ -691,7 +691,7 @@ class CombineFlexibleSyncTests: SwiftSyncTestCase {
             })
         }
         .sink(receiveCompletion: { result in
-            if case .failure(let error as Realm.Error) = result {
+            if case .failure(let error as RealmLegacy.Error) = result {
                 XCTAssertEqual(error.code, .subscriptionFailed)
                 guard case .error = subscriptions.state else {
                     return XCTFail("Adding a query for a not queryable field should change the subscription set state to error")

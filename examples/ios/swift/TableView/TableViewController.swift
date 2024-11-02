@@ -35,8 +35,8 @@ class Cell: UITableViewCell {
 }
 
 class TableViewController: UITableViewController {
-    let realm = try! Realm()
-    let results = try! Realm().objects(DemoObject.self).sorted(byKeyPath: "date")
+    let realm = try! RealmLegacy()
+    let results = try! RealmLegacy().objects(DemoObject.self).sorted(byKeyPath: "date")
     var notificationToken: NotificationToken?
 
     override func viewDidLoad() {
@@ -107,7 +107,7 @@ class TableViewController: UITableViewController {
         DispatchQueue.global().async {
             // Get new realm and table since we are in a new thread
             autoreleasepool {
-                let realm = try! Realm()
+                let realm = try! RealmLegacy()
                 realm.beginWrite()
                 for _ in 0..<5 {
                     // Add row via dictionary. Order is ignored.

@@ -54,7 +54,7 @@ class CompactionTests: TestCase {
 
     func testSuccessfulCompactOnLaunch() {
         // Configure the Realm to compact on launch
-        let config = Realm.Configuration(fileURL: testRealmURL(),
+        let config = RealmLegacy.Configuration(fileURL: testRealmURL(),
                                          shouldCompactOnLaunch: { totalBytes, usedBytes in
             // Confirm expected sizes
             XCTAssertEqual(totalBytes, expectedTotalBytesBefore)
@@ -64,7 +64,7 @@ class CompactionTests: TestCase {
 
         // Confirm expected sizes before and after opening the Realm
         XCTAssertEqual(fileSize(path: config.fileURL!.path), expectedTotalBytesBefore)
-        let realm = try! Realm(configuration: config)
+        let realm = try! RealmLegacy(configuration: config)
         XCTAssertLessThan(fileSize(path: config.fileURL!.path), expectedTotalBytesBefore)
 
         // Validate that the file still contains what it should

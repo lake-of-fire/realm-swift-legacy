@@ -29,7 +29,7 @@ public typealias PropertyKey = UInt16
 internal protocol DiscoverablePersistedProperty: _RealmSchemaDiscoverable {}
 
 public protocol _HasPersistedType: _ObjcBridgeable {
-    // The type which is actually stored in the Realm. This is Self for types
+    // The type which is actually stored in the RealmLegacy. This is Self for types
     // we support directly, but may be a different type for enums and mapped types.
     associatedtype PersistedType: _ObjcBridgeable
 }

@@ -50,8 +50,8 @@ public final class Map<Key: _MapKey, Value: RealmCollectionValue>: RLMSwiftColle
     internal var lastAccessedNames: NSMutableArray?
 
     /// The Realm which manages the map, or `nil` if the map is unmanaged.
-    public var realm: Realm? {
-        return _rlmCollection.realm.map { Realm($0) }
+    public var realm: RealmLegacy? {
+        return _rlmCollection.realm.map { RealmLegacy($0) }
     }
 
     /// Indicates if the map can no longer be accessed.
@@ -92,7 +92,7 @@ public final class Map<Key: _MapKey, Value: RealmCollectionValue>: RLMSwiftColle
      Updates the value stored in the map for the given key, or adds a new key-value pair if the key does not exist.
 
      - Note: If the value being added to the map is an unmanaged object and the
-             map is managed then that unmanaged object will be added to the Realm.
+             map is managed then that unmanaged object will be added to the RealmLegacy.
 
      - warning: This method may only be called during a write transaction.
 
@@ -113,7 +113,7 @@ public final class Map<Key: _MapKey, Value: RealmCollectionValue>: RLMSwiftColle
      map for that key.
 
      - Note: If a value being added to the map is an unmanaged object and the
-             map is managed then that unmanaged object will be added to the Realm.
+             map is managed then that unmanaged object will be added to the RealmLegacy.
 
      - warning: This method may only be called on managed Maps during a write transaction.
 
@@ -146,7 +146,7 @@ public final class Map<Key: _MapKey, Value: RealmCollectionValue>: RLMSwiftColle
      that key.
 
      - Note: If a value being added to the map is an unmanaged object and the
-             map is managed then that unmanaged object will be added to the Realm.
+             map is managed then that unmanaged object will be added to the RealmLegacy.
 
      - warning: This method may only be called on managed Maps during a write transaction.
 
@@ -182,7 +182,7 @@ public final class Map<Key: _MapKey, Value: RealmCollectionValue>: RLMSwiftColle
      Returns the value for a given key, or sets a value for a key should the subscript be used for an assign.
 
      - Note:If the value being added to the map is an unmanaged object and the map is managed
-            then that unmanaged object will be added to the Realm.
+            then that unmanaged object will be added to the RealmLegacy.
 
      - Note:If the value being assigned for a key is `nil` then that key will be removed from the map.
 
@@ -719,7 +719,7 @@ public final class Map<Key: _MapKey, Value: RealmCollectionValue>: RLMSwiftColle
 
      The frozen copy is an immutable `Map` which contains the same data as this
      `Map` currently contains, but will not update when writes are made to the
-     containing Realm. Unlike live `Map`s, frozen `Map`s can be accessed from any
+     containing RealmLegacy. Unlike live `Map`s, frozen `Map`s can be accessed from any
      thread.
 
      - warning: This method cannot be called during a write transaction, or when the

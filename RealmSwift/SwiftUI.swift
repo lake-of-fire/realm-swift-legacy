@@ -307,7 +307,7 @@ private class ObservableResultsStorage<T>: ObservableStorage<T> where T: RealmSu
             didSet()
         }
     }
-    var configuration: Realm.Configuration? {
+    var configuration: RealmLegacy.Configuration? {
         didSet {
             didSet()
         }
@@ -347,7 +347,7 @@ private class ObservableResultsStorage<T>: ObservableStorage<T> where T: RealmSu
 /// the structure that declares the object. When published properties of the
 /// observable realm object change, SwiftUI updates the parts of any view that depend
 /// on those properties. If unmanaged, the property will be read from the object itself,
-/// otherwise, it will be read from the underlying Realm. Changes to the value will update
+/// otherwise, it will be read from the underlying RealmLegacy. Changes to the value will update
 /// the view asynchronously:
 ///
 ///     Text(model.title) // Updates the view any time `title` changes.
@@ -363,7 +363,7 @@ private class ObservableResultsStorage<T>: ObservableStorage<T> where T: RealmSu
 ///
 ///     Toggle("Enabled", isOn: $model.isEnabled)
 ///
-/// This will write the modified `isEnabled` property to the `model` object's Realm.
+/// This will write the modified `isEnabled` property to the `model` object's RealmLegacy.
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @propertyWrapper public struct StateRealmObject<T: RealmSubscribable & ThreadConfined & Equatable>: DynamicProperty {
     @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -489,7 +489,7 @@ extension Projection: _ObservedResultsValue { }
     public typealias Element = ResultType
     private class Storage: ObservableResultsStorage<Results<ResultType>> {
         override func updateValue() {
-            let realm = try! Realm(configuration: configuration ?? Realm.Configuration.defaultConfiguration)
+            let realm = try! RealmLegacy(configuration: configuration ?? RealmLegacy.Configuration.defaultConfiguration)
             var value = realm.objects(ResultType.self)
             if let sortDescriptor = sortDescriptor {
                 value = value.sorted(byKeyPath: sortDescriptor.keyPath, ascending: sortDescriptor.ascending)
@@ -554,7 +554,7 @@ extension Projection: _ObservedResultsValue { }
      - parameter sortDescriptor: A sequence of `SortDescriptor`s to sort by
      */
     public init<ObjectType: ObjectBase>(_ type: ResultType.Type,
-                                        configuration: Realm.Configuration? = nil,
+                                        configuration: RealmLegacy.Configuration? = nil,
                                         filter: NSPredicate? = nil,
                                         keyPaths: [String]? = nil,
                                         sortDescriptor: SortDescriptor? = nil) where ResultType: Projection<ObjectType>, ObjectType: ThreadConfined {
@@ -578,7 +578,7 @@ extension Projection: _ObservedResultsValue { }
      - parameter sortDescriptor: A sequence of `SortDescriptor`s to sort by
      */
     public init(_ type: ResultType.Type,
-                configuration: Realm.Configuration? = nil,
+                configuration: RealmLegacy.Configuration? = nil,
                 filter: NSPredicate? = nil,
                 keyPaths: [String]? = nil,
                 sortDescriptor: SortDescriptor? = nil) where ResultType: Object {
@@ -601,7 +601,7 @@ extension Projection: _ObservedResultsValue { }
      - parameter sortDescriptor: A sequence of `SortDescriptor`s to sort by
      */
     public init(_ type: ResultType.Type,
-                configuration: Realm.Configuration? = nil,
+                configuration: RealmLegacy.Configuration? = nil,
                 where: ((Query<ResultType>) -> Query<Bool>)? = nil,
                 keyPaths: [String]? = nil,
                 sortDescriptor: SortDescriptor? = nil) where ResultType: Object {
@@ -613,7 +613,7 @@ extension Projection: _ObservedResultsValue { }
     /// :nodoc:
     public init(_ type: ResultType.Type,
                 keyPaths: [String]? = nil,
-                configuration: Realm.Configuration? = nil,
+                configuration: RealmLegacy.Configuration? = nil,
                 sortDescriptor: SortDescriptor? = nil) where ResultType: Object {
         self.storage = Storage(Results(RLMResults<ResultType>.emptyDetached()), keyPaths)
         self.storage.configuration = configuration
@@ -646,7 +646,7 @@ extension Projection: _ObservedResultsValue { }
 
     private class Storage: ObservableResultsStorage<SectionedResults<Key, ResultType>> {
         override func updateValue() {
-            let realm = try! Realm(configuration: configuration ?? Realm.Configuration.defaultConfiguration)
+            let realm = try! RealmLegacy(configuration: configuration ?? RealmLegacy.Configuration.defaultConfiguration)
             var results = realm.objects(ResultType.self)
 
             let filters = [searchFilter, filter].compactMap { $0 }
@@ -731,7 +731,7 @@ extension Projection: _ObservedResultsValue { }
                  where: ((Query<ResultType>) -> Query<Bool>)? = nil,
                  keyPaths: [String]? = nil,
                  keyPathString: String? = nil,
-                 configuration: Realm.Configuration? = nil) where ResultType: AnyObject {
+                 configuration: RealmLegacy.Configuration? = nil) where ResultType: AnyObject {
         let results = Results<ResultType>(RLMResults<ResultType>.emptyDetached())
         self.storage = Storage(results,
                                sectionBlock: sectionBlock,
@@ -758,7 +758,7 @@ extension Projection: _ObservedResultsValue { }
      - parameter keyPaths: Only properties contained in the key paths array will be observed.
      If `nil`, notifications will be delivered for any property change on the object.
      String key paths which do not correspond to a valid a property will throw an exception.
-     - parameter configuration: The `Realm.Configuration` used when creating the Realm.
+     - parameter configuration: The `Realm.Configuration` used when creating the RealmLegacy.
      If empty the configuration is set to the `defaultConfiguration`
 
      - note: The primary sort descriptor must be responsible for determining the section key.
@@ -768,7 +768,7 @@ extension Projection: _ObservedResultsValue { }
                                         sortDescriptors: [SortDescriptor] = [],
                                         filter: NSPredicate? = nil,
                                         keyPaths: [String]? = nil,
-                                        configuration: Realm.Configuration? = nil) where ResultType: Projection<ObjectType>, ObjectType: ThreadConfined {
+                                        configuration: RealmLegacy.Configuration? = nil) where ResultType: Projection<ObjectType>, ObjectType: ThreadConfined {
         self.init(type: type,
                   sectionBlock: { (obj: ResultType) in obj[keyPath: sectionKeyPath] },
                   sortDescriptors: sortDescriptors,
@@ -788,7 +788,7 @@ extension Projection: _ObservedResultsValue { }
      - parameter keyPaths: Only properties contained in the key paths array will be observed.
      If `nil`, notifications will be delivered for any property change on the object.
      String key paths which do not correspond to a valid a property will throw an exception.
-     - parameter configuration: The `Realm.Configuration` used when creating the Realm.
+     - parameter configuration: The `Realm.Configuration` used when creating the RealmLegacy.
      If empty the configuration is set to the `defaultConfiguration`
 
      - note: The primary sort descriptor must be responsible for determining the section key.
@@ -798,7 +798,7 @@ extension Projection: _ObservedResultsValue { }
                                         sortDescriptors: [SortDescriptor] = [],
                                         filter: NSPredicate? = nil,
                                         keyPaths: [String]? = nil,
-                                        configuration: Realm.Configuration? = nil) where ResultType: Projection<ObjectType>, ObjectType: ThreadConfined {
+                                        configuration: RealmLegacy.Configuration? = nil) where ResultType: Projection<ObjectType>, ObjectType: ThreadConfined {
         self.init(type: type,
                   sectionBlock: sectionBlock,
                   sortDescriptors: sortDescriptors,
@@ -818,7 +818,7 @@ extension Projection: _ObservedResultsValue { }
      - parameter keyPaths: Only properties contained in the key paths array will be observed.
      If `nil`, notifications will be delivered for any property change on the object.
      String key paths which do not correspond to a valid a property will throw an exception.
-     - parameter configuration: The `Realm.Configuration` used when creating the Realm.
+     - parameter configuration: The `Realm.Configuration` used when creating the RealmLegacy.
      If empty the configuration is set to the `defaultConfiguration`
 
      - note: The primary sort descriptor must be responsible for determining the section key.
@@ -828,7 +828,7 @@ extension Projection: _ObservedResultsValue { }
                 sortDescriptors: [SortDescriptor] = [],
                 filter: NSPredicate? = nil,
                 keyPaths: [String]? = nil,
-                configuration: Realm.Configuration? = nil) where ResultType: Object {
+                configuration: RealmLegacy.Configuration? = nil) where ResultType: Object {
         self.init(type: type,
                   sectionBlock: { (obj: ResultType) in obj[keyPath: sectionKeyPath] },
                   sortDescriptors: sortDescriptors,
@@ -848,7 +848,7 @@ extension Projection: _ObservedResultsValue { }
      - parameter keyPaths: Only properties contained in the key paths array will be observed.
      If `nil`, notifications will be delivered for any property change on the object.
      String key paths which do not correspond to a valid a property will throw an exception.
-     - parameter configuration: The `Realm.Configuration` used when creating the Realm.
+     - parameter configuration: The `Realm.Configuration` used when creating the RealmLegacy.
      If empty the configuration is set to the `defaultConfiguration`
 
      - note: The primary sort descriptor must be responsible for determining the section key.
@@ -858,7 +858,7 @@ extension Projection: _ObservedResultsValue { }
                 sortDescriptors: [SortDescriptor] = [],
                 filter: NSPredicate? = nil,
                 keyPaths: [String]? = nil,
-                configuration: Realm.Configuration? = nil) where ResultType: Object {
+                configuration: RealmLegacy.Configuration? = nil) where ResultType: Object {
         self.init(type: type,
                   sectionBlock: sectionBlock,
                   sortDescriptors: sortDescriptors,
@@ -877,7 +877,7 @@ extension Projection: _ObservedResultsValue { }
      - parameter keyPaths: Only properties contained in the key paths array will be observed.
      If `nil`, notifications will be delivered for any property change on the object.
      String key paths which do not correspond to a valid a property will throw an exception.
-     - parameter configuration: The `Realm.Configuration` used when creating the Realm.
+     - parameter configuration: The `Realm.Configuration` used when creating the RealmLegacy.
      If empty the configuration is set to the `defaultConfiguration`
 
      - note: The primary sort descriptor must be responsible for determining the section key.
@@ -887,7 +887,7 @@ extension Projection: _ObservedResultsValue { }
                 sortDescriptors: [SortDescriptor] = [],
                 where: ((Query<ResultType>) -> Query<Bool>)? = nil,
                 keyPaths: [String]? = nil,
-                configuration: Realm.Configuration? = nil) where ResultType: Object {
+                configuration: RealmLegacy.Configuration? = nil) where ResultType: Object {
         self.init(type: type,
                   sectionBlock: sectionBlock,
                   sortDescriptors: sortDescriptors,
@@ -907,7 +907,7 @@ extension Projection: _ObservedResultsValue { }
      - parameter keyPaths: Only properties contained in the key paths array will be observed.
      If `nil`, notifications will be delivered for any property change on the object.
      String key paths which do not correspond to a valid a property will throw an exception.
-     - parameter configuration: The `Realm.Configuration` used when creating the Realm.
+     - parameter configuration: The `Realm.Configuration` used when creating the RealmLegacy.
      If empty the configuration is set to the `defaultConfiguration`
 
      - note: The primary sort descriptor must be responsible for determining the section key.
@@ -917,7 +917,7 @@ extension Projection: _ObservedResultsValue { }
                 sortDescriptors: [SortDescriptor] = [],
                 where: ((Query<ResultType>) -> Query<Bool>)? = nil,
                 keyPaths: [String]? = nil,
-                configuration: Realm.Configuration? = nil) where ResultType: Object {
+                configuration: RealmLegacy.Configuration? = nil) where ResultType: Object {
         self.init(type: type,
                   sectionBlock: { (obj: ResultType) in obj[keyPath: sectionKeyPath] },
                   sortDescriptors: sortDescriptors,
@@ -936,7 +936,7 @@ extension Projection: _ObservedResultsValue { }
      - parameter keyPaths: Only properties contained in the key paths array will be observed.
      If `nil`, notifications will be delivered for any property change on the object.
      String key paths which do not correspond to a valid a property will throw an exception.
-     - parameter configuration: The `Realm.Configuration` used when creating the Realm.
+     - parameter configuration: The `Realm.Configuration` used when creating the RealmLegacy.
      If empty the configuration is set to the `defaultConfiguration`
 
      - note: The primary sort descriptor must be responsible for determining the section key.
@@ -945,7 +945,7 @@ extension Projection: _ObservedResultsValue { }
                 sectionKeyPath: KeyPath<ResultType, Key>,
                 sortDescriptors: [SortDescriptor] = [],
                 keyPaths: [String]? = nil,
-                configuration: Realm.Configuration? = nil) where ResultType: Object {
+                configuration: RealmLegacy.Configuration? = nil) where ResultType: Object {
         self.init(type: type,
                   sectionBlock: { (obj: ResultType) in obj[keyPath: sectionKeyPath] },
                   sortDescriptors: sortDescriptors,
@@ -962,7 +962,7 @@ extension Projection: _ObservedResultsValue { }
      - parameter keyPaths: Only properties contained in the key paths array will be observed.
      If `nil`, notifications will be delivered for any property change on the object.
      String key paths which do not correspond to a valid a property will throw an exception.
-     - parameter configuration: The `Realm.Configuration` used when creating the Realm.
+     - parameter configuration: The `Realm.Configuration` used when creating the RealmLegacy.
      If empty the configuration is set to the `defaultConfiguration`
 
      - note: The primary sort descriptor must be responsible for determining the section key.
@@ -971,7 +971,7 @@ extension Projection: _ObservedResultsValue { }
                 sectionBlock: @escaping ((ResultType) -> Key),
                 sortDescriptors: [SortDescriptor],
                 keyPaths: [String]? = nil,
-                configuration: Realm.Configuration? = nil) where ResultType: Object {
+                configuration: RealmLegacy.Configuration? = nil) where ResultType: Object {
         self.init(type: type,
                   sectionBlock: sectionBlock,
                   sortDescriptors: sortDescriptors,
@@ -1398,7 +1398,7 @@ extension ThreadConfined where Self: ObjectBase {
 }
 
 private struct RealmEnvironmentKey: EnvironmentKey {
-    static let defaultValue = Realm.Configuration.defaultConfiguration
+    static let defaultValue = RealmLegacy.Configuration.defaultConfiguration
 }
 
 private struct PartitionValueEnvironmentKey: EnvironmentKey {
@@ -1408,7 +1408,7 @@ private struct PartitionValueEnvironmentKey: EnvironmentKey {
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension EnvironmentValues {
     /// The current `Realm.Configuration` that the view should use.
-    public var realmConfiguration: Realm.Configuration {
+    public var realmConfiguration: RealmLegacy.Configuration {
         get {
             return self[RealmEnvironmentKey.self]
         }
@@ -1417,9 +1417,9 @@ extension EnvironmentValues {
         }
     }
     /// The current `Realm` that the view should use.
-    public var realm: Realm {
+    public var realm: RealmLegacy {
         get {
-            return try! Realm(configuration: self[RealmEnvironmentKey.self])
+            return try! RealmLegacy(configuration: self[RealmEnvironmentKey.self])
         }
         set {
             self[RealmEnvironmentKey.self] = newValue.configuration
@@ -1440,12 +1440,12 @@ extension EnvironmentValues {
 An enum representing different states from `AsyncOpen` and `AutoOpen` process
 */
 public enum AsyncOpenState {
-    /// Starting the Realm.asyncOpen process.
+    /// Starting the RealmLegacy.asyncOpen process.
     case connecting
-    /// Waiting for a user to be logged in before executing Realm.asyncOpen.
+    /// Waiting for a user to be logged in before executing RealmLegacy.asyncOpen.
     case waitingForUser
     /// The Realm has been opened and is ready for use. For AsyncOpen this means that the Realm has been fully downloaded, but for AutoOpen the existing local file may have been used if the device is offline.
-    case open(Realm)
+    case open(RealmLegacy)
     /// The Realm is currently being downloaded from the server.
     case progress(Progress)
     /// Opening the Realm failed.
@@ -1461,7 +1461,7 @@ private enum AsyncOpenKind {
 private class ObservableAsyncOpenStorage: ObservableObject {
     private var asyncOpenKind: AsyncOpenKind
     private var app: App
-    var configuration: Realm.Configuration?
+    var configuration: RealmLegacy.Configuration?
     var partitionValue: AnyBSON?
 
     // Tracks User State for App for Multi-User Support
@@ -1477,7 +1477,7 @@ private class ObservableAsyncOpenStorage: ObservableObject {
 
     @Published fileprivate var asyncOpenState: AsyncOpenState
 
-    init(asyncOpenKind: AsyncOpenKind, app: App, configuration: Realm.Configuration?, partitionValue: AnyBSON?) {
+    init(asyncOpenKind: AsyncOpenKind, app: App, configuration: RealmLegacy.Configuration?, partitionValue: AnyBSON?) {
         self.asyncOpenKind = asyncOpenKind
         self.app = app
         self.configuration = configuration
@@ -1532,7 +1532,7 @@ private class ObservableAsyncOpenStorage: ObservableObject {
 
     private func asyncOpenForUser(_ user: User) {
         // Set the `syncConfiguration` depending if there is partition value (pbs) or not (flx).
-        var config: Realm.Configuration
+        var config: RealmLegacy.Configuration
         if let partitionValue = partitionValue {
             config = user.configuration(partitionValue: partitionValue, cancelAsyncOpenOnNonFatalErrors: true)
         } else {
@@ -1552,7 +1552,7 @@ private class ObservableAsyncOpenStorage: ObservableObject {
 
         // Cancel any current subscriptions to asyncOpen if there is one
         cancelAsyncOpen()
-        Realm.asyncOpen(configuration: config)
+        RealmLegacy.asyncOpen(configuration: config)
             .onProgressNotification { asyncProgress in
                 // Do not change state to progress if the realm file is already opened or there is an error
                 switch self.asyncOpenState {
@@ -1569,7 +1569,7 @@ private class ObservableAsyncOpenStorage: ObservableObject {
                     case .asyncOpen:
                         self.asyncOpenState = .error(error)
                     case .autoOpen:
-                        if let realm = try? Realm(configuration: config) {
+                        if let realm = try? RealmLegacy(configuration: config) {
                             self.asyncOpenState = .open(realm)
                         } else {
                             self.asyncOpenState = .error(error)
@@ -1581,7 +1581,7 @@ private class ObservableAsyncOpenStorage: ObservableObject {
             }.store(in: &self.asyncOpenCancellable)
     }
 
-    fileprivate func update(_ partitionValue: PartitionValue?, _ configuration: Realm.Configuration) {
+    fileprivate func update(_ partitionValue: PartitionValue?, _ configuration: RealmLegacy.Configuration) {
         if let partitionValue = partitionValue {
             let bsonValue = AnyBSON(partitionValue: partitionValue)
             if self.partitionValue != bsonValue {
@@ -1646,7 +1646,7 @@ private class ObservableAsyncOpenStorage: ObservableObject {
 ///     @AsyncOpen(appId: "app_id", partitionValue: <partition_value>) var asyncOpen
 ///
 /// This will immediately initiates a `Realm.asyncOpen()` operation which will perform all work needed to get the Realm to
-/// a usable state. (see Realm.asyncOpen() documentation)
+/// a usable state. (see RealmLegacy.asyncOpen() documentation)
 ///
 /// This property wrapper will publish states of the current `Realm.asyncOpen()` process like progress, errors and an opened realm,
 /// which can be used to update the view
@@ -1713,7 +1713,7 @@ private class ObservableAsyncOpenStorage: ObservableObject {
      */
     public init<Partition>(appId: String? = nil,
                            partitionValue: Partition,
-                           configuration: Realm.Configuration? = nil,
+                           configuration: RealmLegacy.Configuration? = nil,
                            timeout: UInt? = nil) where Partition: BSON {
         let app = ObservableAsyncOpenStorage.configureApp(appId: appId, timeout: timeout)
         // Store property wrapper values on the storage
@@ -1730,7 +1730,7 @@ private class ObservableAsyncOpenStorage: ObservableObject {
                  become fully established., if empty or `nil` no connection timeout is set.
      */
     public init(appId: String? = nil,
-                configuration: Realm.Configuration? = nil,
+                configuration: RealmLegacy.Configuration? = nil,
                 timeout: UInt? = nil) {
         let app = ObservableAsyncOpenStorage.configureApp(appId: appId, timeout: timeout)
         // Store property wrapper values on the storage
@@ -1755,7 +1755,7 @@ private class ObservableAsyncOpenStorage: ObservableObject {
 ///     @AutoOpen(appId: "app_id", partitionValue: <partition_value>, timeout: 4000) var autoOpen
 ///
 /// This will immediately initiates a `Realm.asyncOpen()` operation which will perform all work needed to get the Realm to
-/// a usable state. (see Realm.asyncOpen() documentation)
+/// a usable state. (see RealmLegacy.asyncOpen() documentation)
 ///
 /// This property wrapper will publish states of the current `Realm.asyncOpen()` process like progress, errors and an opened realm,
 /// which can be used to update the view
@@ -1825,7 +1825,7 @@ private class ObservableAsyncOpenStorage: ObservableObject {
      */
     public init<Partition>(appId: String? = nil,
                            partitionValue: Partition,
-                           configuration: Realm.Configuration? = nil,
+                           configuration: RealmLegacy.Configuration? = nil,
                            timeout: UInt? = nil) where Partition: BSON {
         let app = ObservableAsyncOpenStorage.configureApp(appId: appId, timeout: timeout)
         // Store property wrapper values on the storage
@@ -1842,7 +1842,7 @@ private class ObservableAsyncOpenStorage: ObservableObject {
                  become fully established., if empty or `nil` no connection timeout is set.
      */
     public init(appId: String? = nil,
-                configuration: Realm.Configuration? = nil,
+                configuration: RealmLegacy.Configuration? = nil,
                 timeout: UInt? = nil) {
         let app = ObservableAsyncOpenStorage.configureApp(appId: appId, timeout: timeout)
         // Store property wrapper values on the storage

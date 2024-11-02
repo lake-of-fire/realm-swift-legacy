@@ -142,7 +142,7 @@ struct SearchView: View {
 }
 
 struct Footer: View {
-    let realm = try! Realm()
+    let realm = try! RealmLegacy()
 
     var body: some View {
         HStack {
@@ -205,13 +205,13 @@ struct MultiRealmContentView: View {
     var body: some View {
         NavigationView {
             VStack {
-                NavigationLink("Realm A", destination: RealmView().environment(\.realmConfiguration, Realm.Configuration(inMemoryIdentifier: "realm_a")))
-                NavigationLink("Realm B", destination: RealmView().environment(\.realmConfiguration, Realm.Configuration(inMemoryIdentifier: "realm_b")))
+                NavigationLink("Realm A", destination: RealmView().environment(\.realmConfiguration, RealmLegacy.Configuration(inMemoryIdentifier: "realm_a")))
+                NavigationLink("Realm B", destination: RealmView().environment(\.realmConfiguration, RealmLegacy.Configuration(inMemoryIdentifier: "realm_b")))
                 Button("Realm C") {
                     showSheet = true
                 }
             }.sheet(isPresented: $showSheet, content: {
-                RealmView().environment(\.realmConfiguration, Realm.Configuration(inMemoryIdentifier: "realm_c"))
+                RealmView().environment(\.realmConfiguration, RealmLegacy.Configuration(inMemoryIdentifier: "realm_c"))
             })
         }
     }
@@ -325,7 +325,7 @@ struct ObservedResultsSearchableTestView: View {
 struct ObservedResultsConfiguration: View {
     @ObservedResults(ReminderList.self) var remindersA // config from `.environment`
     @ObservedResults(ReminderList.self,
-                     configuration: Realm.Configuration(inMemoryIdentifier: "realm_b")) var remindersB
+                     configuration: RealmLegacy.Configuration(inMemoryIdentifier: "realm_b")) var remindersB
 
     var body: some View {
         NavigationView {
@@ -457,7 +457,7 @@ struct ObservedSectionedResultsConfiguration: View {
     @ObservedSectionedResults(ReminderList.self, sectionKeyPath: \.firstLetter) var remindersA // config from `.environment`
     @ObservedSectionedResults(ReminderList.self,
                               sectionKeyPath: \.firstLetter,
-                              configuration: Realm.Configuration(inMemoryIdentifier: "realm_b")) var remindersB
+                              configuration: RealmLegacy.Configuration(inMemoryIdentifier: "realm_b")) var remindersB
 
     var body: some View {
         NavigationView {
@@ -511,11 +511,11 @@ struct ObservedSectionedResultsConfiguration: View {
 struct App: SwiftUI.App {
     var body: some Scene {
         if let realmPath = ProcessInfo.processInfo.environment["REALM_PATH"] {
-            Realm.Configuration.defaultConfiguration =
-                Realm.Configuration(fileURL: URL(string: realmPath)!, deleteRealmIfMigrationNeeded: true)
+            RealmLegacy.Configuration.defaultConfiguration =
+                RealmLegacy.Configuration(fileURL: URL(string: realmPath)!, deleteRealmIfMigrationNeeded: true)
         } else {
-            Realm.Configuration.defaultConfiguration =
-                Realm.Configuration(deleteRealmIfMigrationNeeded: true)
+            RealmLegacy.Configuration.defaultConfiguration =
+                RealmLegacy.Configuration(deleteRealmIfMigrationNeeded: true)
         }
         let view: AnyView = {
             switch ProcessInfo.processInfo.environment["test_type"] {
@@ -533,7 +533,7 @@ struct App: SwiftUI.App {
                 }
             case "observed_results_configuration":
                 return AnyView(ObservedResultsConfiguration()
-                                .environment(\.realmConfiguration, Realm.Configuration(inMemoryIdentifier: "realm_a")))
+                                .environment(\.realmConfiguration, RealmLegacy.Configuration(inMemoryIdentifier: "realm_a")))
             case "observed_sectioned_results_key_path":
                 return AnyView(ObservedSectionedResultsKeyPathTestView())
             case "observed_sectioned_results_sort_descriptors":
@@ -547,7 +547,7 @@ struct App: SwiftUI.App {
             case "observed_sectioned_results_configuration":
                 if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
                     return AnyView(ObservedSectionedResultsConfiguration()
-                                    .environment(\.realmConfiguration, Realm.Configuration(inMemoryIdentifier: "realm_a")))
+                                    .environment(\.realmConfiguration, RealmLegacy.Configuration(inMemoryIdentifier: "realm_a")))
                 } else {
                     return AnyView(EmptyView())
                 }

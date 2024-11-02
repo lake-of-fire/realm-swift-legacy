@@ -92,7 +92,7 @@ public struct Events {
         RLMEventUpdateMetadata(context, newMetadata)
     }
 
-    init?(_ realm: Realm) {
+    init?(_ realm: RealmLegacy) {
         if let context = RLMEventGetContext(realm.rlmRealm) {
             self.context = context
             self.realm = realm.rlmRealm
@@ -211,9 +211,9 @@ public extension Events {
     }
 }
 
-extension Realm {
-    /// Get the event context for the Realm. Will be `nil` unless an
-    /// ``EventConfiguration`` was set while opening the Realm.
+extension RealmLegacy {
+    /// Get the event context for the RealmLegacy. Will be `nil` unless an
+    /// ``EventConfiguration`` was set while opening the RealmLegacy.
     public var events: Events? {
         Events(self)
     }

@@ -86,7 +86,7 @@ class SwiftEventTests: SwiftSyncTestCase {
         super.tearDown()
     }
 
-    override func configuration(user: User) -> Realm.Configuration {
+    override func configuration(user: User) -> RealmLegacy.Configuration {
         var config = user.configuration(partitionValue: name)
         config.eventConfiguration = EventConfiguration()
         return config
@@ -210,7 +210,7 @@ class SwiftEventTests: SwiftSyncTestCase {
     }
 
     func testBasicWithAsyncOpen() throws {
-        let realm = Realm.asyncOpen(configuration: try configuration()).await(self)
+        let realm = RealmLegacy.asyncOpen(configuration: try configuration()).await(self)
         let events = try XCTUnwrap(realm.events)
 
         let personJson: NSDictionary = try scope(events, "create object") {
@@ -469,7 +469,7 @@ class SwiftEventTests: SwiftSyncTestCase {
                 ex.fulfill()
             }
         }
-        let realm = try Realm(configuration: config)
+        let realm = try RealmLegacy(configuration: config)
         let scope = realm.events!.beginScope(activity: "a scope name")
         scope.commit().await(self)
         waitForExpectations(timeout: 2.0)

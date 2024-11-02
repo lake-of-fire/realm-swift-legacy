@@ -81,13 +81,13 @@ import RealmLegacy
     }
 
     /// Convert a `Realm` to a `RLMRealm`.
-    public static func convert(object: Realm) -> RLMRealm {
+    public static func convert(object: RealmLegacy) -> RLMRealm {
         return object.rlmRealm
     }
 
     /// Convert a `RLMRealm` to a `Realm`.
-    public static func convert(object: RLMRealm) -> Realm {
-        return Realm(object)
+    public static func convert(object: RLMRealm) -> RealmLegacy {
+        return RealmLegacy(object)
     }
 
     /// Convert a `Migration` to a `RLMMigration`.
@@ -117,12 +117,12 @@ import RealmLegacy
     }
 
     /// Convert a `Realm.Configuration` to a `RLMRealmConfiguration`.
-    public static func convert(object: Realm.Configuration) -> RLMRealmConfiguration {
+    public static func convert(object: RealmLegacy.Configuration) -> RLMRealmConfiguration {
         return object.rlmConfiguration
     }
 
     /// Convert a `RLMRealmConfiguration` to a `Realm.Configuration`.
-    public static func convert(object: RLMRealmConfiguration) -> Realm.Configuration {
+    public static func convert(object: RLMRealmConfiguration) -> RealmLegacy.Configuration {
         return .fromRLMRealmConfiguration(object)
     }
 
@@ -164,7 +164,7 @@ import RealmLegacy
 
     /// Convert a RealmSwift before block to an RLMClientResetBeforeBlock
     @preconcurrency
-    public static func convert(object: (@Sendable (Realm) -> Void)?) -> RLMClientResetBeforeBlock? {
+    public static func convert(object: (@Sendable (RealmLegacy) -> Void)?) -> RLMClientResetBeforeBlock? {
         guard let object = object else {
             return nil
         }
@@ -175,7 +175,7 @@ import RealmLegacy
 
     /// Convert an RLMClientResetBeforeBlock to a RealmSwift before  block
     @preconcurrency
-    public static func convert(object: RLMClientResetBeforeBlock?) -> (@Sendable (Realm) -> Void)? {
+    public static func convert(object: RLMClientResetBeforeBlock?) -> (@Sendable (RealmLegacy) -> Void)? {
         guard let object = object else {
             return nil
         }
@@ -186,18 +186,18 @@ import RealmLegacy
 
     /// Convert a RealmSwift after block to an RLMClientResetAfterBlock
     @preconcurrency
-    public static func convert(object: (@Sendable (Realm, Realm) -> Void)?) -> RLMClientResetAfterBlock? {
+    public static func convert(object: (@Sendable (RealmLegacy, RealmLegacy) -> Void)?) -> RLMClientResetAfterBlock? {
         guard let object = object else {
             return nil
         }
         return { localRealm, remoteRealm in
-            return object(Realm(localRealm), Realm(remoteRealm))
+            return object(Realm(localRealm), RealmLegacy(remoteRealm))
         }
     }
 
     /// Convert an RLMClientResetAfterBlock to a RealmSwift after block
     @preconcurrency
-    public static func convert(object: RLMClientResetAfterBlock?) -> (@Sendable (Realm, Realm) -> Void)? {
+    public static func convert(object: RLMClientResetAfterBlock?) -> (@Sendable (RealmLegacy, RealmLegacy) -> Void)? {
         guard let object = object else {
             return nil
         }

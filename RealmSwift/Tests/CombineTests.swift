@@ -67,7 +67,7 @@ class ObjectIdentifiableTests: TestCase {
     }
 
     func testManagedTopLevel() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let (obj1, obj2) = try! realm.write {
             return (
                 realm.create(CombineIdentifiableObject.self, value: [1]),
@@ -81,7 +81,7 @@ class ObjectIdentifiableTests: TestCase {
     }
 
     func testManagedEmbedded() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let (obj1, obj2) = try! realm.write {
             return (
                 realm.create(CombineIdentifiableObject.self, value: [1, [1]] as [Any]),
@@ -110,7 +110,7 @@ class CombinePublisherTestCase: TestCase {
 
     override func setUp() {
         super.setUp()
-        realm = try! Realm(configuration: Realm.Configuration(inMemoryIdentifier: "CombinePublisherTestCase"))
+        realm = try! RealmLegacy(configuration: RealmLegacy.Configuration(inMemoryIdentifier: "CombinePublisherTestCase"))
         XCTAssertTrue(realm.isEmpty)
     }
 
@@ -133,7 +133,7 @@ class CombinePublisherTestCase: TestCase {
         // to be ready before we do the thing which should produce notifications
         let ex = expectation(description: "added notifier")
         subscribeOnQueue.sync {
-            let r = try! Realm(configuration: realm.configuration, queue: subscribeOnQueue)
+            let r = try! RealmLegacy(configuration: realm.configuration, queue: subscribeOnQueue)
             RLMAddBeforeNotifyBlock(ObjectiveCSupport.convert(object: r)) {
                 _ = r // retain the Realm until the block is released
                 ex.fulfill()
@@ -200,7 +200,7 @@ class CombineRealmTests: CombinePublisherTestCase {
             exp.fulfill()
         }
         subscribeOnQueue.async {
-            let backgroundRealm = try! Realm(configuration: self.realm.configuration)
+            let backgroundRealm = try! RealmLegacy(configuration: self.realm.configuration)
             try! backgroundRealm.write {
                 backgroundRealm.create(SwiftIntObject.self)
             }
@@ -745,7 +745,7 @@ class CombineObjectPublisherTests: CombinePublisherTestCase {
     }
 
     func testMixedMakeThreadSafe() {
-        let realm2 = try! Realm(configuration: Realm.Configuration(inMemoryIdentifier: "test2"))
+        let realm2 = try! RealmLegacy(configuration: RealmLegacy.Configuration(inMemoryIdentifier: "test2"))
         var objects = try! realm.write {
             try! realm2.write {
                 return [
@@ -4022,7 +4022,7 @@ class CombineProjectionPublisherTests: CombinePublisherTestCase {
     }
 
     func testMixedMakeThreadSafe() {
-        let realm2 = try! Realm(configuration: Realm.Configuration(inMemoryIdentifier: "test2"))
+        let realm2 = try! RealmLegacy(configuration: RealmLegacy.Configuration(inMemoryIdentifier: "test2"))
         var projections = try! realm.write {
             try! realm2.write {
                 return [
@@ -4099,7 +4099,7 @@ class CombineAsyncRealmTests: CombinePublisherTestCase {
             exp.fulfill()
         }
         queue.async {
-            let realm = try! Realm(configuration: self.realm.configuration, queue: self.queue)
+            let realm = try! RealmLegacy(configuration: self.realm.configuration, queue: self.queue)
             realm.writeAsync {
                 realm.create(SwiftIntObject.self)
             }

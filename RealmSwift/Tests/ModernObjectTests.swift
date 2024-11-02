@@ -151,7 +151,7 @@ class ModernObjectTests: TestCase {
             XCTAssertNotEqual(obj1.binaryCol, obj2.binaryCol)
         }
         assertDifferentPropertyValues(ModernDynamicDefaultObject(), ModernDynamicDefaultObject())
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             assertDifferentPropertyValues(realm.create(ModernDynamicDefaultObject.self),
                                           realm.create(ModernDynamicDefaultObject.self))
@@ -172,7 +172,7 @@ class ModernObjectTests: TestCase {
         obj.value = 1
         XCTAssertEqual(calls, 2)
 
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         realm.add(obj)
 
@@ -207,7 +207,7 @@ class ModernObjectTests: TestCase {
         XCTAssertTrue(set === obj.setCol)
         XCTAssertTrue(dictionary === obj.mapAny)
 
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             realm.add(obj)
         }
@@ -244,7 +244,7 @@ class ModernObjectTests: TestCase {
         XCTAssertTrue(set === obj.setCol)
         XCTAssertTrue(dictionary === obj.mapAny)
 
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             realm.add(obj)
         }

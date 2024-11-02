@@ -28,7 +28,7 @@ class PropertyTests: TestCase {
     override func setUp() {
         super.setUp()
         autoreleasepool {
-            let schema = try! Realm().schema
+            let schema = try! RealmLegacy().schema
             self.primitiveProperty = schema["SwiftObject"]!["intCol"]!
             self.linkProperty = schema["SwiftOptionalObject"]!["optObjectCol"]!
             self.primaryProperty = schema["SwiftPrimaryStringObject"]!["stringCol"]!
@@ -66,7 +66,7 @@ class PropertyTests: TestCase {
     }
 
     func testEquals() {
-        XCTAssert(try! primitiveProperty == Realm().schema["SwiftObject"]!["intCol"]!)
+        XCTAssert(try! primitiveProperty == RealmLegacy().schema["SwiftObject"]!["intCol"]!)
         XCTAssert(primitiveProperty != linkProperty)
     }
 }

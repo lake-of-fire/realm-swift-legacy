@@ -599,7 +599,7 @@ class ModernObjectCreationTests: TestCase {
     }
 
     func testCreateDefault() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let obj = try! realm.write {
             return realm.create(ModernAllTypesObject.self)
         }
@@ -607,7 +607,7 @@ class ModernObjectCreationTests: TestCase {
     }
 
     func testCreateWithArray() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         var arrayValues = ModernAllTypesObject.sharedSchema()!.properties.map { values[$0.name] }
         arrayValues[0] = ObjectId.generate()
         let obj = try! realm.write {
@@ -617,7 +617,7 @@ class ModernObjectCreationTests: TestCase {
     }
 
     func testCreateWithDictionary() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let obj = try! realm.write {
             return realm.create(ModernAllTypesObject.self, value: values!)
         }
@@ -625,7 +625,7 @@ class ModernObjectCreationTests: TestCase {
     }
 
     func testCreateWithObject() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let obj = try! realm.write {
             return realm.create(ModernAllTypesObject.self, value: ModernAllTypesObject(value: values!))
         }
@@ -633,7 +633,7 @@ class ModernObjectCreationTests: TestCase {
     }
 
     func testCreateNil() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let obj = try! realm.write {
             return realm.create(ModernAllTypesObject.self, value: nullValues())
         }
@@ -642,7 +642,7 @@ class ModernObjectCreationTests: TestCase {
 
     func testAddDefault() {
         let obj = ModernAllTypesObject()
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             realm.add(obj)
         }
@@ -651,7 +651,7 @@ class ModernObjectCreationTests: TestCase {
 
     func testAdd() {
         let obj = ModernAllTypesObject(value: values!)
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             realm.add(obj)
         }
@@ -660,7 +660,7 @@ class ModernObjectCreationTests: TestCase {
 
     func testAddNil() {
         let obj = ModernAllTypesObject(value: nullValues())
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             realm.add(obj)
         }
@@ -668,7 +668,7 @@ class ModernObjectCreationTests: TestCase {
     }
 
     func testCreateEmbeddedWithDictionary() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let parent = realm.create(ModernEmbeddedParentObject.self, value: [
             "object": ["value": 5, "child": ["value": 6], "children": [[7], [8]]] as [String: Any],
@@ -702,7 +702,7 @@ class ModernObjectCreationTests: TestCase {
         sourceObject.array.append(.init(value: [9]))
         sourceObject.array.append(.init(value: [10]))
 
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let parent = realm.create(ModernEmbeddedParentObject.self, value: sourceObject)
         XCTAssertNil(sourceObject.realm)
@@ -718,7 +718,7 @@ class ModernObjectCreationTests: TestCase {
     }
 
     func testCreateEmbeddedFromManagedObjectInSameRealm() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let parent = realm.create(ModernEmbeddedParentObject.self, value: [
             "object": ["value": 5, "child": ["value": 6], "children": [[7], [8]]] as [String: Any],
@@ -739,7 +739,7 @@ class ModernObjectCreationTests: TestCase {
 
     func testCreateEmbeddedFromManagedObjectInDifferentRealm() {
         let realmA = realmWithTestPath()
-        let realmB = try! Realm()
+        let realmB = try! RealmLegacy()
         realmA.beginWrite()
         let parent = realmA.create(ModernEmbeddedParentObject.self, value: [
             "object": ["value": 5, "child": ["value": 6], "children": [[7], [8]]] as [String: Any],
@@ -786,7 +786,7 @@ class ModernObjectCreationTests: TestCase {
         parent.array.append(objectFactory.create())
         parent.array.append(objectFactory.create())
 
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         realm.add(parent)
         for (i, object) in objectFactory.objects.enumerated() {
@@ -822,7 +822,7 @@ class ModernObjectCreationTests: TestCase {
         parent2.array.append(objectFactory.create())
         parent2.array.append(objectFactory.create())
 
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         realm.add(parent)
         realm.add(parent2, update: .all)
@@ -849,14 +849,14 @@ class ModernObjectCreationTests: TestCase {
     }
 
     func testAddAndUpdateChangedWithExisingNestedObjects() {
-        try! Realm().beginWrite()
-        let existingObject = try! Realm().create(SwiftPrimaryStringObject.self, value: ["primary", 1])
-        try! Realm().commitWrite()
+        try! RealmLegacy().beginWrite()
+        let existingObject = try! RealmLegacy().create(SwiftPrimaryStringObject.self, value: ["primary", 1])
+        try! RealmLegacy().commitWrite()
 
-        try! Realm().beginWrite()
+        try! RealmLegacy().beginWrite()
         let object = SwiftLinkToPrimaryStringObject(value: ["primary", ["primary", 2] as [Any]])
-        try! Realm().add(object, update: .modified)
-        try! Realm().commitWrite()
+        try! RealmLegacy().add(object, update: .modified)
+        try! RealmLegacy().commitWrite()
 
         XCTAssertNotNil(object.realm)
         XCTAssertEqual(object.object!, existingObject) // the existing object should be updated
@@ -881,7 +881,7 @@ class ModernObjectCreationTests: TestCase {
         parent2.array.append(objectFactory.create())
         parent2.array.append(objectFactory.create())
 
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         realm.add(parent)
         realm.add(parent2, update: .modified)
@@ -915,7 +915,7 @@ class ModernObjectCreationTests: TestCase {
             weakObj1 = obj1
             weakObj2 = obj2
 
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             try! realm.write {
                 realm.add(obj1)
             }
@@ -1132,7 +1132,7 @@ class ModernEnumObjectCreationTests: TestCase {
     }
 
     func testCreateDefault() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let obj = try! realm.write {
             return realm.create(ModernCollectionsOfEnums.self)
         }
@@ -1140,7 +1140,7 @@ class ModernEnumObjectCreationTests: TestCase {
     }
 
     func testCreateWithArray() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let arrayValues = ModernCollectionsOfEnums.sharedSchema()!.properties.map { values[$0.name] }
         let obj = try! realm.write {
             return realm.create(ModernCollectionsOfEnums.self, value: arrayValues)
@@ -1149,7 +1149,7 @@ class ModernEnumObjectCreationTests: TestCase {
     }
 
     func testCreateWithDictionary() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let obj = try! realm.write {
             return realm.create(ModernCollectionsOfEnums.self, value: values)
         }
@@ -1157,7 +1157,7 @@ class ModernEnumObjectCreationTests: TestCase {
     }
 
     func testCreateWithObject() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let obj = try! realm.write {
             return realm.create(ModernCollectionsOfEnums.self, value: ModernCollectionsOfEnums(value: values))
         }
@@ -1166,7 +1166,7 @@ class ModernEnumObjectCreationTests: TestCase {
 
     func testAddDefault() {
         let obj = ModernCollectionsOfEnums()
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             realm.add(obj)
         }
@@ -1175,7 +1175,7 @@ class ModernEnumObjectCreationTests: TestCase {
 
     func testAdd() {
         let obj = ModernCollectionsOfEnums(value: values)
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             realm.add(obj)
         }

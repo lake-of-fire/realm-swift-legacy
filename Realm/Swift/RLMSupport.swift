@@ -45,7 +45,7 @@ extension RLMRealm {
 
 extension RLMObject {
     /**
-     Returns all objects of this object type matching the given predicate from the default Realm.
+     Returns all objects of this object type matching the given predicate from the default RealmLegacy.
 
      - see `+ [RLMObject objectsWithPredicate:]`
      */
@@ -54,7 +54,7 @@ extension RLMObject {
     }
 
     /**
-     Returns all objects of this object type matching the given predicate from the specified Realm.
+     Returns all objects of this object type matching the given predicate from the specified RealmLegacy.
 
      - see `+ [RLMObject objectsInRealm:withPredicate:]`
      */

@@ -25,7 +25,7 @@ import RealmLegacy.Private
 
  Embedded objects work similarly to normal objects, but are owned by a single
  parent Object (which itself may be embedded). Unlike normal top-level objects,
- embedded objects cannot be directly created in or added to a Realm. Instead,
+ embedded objects cannot be directly created in or added to a RealmLegacy. Instead,
  they can only be created as part of a parent object, or by assigning an
  unmanaged object to a parent object's property. Embedded objects are
  automatically deleted when the parent object is deleted or when the parent is
@@ -88,9 +88,9 @@ extension EmbeddedObject: _RealmCollectionValueInsideOptional {
     // MARK: Properties
 
     /// The Realm which manages the object, or `nil` if the object is unmanaged.
-    public var realm: Realm? {
+    public var realm: RealmLegacy? {
         if let rlmReam = RLMObjectBaseRealm(self) {
-            return Realm(rlmReam)
+            return RealmLegacy(rlmReam)
         }
         return nil
     }
@@ -103,7 +103,7 @@ extension EmbeddedObject: _RealmCollectionValueInsideOptional {
     /// Indicates if the object can no longer be accessed because it is now invalid.
     ///
     /// An object can no longer be accessed if the object has been deleted from the Realm that manages it, or if
-    /// `invalidate()` is called on that Realm.
+    /// `invalidate()` is called on that RealmLegacy.
     public override final var isInvalidated: Bool { return super.isInvalidated }
 
     /// A human-readable description of the object.
@@ -311,7 +311,7 @@ extension EmbeddedObject: _RealmCollectionValueInsideOptional {
      Returns a list of `DynamicObject`s for a given property name.
 
      - warning:  This method is useful only in specialized circumstances, for example, when building
-     components that integrate with Realm. If you are simply building an app on Realm, it is
+     components that integrate with RealmLegacy. If you are simply building an app on Realm, it is
      recommended to use instance variables or cast the values returned from key-value coding.
 
      - parameter propertyName: The name of the property.
@@ -359,7 +359,7 @@ extension EmbeddedObject: ThreadConfined {
 
      The frozen copy is an immutable object which contains the same data as this
      object currently contains, but will not update when writes are made to the
-     containing Realm. Unlike live objects, frozen objects can be accessed from any
+     containing RealmLegacy. Unlike live objects, frozen objects can be accessed from any
      thread.
 
      - warning: Holding onto a frozen object for an extended period while performing write

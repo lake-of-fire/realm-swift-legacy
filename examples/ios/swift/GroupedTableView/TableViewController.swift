@@ -50,7 +50,7 @@ class TableViewController: UITableViewController {
         super.viewDidLoad()
 
         setupUI()
-        realm = try! Realm()
+        realm = try! RealmLegacy()
         sectionedResults = realm.objects(DemoObject.self)
             .sectioned(by: \.firstLetter, ascending: true)
 
@@ -130,7 +130,7 @@ class TableViewController: UITableViewController {
         DispatchQueue.global().async {
             // Get new realm and table since we are in a new thread
             autoreleasepool {
-                let realm = try! Realm()
+                let realm = try! RealmLegacy()
                 realm.beginWrite()
                 for _ in 0..<5 {
                     // Add row via dictionary. Order is ignored.

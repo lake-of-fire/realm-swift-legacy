@@ -25,7 +25,7 @@ class SchemaTests: TestCase {
     override func setUp() {
         super.setUp()
         autoreleasepool {
-            self.schema = try! Realm().schema
+            self.schema = try! RealmLegacy().schema
         }
     }
 
@@ -44,7 +44,7 @@ class SchemaTests: TestCase {
     }
 
     func testEquals() {
-        XCTAssertTrue(try! schema == Realm().schema)
+        XCTAssertTrue(try! schema == RealmLegacy().schema)
     }
 
     func testNoSchemaForUnpersistedObjectClasses() {

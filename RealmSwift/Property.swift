@@ -21,7 +21,7 @@ import RealmLegacy
 
 /**
  `Property` instances represent properties managed by a Realm in the context of an object schema. Such properties may be
- persisted to a Realm file or computed from other data in the Realm.
+ persisted to a Realm file or computed from other data in the RealmLegacy.
 
  When using Realm, property instances allow performing migrations and introspecting the database's schema.
 

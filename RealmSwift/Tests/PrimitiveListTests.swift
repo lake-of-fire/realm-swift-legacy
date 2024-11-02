@@ -24,7 +24,7 @@ import RealmTestSupport
 #endif
 
 class PrimitiveListTestsBase<O: ObjectFactory, V: ListValueFactory>: RLMTestCaseBase {
-    var realm: Realm?
+    var realm: RealmLegacy?
     var obj: V.ListRoot!
     var array: List<V>!
     var values: [V]!

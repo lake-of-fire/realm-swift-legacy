@@ -39,7 +39,7 @@ public extension User {
             if let user = user {
                 completion(.success(user))
             } else {
-                completion(.failure(error ?? Realm.Error.callFailed))
+                completion(.failure(error ?? RealmLegacy.Error.callFailed))
             }
         }
     }
@@ -134,7 +134,7 @@ public extension SyncTimeoutOptions {
 
 /**
  A session object which represents communication between the client and server for a specific
- Realm.
+ RealmLegacy.
 
  - see: `RLMSyncSession`
  */
@@ -307,7 +307,7 @@ public typealias Provider = RLMIdentityProvider
     /// Example Usage
     /// ```
     /// user.configuration(partitionValue: "myPartition", clientResetMode: .discardUnsyncedChanges({ before in
-    ///    var recoveryConfig = Realm.Configuration()
+    ///    var recoveryConfig = RealmLegacy.Configuration()
     ///    recoveryConfig.fileURL = myRecoveryPath
     ///    do {
     ///        before.writeCopy(configuration: recoveryConfig)
@@ -339,8 +339,8 @@ public typealias Provider = RLMIdentityProvider
     /// ```
     @available(*, deprecated, message: "Use discardUnsyncedChanges")
     @preconcurrency
-    case discardLocal(beforeReset: (@Sendable (_ before: Realm) -> Void)? = nil,
-                      afterReset: (@Sendable (_ before: Realm, _ after: Realm) -> Void)? = nil)
+    case discardLocal(beforeReset: (@Sendable (_ before: RealmLegacy) -> Void)? = nil,
+                      afterReset: (@Sendable (_ before: RealmLegacy, _ after: RealmLegacy) -> Void)? = nil)
     /// All unsynchronized local changes are automatically discarded and the local state is
     /// automatically reverted to the most recent state from the server. Unsynchronized changes
     /// can then be recovered in the post-client-reset callback block.
@@ -356,7 +356,7 @@ public typealias Provider = RLMIdentityProvider
     /// Example Usage
     /// ```
     /// user.configuration(partitionValue: "myPartition", clientResetMode: .discardUnsyncedChanges({ before in
-    ///    var recoveryConfig = Realm.Configuration()
+    ///    var recoveryConfig = RealmLegacy.Configuration()
     ///    recoveryConfig.fileURL = myRecoveryPath
     ///    do {
     ///        before.writeCopy(configuration: recoveryConfig)
@@ -387,8 +387,8 @@ public typealias Provider = RLMIdentityProvider
     /// }))
     /// ```
     @preconcurrency
-    case discardUnsyncedChanges(beforeReset: (@Sendable (_ before: Realm) -> Void)? = nil,
-                                afterReset: (@Sendable (_ before: Realm, _ after: Realm) -> Void)? = nil)
+    case discardUnsyncedChanges(beforeReset: (@Sendable (_ before: RealmLegacy) -> Void)? = nil,
+                                afterReset: (@Sendable (_ before: RealmLegacy, _ after: RealmLegacy) -> Void)? = nil)
     /// The client device will download a realm realm which reflects the latest
     /// state of the server after a client reset. A recovery process is run locally in
     /// an attempt to integrate the server version with any local changes from
@@ -411,7 +411,7 @@ public typealias Provider = RLMIdentityProvider
     /// Example Usage
     /// ```
     /// user.configuration(partitionValue: "myPartition", clientResetMode: .discardUnsyncedChanges({ before in
-    ///    var recoveryConfig = Realm.Configuration()
+    ///    var recoveryConfig = RealmLegacy.Configuration()
     ///    recoveryConfig.fileURL = myRecoveryPath
     ///    do {
     ///        before.writeCopy(configuration: recoveryConfig)
@@ -442,8 +442,8 @@ public typealias Provider = RLMIdentityProvider
     /// }))
     /// ```
     @preconcurrency
-    case recoverUnsyncedChanges(beforeReset: (@Sendable (_ before: Realm) -> Void)? = nil,
-                                afterReset: (@Sendable (_ before: Realm, _ after: Realm) -> Void)? = nil)
+    case recoverUnsyncedChanges(beforeReset: (@Sendable (_ before: RealmLegacy) -> Void)? = nil,
+                                afterReset: (@Sendable (_ before: RealmLegacy, _ after: RealmLegacy) -> Void)? = nil)
     /// The client device will download a realm with objects reflecting the latest version of the server. A recovery
     /// process is run locally in an attempt to integrate the server version with any local changes from before the
     /// client reset occurred.
@@ -465,7 +465,7 @@ public typealias Provider = RLMIdentityProvider
     /// Example Usage
     /// ```
     /// user.configuration(partitionValue: "myPartition", clientResetMode: .discardUnsyncedChanges({ before in
-    ///    var recoveryConfig = Realm.Configuration()
+    ///    var recoveryConfig = RealmLegacy.Configuration()
     ///    recoveryConfig.fileURL = myRecoveryPath
     ///    do {
     ///        before.writeCopy(configuration: recoveryConfig)
@@ -496,8 +496,8 @@ public typealias Provider = RLMIdentityProvider
     /// }))
     /// ```
     @preconcurrency
-    case recoverOrDiscardUnsyncedChanges(beforeReset: (@Sendable (_ before: Realm) -> Void)? = nil,
-                                         afterReset: (@Sendable (_ before: Realm, _ after: Realm) -> Void)? = nil)
+    case recoverOrDiscardUnsyncedChanges(beforeReset: (@Sendable (_ before: RealmLegacy) -> Void)? = nil,
+                                         afterReset: (@Sendable (_ before: RealmLegacy, _ after: RealmLegacy) -> Void)? = nil)
     /// - seeAlso: ``RLMClientResetModeManual``
     ///
     /// The manual client reset mode handler can be set in two places:
@@ -528,7 +528,7 @@ public typealias Provider = RLMIdentityProvider
     /**
      The value this Realm is partitioned on. The partition key is a property defined in
      Atlas App Services. All classes with a property with this value will be synchronized to the
-     Realm.
+     RealmLegacy.
      */
     public var partitionValue: AnyBSON? {
         ObjectiveCSupport.convert(object: config.partitionValue)
@@ -560,7 +560,7 @@ public typealias Provider = RLMIdentityProvider
     }
 
     /**
-     By default, Realm.asyncOpen() swallows non-fatal connection errors such as
+     By default, RealmLegacy.asyncOpen() swallows non-fatal connection errors such as
      a connection attempt timing out and simply retries until it succeeds. If
      this is set to `true`, instead the error will be reported to the callback
      and the async open will be cancelled.
@@ -627,7 +627,7 @@ public typealias Provider = RLMIdentityProvider
                 if let b = bson.map(ObjectiveCSupport.convertBson), let bson = b {
                     completionHandler(.success(bson))
                 } else {
-                    completionHandler(.failure(error ?? Realm.Error.callFailed))
+                    completionHandler(.failure(error ?? RealmLegacy.Error.callFailed))
                 }
             }
         }
@@ -669,7 +669,7 @@ public struct FunctionCallable: Sendable {
                 if let b = bson.map(ObjectiveCSupport.convertBson), let bson = b {
                     promise(.success(bson))
                 } else {
-                    promise(.failure(error ?? Realm.Error.callFailed))
+                    promise(.failure(error ?? RealmLegacy.Error.callFailed))
                 }
             }
         }
@@ -682,7 +682,7 @@ public extension User {
 
      - parameter partitionValue: The `BSON` value the Realm is partitioned on.
      - parameter clientResetMode: Determines file recovery behavior during a client reset. `.recoverUnsyncedChanges` by default.
-     - parameter cancelAsyncOpenOnNonFatalErrors: By default, Realm.asyncOpen()
+     - parameter cancelAsyncOpenOnNonFatalErrors: By default, RealmLegacy.asyncOpen()
      swallows non-fatal connection errors such as a connection attempt timing
      out and simply retries until it succeeds. If this is set to `true`, instead
      the error will be reported to the callback and the async open will be
@@ -691,7 +691,7 @@ public extension User {
     @preconcurrency
     func configuration<T: BSON>(partitionValue: T,
                                 clientResetMode: ClientResetMode = .recoverUnsyncedChanges(beforeReset: nil, afterReset: nil),
-                                cancelAsyncOpenOnNonFatalErrors: Bool = false) -> Realm.Configuration {
+                                cancelAsyncOpenOnNonFatalErrors: Bool = false) -> RealmLegacy.Configuration {
         return configuration(partitionValue: AnyBSON(partitionValue),
                              clientResetMode: clientResetMode,
                              cancelAsyncOpenOnNonFatalErrors: cancelAsyncOpenOnNonFatalErrors)
@@ -702,7 +702,7 @@ public extension User {
 
      - parameter partitionValue: Takes `nil` as a partition value.
      - parameter clientResetMode: Determines file recovery behavior during a client reset. `.recoverUnsyncedChanges` by default.
-     - parameter cancelAsyncOpenOnNonFatalErrors: By default, Realm.asyncOpen()
+     - parameter cancelAsyncOpenOnNonFatalErrors: By default, RealmLegacy.asyncOpen()
      swallows non-fatal connection errors such as a connection attempt timing
      out and simply retries until it succeeds. If this is set to `true`, instead
      the error will be reported to the callback and the async open will be
@@ -711,7 +711,7 @@ public extension User {
     @preconcurrency
     func configuration(partitionValue: AnyBSON,
                        clientResetMode: ClientResetMode = .recoverUnsyncedChanges(beforeReset: nil, afterReset: nil),
-                       cancelAsyncOpenOnNonFatalErrors: Bool = false) -> Realm.Configuration {
+                       cancelAsyncOpenOnNonFatalErrors: Bool = false) -> RealmLegacy.Configuration {
         var config: RLMRealmConfiguration
         switch clientResetMode {
         case .manual(let manualClientReset):
@@ -855,7 +855,7 @@ public extension SyncSession {
          plus bytes pending transfer).
 
          If the notification block is tracking downloads, this number represents the size of the
-         changesets generated by all other clients using the Realm.
+         changesets generated by all other clients using the RealmLegacy.
          If the notification block is tracking uploads, this number represents the size of the
          changesets representing the local changes on this client.
          */
@@ -969,7 +969,7 @@ public extension SyncSession {
     }
 }
 
-extension Realm {
+extension RealmLegacy {
     /// :nodoc:
     @available(*, unavailable, message: "Use Results.subscribe()")
     public func subscribe<T: Object>(to objects: T.Type, where: String,
@@ -978,8 +978,8 @@ extension Realm {
     }
 
     /**
-     Get the SyncSession used by this Realm. Will be nil if this is not a
-     synchronized Realm.
+     Get the SyncSession used by this RealmLegacy. Will be nil if this is not a
+     synchronized RealmLegacy.
     */
     public var syncSession: SyncSession? {
         return SyncSession(for: rlmRealm)
@@ -1091,7 +1091,7 @@ public extension User {
             if let customData = customData {
                 completion(.success(customData))
             } else {
-                completion(.failure(error ?? Realm.Error.callFailed))
+                completion(.failure(error ?? RealmLegacy.Error.callFailed))
             }
         }
     }
@@ -1111,7 +1111,7 @@ extension FunctionCallable {
         if let bson = ObjectiveCSupport.convertBson(object: ret) {
             return bson
         }
-        throw Realm.Error.callFailed
+        throw RealmLegacy.Error.callFailed
     }
 }
 
@@ -1125,7 +1125,7 @@ extension User {
      and the other way around.
 
      - parameter clientResetMode: Determines file recovery behavior during a client reset. `.recoverUnsyncedChanges` by default.
-     - parameter cancelAsyncOpenOnNonFatalErrors: By default, Realm.asyncOpen()
+     - parameter cancelAsyncOpenOnNonFatalErrors: By default, RealmLegacy.asyncOpen()
      swallows non-fatal connection errors such as a connection attempt timing
      out and simply retries until it succeeds. If this is set to `true`, instead
      the error will be reported to the callback and the async open will be
@@ -1134,7 +1134,7 @@ extension User {
      - returns A `Realm.Configuration` instance with a flexible sync configuration.
      */
     public func flexibleSyncConfiguration(clientResetMode: ClientResetMode = .recoverUnsyncedChanges(),
-                                          cancelAsyncOpenOnNonFatalErrors: Bool = false) -> Realm.Configuration {
+                                          cancelAsyncOpenOnNonFatalErrors: Bool = false) -> RealmLegacy.Configuration {
         var config: RLMRealmConfiguration
         switch clientResetMode {
         case .manual(let block):
@@ -1182,7 +1182,7 @@ extension User {
      - parameter rerunOnOpen:          If true, allows to run the initial set of subscriptions specified, on every app startup.
                                        This can be used to re-run dynamic time ranges and other queries that require a
                                        re-computation of a static variable.
-     - parameter cancelAsyncOpenOnNonFatalErrors: By default, Realm.asyncOpen()
+     - parameter cancelAsyncOpenOnNonFatalErrors: By default, RealmLegacy.asyncOpen()
      swallows non-fatal connection errors such as a connection attempt timing
      out and simply retries until it succeeds. If this is set to `true`, instead
      the error will be reported to the callback and the async open will be
@@ -1195,7 +1195,7 @@ extension User {
     public func flexibleSyncConfiguration(clientResetMode: ClientResetMode = .recoverUnsyncedChanges(),
                                           cancelAsyncOpenOnNonFatalErrors: Bool = false,
                                           initialSubscriptions: @escaping @Sendable (SyncSubscriptionSet) -> Void,
-                                          rerunOnOpen: Bool = false) -> Realm.Configuration {
+                                          rerunOnOpen: Bool = false) -> RealmLegacy.Configuration {
         var config: RLMRealmConfiguration
         switch clientResetMode {
         case .manual(let block):

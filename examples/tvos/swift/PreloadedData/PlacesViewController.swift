@@ -28,8 +28,8 @@ class PlacesViewController: UITableViewController, UITextFieldDelegate {
         super.viewDidLoad()
 
         let seedFileURL = Bundle.main.url(forResource: "Places", withExtension: "realm")
-        let config = Realm.Configuration(fileURL: seedFileURL, readOnly: true)
-        Realm.Configuration.defaultConfiguration = config
+        let config = RealmLegacy.Configuration(fileURL: seedFileURL, readOnly: true)
+        RealmLegacy.Configuration.defaultConfiguration = config
 
         reloadData()
     }
@@ -52,7 +52,7 @@ class PlacesViewController: UITableViewController, UITextFieldDelegate {
     }
 
     func reloadData() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         results = realm.objects(Place.self)
         if let text = searchField.text, !text.isEmpty {
             results = results?.filter("postalCode beginswith %@", text)

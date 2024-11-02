@@ -38,10 +38,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
-    private func addExampleDataToRealm(_ exampleData: (Realm) -> Void) {
+    private func addExampleDataToRealm(_ exampleData: (RealmLegacy) -> Void) {
         let url = realmUrl(for: schemaVersion, usingTemplate: false)
-        let configuration = Realm.Configuration(fileURL: url, schemaVersion: UInt64(schemaVersion))
-        let realm = try! Realm(configuration: configuration)
+        let configuration = RealmLegacy.Configuration(fileURL: url, schemaVersion: UInt64(schemaVersion))
+        let realm = try! RealmLegacy(configuration: configuration)
 
         try! realm.write {
             exampleData(realm)
@@ -52,15 +52,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func performMigration() {
         for oldSchemaVersion in 0..<schemaVersion {
             let url = realmUrl(for: oldSchemaVersion, usingTemplate: true)
-            let realmConfiguration = Realm.Configuration(fileURL: url, schemaVersion: UInt64(schemaVersion), migrationBlock: migrationBlock)
-            try! Realm.performMigration(for: realmConfiguration)
-            let realm = try! Realm(configuration: realmConfiguration)
+            let realmConfiguration = RealmLegacy.Configuration(fileURL: url, schemaVersion: UInt64(schemaVersion), migrationBlock: migrationBlock)
+            try! RealmLegacy.performMigration(for: realmConfiguration)
+            let realm = try! RealmLegacy(configuration: realmConfiguration)
             migrationCheck(realm)
         }
     }
 
     private func realmUrl(for schemaVersion: Int, usingTemplate: Bool) -> URL {
-        let defaultURL = Realm.Configuration.defaultConfiguration.fileURL!
+        let defaultURL = RealmLegacy.Configuration.defaultConfiguration.fileURL!
         let defaultParentURL = defaultURL.deletingLastPathComponent()
         let fileName = "default-v\(schemaVersion)"
         let destinationUrl = defaultParentURL.appendingPathComponent(fileName + ".realm")

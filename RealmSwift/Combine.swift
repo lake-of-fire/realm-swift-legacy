@@ -600,7 +600,7 @@ public func changesetPublisher<T: RealmCollection>(_ collection: T, keyPaths: [S
 // MARK: - Realm
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-extension Realm {
+extension RealmLegacy {
     /// A publisher that emits Void each time the object changes.
     ///
     /// Despite the name, this actually emits *after* the collection has changed.
@@ -892,9 +892,9 @@ extension RealmKeyedCollection {
 /// A subscription which wraps a Realm AsyncOpenTask.
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 @frozen public struct AsyncOpenSubscription: Subscription {
-    private let task: Realm.AsyncOpenTask
+    private let task: RealmLegacy.AsyncOpenTask
 
-    internal init(task: Realm.AsyncOpenTask) {
+    internal init(task: RealmLegacy.AsyncOpenTask) {
         self.task = task
     }
 
@@ -923,25 +923,25 @@ extension RealmKeyedCollection {
 /// instead use the extension methods which create them.
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public enum RealmPublishers {
-    static private func realm<S: Scheduler>(_ config: RLMRealmConfiguration, _ scheduler: S) -> Realm? {
-        try? Realm(RLMRealm(configuration: config, queue: scheduler as? DispatchQueue))
+    static private func realm<S: Scheduler>(_ config: RLMRealmConfiguration, _ scheduler: S) -> RealmLegacy? {
+        try? RealmLegacy(RLMRealm(configuration: config, queue: scheduler as? DispatchQueue))
     }
-    static private func realm<S: Scheduler>(_ sourceRealm: Realm, _ scheduler: S) -> Realm? {
+    static private func realm<S: Scheduler>(_ sourceRealm: RealmLegacy, _ scheduler: S) -> RealmLegacy? {
         return realm(sourceRealm.rlmRealm.configuration, scheduler)
     }
 
-    /// A publisher which emits an asynchronously opened Realm.
+    /// A publisher which emits an asynchronously opened RealmLegacy.
     @frozen public struct AsyncOpenPublisher: Publisher {
-        /// This publisher can fail if there is an error opening the Realm.
+        /// This publisher can fail if there is an error opening the RealmLegacy.
         public typealias Failure = Error
-        /// This publisher emits an opened Realm.
-        public typealias Output = Realm
+        /// This publisher emits an opened RealmLegacy.
+        public typealias Output = RealmLegacy
 
-        private let configuration: Realm.Configuration
+        private let configuration: RealmLegacy.Configuration
         private let callbackQueue: DispatchQueue
         private let onProgressNotificationCallback: ((SyncSession.Progress) -> Void)?
 
-        internal init(configuration: Realm.Configuration,
+        internal init(configuration: RealmLegacy.Configuration,
                       callbackQueue: DispatchQueue = .main,
                       onProgressNotificationCallback: ((SyncSession.Progress) -> Void)? = nil) {
             self.configuration = configuration
@@ -954,7 +954,7 @@ public enum RealmPublishers {
         /// This should be called directly after invoking the publisher.
         ///
         /// - Parameter onProgressNotificationCallback: Callback which will be invoked when there is an update on progress.
-        /// - Returns: A publisher that emits an asynchronously opened Realm.
+        /// - Returns: A publisher that emits an asynchronously opened RealmLegacy.
         public func onProgressNotification(_ onProgressNotificationCallback: @escaping ((SyncSession.Progress) -> Void)) -> Self {
             Self(configuration: configuration,
                  callbackQueue: callbackQueue,
@@ -965,14 +965,14 @@ public enum RealmPublishers {
         public func receive<S>(subscriber: S) where S: Subscriber, S.Failure == Failure, Output == S.Input {
             let rlmTask = RLMRealm.asyncOpen(with: configuration.rlmConfiguration,
                                              callbackQueue: callbackQueue) { rlmRealm, error in
-                if let realm = rlmRealm.flatMap(Realm.init) {
+                if let realm = rlmRealm.flatMap(RealmLegacy.init) {
                     _ = subscriber.receive(realm)
                     subscriber.receive(completion: .finished)
                 } else {
-                    subscriber.receive(completion: .failure(error ?? Realm.Error.callFailed))
+                    subscriber.receive(completion: .failure(error ?? RealmLegacy.Error.callFailed))
                 }
             }
-            let task = Realm.AsyncOpenTask(rlmTask: rlmTask)
+            let task = RealmLegacy.AsyncOpenTask(rlmTask: rlmTask)
             if let onProgressNotificationCallback {
                 task.addProgressNotification(queue: callbackQueue, block: onProgressNotificationCallback)
             }
@@ -1003,9 +1003,9 @@ public enum RealmPublishers {
         /// This publisher emits Void.
         public typealias Output = Void
 
-        private let realm: Realm
+        private let realm: RealmLegacy
 
-        internal init(_ realm: Realm) {
+        internal init(_ realm: RealmLegacy) {
             self.realm = realm
         }
 
@@ -1042,11 +1042,11 @@ public enum RealmPublishers {
         internal typealias TokenParent = T
         internal typealias TokenKeyPath = WritableKeyPath<T, NotificationToken?>
 
-        private let realm: Realm
+        private let realm: RealmLegacy
         private var tokenParent: TokenParent
         private var tokenKeyPath: TokenKeyPath
 
-        internal init(_ realm: Realm,
+        internal init(_ realm: RealmLegacy,
                       _ tokenParent: TokenParent,
                       _ tokenKeyPath: TokenKeyPath) {
             self.realm = realm
@@ -1287,7 +1287,7 @@ public enum RealmPublishers {
         private let upstream: Upstream
         private let scheduler: S
 
-        internal init(_ upstream: Upstream, _ scheduler: S, _ realm: Realm) {
+        internal init(_ upstream: Upstream, _ scheduler: S, _ realm: RealmLegacy) {
             self.config = realm.rlmRealm.configuration
             self.upstream = upstream
             self.scheduler = scheduler

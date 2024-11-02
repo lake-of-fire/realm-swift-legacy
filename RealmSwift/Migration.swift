@@ -21,7 +21,7 @@ import RealmLegacy
 import RealmLegacy.Private
 
 /**
- The type of a migration block used to migrate a Realm.
+ The type of a migration block used to migrate a RealmLegacy.
 
  - parameter migration:  A `Migration` object used to perform the migration. The migration object allows you to
                          enumerate and alter any existing objects which require migration.
@@ -34,7 +34,7 @@ public typealias MigrationBlock = @Sendable (_ migration: Migration, _ oldSchema
 public typealias MigrationObject = DynamicObject
 
 /**
- A block type which provides both the old and new versions of an object in the Realm. Object
+ A block type which provides both the old and new versions of an object in the RealmLegacy. Object
  properties can only be accessed using subscripting.
 
  - parameter oldObject: The object from the original Realm (read-only).
@@ -59,16 +59,16 @@ public func schemaVersionAtURL(_ fileURL: URL, encryptionKey: Data? = nil) throw
     return version
 }
 
-extension Realm {
+extension RealmLegacy {
     /**
      Performs the given Realm configuration's migration block on a Realm at the given path.
 
      This method is called automatically when opening a Realm for the first time and does not need to be called
      explicitly. You can choose to call this method to control exactly when and how migrations are performed.
 
-     - parameter configuration: The Realm configuration used to open and migrate the Realm.
+     - parameter configuration: The Realm configuration used to open and migrate the RealmLegacy.
      */
-    public static func performMigration(for configuration: Realm.Configuration = Realm.Configuration.defaultConfiguration) throws {
+    public static func performMigration(for configuration: RealmLegacy.Configuration = RealmLegacy.Configuration.defaultConfiguration) throws {
         try RLMRealm.performMigration(for: configuration.rlmConfiguration)
     }
 }
@@ -76,7 +76,7 @@ extension Realm {
 /**
  `Migration` instances encapsulate information intended to facilitate a schema migration.
 
- A `Migration` instance is passed into a user-defined `MigrationBlock` block when updating the version of a Realm. This
+ A `Migration` instance is passed into a user-defined `MigrationBlock` block when updating the version of a RealmLegacy. This
  instance provides access to the old and new database schemas, the objects in the Realm, and provides functionality for
  modifying the Realm during the migration.
  */
@@ -97,7 +97,7 @@ extension Migration {
      Properties on an object can be accessed using subscripting.
 
      - parameter objectClassName: The name of the `Object` class to enumerate.
-     - parameter block:           The block providing both the old and new versions of an object in this Realm.
+     - parameter block:           The block providing both the old and new versions of an object in this RealmLegacy.
      */
     public func enumerateObjects(ofType typeName: String, _ block: MigrationObjectEnumerateBlock) {
         __enumerateObjects(typeName) { oldObject, newObject in

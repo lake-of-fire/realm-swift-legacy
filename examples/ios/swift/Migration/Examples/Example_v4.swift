@@ -145,7 +145,7 @@ let migrationBlock: MigrationBlock = { migration, oldSchemaVersion in
 
 // This block checks if the migration led to the expected result.
 // All older versions should have been migrated to the below stated `exampleData`.
-let migrationCheck: (Realm) -> Void = { realm in
+let migrationCheck: (RealmLegacy) -> Void = { realm in
     let persons = realm.objects(Person.self)
     assert(persons.count == 3)
     assert(persons[0].fullName == "John Doe")
@@ -175,7 +175,7 @@ let migrationCheck: (Realm) -> Void = { realm in
 // MARK: - Example data
 
 // Example data for this schema version.
-let exampleData: (Realm) -> Void = { realm in
+let exampleData: (RealmLegacy) -> Void = { realm in
     let address = Address(street: "Broadway", city: "New York")
     let person1 = Person(fullName: "John Doe", age: 42, address: address)
     let person2 = Person(fullName: "Jane Doe", age: 43, address: nil)

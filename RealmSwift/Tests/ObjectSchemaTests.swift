@@ -23,7 +23,7 @@ class ObjectSchemaTests: TestCase {
     var objectSchema: ObjectSchema!
 
     var swiftObjectSchema: ObjectSchema {
-        return try! Realm().schema["SwiftObject"]!
+        return try! RealmLegacy().schema["SwiftObject"]!
     }
 
     func testProperties() {
@@ -50,7 +50,7 @@ class ObjectSchemaTests: TestCase {
     func testPrimaryKeyProperty() {
         let objectSchema = swiftObjectSchema
         XCTAssertNil(objectSchema.primaryKeyProperty)
-        XCTAssertEqual(try! Realm().schema["SwiftPrimaryStringObject"]!.primaryKeyProperty!.name, "stringCol")
+        XCTAssertEqual(try! RealmLegacy().schema["SwiftPrimaryStringObject"]!.primaryKeyProperty!.name, "stringCol")
     }
 
     func testDescription() {
@@ -278,7 +278,7 @@ class ObjectSchemaTests: TestCase {
 
     func testEquals() {
         let objectSchema = swiftObjectSchema
-        XCTAssert(try! objectSchema == Realm().schema["SwiftObject"]!)
-        XCTAssert(try! objectSchema != Realm().schema["SwiftStringObject"]!)
+        XCTAssert(try! objectSchema == RealmLegacy().schema["SwiftObject"]!)
+        XCTAssert(try! objectSchema != RealmLegacy().schema["SwiftStringObject"]!)
     }
 }

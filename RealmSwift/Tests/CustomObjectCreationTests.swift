@@ -829,7 +829,7 @@ class CustomObjectCreationTests: TestCase {
     }
 
     func testCreateDefault() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             verifyDefault(realm.create(AllCustomPersistableTypes.self))
             verifyDefault(realm.create(CustomPersistableCollections.self))
@@ -837,7 +837,7 @@ class CustomObjectCreationTests: TestCase {
     }
 
     func testCreateWithArray() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             verifyObject(realm.create(AllCustomPersistableTypes.self, value: arrayValues(AllCustomPersistableTypes.self, wrappedValues!)))
             verifyObject(realm.create(AllCustomPersistableTypes.self, value: arrayValues(AllCustomPersistableTypes.self, rawValues!)))
@@ -847,7 +847,7 @@ class CustomObjectCreationTests: TestCase {
     }
 
     func testCreateWithDictionary() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             verifyObject(realm.create(AllCustomPersistableTypes.self, value: wrappedValues!))
             verifyObject(realm.create(AllCustomPersistableTypes.self, value: rawValues!))
@@ -857,7 +857,7 @@ class CustomObjectCreationTests: TestCase {
     }
 
     func testCreateWithObject() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             let obj = AllCustomPersistableTypes(value: wrappedValues!)
             verifyObject(realm.create(AllCustomPersistableTypes.self, value: obj))
@@ -865,7 +865,7 @@ class CustomObjectCreationTests: TestCase {
     }
 
     func testCreateFailable() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
 
         let obj = realm.create(FailableCustomObject.self,
@@ -891,7 +891,7 @@ class CustomObjectCreationTests: TestCase {
     }
 
     func testAddDefault() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let obj1 = AllCustomPersistableTypes()
         let obj2 = CustomPersistableCollections()
         try! realm.write {
@@ -903,7 +903,7 @@ class CustomObjectCreationTests: TestCase {
     }
 
     func testAdd() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let obj1 = AllCustomPersistableTypes(value: wrappedValues!)
         let obj2 = CustomPersistableCollections(value: wrappedValues!)
         try! realm.write {
@@ -915,7 +915,7 @@ class CustomObjectCreationTests: TestCase {
     }
 
     func testNullValueForNonOptionalPropertyBackedByOptional() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
 
         // Non-optional object col can be null
@@ -943,7 +943,7 @@ class CustomObjectCreationTests: TestCase {
         let expectedError = "Failed to default construct a InvalidDefaultInit using the default value for persisted type Int. This conversion must either succeed, the property must be optional, or you must explicitly specify a default value for the property."
         let obj = InvalidDefaultInitObject()
         assertThrows(obj.value, reason: expectedError)
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         assertThrows(realm.create(InvalidDefaultInitObject.self), reason: expectedError)
         assertThrows(realm.add(obj), reason: expectedError)

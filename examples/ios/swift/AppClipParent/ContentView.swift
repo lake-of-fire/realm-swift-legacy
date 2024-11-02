@@ -36,9 +36,9 @@ struct ContentView: View {
         /*
          The app clip and parent application share data by accessing a common realm file path within an App Group.
          */
-        let config = Realm.Configuration(fileURL: FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Constants.groupId)!.appendingPathComponent("default.realm"))
+        let config = RealmLegacy.Configuration(fileURL: FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: Constants.groupId)!.appendingPathComponent("default.realm"))
 
-        let realm = try! Realm(configuration: config)
+        let realm = try! RealmLegacy(configuration: config)
         try! realm.write {
             objects.append(DemoObject())
         }

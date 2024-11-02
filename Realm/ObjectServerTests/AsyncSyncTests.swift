@@ -80,14 +80,14 @@ class AsyncAwaitSyncTests: SwiftSyncTestCase {
 
     @MainActor func testAsyncOpenStandalone() async throws {
         try autoreleasepool {
-            let configuration = Realm.Configuration(objectTypes: [SwiftPerson.self])
-            let realm = try Realm(configuration: configuration)
+            let configuration = RealmLegacy.Configuration(objectTypes: [SwiftPerson.self])
+            let realm = try RealmLegacy(configuration: configuration)
             try realm.write {
                 (0..<10).forEach { _ in realm.add(SwiftPerson(firstName: "Charlie", lastName: "Bucket")) }
             }
         }
-        let configuration = Realm.Configuration(objectTypes: [SwiftPerson.self])
-        let realm = try await Realm(configuration: configuration)
+        let configuration = RealmLegacy.Configuration(objectTypes: [SwiftPerson.self])
+        let realm = try await RealmLegacy(configuration: configuration)
         XCTAssertEqual(realm.objects(SwiftPerson.self).count, 10)
     }
 
@@ -102,7 +102,7 @@ class AsyncAwaitSyncTests: SwiftSyncTestCase {
         let config = try configuration()
 
         // Should not have any objects as it just opens immediately without waiting
-        let realm = try await Realm(configuration: config, downloadBeforeOpen: .never)
+        let realm = try await RealmLegacy(configuration: config, downloadBeforeOpen: .never)
         XCTAssertEqual(realm.objects(SwiftHugeSyncObject.self).count, 0)
         waitForDownloads(for: realm)
         XCTAssertEqual(realm.objects(SwiftHugeSyncObject.self).count, 2)
@@ -114,7 +114,7 @@ class AsyncAwaitSyncTests: SwiftSyncTestCase {
 
         // Should have the objects
         try await Task {
-            let realm = try await Realm(configuration: config, downloadBeforeOpen: .once)
+            let realm = try await RealmLegacy(configuration: config, downloadBeforeOpen: .once)
             XCTAssertEqual(realm.objects(SwiftHugeSyncObject.self).count, 2)
         }.value
 
@@ -126,7 +126,7 @@ class AsyncAwaitSyncTests: SwiftSyncTestCase {
 
         // Will not wait for the new objects to download
         try await Task {
-            let realm = try await Realm(configuration: config, downloadBeforeOpen: .once)
+            let realm = try await RealmLegacy(configuration: config, downloadBeforeOpen: .once)
             XCTAssertEqual(realm.objects(SwiftHugeSyncObject.self).count, 2)
             try XCTUnwrap(realm.syncSession).suspend()
         }.value
@@ -137,7 +137,7 @@ class AsyncAwaitSyncTests: SwiftSyncTestCase {
         let config = try configuration()
 
         // Should have the objects
-        let realm = try await Realm(configuration: config, downloadBeforeOpen: .always)
+        let realm = try await RealmLegacy(configuration: config, downloadBeforeOpen: .always)
         XCTAssertEqual(realm.objects(SwiftHugeSyncObject.self).count, 2)
         try XCTUnwrap(realm.syncSession).suspend()
 
@@ -146,7 +146,7 @@ class AsyncAwaitSyncTests: SwiftSyncTestCase {
         try await populateRealm()
 
         // Should resume the session and wait for the new objects to download
-        _ = try await Realm(configuration: config, downloadBeforeOpen: .always)
+        _ = try await RealmLegacy(configuration: config, downloadBeforeOpen: .always)
         XCTAssertEqual(realm.objects(SwiftHugeSyncObject.self).count, 4)
     }
 
@@ -156,7 +156,7 @@ class AsyncAwaitSyncTests: SwiftSyncTestCase {
 
         // Open in a Task so that the Realm is closed and re-opened later
         _ = try await Task {
-            let realm = try await Realm(configuration: config, downloadBeforeOpen: .always)
+            let realm = try await RealmLegacy(configuration: config, downloadBeforeOpen: .always)
             XCTAssertEqual(realm.objects(SwiftHugeSyncObject.self).count, 2)
         }.value
 
@@ -164,7 +164,7 @@ class AsyncAwaitSyncTests: SwiftSyncTestCase {
         try await populateRealm()
 
         // Should wait for the new objects to download
-        let realm = try await Realm(configuration: config, downloadBeforeOpen: .always)
+        let realm = try await RealmLegacy(configuration: config, downloadBeforeOpen: .always)
         XCTAssertEqual(realm.objects(SwiftHugeSyncObject.self).count, 4)
     }
 
@@ -263,7 +263,7 @@ class AsyncAwaitSyncTests: SwiftSyncTestCase {
 
         let configuration = try configuration()
         func isolatedOpen(_ actor: isolated CustomExecutorActor) async throws {
-            _ = try await Realm(configuration: configuration, actor: actor, downloadBeforeOpen: .always)
+            _ = try await RealmLegacy(configuration: configuration, actor: actor, downloadBeforeOpen: .always)
         }
 
         // Try opening the Realm with the Task being cancelled at every possible
@@ -272,7 +272,7 @@ class AsyncAwaitSyncTests: SwiftSyncTestCase {
         // a hang or crash.
         for i in 0 ..< .max {
             RLMWaitForRealmToClose(configuration.fileURL!.path)
-            _ = try Realm.deleteFiles(for: configuration)
+            _ = try RealmLegacy.deleteFiles(for: configuration)
 
             let executor = CancellingExecutor(cancelAfter: i)
             executor.task = Task {
@@ -289,7 +289,7 @@ class AsyncAwaitSyncTests: SwiftSyncTestCase {
         }
 
         // Repeat the above, but with a cached Realm so that we hit that code path instead
-        let cachedRealm = try await Realm(configuration: configuration, downloadBeforeOpen: .always)
+        let cachedRealm = try await RealmLegacy(configuration: configuration, downloadBeforeOpen: .always)
         for i in 0 ..< .max {
             let executor = CancellingExecutor(cancelAfter: i)
             executor.task = Task {
@@ -473,7 +473,7 @@ class AsyncFlexibleSyncTests: SwiftSyncTestCase {
         [SwiftCustomColumnObject.self, SwiftPerson.self, SwiftTypesSyncObject.self]
     }
 
-    override func configuration(user: User) -> Realm.Configuration {
+    override func configuration(user: User) -> RealmLegacy.Configuration {
         user.flexibleSyncConfiguration()
     }
 
@@ -527,7 +527,7 @@ class AsyncFlexibleSyncTests: SwiftSyncTestCase {
             })
             config.objectTypes = [SwiftPerson.self]
             config.inMemoryIdentifier = "identifier"
-            let inMemoryRealm = try await Realm(configuration: config, downloadBeforeOpen: .always)
+            let inMemoryRealm = try await RealmLegacy(configuration: config, downloadBeforeOpen: .always)
             XCTAssertEqual(inMemoryRealm.objects(SwiftPerson.self).count, 5)
             try! inMemoryRealm.write {
                 let person = SwiftPerson(firstName: self.name,
@@ -546,7 +546,7 @@ class AsyncFlexibleSyncTests: SwiftSyncTestCase {
         })
         config.objectTypes = [SwiftPerson.self]
         config.inMemoryIdentifier = "identifier"
-        let inMemoryRealm = try await Realm(configuration: config, downloadBeforeOpen: .always)
+        let inMemoryRealm = try await RealmLegacy(configuration: config, downloadBeforeOpen: .always)
         XCTAssertEqual(inMemoryRealm.objects(SwiftPerson.self).count, 1)
 
         var config2 = user.flexibleSyncConfiguration(initialSubscriptions: { subs in
@@ -556,7 +556,7 @@ class AsyncFlexibleSyncTests: SwiftSyncTestCase {
         })
         config2.objectTypes = [SwiftPerson.self]
         config2.inMemoryIdentifier = "identifier2"
-        let inMemoryRealm2 = try await Realm(configuration: config2, downloadBeforeOpen: .always)
+        let inMemoryRealm2 = try await RealmLegacy(configuration: config2, downloadBeforeOpen: .always)
         XCTAssertEqual(inMemoryRealm2.objects(SwiftPerson.self).count, 6)
     }
 
@@ -581,7 +581,7 @@ class AsyncFlexibleSyncTests: SwiftSyncTestCase {
                 })
             }
             XCTFail("Invalid query should have failed")
-        } catch Realm.Error.subscriptionFailed {
+        } catch RealmLegacy.Error.subscriptionFailed {
             guard case .error = subscriptions.state else {
                 return XCTFail("Adding a query for a not queryable field should change the subscription set state to error")
             }
@@ -611,7 +611,7 @@ class AsyncFlexibleSyncTests: SwiftSyncTestCase {
             })
         })
         config.objectTypes = [SwiftPerson.self]
-        let realm = try await Realm(configuration: config, downloadBeforeOpen: .once)
+        let realm = try await RealmLegacy(configuration: config, downloadBeforeOpen: .once)
         XCTAssertEqual(realm.subscriptions.count, 1)
         checkCount(expected: 10, realm, SwiftPerson.self)
     }
@@ -625,10 +625,10 @@ class AsyncFlexibleSyncTests: SwiftSyncTestCase {
             })
         })
         config.objectTypes = [SwiftPerson.self]
-        let realm = try await Realm(configuration: config, downloadBeforeOpen: .once)
+        let realm = try await RealmLegacy(configuration: config, downloadBeforeOpen: .once)
         XCTAssertEqual(realm.subscriptions.count, 1)
 
-        let realm2 = try await Realm(configuration: config, downloadBeforeOpen: .once)
+        let realm2 = try await RealmLegacy(configuration: config, downloadBeforeOpen: .once)
         XCTAssertNotNil(realm2)
         XCTAssertEqual(realm.subscriptions.count, 1)
     }
@@ -645,12 +645,12 @@ class AsyncFlexibleSyncTests: SwiftSyncTestCase {
         }, rerunOnOpen: true)
         config.objectTypes = [SwiftPerson.self]
         try await Task {
-            let realm = try await Realm(configuration: config, downloadBeforeOpen: .once)
+            let realm = try await RealmLegacy(configuration: config, downloadBeforeOpen: .once)
             XCTAssertEqual(realm.subscriptions.count, 1)
         }.value
 
         try await Task {
-            let realm2 = try await Realm(configuration: config, downloadBeforeOpen: .once)
+            let realm2 = try await RealmLegacy(configuration: config, downloadBeforeOpen: .once)
             XCTAssertNotNil(realm2)
             XCTAssertEqual(realm2.subscriptions.count, 1)
         }.value
@@ -688,13 +688,13 @@ class AsyncFlexibleSyncTests: SwiftSyncTestCase {
         config.objectTypes = [SwiftTypesSyncObject.self, SwiftPerson.self]
         let c = config
         try await Task {
-            let realm = try await Realm(configuration: c, downloadBeforeOpen: .always)
+            let realm = try await RealmLegacy(configuration: c, downloadBeforeOpen: .always)
             XCTAssertEqual(realm.subscriptions.count, 1)
             checkCount(expected: 9, realm, SwiftTypesSyncObject.self)
         }.value
 
         try await Task {
-            let realm = try await Realm(configuration: c, downloadBeforeOpen: .always)
+            let realm = try await RealmLegacy(configuration: c, downloadBeforeOpen: .always)
             XCTAssertEqual(realm.subscriptions.count, 2)
             checkCount(expected: 19, realm, SwiftTypesSyncObject.self)
         }.value
@@ -710,8 +710,8 @@ class AsyncFlexibleSyncTests: SwiftSyncTestCase {
         })
         config.objectTypes = [SwiftTypesSyncObject.self, SwiftPerson.self]
         do {
-           _ = try await Realm(configuration: config, downloadBeforeOpen: .once)
-        } catch let error as Realm.Error {
+           _ = try await RealmLegacy(configuration: config, downloadBeforeOpen: .once)
+        } catch let error as RealmLegacy.Error {
             XCTAssertEqual(error.code, .subscriptionFailed)
         }
     }
@@ -723,9 +723,9 @@ class AsyncFlexibleSyncTests: SwiftSyncTestCase {
             subscriptions.append(QuerySubscription<SwiftTypesSyncObject>())
         })
         config.objectTypes = [SwiftTypesSyncObject.self, SwiftPerson.self]
-        Realm.Configuration.defaultConfiguration = config
+        RealmLegacy.Configuration.defaultConfiguration = config
 
-        let realm = try await Realm(downloadBeforeOpen: .once)
+        let realm = try await RealmLegacy(downloadBeforeOpen: .once)
         XCTAssertEqual(realm.subscriptions.count, 1)
     }
 
@@ -849,7 +849,7 @@ class AsyncFlexibleSyncTests: SwiftSyncTestCase {
         let user = try await createUser()
         var config = user.flexibleSyncConfiguration()
         config.objectTypes = [SwiftPerson.self]
-        let realm = try await Realm(configuration: config, actor: MainActor.shared)
+        let realm = try await RealmLegacy(configuration: config, actor: MainActor.shared)
         let results1 = try await realm.objects(SwiftPerson.self)
             .where { $0.firstName == name && $0.age > 8 }.subscribe(waitForSync: .onCreation)
         XCTAssertEqual(results1.count, 2)
@@ -869,7 +869,7 @@ class AsyncFlexibleSyncTests: SwiftSyncTestCase {
         let user = try await createUser()
         var config = user.flexibleSyncConfiguration()
         config.objectTypes = [SwiftPerson.self]
-        let realm = try await Realm(configuration: config, actor: CustomGlobalActor.shared)
+        let realm = try await RealmLegacy(configuration: config, actor: CustomGlobalActor.shared)
         let results1 = try await realm.objects(SwiftPerson.self)
             .where { $0.firstName == name && $0.age > 8 }.subscribe(waitForSync: .onCreation)
         XCTAssertEqual(results1.count, 2)
@@ -1158,7 +1158,7 @@ class AsyncFlexibleSyncTests: SwiftSyncTestCase {
             subscriptions.append(QuerySubscription<SwiftCustomColumnObject>())
         })
         config.objectTypes = [SwiftCustomColumnObject.self]
-        let realm = try await Realm(configuration: config, downloadBeforeOpen: .once)
+        let realm = try await RealmLegacy(configuration: config, downloadBeforeOpen: .once)
         XCTAssertEqual(realm.subscriptions.count, 1)
 
         let foundObject = realm.object(ofType: SwiftCustomColumnObject.self, forPrimaryKey: objectId)
@@ -1196,7 +1196,7 @@ class AsyncFlexibleSyncTests: SwiftSyncTestCase {
             subscriptions.append(QuerySubscription<SwiftCustomColumnObject>(where: NSPredicate(format: "id == %@ || id == %@", objectId, linkedObjectId)))
         })
         config.objectTypes = [SwiftCustomColumnObject.self]
-        let realm = try await Realm(configuration: config, downloadBeforeOpen: .once)
+        let realm = try await RealmLegacy(configuration: config, downloadBeforeOpen: .once)
         XCTAssertEqual(realm.subscriptions.count, 1)
         checkCount(expected: 2, realm, SwiftCustomColumnObject.self)
 
@@ -1235,7 +1235,7 @@ class AsyncFlexibleSyncTests: SwiftSyncTestCase {
             subscriptions.append(QuerySubscription<SwiftCustomColumnObject>(where: "id == %@ || id == %@", objectId, linkedObjectId))
         })
         config.objectTypes = [SwiftCustomColumnObject.self]
-        let realm = try await Realm(configuration: config, downloadBeforeOpen: .once)
+        let realm = try await RealmLegacy(configuration: config, downloadBeforeOpen: .once)
         XCTAssertEqual(realm.subscriptions.count, 1)
         checkCount(expected: 2, realm, SwiftCustomColumnObject.self)
 
@@ -1276,7 +1276,7 @@ class AsyncFlexibleSyncTests: SwiftSyncTestCase {
             })
         })
         config.objectTypes = [SwiftCustomColumnObject.self]
-        let realm = try await Realm(configuration: config, downloadBeforeOpen: .once)
+        let realm = try await RealmLegacy(configuration: config, downloadBeforeOpen: .once)
         XCTAssertEqual(realm.subscriptions.count, 1)
         checkCount(expected: 2, realm, SwiftCustomColumnObject.self)
 

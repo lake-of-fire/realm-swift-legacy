@@ -31,7 +31,7 @@ public protocol RealmKeyedCollection: Sequence, ThreadConfined, CustomStringConv
     // MARK: Properties
 
     /// The Realm which manages the map, or `nil` if the map is unmanaged.
-    var realm: Realm? { get }
+    var realm: RealmLegacy? { get }
 
     /// Indicates if the map can no longer be accessed.
     var isInvalidated: Bool { get }
@@ -48,7 +48,7 @@ public protocol RealmKeyedCollection: Sequence, ThreadConfined, CustomStringConv
      Updates the value stored in the dictionary for the given key, or adds a new key-value pair if the key does not exist.
 
      - Note:If the value being added to the dictionary is an unmanaged object and the dictionary is managed
-            then that unmanaged object will be added to the Realm.
+            then that unmanaged object will be added to the RealmLegacy.
 
      - warning: This method may only be called during a write transaction.
 
@@ -76,7 +76,7 @@ public protocol RealmKeyedCollection: Sequence, ThreadConfined, CustomStringConv
      Returns the value for a given key, or sets a value for a key should the subscript be used for an assign.
 
      - Note:If the value being added to the dictionary is an unmanaged object and the dictionary is managed
-            then that unmanaged object will be added to the Realm.
+            then that unmanaged object will be added to the RealmLegacy.
 
      - Note:If the value being assigned for a key is `nil` then that key will be removed from the dictionary.
 
@@ -349,7 +349,7 @@ public protocol RealmKeyedCollection: Sequence, ThreadConfined, CustomStringConv
      Returns a frozen (immutable) snapshot of this collection.
 
      The frozen copy is an immutable collection which contains the same data as this collection
-    currently contains, but will not update when writes are made to the containing Realm. Unlike
+    currently contains, but will not update when writes are made to the containing RealmLegacy. Unlike
     live collections, frozen collections can be accessed from any thread.
 
      - warning: This method cannot be called during a write transaction, or when the containing

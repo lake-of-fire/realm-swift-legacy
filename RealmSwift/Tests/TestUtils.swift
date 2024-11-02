@@ -89,7 +89,7 @@ public struct Unchecked<Wrapped>: @unchecked Sendable {
 }
 
 public extension XCTestCase {
-    /// Check whether two test objects are equal (refer to the same row in the same Realm), even if their models
+    /// Check whether two test objects are equal (refer to the same row in the same RealmLegacy), even if their models
     /// don't define a primary key.
     func assertEqual<O: Object>(_ o1: O?, _ o2: O?, fileName: StaticString = #file, lineNumber: UInt = #line) {
         if o1 == nil && o2 == nil {
@@ -136,14 +136,14 @@ public extension XCTestCase {
         }
     }
 
-    func assertFails<T>(_ expectedError: Realm.Error.Code, _ message: String? = nil,
+    func assertFails<T>(_ expectedError: RealmLegacy.Error.Code, _ message: String? = nil,
                         fileName: StaticString = #file, lineNumber: UInt = #line,
                         block: () throws -> T) {
         do {
             _ = try autoreleasepool(invoking: block)
             XCTFail("Expected to catch <\(expectedError)>, but no error was thrown.",
                 file: fileName, line: lineNumber)
-        } catch let e as Realm.Error where e.code == expectedError {
+        } catch let e as RealmLegacy.Error where e.code == expectedError {
             if message != nil {
                 XCTAssertEqual(e.localizedDescription, message, file: fileName, line: lineNumber)
             }
@@ -153,14 +153,14 @@ public extension XCTestCase {
         }
     }
 
-    func assertFails<T>(_ expectedError: Realm.Error.Code, _ file: URL, _ message: String,
+    func assertFails<T>(_ expectedError: RealmLegacy.Error.Code, _ file: URL, _ message: String,
                         fileName: StaticString = #file, lineNumber: UInt = #line,
                         block: () throws -> T) {
         do {
             _ = try autoreleasepool(invoking: block)
             XCTFail("Expected to catch <\(expectedError)>, but no error was thrown.",
                 file: fileName, line: lineNumber)
-        } catch let e as Realm.Error where e.code == expectedError {
+        } catch let e as RealmLegacy.Error where e.code == expectedError {
             XCTAssertEqual(e.localizedDescription, message, file: fileName, line: lineNumber)
             XCTAssertEqual(e.fileURL, file, file: fileName, line: lineNumber)
         } catch {

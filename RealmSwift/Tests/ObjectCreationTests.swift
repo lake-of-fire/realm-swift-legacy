@@ -95,7 +95,7 @@ class ObjectCreationTests: TestCase {
            ]
 
         // test with valid dictionary literals
-        let props = try! Realm().schema["SwiftObject"]!.properties
+        let props = try! RealmLegacy().schema["SwiftObject"]!.properties
         for propNum in 0..<props.count {
             for validValue in validValuesForSwiftObjectType(props[propNum].type, (props[propNum].isArray || props[propNum].isSet), props[propNum].isMap) {
                 // update dict with valid value and init
@@ -136,7 +136,7 @@ class ObjectCreationTests: TestCase {
                                      "anyCol", [[true], [false]], [[true], [false]],
                                      ["trueVal": ["boolCol": true], "falseVal": ["boolCol": false]]]
         // test with valid dictionary literals
-        let props = try! Realm().schema["SwiftObject"]!.properties
+        let props = try! RealmLegacy().schema["SwiftObject"]!.properties
         for propNum in 0..<props.count {
             for validValue in validValuesForSwiftObjectType(props[propNum].type, (props[propNum].isArray || props[propNum].isSet), props[propNum].isMap) {
                 var values = baselineValues
@@ -186,7 +186,7 @@ class ObjectCreationTests: TestCase {
     // MARK: - Creation tests
 
     func testCreateWithDefaults() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         assertThrows(realm.create(SwiftObject.self), "Must be in write transaction")
 
         var object: SwiftObject!
@@ -207,7 +207,7 @@ class ObjectCreationTests: TestCase {
     }
 
     func testCreateWithOptionalWithoutDefaults() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             let object = realm.create(SwiftOptionalObject.self)
             for prop in object.objectSchema.properties {
@@ -217,7 +217,7 @@ class ObjectCreationTests: TestCase {
     }
 
     func testCreateWithOptionalDefaults() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             let object = realm.create(SwiftOptionalDefaultValuesObject.self)
             self.verifySwiftOptionalObjectWithDictionaryLiteral(object,
@@ -226,7 +226,7 @@ class ObjectCreationTests: TestCase {
     }
 
     func testCreateWithOptionalIgnoredProperties() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             let object = realm.create(SwiftOptionalIgnoredPropertiesObject.self)
             let properties = object.objectSchema.properties
@@ -259,17 +259,17 @@ class ObjectCreationTests: TestCase {
         ]
 
         // test with valid dictionary literals
-        let props = try! Realm().schema["SwiftObject"]!.properties
+        let props = try! RealmLegacy().schema["SwiftObject"]!.properties
         for propNum in 0..<props.count {
             for validValue in validValuesForSwiftObjectType(props[propNum].type, (props[propNum].isArray || props[propNum].isSet), props[propNum].isMap) {
                 // update dict with valid value and init
                 var values = baselineValues
                 values[props[propNum].name] = validValue
-                try! Realm().beginWrite()
-                let object = try! Realm().create(SwiftObject.self, value: values)
+                try! RealmLegacy().beginWrite()
+                let object = try! RealmLegacy().create(SwiftObject.self, value: values)
                 verifySwiftObjectWithDictionaryLiteral(object, dictionary: values, boolObjectValue: true,
                     boolObjectListValues: [true, false])
-                try! Realm().commitWrite()
+                try! RealmLegacy().commitWrite()
                 verifySwiftObjectWithDictionaryLiteral(object, dictionary: values, boolObjectValue: true,
                     boolObjectListValues: [true, false])
             }
@@ -281,16 +281,16 @@ class ObjectCreationTests: TestCase {
                 // update dict with invalid value and init
                 var values = baselineValues
                 values[props[propNum].name] = invalidValue
-                try! Realm().beginWrite()
-                assertThrows(try! Realm().create(SwiftObject.self, value: values), "Invalid property value")
-                try! Realm().cancelWrite()
+                try! RealmLegacy().beginWrite()
+                assertThrows(try! RealmLegacy().create(SwiftObject.self, value: values), "Invalid property value")
+                try! RealmLegacy().cancelWrite()
             }
         }
     }
 
     func testCreateWithDefaultsAndDictionary() {
         // test with dictionary with mix of default and one specified value
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let objectWithInt = realm.create(SwiftObject.self, value: ["intCol": 200])
         try! realm.commitWrite()
@@ -311,16 +311,16 @@ class ObjectCreationTests: TestCase {
                                      ["trueVal": ["boolCol": true], "falseVal": ["boolCol": false]]]
 
         // test with valid dictionary literals
-        let props = try! Realm().schema["SwiftObject"]!.properties
+        let props = try! RealmLegacy().schema["SwiftObject"]!.properties
         for propNum in 0..<props.count {
             for validValue in validValuesForSwiftObjectType(props[propNum].type, (props[propNum].isArray || props[propNum].isSet), props[propNum].isMap) {
                 var values = baselineValues
                 values[propNum] = validValue
-                try! Realm().beginWrite()
-                let object = try! Realm().create(SwiftObject.self, value: values)
+                try! RealmLegacy().beginWrite()
+                let object = try! RealmLegacy().create(SwiftObject.self, value: values)
                 verifySwiftObjectWithArrayLiteral(object, array: values, boolObjectValue: true,
                     boolObjectListValues: [true, false])
-                try! Realm().commitWrite()
+                try! RealmLegacy().commitWrite()
                 verifySwiftObjectWithArrayLiteral(object, array: values, boolObjectValue: true,
                     boolObjectListValues: [true, false])
             }
@@ -333,30 +333,30 @@ class ObjectCreationTests: TestCase {
                 var values = baselineValues
                 values[propNum] = invalidValue
 
-                try! Realm().beginWrite()
-                assertThrows(try! Realm().create(SwiftObject.self, value: values),
+                try! RealmLegacy().beginWrite()
+                assertThrows(try! RealmLegacy().create(SwiftObject.self, value: values),
                     "Invalid property value '\(invalidValue)' for property number \(propNum)")
-                try! Realm().cancelWrite()
+                try! RealmLegacy().cancelWrite()
             }
         }
     }
 
     func testCreateWithKVCObject() {
         // test with kvc object
-        try! Realm().beginWrite()
-        let objectWithInt = try! Realm().create(SwiftObject.self, value: ["intCol": 200])
-        let objectWithKVCObject = try! Realm().create(SwiftObject.self, value: objectWithInt)
+        try! RealmLegacy().beginWrite()
+        let objectWithInt = try! RealmLegacy().create(SwiftObject.self, value: ["intCol": 200])
+        let objectWithKVCObject = try! RealmLegacy().create(SwiftObject.self, value: objectWithInt)
         let valueDict = defaultSwiftObjectValuesWithReplacements(["intCol": 200])
-        try! Realm().commitWrite()
+        try! RealmLegacy().commitWrite()
 
         verifySwiftObjectWithDictionaryLiteral(objectWithKVCObject, dictionary: valueDict, boolObjectValue: false,
             boolObjectListValues: [])
-        XCTAssertEqual(try! Realm().objects(SwiftObject.self).count, 2, "Object should have been copied")
+        XCTAssertEqual(try! RealmLegacy().objects(SwiftObject.self).count, 2, "Object should have been copied")
     }
 
     func testCreateWithNestedObjects() throws {
         let standalone = SwiftPrimaryStringObject(value: ["p0", 11])
-        let realm = try Realm()
+        let realm = try RealmLegacy()
         let objectWithNestedObjects = try realm.write {
             realm.create(SwiftLinkToPrimaryStringObject.self, value: ["p1", ["p1", 12] as [Any],
                                                                       [standalone]])
@@ -382,7 +382,7 @@ class ObjectCreationTests: TestCase {
 
     func testUpdateWithNestedObjects() throws {
         let standalone = SwiftPrimaryStringObject(value: ["primary", 11])
-        let realm = try Realm()
+        let realm = try RealmLegacy()
         let object = try realm.write {
             realm.create(SwiftLinkToPrimaryStringObject.self,
                          value: ["otherPrimary", ["primary", 12] as [Any],
@@ -401,7 +401,7 @@ class ObjectCreationTests: TestCase {
 
     func testUpdateChangedWithNestedObjects() throws {
         let standalone = SwiftPrimaryStringObject(value: ["primary", 11])
-        let realm = try Realm()
+        let realm = try RealmLegacy()
         let object = try realm.write {
             realm.create(SwiftLinkToPrimaryStringObject.self,
                          value: ["otherPrimary", ["primary", 12] as [Any],
@@ -443,7 +443,7 @@ class ObjectCreationTests: TestCase {
         let otherRealmObject = realmWithTestPath().create(SwiftObject.self, value: values)
         try! realmWithTestPath().commitWrite()
 
-        let realm = try Realm()
+        let realm = try RealmLegacy()
         let object = try realm.write {
             realm.create(SwiftObject.self, value: otherRealmObject)
         }
@@ -475,7 +475,7 @@ class ObjectCreationTests: TestCase {
         ]
 
         let realmA = realmWithTestPath()
-        let realmB = try! Realm()
+        let realmB = try! RealmLegacy()
 
         var realmAListObject: SwiftListOfSwiftObject?
         try! realmA.write {
@@ -521,7 +521,7 @@ class ObjectCreationTests: TestCase {
                              value: ["primary", NSNull(), [["2", 2] as [Any], ["4", 4]]])
         }
 
-        let realm = try Realm()
+        let realm = try RealmLegacy()
         let object = try realm.write { () -> SwiftLinkToPrimaryStringObject in
             realm.create(SwiftLinkToPrimaryStringObject.self,
                          value: ["primary", ["10", 10] as [Any], [["11", 11] as [Any]]])
@@ -529,8 +529,8 @@ class ObjectCreationTests: TestCase {
         }
 
         XCTAssertNotEqual(otherRealmObject, object) // the object from the other realm should be copied into this realm
-        XCTAssertEqual(try! Realm().objects(SwiftLinkToPrimaryStringObject.self).count, 1)
-        XCTAssertEqual(try! Realm().objects(SwiftPrimaryStringObject.self).count, 4)
+        XCTAssertEqual(try! RealmLegacy().objects(SwiftLinkToPrimaryStringObject.self).count, 1)
+        XCTAssertEqual(try! RealmLegacy().objects(SwiftPrimaryStringObject.self).count, 4)
     }
 
     func testUpdateChangedWithObjectsFromAnotherRealm() throws {
@@ -540,7 +540,7 @@ class ObjectCreationTests: TestCase {
                              value: ["primary", NSNull(), [["2", 2] as [Any], ["4", 4]]])
         }
 
-        let realm = try Realm()
+        let realm = try RealmLegacy()
         let object = try realm.write { () -> SwiftLinkToPrimaryStringObject in
             realm.create(SwiftLinkToPrimaryStringObject.self,
                          value: ["primary", ["10", 10] as [Any], [["11", 11] as [Any]]])
@@ -548,8 +548,8 @@ class ObjectCreationTests: TestCase {
         }
 
         XCTAssertNotEqual(otherRealmObject, object) // the object from the other realm should be copied into this realm
-        XCTAssertEqual(try! Realm().objects(SwiftLinkToPrimaryStringObject.self).count, 1)
-        XCTAssertEqual(try! Realm().objects(SwiftPrimaryStringObject.self).count, 4)
+        XCTAssertEqual(try! RealmLegacy().objects(SwiftLinkToPrimaryStringObject.self).count, 1)
+        XCTAssertEqual(try! RealmLegacy().objects(SwiftPrimaryStringObject.self).count, 4)
     }
 
     func testCreateWithNSNullLinks() {
@@ -578,7 +578,7 @@ class ObjectCreationTests: TestCase {
     }
 
     func testCreateWithObjcName() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             let object = realm.create(SwiftObjcRenamedObject.self)
             object.stringCol = "string"
@@ -592,7 +592,7 @@ class ObjectCreationTests: TestCase {
     }
 
     func testCreateWithDifferentObjcName() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             let object = realm.create(SwiftObjcArbitrarilyRenamedObject.self)
             object.boolCol = true
@@ -606,7 +606,7 @@ class ObjectCreationTests: TestCase {
     }
 
     func testCreateOrUpdateNil() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
 
         // Create with all fields nil
@@ -682,7 +682,7 @@ class ObjectCreationTests: TestCase {
     }
 
     func testCreateOrUpdateModifiedNil() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
 
         // Create with all fields nil
@@ -758,7 +758,7 @@ class ObjectCreationTests: TestCase {
     }
 
     func testCreateOrUpdateDynamicUnmanagedType() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let unmanagedValue = SwiftOptionalPrimaryObject()
         // Shouldn't throw.
         realm.beginWrite()
@@ -767,7 +767,7 @@ class ObjectCreationTests: TestCase {
     }
 
     func testCreateOrUpdateDynamicManagedType() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let managedValue = SwiftOptionalPrimaryObject()
         try! realm.write {
             realm.add(managedValue)
@@ -779,7 +779,7 @@ class ObjectCreationTests: TestCase {
     }
 
     func testCreateOrUpdateModifiedDynamicManagedType() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let managedValue = SwiftOptionalPrimaryObject()
         try! realm.write {
             realm.add(managedValue)
@@ -791,7 +791,7 @@ class ObjectCreationTests: TestCase {
     }
 
     func testCreateOrUpdateWithMismatchedStaticAndDynamicTypes() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let obj: Object = SwiftOptionalPrimaryObject()
         try! realm.write {
             let obj2 = realm.create(type(of: obj), value: obj)
@@ -802,7 +802,7 @@ class ObjectCreationTests: TestCase {
     }
 
     func testDynamicCreateEmbeddedDirectly() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         assertThrows(realm.dynamicCreate("EmbeddedTreeObject1"),
                      reasonMatching: "Embedded objects cannot be created directly")
@@ -810,7 +810,7 @@ class ObjectCreationTests: TestCase {
     }
 
     func testCreateEmbeddedWithDictionary() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let parent = realm.create(EmbeddedParentObject.self, value: [
             "object": ["value": 5, "child": ["value": 6], "children": [[7], [8]]] as [String: Any],
@@ -844,7 +844,7 @@ class ObjectCreationTests: TestCase {
         sourceObject.array.append(.init(value: [9]))
         sourceObject.array.append(.init(value: [10]))
 
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let parent = realm.create(EmbeddedParentObject.self, value: sourceObject)
         XCTAssertNil(sourceObject.realm)
@@ -860,7 +860,7 @@ class ObjectCreationTests: TestCase {
     }
 
     func testCreateEmbeddedFromManagedObjectInSameRealm() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let parent = realm.create(EmbeddedParentObject.self, value: [
             "object": ["value": 5, "child": ["value": 6], "children": [[7], [8]]] as [String: Any],
@@ -881,7 +881,7 @@ class ObjectCreationTests: TestCase {
 
     func testCreateEmbeddedFromManagedObjectInDifferentRealm() {
         let realmA = realmWithTestPath()
-        let realmB = try! Realm()
+        let realmB = try! RealmLegacy()
         realmA.beginWrite()
         let parent = realmA.create(EmbeddedParentObject.self, value: [
             "object": ["value": 5, "child": ["value": 6], "children": [[7], [8]]] as [String: Any],
@@ -904,7 +904,7 @@ class ObjectCreationTests: TestCase {
     }
 
     func testCreateObjectWithNestedEmbeddedType() throws {
-        let realm = try Realm()
+        let realm = try RealmLegacy()
         let obj = try realm.write {
             realm.create(ObjectWithNestedEmbeddedObject.self, value: [1, [2]])
         }
@@ -917,14 +917,14 @@ class ObjectCreationTests: TestCase {
 
     // MARK: - Add tests
     func testAddWithExisingNestedObjects() {
-        try! Realm().beginWrite()
-        let existingObject = try! Realm().create(SwiftBoolObject.self)
-        try! Realm().commitWrite()
+        try! RealmLegacy().beginWrite()
+        let existingObject = try! RealmLegacy().create(SwiftBoolObject.self)
+        try! RealmLegacy().commitWrite()
 
-        try! Realm().beginWrite()
+        try! RealmLegacy().beginWrite()
         let object = SwiftObject(value: ["objectCol": existingObject])
-        try! Realm().add(object)
-        try! Realm().commitWrite()
+        try! RealmLegacy().add(object)
+        try! RealmLegacy().commitWrite()
 
         XCTAssertNotNil(object.realm)
 
@@ -954,7 +954,7 @@ class ObjectCreationTests: TestCase {
         parent.array.append(objectFactory.create())
         parent.array.append(objectFactory.create())
 
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         realm.add(parent)
         for (i, object) in objectFactory.objects.enumerated() {
@@ -973,7 +973,7 @@ class ObjectCreationTests: TestCase {
     }
 
     func testAddAndUpdateWithExisingNestedObjects() throws {
-        let realm = try Realm()
+        let realm = try RealmLegacy()
         let existingObject = try realm.write {
             realm.create(SwiftPrimaryStringObject.self, value: ["primary", 1])
         }
@@ -1007,7 +1007,7 @@ class ObjectCreationTests: TestCase {
         parent2.array.append(objectFactory.create())
         parent2.array.append(objectFactory.create())
 
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         realm.add(parent)
         realm.add(parent2, update: .all)
@@ -1034,14 +1034,14 @@ class ObjectCreationTests: TestCase {
     }
 
     func testAddAndUpdateChangedWithExisingNestedObjects() {
-        try! Realm().beginWrite()
-        let existingObject = try! Realm().create(SwiftPrimaryStringObject.self, value: ["primary", 1])
-        try! Realm().commitWrite()
+        try! RealmLegacy().beginWrite()
+        let existingObject = try! RealmLegacy().create(SwiftPrimaryStringObject.self, value: ["primary", 1])
+        try! RealmLegacy().commitWrite()
 
-        try! Realm().beginWrite()
+        try! RealmLegacy().beginWrite()
         let object = SwiftLinkToPrimaryStringObject(value: ["primary", ["primary", 2] as [Any]])
-        try! Realm().add(object, update: .modified)
-        try! Realm().commitWrite()
+        try! RealmLegacy().add(object, update: .modified)
+        try! RealmLegacy().commitWrite()
 
         XCTAssertNotNil(object.realm)
         XCTAssertEqual(object.object!, existingObject) // the existing object should be updated
@@ -1066,7 +1066,7 @@ class ObjectCreationTests: TestCase {
         parent2.array.append(objectFactory.create())
         parent2.array.append(objectFactory.create())
 
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         realm.add(parent)
         realm.add(parent2, update: .modified)
@@ -1100,7 +1100,7 @@ class ObjectCreationTests: TestCase {
             weakObj1 = obj1
             weakObj2 = obj2
 
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             try! realm.write {
                 realm.add(obj1)
             }
@@ -1114,7 +1114,7 @@ class ObjectCreationTests: TestCase {
     }
 
     func testAddOrUpdateNil() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
 
         // Create with all fields nil
@@ -1191,7 +1191,7 @@ class ObjectCreationTests: TestCase {
     }
 
     func testAddOrUpdateModifiedNil() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
 
         // Create with all fields nil
@@ -1313,7 +1313,7 @@ class ObjectCreationTests: TestCase {
     }
 
     func testPrivateOptionalNonobjcString() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             let obj = ObjectWithPrivateOptionals()
             obj.value = 5
@@ -1413,9 +1413,9 @@ class ObjectCreationTests: TestCase {
 
     // return an array of valid values that can be used to initialize each type
     private func validValuesForSwiftObjectType(_ type: PropertyType, _ array: Bool, _ map: Bool) -> [Any] {
-        try! Realm().beginWrite()
-        let persistedObject = try! Realm().create(SwiftBoolObject.self, value: [true])
-        try! Realm().commitWrite()
+        try! RealmLegacy().beginWrite()
+        let persistedObject = try! RealmLegacy().create(SwiftBoolObject.self, value: [true])
+        try! RealmLegacy().commitWrite()
         if map {
             return [
                 ["trueVal": ["boolCol": true], "falseVal": ["boolCol": false]],
@@ -1449,9 +1449,9 @@ class ObjectCreationTests: TestCase {
     }
 
     private func invalidValuesForSwiftObjectType(_ type: PropertyType, _ array: Bool, _ map: Bool) -> [Any] {
-        try! Realm().beginWrite()
-        let persistedObject = try! Realm().create(SwiftIntObject.self)
-        try! Realm().commitWrite()
+        try! RealmLegacy().beginWrite()
+        let persistedObject = try! RealmLegacy().create(SwiftIntObject.self)
+        try! RealmLegacy().commitWrite()
         if map {
             return [
                 ["trueVal": ["boolCol": "invalid"] as [String: Any], "falseVal": ["boolCol": false]],

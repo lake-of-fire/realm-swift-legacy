@@ -1220,7 +1220,7 @@ class CodableTests: TestCase {
         let actual = try String(data: encoder.encode(obj), encoding: .utf8)
         XCTAssertEqual(str, actual)
 
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             realm.add(obj)
         }

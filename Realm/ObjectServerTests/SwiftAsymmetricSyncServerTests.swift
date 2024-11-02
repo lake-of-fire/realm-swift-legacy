@@ -149,7 +149,7 @@ class SwiftAsymmetricSyncTests: SwiftSyncTestCase {
         SwiftAsymmetricSyncTests.objectTypes
     }
 
-    override func configuration(user: User) -> Realm.Configuration {
+    override func configuration(user: User) -> RealmLegacy.Configuration {
         user.flexibleSyncConfiguration()
     }
 
@@ -159,8 +159,8 @@ class SwiftAsymmetricSyncTests: SwiftSyncTestCase {
     }
 
     func testOpenLocalRealmWithAsymmetricObjectError() throws {
-        let configuration = Realm.Configuration(objectTypes: [SwiftObjectAsymmetric.self])
-        XCTAssertThrowsError(try Realm(configuration: configuration)) { error in
+        let configuration = RealmLegacy.Configuration(objectTypes: [SwiftObjectAsymmetric.self])
+        XCTAssertThrowsError(try RealmLegacy(configuration: configuration)) { error in
             XCTAssertEqual(error.localizedDescription, "Schema validation failed due to the following errors:\n- Asymmetric table \'SwiftObjectAsymmetric\' not allowed in a local Realm")
         }
     }
@@ -170,7 +170,7 @@ class SwiftAsymmetricSyncTests: SwiftSyncTestCase {
         var configuration = user.configuration(partitionValue: #function)
         configuration.objectTypes = [SwiftObjectAsymmetric.self]
 
-        XCTAssertThrowsError(try Realm(configuration: configuration)) { error in
+        XCTAssertThrowsError(try RealmLegacy(configuration: configuration)) { error in
             XCTAssert(error.localizedDescription.contains("Asymmetric table 'SwiftObjectAsymmetric' not allowed in partition based sync"))
         }
     }

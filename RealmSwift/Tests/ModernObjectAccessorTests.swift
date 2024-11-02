@@ -644,7 +644,7 @@ class ModernObjectAccessorTests: TestCase {
     }
 
     func testManagedAccessorsReadFromRealm() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let object = realm.create(ModernAllTypesObject.self)
         setAndTestAllPropertiesViaNormalAccess(object)
@@ -658,7 +658,7 @@ class ModernObjectAccessorTests: TestCase {
     }
 
     func testManagedAccessorsAddedToRealm() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let object = ModernAllTypesObject()
         realm.add(object)
@@ -672,7 +672,7 @@ class ModernObjectAccessorTests: TestCase {
     }
 
     func testThreadChecking() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         var obj: ModernAllTypesObject!
         try! realm.write {
             obj = realm.create(ModernAllTypesObject.self)
@@ -689,7 +689,7 @@ class ModernObjectAccessorTests: TestCase {
     }
 
     func testInvalidationChecking() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         var obj: ModernAllTypesObject!
         try! realm.write {
             obj = realm.create(ModernAllTypesObject.self)
@@ -719,7 +719,7 @@ class ModernObjectAccessorTests: TestCase {
     }
 
     func testReadInvalidEnumValue() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
 
         let obj = realm.create(ModernAllTypesObject.self)

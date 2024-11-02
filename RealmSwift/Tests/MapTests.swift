@@ -345,7 +345,7 @@ class MapTests: TestCase {
     }
 
     func testValueForKey() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             for value in [1, 2] {
                 let mapObject = SwiftMapOfSwiftObject()
@@ -393,7 +393,7 @@ class MapTests: TestCase {
 
     @available(*, deprecated) // Silence deprecation warnings for RealmOptional
     func testValueForKeyOptional() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             for value in [1, 2] {
                 let mapObject = SwiftMapOfSwiftOptionalObject()

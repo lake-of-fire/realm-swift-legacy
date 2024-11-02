@@ -60,7 +60,7 @@ public extension AppConfiguration {
        - baseURL: A custom Atlas App Services URL for when using a non-standard deployment
        - transport: A network transport used for calls to the server.
        - defaultRequestTimeoutMS: The default timeout for non-sync HTTP requests made to the server.
-       - enableSessionMultiplexing: Use a single network connection per sync user rather than one per sync Realm.
+       - enableSessionMultiplexing: Use a single network connection per sync user rather than one per sync RealmLegacy.
        - syncTimeouts: Timeout options for sync connections.
      */
     @_disfavoredOverload // this is ambiguous with the base init if nil is explicitly passed
@@ -232,7 +232,7 @@ public extension App {
             if let user = user {
                 completion(.success(user))
             } else {
-                completion(.failure(error ?? Realm.Error.callFailed))
+                completion(.failure(error ?? RealmLegacy.Error.callFailed))
             }
         }
     }
@@ -540,7 +540,7 @@ public extension APIKeyAuth {
             if let userApiKey = userApiKey {
                 completion(.success(userApiKey))
             } else {
-                completion(.failure(error ?? Realm.Error.callFailed))
+                completion(.failure(error ?? RealmLegacy.Error.callFailed))
             }
         }
     }
@@ -556,7 +556,7 @@ public extension APIKeyAuth {
             if let userApiKey = userApiKey {
                 completion(.success(userApiKey))
             } else {
-                completion(.failure(error ?? Realm.Error.callFailed))
+                completion(.failure(error ?? RealmLegacy.Error.callFailed))
             }
         }
     }
@@ -571,7 +571,7 @@ public extension APIKeyAuth {
             if let userApiKeys = userApiKeys {
                 completion(.success(userApiKeys))
             } else {
-                completion(.failure(error ?? Realm.Error.callFailed))
+                completion(.failure(error ?? RealmLegacy.Error.callFailed))
             }
         }
     }

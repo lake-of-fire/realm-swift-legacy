@@ -36,7 +36,7 @@ public protocol ThreadConfined {
      Unmanaged objects are not confined to a thread and cannot be passed to methods expecting a
      `ThreadConfined` object.
      */
-    var realm: Realm? { get }
+    var realm: RealmLegacy? { get }
 
     /// Indicates if the object can no longer be accessed because it is now invalid.
     var isInvalidated: Bool { get }
@@ -53,7 +53,7 @@ public protocol ThreadConfined {
      Returns a frozen snapshot of this object.
 
      Unlike normal Realm live objects, the frozen copy can be read from any thread, and the values
-     read will never update to reflect new writes to the Realm. Frozen collections can be queried
+     read will never update to reflect new writes to the RealmLegacy. Frozen collections can be queried
      like any other Realm collection. Frozen objects cannot be mutated, and cannot be observed for
      change notifications.
 
@@ -110,7 +110,7 @@ public protocol ThreadConfined {
         objectiveCReference = RLMThreadSafeReference(threadConfined: (threadConfined as! _ObjcBridgeable)._rlmObjcValue as! RLMThreadConfined)
     }
 
-    internal func resolve(in realm: Realm) -> Confined? {
+    internal func resolve(in realm: RealmLegacy) -> Confined? {
         guard let resolved = realm.rlmRealm.__resolve(objectiveCReference) as? RLMThreadConfined else { return nil }
         return (Confined.self as! _ObjcBridgeable.Type)._rlmFromObjc(resolved).flatMap { $0 as? Confined }
     }
@@ -150,7 +150,7 @@ public protocol ThreadConfined {
             }
             do {
                 let rlmRealm = try RLMRealm(configuration: rlmConfig)
-                let realm = Realm(rlmRealm)
+                let realm = RealmLegacy(rlmRealm)
                 guard let value = threadSafeReference.resolve(in: realm) else {
                     self.threadSafeReference = nil
                     lock.unlock()
@@ -189,7 +189,7 @@ public protocol ThreadConfined {
     }
 }
 
-extension Realm {
+extension RealmLegacy {
     // MARK: Thread Safe Reference
 
     /**
@@ -198,7 +198,7 @@ extension Realm {
      deleted after the reference was created.
 
      - parameter reference: The thread-safe reference to the thread-confined object to resolve in
-                            this Realm.
+                            this RealmLegacy.
 
      - warning: A `ThreadSafeReference` object must be resolved at most once.
                 Failing to resolve a `ThreadSafeReference` will result in the source version of the

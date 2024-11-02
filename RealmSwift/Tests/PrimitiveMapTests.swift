@@ -23,7 +23,7 @@ import RealmSwiftLegacy
 // swiftlint:disable cyclomatic_complexity
 
 class PrimitiveMapTestsBase<O: ObjectFactory, V: MapValueFactory>: TestCase {
-    var realm: Realm?
+    var realm: RealmLegacy?
     var obj: V.MapRoot!
     var obj2: V.MapRoot!
     var map: Map<String, V>!

@@ -18,17 +18,17 @@
 
 import RealmLegacy
 
-extension Realm {
+extension RealmLegacy {
     /**
      Struct that describes the error codes within the Realm error domain.
      The values can be used to catch a variety of _recoverable_ errors, especially those
      happening when initializing a Realm instance.
 
      ```swift
-     let realm: Realm?
+     let realm: RealmLegacy?
      do {
-         realm = try Realm()
-     } catch Realm.Error.incompatibleLockFile {
+         realm = try RealmLegacy()
+     } catch RealmLegacy.Error.incompatibleLockFile {
          print("Realm Browser app may be attached to Realm on device?")
      }
      ```
@@ -36,9 +36,9 @@ extension Realm {
     public typealias Error = RLMError
 }
 
-extension Realm.Error {
+extension RealmLegacy.Error {
     /// This error could be returned by completion block when no success and no error were produced
-    public static let callFailed = Realm.Error(Realm.Error.fail, userInfo: [NSLocalizedDescriptionKey: "Call failed"])
+    public static let callFailed = RealmLegacy.Error(RealmLegacy.Error.fail, userInfo: [NSLocalizedDescriptionKey: "Call failed"])
 
     /// The file URL which produced this error, or `nil` if not applicable
     public var fileURL: URL? {
@@ -48,7 +48,7 @@ extension Realm.Error {
 
 // MARK: Equatable
 
-extension Realm.Error: Equatable {}
+extension RealmLegacy.Error: Equatable {}
 
 // FIXME: we should not be defining this but it's a breaking change to remove
 /// Returns a Boolean indicating whether the errors are identical.

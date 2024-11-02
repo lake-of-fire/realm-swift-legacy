@@ -40,7 +40,7 @@ class ThreadSafeReferenceTests: TestCase {
         assertThrows(ThreadSafeReference(to: arrayObject), reason: "Cannot construct reference to unmanaged object")
         assertThrows(ThreadSafeReference(to: setObject), reason: "Cannot construct reference to unmanaged object")
 
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         realm.add(stringObject)
         realm.add(arrayParent)
@@ -54,7 +54,7 @@ class ThreadSafeReferenceTests: TestCase {
     }
 
     func testInvalidThreadSafeReferenceUsage() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let stringObject = realm.create(SwiftStringObject.self, value: ["stringCol": "hello"])
         let ref1 = ThreadSafeReference(to: stringObject)
@@ -63,7 +63,7 @@ class ThreadSafeReferenceTests: TestCase {
         let ref3 = ThreadSafeReference(to: stringObject)
         dispatchSyncNewThread {
             XCTAssertNil(self.realmWithTestPath().resolve(ref1))
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             _ = realm.resolve(ref2)
             self.assertThrows(realm.resolve(ref2),
                               reason: "Can only resolve a thread safe reference once")
@@ -73,7 +73,7 @@ class ThreadSafeReferenceTests: TestCase {
     }
 
     func testPassThreadSafeReferenceToDeletedObject() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let intObject = SwiftIntObject()
         try! realm.write {
             realm.add(intObject)
@@ -82,13 +82,13 @@ class ThreadSafeReferenceTests: TestCase {
         let ref2 = ThreadSafeReference(to: intObject)
         XCTAssertEqual(0, intObject.intCol)
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             try! realm.write {
                 realm.deleteAll()
             }
         }
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             XCTAssertEqual(self.assertResolve(realm, ref1)!.intCol, 0)
             realm.refresh()
             XCTAssertNil(self.assertResolve(realm, ref2))
@@ -96,7 +96,7 @@ class ThreadSafeReferenceTests: TestCase {
     }
 
     func testPassThreadSafeReferencesToMultipleObjects() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let (stringObject, intObject) = (SwiftStringObject(), SwiftIntObject())
         try! realm.write {
             realm.add(stringObject)
@@ -107,7 +107,7 @@ class ThreadSafeReferenceTests: TestCase {
         XCTAssertEqual("", stringObject.stringCol)
         XCTAssertEqual(0, intObject.intCol)
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             let stringObject = self.assertResolve(realm, stringObjectRef)!
             let intObject = self.assertResolve(realm, intObjectRef)!
             try! realm.write {
@@ -123,7 +123,7 @@ class ThreadSafeReferenceTests: TestCase {
     }
 
     func testPassThreadSafeReferenceToList() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let company = SwiftCompanyObject()
         try! realm.write {
             realm.add(company)
@@ -133,7 +133,7 @@ class ThreadSafeReferenceTests: TestCase {
         XCTAssertEqual("jg", company.employees[0].name)
         let listRef = ThreadSafeReference(to: company.employees)
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             let employees = self.assertResolve(realm, listRef)!
             XCTAssertEqual(1, employees.count)
             XCTAssertEqual("jg", employees[0].name)
@@ -156,7 +156,7 @@ class ThreadSafeReferenceTests: TestCase {
     }
 
     func testPassThreadSafeReferenceToMutableSet() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let company = SwiftCompanyObject()
         try! realm.write {
             realm.add(company)
@@ -166,7 +166,7 @@ class ThreadSafeReferenceTests: TestCase {
         XCTAssertEqual("jg", company.employeeSet[0].name)
         let setRef = ThreadSafeReference(to: company.employeeSet)
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             let employeeSet = self.assertResolve(realm, setRef)!
             XCTAssertEqual(1, employeeSet.count)
             XCTAssertEqual("jg", employeeSet[0].name)
@@ -187,7 +187,7 @@ class ThreadSafeReferenceTests: TestCase {
     }
 
     func testPassThreadSafeReferenceToResults() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let allObjects = realm.objects(SwiftStringObject.self)
         let results = allObjects
             .filter("stringCol != 'C'")
@@ -205,7 +205,7 @@ class ThreadSafeReferenceTests: TestCase {
         XCTAssertEqual("B", results[1].stringCol)
         XCTAssertEqual("A", results[2].stringCol)
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             let results = self.assertResolve(realm, resultsRef)!
             let allObjects = realm.objects(SwiftStringObject.self)
             XCTAssertEqual(0, allObjects.count)
@@ -239,7 +239,7 @@ class ThreadSafeReferenceTests: TestCase {
     }
 
     func testPassThreadSafeReferenceToLinkingObjects() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let dogA = SwiftDogObject(value: ["dogName": "Cookie", "age": 10])
         let unaccessedDogB = SwiftDogObject(value: ["dogName": "Skipper", "age": 7])
         // Ensures that a `LinkingObjects` without cached results can be handed over
@@ -253,7 +253,7 @@ class ThreadSafeReferenceTests: TestCase {
         let ownersARef = ThreadSafeReference(to: dogA.owners)
         let ownersBRef = ThreadSafeReference(to: unaccessedDogB.owners)
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             let ownersA = self.assertResolve(realm, ownersARef)!
             let ownersB = self.assertResolve(realm, ownersBRef)!
 
@@ -282,7 +282,7 @@ class ThreadSafeReferenceTests: TestCase {
     }
 
     func testPassThreadSafeReferenceToAnyRealmCollection() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let company = SwiftCompanyObject()
         try! realm.write {
             realm.add(company)
@@ -315,7 +315,7 @@ class ThreadSafeReferenceTests: TestCase {
         let listRef = ThreadSafeReference(to: list)
         let setRef = ThreadSafeReference(to: set)
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             let results = self.assertResolve(realm, resultsRef)!
             let list = self.assertResolve(realm, listRef)!
             let set = self.assertResolve(realm, setRef)!
@@ -352,7 +352,7 @@ struct TestThreadSafeWrapperStruct {
 // MARK: ThreadSafeWrapperTests
 class ThreadSafeWrapperTests: ThreadSafeReferenceTests {
     func wrapperStruct() -> TestThreadSafeWrapperStruct {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         var stringObj: SwiftStringObject?, intObj: SwiftIntObject?
         try! realm.write({
             stringObj = realm.create(SwiftStringObject.self, value: ["stringCol": "before"])
@@ -372,7 +372,7 @@ class ThreadSafeWrapperTests: ThreadSafeReferenceTests {
         XCTAssertEqual(testStruct.intObject!.intCol, 1)
 
         dispatchSyncNewThread {
-            try! Realm().write({
+            try! RealmLegacy().write({
                 testStruct.stringObject!.stringCol = "after"
                 testStruct.intObject!.intCol = 2
             })
@@ -382,7 +382,7 @@ class ThreadSafeWrapperTests: ThreadSafeReferenceTests {
 
         // Edit value again to test the same thread safe reference isn't resolved twice
         dispatchSyncNewThread {
-            try! Realm().write({
+            try! RealmLegacy().write({
                 testStruct.stringObject!.stringCol = "after, again"
                 testStruct.intObject!.intCol = 3
             })
@@ -397,7 +397,7 @@ class ThreadSafeWrapperTests: ThreadSafeReferenceTests {
         XCTAssertEqual(testStruct.intObject!.intCol, 1)
 
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             try! realm.write({
                 realm.delete(testStruct.stringObject!)
                 realm.delete(testStruct.intObject!)
@@ -413,7 +413,7 @@ class ThreadSafeWrapperTests: ThreadSafeReferenceTests {
         XCTAssertEqual(testStruct.intObject!.intCol, 1)
 
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             try! realm.write({
                 let stringObj = realm.create(SwiftStringObject.self, value: ["stringCol": "after"])
                 let intObj = realm.create(SwiftIntObject.self, value: ["intCol": 2])
@@ -432,7 +432,7 @@ class ThreadSafeWrapperTests: ThreadSafeReferenceTests {
         XCTAssertEqual(testStruct.intObject!.intCol, 1)
 
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             try! realm.write({
                 testStruct.stringObject = nil
                 testStruct.intObject = nil
@@ -442,7 +442,7 @@ class ThreadSafeWrapperTests: ThreadSafeReferenceTests {
         XCTAssertNil(testStruct.intObject)
 
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             try! realm.write({
                 testStruct.stringObject = realm.create(SwiftStringObject.self, value: ["stringCol": "after, again"])
                 testStruct.intObject = realm.create(SwiftIntObject.self, value: ["intCol": 3])
@@ -457,10 +457,10 @@ class ThreadSafeWrapperTests: ThreadSafeReferenceTests {
         XCTAssertEqual(testStruct.stringObject, nil)
         XCTAssertEqual(testStruct.intObject, nil)
 
-        var config = Realm.Configuration.defaultConfiguration
+        var config = RealmLegacy.Configuration.defaultConfiguration
         config.objectTypes = [SwiftStringObject.self, SwiftIntObject.self]
         dispatchSyncNewThread {
-            let realm = try! Realm(configuration: config)
+            let realm = try! RealmLegacy(configuration: config)
             try! realm.write({
                 testStruct.stringObject = realm.create(SwiftStringObject.self, value: ["stringCol": "after"])
                 testStruct.intObject = realm.create(SwiftIntObject.self, value: ["intCol": 2])
@@ -471,7 +471,7 @@ class ThreadSafeWrapperTests: ThreadSafeReferenceTests {
 
         // Edit value again to test the same thread safe reference isn't resolved twice
         dispatchSyncNewThread {
-            let realm = try! Realm(configuration: config)
+            let realm = try! RealmLegacy(configuration: config)
             try! realm.write({
                 testStruct.stringObject!.stringCol = "after, again"
                 testStruct.intObject!.intCol = 3
@@ -487,13 +487,13 @@ class ThreadSafeWrapperTests: ThreadSafeReferenceTests {
         XCTAssertEqual(testStruct.intObject!.intCol, 1)
 
         dispatchSyncNewThread {
-            var config = Realm.Configuration.defaultConfiguration
+            var config = RealmLegacy.Configuration.defaultConfiguration
             config.fileURL = config.fileURL!.deletingLastPathComponent().appendingPathComponent("newpath.realm")
             config.objectTypes = [SwiftEmployeeObject.self,
                                   SwiftStringObject.self,
                                   SwiftIntObject.self]
 
-            let realm = try! Realm(configuration: config) // Different realm config than original
+            let realm = try! RealmLegacy(configuration: config) // Different realm config than original
             try! realm.write({
                 let stringObj = realm.create(SwiftStringObject.self, value: ["stringCol": "after"])
                 let intObj = realm.create(SwiftIntObject.self, value: ["intCol": 2])
@@ -512,7 +512,7 @@ class ThreadSafeWrapperTests: ThreadSafeReferenceTests {
         XCTAssertEqual(testStruct.intObject!.intCol, 1)
 
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             try! realm.write {
                 self.assertThrows(testStruct.stringObject = SwiftStringObject(),
                                   reason: "Only managed objects may be wrapped as thread safe.")
@@ -521,7 +521,7 @@ class ThreadSafeWrapperTests: ThreadSafeReferenceTests {
     }
 
     func testThreadSafeWrapperToList() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let company = SwiftCompanyObject()
         try! realm.write {
             realm.add(company)
@@ -532,7 +532,7 @@ class ThreadSafeWrapperTests: ThreadSafeReferenceTests {
         XCTAssertEqual("jg", company.employees[0].name)
         let testStruct = TestThreadSafeWrapperStruct(employees: company.employees)
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             XCTAssertEqual(1, testStruct.employees!.count)
             XCTAssertEqual("jg", testStruct.employees![0].name)
 
@@ -552,7 +552,7 @@ class ThreadSafeWrapperTests: ThreadSafeReferenceTests {
 
     func testThreadSafeWrapperToMap() {
         let testStruct = TestThreadSafeWrapperStruct()
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             let mapObject = SwiftMapObject()
             mapObject.object["before"] = realm.create(SwiftStringObject.self, value: ["stringCol": "first"])
@@ -562,7 +562,7 @@ class ThreadSafeWrapperTests: ThreadSafeReferenceTests {
         dispatchSyncNewThread {
             XCTAssertEqual(testStruct.stringMap?.count, 1)
             XCTAssertEqual(testStruct.stringMap?["before"]??.stringCol, "first")
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             try! realm.write {
                 let swiftStringObject = realm.create(SwiftStringObject.self, value: ["stringCol": "second"])
                 testStruct.stringMap!["after"] = swiftStringObject
@@ -574,7 +574,7 @@ class ThreadSafeWrapperTests: ThreadSafeReferenceTests {
     }
 
     func testThreadSafeWrapperToMutableSet() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let company = SwiftCompanyObject()
         try! realm.write {
             realm.add(company)
@@ -584,7 +584,7 @@ class ThreadSafeWrapperTests: ThreadSafeReferenceTests {
         XCTAssertEqual("jg", company.employeeSet[0].name)
         let testStruct = TestThreadSafeWrapperStruct(employeeSet: company.employeeSet)
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             XCTAssertEqual(1, testStruct.employeeSet!.count)
             XCTAssertEqual("jg", testStruct.employeeSet![0].name)
 
@@ -601,7 +601,7 @@ class ThreadSafeWrapperTests: ThreadSafeReferenceTests {
     }
 
     func testThreadSafeWrapperToResults() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let allObjects = realm.objects(SwiftStringObject.self)
         let results = allObjects
             .filter("stringCol != 'C'")
@@ -619,7 +619,7 @@ class ThreadSafeWrapperTests: ThreadSafeReferenceTests {
         XCTAssertEqual("B", resultsStruct.results![1].stringCol)
         XCTAssertEqual("A", resultsStruct.results![2].stringCol)
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             let allObjects = realm.objects(SwiftStringObject.self)
             XCTAssertEqual(4, allObjects.count)
             XCTAssertEqual(3, resultsStruct.results!.count)
@@ -644,7 +644,7 @@ class ThreadSafeWrapperTests: ThreadSafeReferenceTests {
     }
 
     func testThreadSafeWrapperLinkingObjects() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let dog = SwiftDogObject(value: ["dogName": "Cookie", "age": 10])
 
         try! realm.write {
@@ -655,7 +655,7 @@ class ThreadSafeWrapperTests: ThreadSafeReferenceTests {
         XCTAssertEqual(1, linkingObjectsStruct.owners!.count)
         XCTAssertEqual("Andrea", linkingObjectsStruct.owners![0].name)
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             XCTAssertEqual(1, linkingObjectsStruct.owners!.count)
             XCTAssertEqual("Andrea", linkingObjectsStruct.owners![0].name)
 
@@ -670,7 +670,7 @@ class ThreadSafeWrapperTests: ThreadSafeReferenceTests {
     }
 
     func testThreadSafeWrapperToAnyRealmCollection() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         let company = SwiftCompanyObject()
         try! realm.write {
             realm.add(company)
@@ -722,7 +722,7 @@ extension ThreadSafeWrapperTests {
     func testThreadSafeWrapperInline() throws {
         let values = ["A", "B", "C", "D"]
         try autoreleasepool {
-            let realm = try Realm()
+            let realm = try RealmLegacy()
             try realm.write {
                 realm.create(SwiftStringObject.self, value: ["A"])
                 realm.create(SwiftStringObject.self, value: ["B"])
@@ -731,7 +731,7 @@ extension ThreadSafeWrapperTests {
             }
         }
 
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         @ThreadSafe var results = realm.objects(SwiftStringObject.self)
         dispatchSyncNewThread {
             guard let results = results else {
@@ -753,7 +753,7 @@ extension ThreadSafeWrapperTests {
 
     func mutateStringCol(@ThreadSafe stringObj: SwiftStringObject?) {
         dispatchSyncNewThread {
-            let realm = try! Realm()
+            let realm = try! RealmLegacy()
             try! realm.write {
                 stringObj?.stringCol = "after"
             }
@@ -761,7 +761,7 @@ extension ThreadSafeWrapperTests {
     }
 
     func testThreadSafeFunctionArgument() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         @ThreadSafe var stringObj = try! realm.write {
             realm.create(SwiftStringObject.self, value: ["stringCol": "before"])
         }
@@ -781,7 +781,7 @@ extension ThreadSafeWrapperTests {
     }
 
     func testThreadSafeMultipleDispatch() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         @ThreadSafe var obj = try! realm.write {
             realm.create(SwiftStringObject.self, value: ["stringCol": "before"])
         }

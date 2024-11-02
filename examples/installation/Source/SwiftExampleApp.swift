@@ -29,7 +29,7 @@ class MyModel: Object {
 
 @main
 struct SwiftExampleApp: SwiftUI.App {
-    let realm = try! Realm()
+    let realm = try! RealmLegacy()
 #if COCOAPODS
     let subrealm = try! SubRealm.findTestModel()
 #endif

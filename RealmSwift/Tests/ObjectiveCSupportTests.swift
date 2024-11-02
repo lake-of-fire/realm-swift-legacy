@@ -25,7 +25,7 @@ class ObjectiveCSupportTests: TestCase {
 
     func testSupport() {
 
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
 
         try! realm.write {
             realm.add(SwiftObject())
@@ -73,7 +73,7 @@ class ObjectiveCSupportTests: TestCase {
     }
 
     func testConfigurationSupport() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
 
         try! realm.write {
             realm.add(SwiftObject())

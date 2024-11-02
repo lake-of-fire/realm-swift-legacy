@@ -360,7 +360,7 @@ class FLXSwiftUISyncUITests: SwiftUISyncUITests {
         try createFlexibleSyncApp()
     }
 
-    override func configuration(user: User) -> Realm.Configuration {
+    override func configuration(user: User) -> RealmLegacy.Configuration {
         user.flexibleSyncConfiguration()
     }
 

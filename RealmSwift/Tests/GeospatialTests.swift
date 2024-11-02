@@ -20,7 +20,7 @@ import XCTest
 import RealmSwiftLegacy
 import RealmLegacy.Private
 
-// Template `EmbeddedObject` for storing GeoPoints in Realm.
+// Template `EmbeddedObject` for storing GeoPoints in RealmLegacy.
 public class Location: EmbeddedObject {
     @Persisted private(set) var coordinates: List<Double>
     @Persisted public var type: String = "Point" // public for testing

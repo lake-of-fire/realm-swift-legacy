@@ -26,7 +26,7 @@ import RealmSwiftLegacySyncTestSupport
 @available(macOS 13, *)
 @objc(SwiftObjectServerPartitionTests)
 class SwiftObjectServerPartitionTests: SwiftSyncTestCase {
-    func configuration(_ user: User, _ partitionValue: some BSON) -> Realm.Configuration {
+    func configuration(_ user: User, _ partitionValue: some BSON) -> RealmLegacy.Configuration {
         var config = user.configuration(partitionValue: partitionValue)
         config.objectTypes = [SwiftPerson.self]
         return config
@@ -35,7 +35,7 @@ class SwiftObjectServerPartitionTests: SwiftSyncTestCase {
 
     func writeObjects(_ user: User, _ partitionValue: some BSON) throws {
         try autoreleasepool {
-            let realm = try Realm(configuration: configuration(user, partitionValue))
+            let realm = try RealmLegacy(configuration: configuration(user, partitionValue))
             try realm.write {
                 realm.add(SwiftPerson(firstName: "Ringo", lastName: "Starr"))
                 realm.add(SwiftPerson(firstName: "John", lastName: "Lennon"))
@@ -52,7 +52,7 @@ class SwiftObjectServerPartitionTests: SwiftSyncTestCase {
         let partitionApp = app(id: appId)
         let user = createUser(for: partitionApp)
         let user2 = createUser(for: partitionApp)
-        let realm = try Realm(configuration: configuration(user, partitionValue))
+        let realm = try RealmLegacy(configuration: configuration(user, partitionValue))
         checkCount(expected: 0, realm, SwiftPerson.self)
 
         try writeObjects(user2, partitionValue)

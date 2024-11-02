@@ -34,7 +34,7 @@ class SwiftUIServerTests: SwiftSyncTestCase {
     }
 
     // Configuration for tests
-    private func configuration<T: BSON>(user: User, partition: T) -> Realm.Configuration {
+    private func configuration<T: BSON>(user: User, partition: T) -> RealmLegacy.Configuration {
         var userConfiguration = user.configuration(partitionValue: partition)
         userConfiguration.objectTypes = self.objectTypes
         return userConfiguration
@@ -49,11 +49,11 @@ class SwiftUIServerTests: SwiftSyncTestCase {
     var cancellables: Set<AnyCancellable> = []
 
     // MARK: - AsyncOpen
-    func asyncOpen(appId: String?, partitionValue: String, configuration: Realm.Configuration?,
+    func asyncOpen(appId: String?, partitionValue: String, configuration: RealmLegacy.Configuration?,
                    timeout: UInt? = nil, handler: @escaping (AsyncOpenState) -> Void) {
         let asyncOpen = AsyncOpen(appId: appId,
                                   partitionValue: partitionValue,
-                                  configuration: configuration ?? Realm.Configuration(objectTypes: self.objectTypes),
+                                  configuration: configuration ?? RealmLegacy.Configuration(objectTypes: self.objectTypes),
                                   timeout: timeout)
         _ = asyncOpen.wrappedValue // Retrieving the wrappedValue to simulate a SwiftUI environment where this is called when initialising the view.
         asyncOpen.projectedValue
@@ -251,7 +251,7 @@ class SwiftUIServerTests: SwiftSyncTestCase {
     }
 
     // MARK: - AutoOpen
-    func autoOpen(appId: String?, partitionValue: String, configuration: Realm.Configuration?,
+    func autoOpen(appId: String?, partitionValue: String, configuration: RealmLegacy.Configuration?,
                   timeout: UInt?, handler: @escaping (AsyncOpenState) -> Void) {
         let autoOpen = AutoOpen(appId: appId,
                                 partitionValue: partitionValue,

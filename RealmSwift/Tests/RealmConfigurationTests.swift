@@ -18,13 +18,13 @@
 
 import XCTest
 import RealmSwiftLegacy
-import class Realm.Private.RLMRealmConfiguration
+import class RealmLegacy.Private.RLMRealmConfiguration
 
 class RealmConfigurationTests: TestCase {
     func testDefaultConfiguration() {
-        let defaultConfiguration = Realm.Configuration.defaultConfiguration
+        let defaultConfiguration = RealmLegacy.Configuration.defaultConfiguration
 
-        XCTAssertEqual(defaultConfiguration.fileURL, try! Realm().configuration.fileURL)
+        XCTAssertEqual(defaultConfiguration.fileURL, try! RealmLegacy().configuration.fileURL)
         XCTAssertNil(defaultConfiguration.inMemoryIdentifier)
         XCTAssertNil(defaultConfiguration.encryptionKey)
         XCTAssertFalse(defaultConfiguration.readOnly)
@@ -33,18 +33,18 @@ class RealmConfigurationTests: TestCase {
     }
 
     func testSetDefaultConfiguration() {
-        let fileURL = Realm.Configuration.defaultConfiguration.fileURL
-        let configuration = Realm.Configuration(fileURL: URL(fileURLWithPath: "/dev/null"))
-        Realm.Configuration.defaultConfiguration = configuration
+        let fileURL = RealmLegacy.Configuration.defaultConfiguration.fileURL
+        let configuration = RealmLegacy.Configuration(fileURL: URL(fileURLWithPath: "/dev/null"))
+        RealmLegacy.Configuration.defaultConfiguration = configuration
         XCTAssertEqual(Realm.Configuration.defaultConfiguration.fileURL, URL(fileURLWithPath: "/dev/null"))
-        Realm.Configuration.defaultConfiguration.fileURL = fileURL
+        RealmLegacy.Configuration.defaultConfiguration.fileURL = fileURL
     }
 
     func testCannotSetMutuallyExclusiveProperties() {
-        var configuration = Realm.Configuration()
+        var configuration = RealmLegacy.Configuration()
         configuration.readOnly = true
         configuration.deleteRealmIfMigrationNeeded = true
-        assertThrows(try! Realm(configuration: configuration),
+        assertThrows(try! RealmLegacy(configuration: configuration),
                      reason: "Cannot set `deleteRealmIfMigrationNeeded` when `readOnly` is set.")
     }
 }

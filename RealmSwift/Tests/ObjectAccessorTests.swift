@@ -883,7 +883,7 @@ class ObjectAccessorTests: TestCase {
     }
 
     func testManagedAccessors() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
         let object = realm.create(SwiftObject.self)
         let optionalObject = realm.create(SwiftOptionalObject.self)
@@ -1037,7 +1037,7 @@ class ObjectAccessorTests: TestCase {
     }
 
     func testSettingOptionalPropertyOnDeletedObjectsThrows() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             let obj = realm.create(SwiftOptionalObject.self)
             let copy = realm.objects(SwiftOptionalObject.self).first!
@@ -1056,7 +1056,7 @@ class ObjectAccessorTests: TestCase {
         let owner = SwiftOwnerObject()
         owner.dog = fido
         owner.name = "JP"
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             realm.add([fido, owner])
         }
@@ -1086,7 +1086,7 @@ class ObjectAccessorTests: TestCase {
         link.array1.append(obj)
         link.set1.insert(obj)
 
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             realm.add(link)
         }
@@ -1136,7 +1136,7 @@ class ObjectAccessorTests: TestCase {
         var realmProperty: RealmProperty<Int?>!
         var list: List<Int>!
         var set: MutableSet<Int>!
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         try! realm.write {
             autoreleasepool {
                 let optObject = realm.create(SwiftOptionalObject.self, value: ["optIntCol": 1, "otherIntCol": 1])
@@ -1201,7 +1201,7 @@ class ObjectAccessorTests: TestCase {
     }
 
     func testSetEmbeddedLink() {
-        let realm = try! Realm()
+        let realm = try! RealmLegacy()
         realm.beginWrite()
 
         let parent = EmbeddedParentObject()

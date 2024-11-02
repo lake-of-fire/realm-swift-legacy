@@ -18,16 +18,16 @@
 
 import RealmLegacy.Private
 
-extension Realm {
+extension RealmLegacy {
     /**
-     A `Configuration` instance describes the different options used to create an instance of a Realm.
+     A `Configuration` instance describes the different options used to create an instance of a RealmLegacy.
 
      `Configuration` instances are just plain Swift structs. Unlike `Realm`s and `Object`s, they can be freely shared
      between threads as long as you do not mutate them.
 
      Creating configuration values for class subsets (by setting the `objectClasses` property) can be expensive. Because
      of this, you will normally want to cache and reuse a single configuration value for each distinct configuration
-     rather than creating a new value each time you open a Realm.
+     rather than creating a new value each time you open a RealmLegacy.
      */
     @frozen public struct Configuration: Sendable {
 
@@ -56,7 +56,7 @@ extension Realm {
                  Synced Realms will set a unique file path unless is an in-memory realm.
 
          - parameter fileURL:            The local URL to the Realm file.
-         - parameter inMemoryIdentifier: A string used to identify a particular in-memory Realm.
+         - parameter inMemoryIdentifier: A string used to identify a particular in-memory RealmLegacy.
          - parameter syncConfiguration:  For Realms intended to sync with Atlas App Services, a sync configuration.
          - parameter encryptionKey:      An optional 64-byte key to use to encrypt the data.
          - parameter readOnly:           Whether the Realm is read-only (must be true for read-only files).
@@ -71,7 +71,7 @@ extension Realm {
 
                                             Return `true ` to indicate that an attempt to compact the file should be made.
                                             The compaction will be skipped if another process is accessing it.
-         - parameter objectTypes:        The subset of `Object` and `EmbeddedObject` subclasses persisted in the Realm.
+         - parameter objectTypes:        The subset of `Object` and `EmbeddedObject` subclasses persisted in the RealmLegacy.
          - parameter seedFilePath:       The path to the realm file that will be copied to the fileURL when opened
                                          for the first time.
         */
@@ -127,7 +127,7 @@ extension Realm {
             }
         }
 
-        /// A string used to identify a particular in-memory Realm. Mutually exclusive with `fileURL`.
+        /// A string used to identify a particular in-memory RealmLegacy. Mutually exclusive with `fileURL`.
         public var inMemoryIdentifier: String? {
             get {
                 return _inMemoryIdentifier
@@ -154,7 +154,7 @@ extension Realm {
          transaction from another process will result in crashes.
 
          Synchronized Realms must always be writeable (as otherwise no synchronization could happen),
-         and this instead merely disallows performing write transactions on the Realm. In addition,
+         and this instead merely disallows performing write transactions on the RealmLegacy. In addition,
          it will skip some automatic writes made to the Realm, such as to initialize the Realm's
          schema. Setting `readOnly = YES` is not strictly required for Realms which the sync user
          does not have write access to, but is highly recommended as it will improve error reporting
@@ -205,7 +205,7 @@ extension Realm {
         @preconcurrency
         public var shouldCompactOnLaunch: (@Sendable (Int, Int) -> Bool)?
 
-        /// The classes managed by the Realm.
+        /// The classes managed by the RealmLegacy.
         public var objectTypes: [ObjectBase.Type]? {
             get {
                 return self.customSchema.map { $0.objectSchema.compactMap { $0.objectClass as? ObjectBase.Type } }
@@ -262,10 +262,10 @@ extension Realm {
          */
         public var eventConfiguration: EventConfiguration?
 
-        /// A custom schema to use for the Realm.
+        /// A custom schema to use for the RealmLegacy.
         private var customSchema: RLMSchema?
 
-        /// If `true`, disables automatic format upgrades when accessing the Realm.
+        /// If `true`, disables automatic format upgrades when accessing the RealmLegacy.
         internal var disableFormatUpgrade: Bool = false
 
         // MARK: Flexible Sync
@@ -350,7 +350,7 @@ extension Realm {
 
 // MARK: CustomStringConvertible
 
-extension Realm.Configuration: CustomStringConvertible {
+extension RealmLegacy.Configuration: CustomStringConvertible {
     /// A human-readable description of the configuration value.
     public var description: String {
         return gsub(pattern: "\\ARLMRealmConfiguration",
@@ -361,8 +361,8 @@ extension Realm.Configuration: CustomStringConvertible {
 
 // MARK: Equatable
 
-extension Realm.Configuration: Equatable {
-    public static func == (lhs: Realm.Configuration, rhs: Realm.Configuration) -> Bool {
+extension RealmLegacy.Configuration: Equatable {
+    public static func == (lhs: RealmLegacy.Configuration, rhs: RealmLegacy.Configuration) -> Bool {
         lhs.encryptionKey == rhs.encryptionKey &&
             lhs.fileURL == rhs.fileURL &&
             lhs.syncConfiguration?.partitionValue == rhs.syncConfiguration?.partitionValue &&

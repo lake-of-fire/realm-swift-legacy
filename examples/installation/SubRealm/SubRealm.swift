@@ -24,7 +24,7 @@ public class TestObject: Object {
 
 public class SubRealm {
     public static func storeTestModel() throws {
-        let realm = try Realm()
+        let realm = try RealmLegacy()
         let model = TestObject()
         model.name = "Test"
         try realm.write {
@@ -33,7 +33,7 @@ public class SubRealm {
     }
 
     public static func findTestModel() throws -> TestObject? {
-        let realm = try Realm()
+        let realm = try RealmLegacy()
         return realm.objects(TestObject.self).first
     }
 }

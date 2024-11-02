@@ -169,7 +169,7 @@ import RealmLegacy
             return nil
         }
         return { localRealm in
-            return object(Realm(localRealm))
+            return object(RealmLegacy(localRealm))
         }
     }
 
@@ -191,7 +191,7 @@ import RealmLegacy
             return nil
         }
         return { localRealm, remoteRealm in
-            return object(Realm(localRealm), RealmLegacy(remoteRealm))
+            return object(RealmLegacy(localRealm), RealmLegacy(remoteRealm))
         }
     }
 

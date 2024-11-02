@@ -502,7 +502,7 @@ extension SectionedResultImpl {
     public var endIndex: Int { Int(collection.count) }
 
     public var realm: RealmLegacy? {
-        collection.realm.map(Realm.init)
+        collection.realm.map(RealmLegacy.init)
     }
     public var isInvalidated: Bool {
         collection.isInvalidated

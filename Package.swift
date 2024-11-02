@@ -1,4 +1,4 @@
-// swift-tools-version:5.7
+// swift-tools-version:5.9
 
 import PackageDescription
 import Foundation
@@ -140,8 +140,8 @@ let package = Package(
     name: "RealmLegacy",
     platforms: [
         .macOS(.v10_13),
-        .iOS(.v11),
-        .tvOS(.v11),
+        .iOS(.v12),
+        .tvOS(.v12),
         .watchOS(.v4)
     ],
     products: [

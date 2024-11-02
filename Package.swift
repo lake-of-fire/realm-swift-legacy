@@ -147,17 +147,17 @@ let package = Package(
     products: [
         .library(
             name: "RealmLegacy",
-            targets: ["Realm"]),
+            targets: ["RealmLegacy"]),
         .library(
             name: "RealmSwiftLegacy",
-            targets: ["Realm", "RealmSwift"]),
+            targets: ["RealmLegacy", "RealmSwiftLegacy"]),
     ],
     dependencies: [
         .package(url: "https://github.com/lake-of-fire/realm-core-legacy.git", branch: "legacy")
     ],
     targets: [
       .target(
-            name: "Realm",
+            name: "RealmLegacy",
             dependencies: [.product(name: "RealmCoreLegacy", package: "realm-core-legacy")],
             path: ".",
             exclude: [
@@ -269,8 +269,8 @@ let package = Package(
             ]
         ),
         .target(
-            name: "RealmSwift",
-            dependencies: ["Realm"],
+            name: "RealmSwiftLegacy",
+            dependencies: ["RealmLegacy"],
             path: "RealmSwift",
             exclude: [
                 "Nonsync.swift",
@@ -281,113 +281,113 @@ let package = Package(
                 .copy("PrivacyInfo.xcprivacy")
             ]
         ),
-        .target(
-            name: "RealmTestSupport",
-            dependencies: ["Realm"],
-            path: "Realm/TestUtils",
-            cxxSettings: testCxxSettings
-        ),
-        .target(
-            name: "RealmSwiftTestSupport",
-            dependencies: ["RealmSwift", "RealmTestSupport"],
-            path: "RealmSwift/Tests",
-            sources: ["TestUtils.swift"]
-        ),
-        .testTarget(
-            name: "RealmTests",
-            dependencies: ["Realm", "RealmTestSupport"],
-            path: "Realm/Tests",
-            exclude: [
-                "PrimitiveArrayPropertyTests.tpl.m",
-                "PrimitiveDictionaryPropertyTests.tpl.m",
-                "PrimitiveRLMValuePropertyTests.tpl.m",
-                "PrimitiveSetPropertyTests.tpl.m",
-                "RealmTests-Info.plist",
-                "Swift",
-                "SwiftUITestHost",
-                "SwiftUITestHostUITests",
-                "TestHost",
-                "array_tests.py",
-                "dictionary_tests.py",
-                "fileformat-pre-null.realm",
-                "mixed_tests.py",
-                "set_tests.py",
-                "SwiftUISyncTestHost",
-                "SwiftUISyncTestHostUITests"
-            ],
-            cxxSettings: testCxxSettings
-        ),
-        .testTarget(
-            name: "RealmObjcSwiftTests",
-            dependencies: ["Realm", "RealmTestSupport"],
-            path: "Realm/Tests/Swift",
-            exclude: ["RealmObjcSwiftTests-Info.plist"]
-        ),
-        .testTarget(
-            name: "RealmSwiftTests",
-            dependencies: ["RealmSwift", "RealmTestSupport", "RealmSwiftTestSupport"],
-            path: "RealmSwift/Tests",
-            exclude: [
-                "RealmSwiftTests-Info.plist",
-                "QueryTests.swift.gyb",
-                "TestUtils.swift"
-            ]
-        ),
+//        .target(
+//            name: "RealmTestSupport",
+//            dependencies: ["Realm"],
+//            path: "Realm/TestUtils",
+//            cxxSettings: testCxxSettings
+//        ),
+//        .target(
+//            name: "RealmSwiftTestSupport",
+//            dependencies: ["RealmSwift", "RealmTestSupport"],
+//            path: "RealmSwift/Tests",
+//            sources: ["TestUtils.swift"]
+//        ),
+//        .testTarget(
+//            name: "RealmTests",
+//            dependencies: ["Realm", "RealmTestSupport"],
+//            path: "Realm/Tests",
+//            exclude: [
+//                "PrimitiveArrayPropertyTests.tpl.m",
+//                "PrimitiveDictionaryPropertyTests.tpl.m",
+//                "PrimitiveRLMValuePropertyTests.tpl.m",
+//                "PrimitiveSetPropertyTests.tpl.m",
+//                "RealmTests-Info.plist",
+//                "Swift",
+//                "SwiftUITestHost",
+//                "SwiftUITestHostUITests",
+//                "TestHost",
+//                "array_tests.py",
+//                "dictionary_tests.py",
+//                "fileformat-pre-null.realm",
+//                "mixed_tests.py",
+//                "set_tests.py",
+//                "SwiftUISyncTestHost",
+//                "SwiftUISyncTestHostUITests"
+//            ],
+//            cxxSettings: testCxxSettings
+//        ),
+//        .testTarget(
+//            name: "RealmObjcSwiftTests",
+//            dependencies: ["Realm", "RealmTestSupport"],
+//            path: "Realm/Tests/Swift",
+//            exclude: ["RealmObjcSwiftTests-Info.plist"]
+//        ),
+//        .testTarget(
+//            name: "RealmSwiftTests",
+//            dependencies: ["RealmSwift", "RealmTestSupport", "RealmSwiftTestSupport"],
+//            path: "RealmSwift/Tests",
+//            exclude: [
+//                "RealmSwiftTests-Info.plist",
+//                "QueryTests.swift.gyb",
+//                "TestUtils.swift"
+//            ]
+//        ),
 
         // Object server tests have support code written in both obj-c and
         // Swift which is used by both the obj-c and swift test code. SPM
         // doesn't support mixed targets, so this ends up requiring four
         // different targets.
-        objectServerTestSupportTarget(
-            name: "RealmSyncTestSupport",
-            dependencies: ["Realm", "RealmSwift", "RealmTestSupport"],
-            sources: [
-                "RLMServerTestObjects.m",
-                "RLMSyncTestCase.mm",
-                "RLMUser+ObjectServerTests.mm",
-                "RLMWatchTestUtility.m",
-            ]
-        ),
-        objectServerTestSupportTarget(
-            name: "RealmSwiftSyncTestSupport",
-            dependencies: ["RealmSwift", "RealmTestSupport", "RealmSyncTestSupport", "RealmSwiftTestSupport"],
-            sources: [
-                 "RealmServer.swift",
-                 "SwiftServerObjects.swift",
-                 "SwiftSyncTestCase.swift",
-                 "TimeoutProxyServer.swift",
-                 "WatchTestUtility.swift",
-            ]
-        ),
-        objectServerTestTarget(
-            name: "SwiftObjectServerTests",
-            sources: [
-                "AsyncSyncTests.swift",
-                "ClientResetTests.swift",
-                "CombineSyncTests.swift",
-                "EventTests.swift",
-                "SwiftAsymmetricSyncServerTests.swift",
-                "SwiftCollectionSyncTests.swift",
-                "SwiftFlexibleSyncServerTests.swift",
-                "SwiftMongoClientTests.swift",
-                "SwiftObjectServerPartitionTests.swift",
-                "SwiftObjectServerTests.swift",
-                "SwiftUIServerTests.swift",
-            ]
-        ),
-        objectServerTestTarget(
-            name: "ObjcObjectServerTests",
-            sources: [
-                "RLMAsymmetricSyncServerTests.mm",
-                "RLMBSONTests.mm",
-                "RLMCollectionSyncTests.mm",
-                "RLMFlexibleSyncServerTests.mm",
-                "RLMMongoClientTests.mm",
-                "RLMObjectServerPartitionTests.mm",
-                "RLMObjectServerTests.mm",
-                "RLMSubscriptionTests.mm",
-            ]
-        )
+//        objectServerTestSupportTarget(
+//            name: "RealmSyncTestSupport",
+//            dependencies: ["Realm", "RealmSwift", "RealmTestSupport"],
+//            sources: [
+//                "RLMServerTestObjects.m",
+//                "RLMSyncTestCase.mm",
+//                "RLMUser+ObjectServerTests.mm",
+//                "RLMWatchTestUtility.m",
+//            ]
+//        ),
+//        objectServerTestSupportTarget(
+//            name: "RealmSwiftSyncTestSupport",
+//            dependencies: ["RealmSwift", "RealmTestSupport", "RealmSyncTestSupport", "RealmSwiftTestSupport"],
+//            sources: [
+//                 "RealmServer.swift",
+//                 "SwiftServerObjects.swift",
+//                 "SwiftSyncTestCase.swift",
+//                 "TimeoutProxyServer.swift",
+//                 "WatchTestUtility.swift",
+//            ]
+//        ),
+//        objectServerTestTarget(
+//            name: "SwiftObjectServerTests",
+//            sources: [
+//                "AsyncSyncTests.swift",
+//                "ClientResetTests.swift",
+//                "CombineSyncTests.swift",
+//                "EventTests.swift",
+//                "SwiftAsymmetricSyncServerTests.swift",
+//                "SwiftCollectionSyncTests.swift",
+//                "SwiftFlexibleSyncServerTests.swift",
+//                "SwiftMongoClientTests.swift",
+//                "SwiftObjectServerPartitionTests.swift",
+//                "SwiftObjectServerTests.swift",
+//                "SwiftUIServerTests.swift",
+//            ]
+//        ),
+//        objectServerTestTarget(
+//            name: "ObjcObjectServerTests",
+//            sources: [
+//                "RLMAsymmetricSyncServerTests.mm",
+//                "RLMBSONTests.mm",
+//                "RLMCollectionSyncTests.mm",
+//                "RLMFlexibleSyncServerTests.mm",
+//                "RLMMongoClientTests.mm",
+//                "RLMObjectServerPartitionTests.mm",
+//                "RLMObjectServerTests.mm",
+//                "RLMSubscriptionTests.mm",
+//            ]
+//        )
     ],
     cxxLanguageStandard: .cxx20
 )

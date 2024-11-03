@@ -1,0 +1,1 @@
+../../Realm/LEGACYRealmConfiguration.h

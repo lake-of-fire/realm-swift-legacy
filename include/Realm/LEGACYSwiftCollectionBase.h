@@ -1,0 +1,1 @@
+../../Realm/LEGACYSwiftCollectionBase.h

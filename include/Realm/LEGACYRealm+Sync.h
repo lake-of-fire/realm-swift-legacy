@@ -1,0 +1,1 @@
+../../Realm/LEGACYRealm+Sync.h

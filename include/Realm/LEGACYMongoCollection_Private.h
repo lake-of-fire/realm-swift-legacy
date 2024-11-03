@@ -1,0 +1,1 @@
+../../Realm/LEGACYMongoCollection_Private.h

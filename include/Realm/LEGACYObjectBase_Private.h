@@ -1,0 +1,1 @@
+../../Realm/LEGACYObjectBase_Private.h

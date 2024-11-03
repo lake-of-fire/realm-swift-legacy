@@ -1,0 +1,1 @@
+../../Realm/LEGACYCollection_Private.h

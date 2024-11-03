@@ -1,0 +1,1 @@
+../../Realm/NSError+LEGACYSync.h

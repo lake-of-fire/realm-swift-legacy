@@ -1,0 +1,1 @@
+../../Realm/LEGACYSchema_Private.h

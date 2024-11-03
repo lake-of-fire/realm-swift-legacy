@@ -38,68 +38,6 @@ let testCxxSettings: [CXXSetting] = cxxSettings + [
 
 // SPM requires all targets to explicitly include or exclude every file, which
 // gets very awkward when we have four targets building from a single directory
-let objectServerTestSources = [
-    "AsyncSyncTests.swift",
-    "ClientResetTests.swift",
-    "CombineSyncTests.swift",
-    "EventTests.swift",
-    "Object-Server-Tests-Bridging-Header.h",
-    "ObjectServerTests-Info.plist",
-    "LEGACYAsymmetricSyncServerTests.mm",
-    "LEGACYBSONTests.mm",
-    "LEGACYCollectionSyncTests.mm",
-    "LEGACYFlexibleSyncServerTests.mm",
-    "LEGACYMongoClientTests.mm",
-    "LEGACYObjectServerPartitionTests.mm",
-    "LEGACYObjectServerTests.mm",
-    "LEGACYServerTestObjects.h",
-    "LEGACYServerTestObjects.m",
-    "LEGACYSubscriptionTests.mm",
-    "LEGACYSyncTestCase.h",
-    "LEGACYSyncTestCase.mm",
-    "LEGACYUser+ObjectServerTests.h",
-    "LEGACYUser+ObjectServerTests.mm",
-    "LEGACYWatchTestUtility.h",
-    "LEGACYWatchTestUtility.m",
-    "RealmServer.swift",
-    "SwiftAsymmetricSyncServerTests.swift",
-    "SwiftCollectionSyncTests.swift",
-    "SwiftFlexibleSyncServerTests.swift",
-    "SwiftMongoClientTests.swift",
-    "SwiftObjectServerPartitionTests.swift",
-    "SwiftObjectServerTests.swift",
-    "SwiftServerObjects.swift",
-    "SwiftSyncTestCase.swift",
-    "SwiftUIServerTests.swift",
-    "TimeoutProxyServer.swift",
-    "WatchTestUtility.swift",
-    "certificates",
-    "config_overrides.json",
-    "include",
-    "setup_baas.rb",
-]
-
-func objectServerTestSupportTarget(name: String, dependencies: [Target.Dependency], sources: [String]) -> Target {
-    .target(
-        name: name,
-        dependencies: dependencies,
-        path: "Realm/ObjectServerTests",
-        exclude: objectServerTestSources.filter { !sources.contains($0) },
-        sources: sources,
-        cxxSettings: testCxxSettings
-    )
-}
-
-func objectServerTestTarget(name: String, sources: [String]) -> Target {
-    .testTarget(
-        name: name,
-        dependencies: ["RealmSwift", "RealmTestSupport", "RealmSyncTestSupport", "RealmSwiftSyncTestSupport"],
-        path: "Realm/ObjectServerTests",
-        exclude: objectServerTestSources.filter { !sources.contains($0) },
-        sources: sources,
-        cxxSettings: testCxxSettings
-    )
-}
 
 func runCommand() -> String {
     let task = Process()
@@ -168,7 +106,6 @@ let package = Package(
                 "Package.swift",
                 "README.md",
                 "Realm.xcodeproj",
-                "Realm/ObjectServerTests",
                 "Realm/Realm-Info.plist",
                 "Realm/Swift/LEGACYSupport.swift",
                 "RealmSwift",

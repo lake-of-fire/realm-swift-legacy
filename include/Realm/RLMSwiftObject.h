@@ -1,1 +1,0 @@
-../../Realm/RLMSwiftObject.h

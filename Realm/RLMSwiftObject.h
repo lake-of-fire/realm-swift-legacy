@@ -70,7 +70,7 @@ LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  See our [Objective-C guide](https://docs.mongodb.com/realm/sdk/swift/fundamentals/relationships/) for more details.
  */
-@interface RealmSwiftObject : LEGACYObjectBase
+@interface RealmSwiftLegacyObject : LEGACYObjectBase
 @end
 
 /**

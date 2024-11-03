@@ -69,7 +69,7 @@ void LEGACYCreateAsymmetricObjectInRealm(LEGACYRealm *realm, NSString *className
 //
 
 
-// Perform the per-property accessor initialization for a managed RealmSwiftObject
+// Perform the per-property accessor initialization for a managed RealmSwiftLegacyObject
 // promotingExisting should be true if the object was previously used as an
 // unmanaged object, and false if it is a newly created object.
 void LEGACYInitializeSwiftAccessor(LEGACYObjectBase *object, bool promotingExisting);

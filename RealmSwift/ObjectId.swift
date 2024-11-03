@@ -30,7 +30,7 @@ import RealmLegacy
 
  ObjectIds are intended to be fast to generate. Sorting by an ObjectId field will typically result in the objects being sorted in creation order.
  */
-@objc(RealmSwiftObjectId)
+@objc(RealmSwiftLegacyObjectId)
 public final class ObjectId: LEGACYObjectId, Decodable, @unchecked Sendable {
     // MARK: Initializers
 

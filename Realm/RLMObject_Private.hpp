@@ -59,5 +59,5 @@ static inline void LEGACYVerifyInWriteTransaction(__unsafe_unretained LEGACYObje
 }
 
 [[clang::objc_runtime_visible]]
-@interface RealmSwiftDynamicObject : RealmSwiftObject
+@interface RealmSwiftLegacyDynamicObject : RealmSwiftLegacyObject
 @end

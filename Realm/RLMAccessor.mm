@@ -637,7 +637,7 @@ void LEGACYReplaceClassNameMethod(Class accessorClass, NSString *className) {
 
 // implement the shared schema method
 void LEGACYReplaceSharedSchemaMethod(Class accessorClass, LEGACYObjectSchema *schema) {
-    REALM_ASSERT(accessorClass != [RealmSwiftObject class]);
+    REALM_ASSERT(accessorClass != [RealmSwiftLegacyObject class]);
     Class metaClass = object_getClass(accessorClass);
     IMP imp = imp_implementationWithBlock(^(Class cls) {
         if (cls == accessorClass) {

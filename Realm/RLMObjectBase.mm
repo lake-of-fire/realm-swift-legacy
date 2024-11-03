@@ -833,7 +833,7 @@ uint64_t LEGACYObjectBaseGetCombineId(__unsafe_unretained LEGACYObjectBase *cons
     return reinterpret_cast<uint64_t>((__bridge void *)obj);
 }
 
-@implementation RealmSwiftObject
+@implementation RealmSwiftLegacyObject
 + (BOOL)accessInstanceVariablesDirectly {
     // By default KVO will try to directly read ivars if a thing with a matching
     // name is observed and there's no objc property with that name. This

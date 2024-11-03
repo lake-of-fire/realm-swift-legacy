@@ -153,7 +153,7 @@ LEGACYObjectBase *LEGACYObjectFromObjLink(LEGACYRealm *realm, realm::ObjLink&& o
     } else {
         // Construct the object dynamically.
         // This code path should only be hit on first access of the object.
-        Class cls = parentIsSwiftObject ? [RealmSwiftDynamicObject class] : [LEGACYDynamicObject class];
+        Class cls = parentIsSwiftObject ? [RealmSwiftLegacyDynamicObject class] : [LEGACYDynamicObject class];
         auto& group = realm->_realm->read_group();
         auto schema = std::make_unique<realm::ObjectSchema>(group,
                                                             group.get_table_name(objLink.get_table_key()),

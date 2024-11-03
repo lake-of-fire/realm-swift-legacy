@@ -95,7 +95,7 @@ id LEGACYBridgeSwiftValue(__unsafe_unretained id value) {
 }
 
 bool LEGACYIsSwiftObjectClass(Class cls) {
-    return [cls isSubclassOfClass:RealmSwiftObject.class]
+    return [cls isSubclassOfClass:RealmSwiftLegacyObject.class]
         || [cls isSubclassOfClass:RealmSwiftEmbeddedObject.class];
 }
 

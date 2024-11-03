@@ -6251,7 +6251,7 @@ This does not effect non-synchronized Realms.
 
 * The static type passed at compile time to `realm.create()` was checked for a
   primary key rather than the actual type passed at runtime, resulting in
-  exceptions like "''RealmSwiftObject' does not have a primary key and can not
+  exceptions like "''RealmSwiftLegacyObject' does not have a primary key and can not
   be updated'" being thrown even if the object type being created has a primary
   key. (since 3.16.0, [#6159](https://github.com/realm/realm-swift/issues/6159)).
 
@@ -6358,7 +6358,7 @@ not need to worry about this.
 
 ### Fixed
 
-* Fix "Cannot find interface declaration for 'RealmSwiftObject', superclass of
+* Fix "Cannot find interface declaration for 'RealmSwiftLegacyObject', superclass of
   'MyRealmObjectClass'" errors when building for a simulator with Xcode 10.2
   with "Install Objective-C Compatibility Header" enabled.
 

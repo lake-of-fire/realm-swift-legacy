@@ -397,12 +397,12 @@ class ObjectSchemaInitializationTests: TestCase {
         assertThrows(RLMProperty(name: "name", value: Object()),
                      reason: "Object property 'name' must be marked as optional.")
         assertThrows(RLMProperty(name: "name", value: List<Object?>()),
-                     reason: "List<RealmSwiftObject> property 'name' must not be marked as optional.")
+                     reason: "List<RealmSwiftLegacyObject> property 'name' must not be marked as optional.")
         assertThrows(RLMProperty(name: "name", value: MutableSet<Object?>()),
-                     reason: "MutableSet<RealmSwiftObject> property 'name' must not be marked as optional.")
-        assertType(Object?.none, .object, optional: true, objectType: "RealmSwiftObject")
-        assertType(List<Object>(), .object, list: true, objectType: "RealmSwiftObject", hasSelectors: false)
-        assertType(MutableSet<Object>(), .object, set: true, objectType: "RealmSwiftObject", hasSelectors: false)
+                     reason: "MutableSet<RealmSwiftLegacyObject> property 'name' must not be marked as optional.")
+        assertType(Object?.none, .object, optional: true, objectType: "RealmSwiftLegacyObject")
+        assertType(List<Object>(), .object, list: true, objectType: "RealmSwiftLegacyObject", hasSelectors: false)
+        assertType(MutableSet<Object>(), .object, set: true, objectType: "RealmSwiftLegacyObject", hasSelectors: false)
     }
 
     func assertType<T: _Persistable>(_ type: T.Type, _ propertyType: PropertyType,
@@ -454,7 +454,7 @@ class ObjectSchemaInitializationTests: TestCase {
         assertType(UUID?.self, .UUID, optional: true)
         assertType(Decimal128?.self, .decimal128, optional: true)
         assertType(ObjectId?.self, .objectId, optional: true)
-        assertType(Object?.self, .object, optional: true, objectType: "RealmSwiftObject")
+        assertType(Object?.self, .object, optional: true, objectType: "RealmSwiftLegacyObject")
         assertType(EmbeddedObject?.self, .object, optional: true, objectType: "RealmSwiftEmbeddedObject")
         assertType(ModernIntEnum?.self, .int, optional: true)
         assertType(ModernStringEnum?.self, .string, optional: true)
@@ -474,7 +474,7 @@ class ObjectSchemaInitializationTests: TestCase {
         assertType(List<Decimal128>.self, .decimal128, list: true)
         assertType(List<ObjectId>.self, .objectId, list: true)
         assertType(List<AnyRealmValue>.self, .any, list: true)
-        assertType(List<Object>.self, .object, list: true, objectType: "RealmSwiftObject")
+        assertType(List<Object>.self, .object, list: true, objectType: "RealmSwiftLegacyObject")
         assertType(List<EmbeddedObject>.self, .object, list: true, objectType: "RealmSwiftEmbeddedObject")
 
         assertType(List<Int?>.self, .int, optional: true, list: true)
@@ -507,7 +507,7 @@ class ObjectSchemaInitializationTests: TestCase {
         assertType(MutableSet<Decimal128>.self, .decimal128, set: true)
         assertType(MutableSet<ObjectId>.self, .objectId, set: true)
         assertType(MutableSet<AnyRealmValue>.self, .any, set: true)
-        assertType(MutableSet<Object>.self, .object, set: true, objectType: "RealmSwiftObject")
+        assertType(MutableSet<Object>.self, .object, set: true, objectType: "RealmSwiftLegacyObject")
         assertType(MutableSet<EmbeddedObject>.self, .object, set: true, objectType: "RealmSwiftEmbeddedObject")
 
         assertType(MutableSet<Int?>.self, .int, optional: true, set: true)
@@ -555,30 +555,30 @@ class ObjectSchemaInitializationTests: TestCase {
         assertType(Map<String, UUID?>.self, .UUID, optional: true, map: true)
         assertType(Map<String, Decimal128?>.self, .decimal128, optional: true, map: true)
         assertType(Map<String, ObjectId?>.self, .objectId, optional: true, map: true)
-        assertType(Map<String, Object?>.self, .object, optional: true, map: true, objectType: "RealmSwiftObject")
+        assertType(Map<String, Object?>.self, .object, optional: true, map: true, objectType: "RealmSwiftLegacyObject")
         assertType(Map<String, EmbeddedObject?>.self, .object, optional: true, map: true, objectType: "RealmSwiftEmbeddedObject")
 
         assertThrows(RLMProperty(name: "_name", value: Persisted<Object>()),
                      reason: "Object property 'name' must be marked as optional.")
         assertThrows(RLMProperty(name: "_name", value: Persisted<List<Object?>>()),
-                     reason: "List<RealmSwiftObject> property 'name' must not be marked as optional.")
+                     reason: "List<RealmSwiftLegacyObject> property 'name' must not be marked as optional.")
         assertThrows(RLMProperty(name: "_name", value: Persisted<MutableSet<Object?>>()),
-                     reason: "MutableSet<RealmSwiftObject> property 'name' must not be marked as optional.")
+                     reason: "MutableSet<RealmSwiftLegacyObject> property 'name' must not be marked as optional.")
         assertThrows(RLMProperty(name: "_name", value: Persisted<LinkingObjects<Object>>()),
-                     reason: "LinkingObjects<RealmSwiftObject> property 'name' must set the origin property name with @Persisted(originProperty: \"name\").")
+                     reason: "LinkingObjects<RealmSwiftLegacyObject> property 'name' must set the origin property name with @Persisted(originProperty: \"name\").")
 
         assertThrows(RLMProperty(name: "_name", value: Persisted<EmbeddedObject>()),
                      reason: "Object property 'name' must be marked as optional.")
         assertThrows(RLMProperty(name: "_name", value: Persisted<List<EmbeddedObject?>>()),
-                     reason: "List<RealmSwiftObject> property 'name' must not be marked as optional.")
+                     reason: "List<RealmSwiftLegacyObject> property 'name' must not be marked as optional.")
         assertThrows(RLMProperty(name: "_name", value: Persisted<MutableSet<EmbeddedObject?>>()),
-                     reason: "MutableSet<RealmSwiftObject> property 'name' must not be marked as optional.")
+                     reason: "MutableSet<RealmSwiftLegacyObject> property 'name' must not be marked as optional.")
         assertThrows(RLMProperty(name: "_name", value: Persisted<LinkingObjects<EmbeddedObject>>()),
                      reason: "LinkingObjects<RealmSwiftEmbeddedObject> property 'name' must set the origin property name with @Persisted(originProperty: \"name\").")
         assertThrows(RLMProperty(name: "_name", value: Persisted<Map<String, Object>>()),
-                     reason: "Map<String, RealmSwiftObject> property 'name' must be marked as optional.")
+                     reason: "Map<String, RealmSwiftLegacyObject> property 'name' must be marked as optional.")
         assertThrows(RLMProperty(name: "_name", value: Persisted<Map<String, EmbeddedObject>>()),
-                     reason: "Map<String, RealmSwiftObject> property 'name' must be marked as optional.")
+                     reason: "Map<String, RealmSwiftLegacyObject> property 'name' must be marked as optional.")
     }
 
     func testModernIndexed() {

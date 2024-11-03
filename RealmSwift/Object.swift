@@ -80,7 +80,7 @@ import RealmLegacy.Private
 
  See our [Swift guide](https://docs.mongodb.com/realm/sdk/swift/fundamentals/relationships/) for more details.
  */
-public typealias Object = RealmSwiftObject
+public typealias Object = RealmSwiftLegacyObject
 extension Object: _RealmCollectionValueInsideOptional {
     // MARK: Initializers
 
@@ -682,7 +682,7 @@ extension Object: ThreadConfined {
 
 /// Object interface which allows untyped getters and setters for Objects.
 /// :nodoc:
-@objc(RealmSwiftDynamicObject)
+@objc(RealmSwiftLegacyDynamicObject)
 @dynamicMemberLookup
 public final class DynamicObject: Object {
     public override subscript(key: String) -> Any? {

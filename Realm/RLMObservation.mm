@@ -16,19 +16,19 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMObservation.hpp"
+#import "LEGACYObservation.hpp"
 
-#import "RLMAccessor.h"
-#import "RLMArray_Private.hpp"
-#import "RLMObjectSchema_Private.hpp"
-#import "RLMObject_Private.hpp"
-#import "RLMProperty_Private.h"
-#import "RLMQueryUtil.hpp"
-#import "RLMRealm_Private.hpp"
-#import "RLMSchema_Private.h"
-#import "RLMSet_Private.hpp"
-#import "RLMSwiftCollectionBase.h"
-#import "RLMSwiftValueStorage.h"
+#import "LEGACYAccessor.h"
+#import "LEGACYArray_Private.hpp"
+#import "LEGACYObjectSchema_Private.hpp"
+#import "LEGACYObject_Private.hpp"
+#import "LEGACYProperty_Private.h"
+#import "LEGACYQueryUtil.hpp"
+#import "LEGACYRealm_Private.hpp"
+#import "LEGACYSchema_Private.h"
+#import "LEGACYSet_Private.hpp"
+#import "LEGACYSwiftCollectionBase.h"
+#import "LEGACYSwiftValueStorage.h"
 
 #import <realm/group.hpp>
 
@@ -55,19 +55,19 @@ namespace {
     }
 }
 
-RLMObservationInfo::RLMObservationInfo(RLMClassInfo &objectSchema, realm::ObjKey row, id object)
+LEGACYObservationInfo::LEGACYObservationInfo(LEGACYClassInfo &objectSchema, realm::ObjKey row, id object)
 : object(object)
 , objectSchema(&objectSchema)
 {
     setRow(*objectSchema.table(), row);
 }
 
-RLMObservationInfo::RLMObservationInfo(id object)
+LEGACYObservationInfo::LEGACYObservationInfo(id object)
 : object(object)
 {
 }
 
-RLMObservationInfo::~RLMObservationInfo() {
+LEGACYObservationInfo::~LEGACYObservationInfo() {
     if (prev) {
         // Not the head of the linked list, so just detach from the list
         REALM_ASSERT_DEBUG(prev->next == this);
@@ -99,16 +99,16 @@ RLMObservationInfo::~RLMObservationInfo() {
 #ifdef DEBUG
     // ensure that incorrect cleanup fails noisily
     object = (__bridge id)(void *)-1;
-    prev = (RLMObservationInfo *)-1;
-    next = (RLMObservationInfo *)-1;
+    prev = (LEGACYObservationInfo *)-1;
+    next = (LEGACYObservationInfo *)-1;
 #endif
 }
 
-NSString *RLMObservationInfo::columnName(realm::ColKey col) const noexcept {
+NSString *LEGACYObservationInfo::columnName(realm::ColKey col) const noexcept {
     return objectSchema->propertyForTableColumn(col).name;
 }
 
-void RLMObservationInfo::willChange(NSString *key, NSKeyValueChange kind, NSIndexSet *indexes) const {
+void LEGACYObservationInfo::willChange(NSString *key, NSKeyValueChange kind, NSIndexSet *indexes) const {
     if (indexes) {
         forEach([=](__unsafe_unretained auto o) {
             [o willChange:kind valuesAtIndexes:indexes forKey:key];
@@ -121,7 +121,7 @@ void RLMObservationInfo::willChange(NSString *key, NSKeyValueChange kind, NSInde
     }
 }
 
-void RLMObservationInfo::didChange(NSString *key, NSKeyValueChange kind, NSIndexSet *indexes) const {
+void LEGACYObservationInfo::didChange(NSString *key, NSKeyValueChange kind, NSIndexSet *indexes) const {
     if (indexes) {
         forEach([=](__unsafe_unretained auto o) {
             [o didChange:kind valuesAtIndexes:indexes forKey:key];
@@ -134,14 +134,14 @@ void RLMObservationInfo::didChange(NSString *key, NSKeyValueChange kind, NSIndex
     }
 }
 
-void RLMObservationInfo::prepareForInvalidation() {
+void LEGACYObservationInfo::prepareForInvalidation() {
     REALM_ASSERT_DEBUG(objectSchema);
     REALM_ASSERT_DEBUG(!prev);
     for (auto info = this; info; info = info->next)
         info->invalidated = true;
 }
 
-void RLMObservationInfo::setRow(realm::Table const& table, realm::ObjKey key) {
+void LEGACYObservationInfo::setRow(realm::Table const& table, realm::ObjKey key) {
     REALM_ASSERT_DEBUG(!row);
     REALM_ASSERT_DEBUG(objectSchema);
     row = table.get_object(key);
@@ -158,8 +158,8 @@ void RLMObservationInfo::setRow(realm::Table const& table, realm::ObjKey key) {
     objectSchema->observedObjects.push_back(this);
 }
 
-void RLMObservationInfo::recordObserver(realm::Obj& objectRow, RLMClassInfo *objectInfo,
-                                        __unsafe_unretained RLMObjectSchema *const objectSchema,
+void LEGACYObservationInfo::recordObserver(realm::Obj& objectRow, LEGACYClassInfo *objectInfo,
+                                        __unsafe_unretained LEGACYObjectSchema *const objectSchema,
                                         __unsafe_unretained NSString *const keyPath) {
     ++observerCount;
     if (row) {
@@ -179,12 +179,12 @@ void RLMObservationInfo::recordObserver(realm::Obj& objectRow, RLMClassInfo *obj
     // For managed objects we do this when the object is added or created
     // (and have to to support notifications from modifying an object which
     // was never observed), but for Swift classes (both RealmSwift and
-    // RLMObject) we can't do it then because we don't know what the parent
+    // LEGACYObject) we can't do it then because we don't know what the parent
     // object is.
 
     NSUInteger sep = [keyPath rangeOfString:@"."].location;
     NSString *key = sep == NSNotFound ? keyPath : [keyPath substringToIndex:sep];
-    RLMProperty *prop = objectSchema[key];
+    LEGACYProperty *prop = objectSchema[key];
     if (auto swiftAccessor = prop.swiftAccessor) {
         [swiftAccessor observe:prop on:object];
     }
@@ -193,13 +193,13 @@ void RLMObservationInfo::recordObserver(realm::Obj& objectRow, RLMClassInfo *obj
     }
 }
 
-void RLMObservationInfo::removeObserver() {
+void LEGACYObservationInfo::removeObserver() {
     --observerCount;
 }
 
-id RLMObservationInfo::valueForKey(NSString *key) {
+id LEGACYObservationInfo::valueForKey(NSString *key) {
     if (invalidated) {
-        if ([key isEqualToString:RLMInvalidatedKey]) {
+        if ([key isEqualToString:LEGACYInvalidatedKey]) {
             return @YES;
         }
         return cachedObjects[key];
@@ -213,11 +213,11 @@ id RLMObservationInfo::valueForKey(NSString *key) {
     static auto superValueForKey = reinterpret_cast<id(*)(id, SEL, NSString *)>([NSObject methodForSelector:@selector(valueForKey:)]);
     if (!lastProp) {
         // Not a managed property, so use NSObject's implementation of valueForKey:
-        return RLMCoerceToNil(superValueForKey(object, @selector(valueForKey:), key));
+        return LEGACYCoerceToNil(superValueForKey(object, @selector(valueForKey:), key));
     }
 
     auto getSuper = [&] {
-        return row ? RLMDynamicGet(object, lastProp) : RLMCoerceToNil(superValueForKey(object, @selector(valueForKey:), key));
+        return row ? LEGACYDynamicGet(object, lastProp) : LEGACYCoerceToNil(superValueForKey(object, @selector(valueForKey:), key));
     };
 
     // We need to return the same object each time for observing over keypaths
@@ -235,14 +235,14 @@ id RLMObservationInfo::valueForKey(NSString *key) {
         return value;
     }
 
-    if (lastProp.type == RLMPropertyTypeObject) {
+    if (lastProp.type == LEGACYPropertyTypeObject) {
         auto col = row.get_table()->get_column_key(lastProp.name.UTF8String);
         if (row.is_null(col)) {
             [cachedObjects removeObjectForKey:key];
             return nil;
         }
 
-        RLMObjectBase *value = cachedObjects[key];
+        LEGACYObjectBase *value = cachedObjects[key];
         if (value && value->_row.get_key() == row.get<realm::ObjKey>(col)) {
             return value;
         }
@@ -257,13 +257,13 @@ id RLMObservationInfo::valueForKey(NSString *key) {
     return getSuper();
 }
 
-RLMObservationInfo *RLMGetObservationInfo(RLMObservationInfo *info, realm::ObjKey row,
-                                          RLMClassInfo& objectSchema) {
+LEGACYObservationInfo *LEGACYGetObservationInfo(LEGACYObservationInfo *info, realm::ObjKey row,
+                                          LEGACYClassInfo& objectSchema) {
     if (info) {
         return info;
     }
 
-    for (RLMObservationInfo *info : objectSchema.observedObjects) {
+    for (LEGACYObservationInfo *info : objectSchema.observedObjects) {
         if (info->isForRow(row)) {
             return info;
         }
@@ -272,7 +272,7 @@ RLMObservationInfo *RLMGetObservationInfo(RLMObservationInfo *info, realm::ObjKe
     return nullptr;
 }
 
-void RLMClearTable(RLMClassInfo &objectSchema) {
+void LEGACYClearTable(LEGACYClassInfo &objectSchema) {
     if (!objectSchema.table()) {
         // Orphaned embedded object types are included in the schema but do not
         // create a table at all, so we may not have a table here and just
@@ -281,11 +281,11 @@ void RLMClearTable(RLMClassInfo &objectSchema) {
     }
 
     for (auto info : objectSchema.observedObjects) {
-        info->willChange(RLMInvalidatedKey);
+        info->willChange(LEGACYInvalidatedKey);
     }
 
     {
-        RLMObservationTracker tracker(objectSchema.realm, true);
+        LEGACYObservationTracker tracker(objectSchema.realm, true);
         Results(objectSchema.realm->_realm, objectSchema.table()).clear();
 
         for (auto info : objectSchema.observedObjects) {
@@ -294,13 +294,13 @@ void RLMClearTable(RLMClassInfo &objectSchema) {
     }
 
     for (auto info : reverse(objectSchema.observedObjects)) {
-        info->didChange(RLMInvalidatedKey);
+        info->didChange(LEGACYInvalidatedKey);
     }
 
     objectSchema.observedObjects.clear();
 }
 
-RLMObservationTracker::RLMObservationTracker(__unsafe_unretained RLMRealm *const realm, bool trackDeletions)
+LEGACYObservationTracker::LEGACYObservationTracker(__unsafe_unretained LEGACYRealm *const realm, bool trackDeletions)
 : _realm(realm)
 , _group(realm.group)
 {
@@ -309,11 +309,11 @@ RLMObservationTracker::RLMObservationTracker(__unsafe_unretained RLMRealm *const
     }
 }
 
-RLMObservationTracker::~RLMObservationTracker() {
+LEGACYObservationTracker::~LEGACYObservationTracker() {
     didChange();
 }
 
-void RLMObservationTracker::willChange(RLMObservationInfo *info, NSString *key,
+void LEGACYObservationTracker::willChange(LEGACYObservationInfo *info, NSString *key,
                                        NSKeyValueChange kind, NSIndexSet *indexes) {
     _key = key;
     _kind = kind;
@@ -324,7 +324,7 @@ void RLMObservationTracker::willChange(RLMObservationInfo *info, NSString *key,
     }
 }
 
-void RLMObservationTracker::trackDeletions() {
+void LEGACYObservationTracker::trackDeletions() {
     if (_group.has_cascade_notification_handler()) {
         // We're nested inside another call which will handle any cascaded changes for us
         return;
@@ -347,7 +347,7 @@ void RLMObservationTracker::trackDeletions() {
 }
 
 template<typename CascadeNotification>
-void RLMObservationTracker::cascadeNotification(CascadeNotification const& cs) {
+void LEGACYObservationTracker::cascadeNotification(CascadeNotification const& cs) {
     if (cs.rows.empty() && cs.links.empty()) {
         return;
     }
@@ -355,7 +355,7 @@ void RLMObservationTracker::cascadeNotification(CascadeNotification const& cs) {
     size_t invalidatedCount = _invalidated.size();
     size_t changeCount = _changes.size();
 
-    auto tableKey = [](RLMObservationInfo *info) {
+    auto tableKey = [](LEGACYObservationInfo *info) {
         return info->getRow().get_table()->get_key();
     };
     std::sort(begin(_observedTables), end(_observedTables),
@@ -434,7 +434,7 @@ void RLMObservationTracker::cascadeNotification(CascadeNotification const& cs) {
 
     // The relative order of these loops is very important
     for (size_t i = invalidatedCount; i < _invalidated.size(); ++i) {
-        _invalidated[i]->willChange(RLMInvalidatedKey);
+        _invalidated[i]->willChange(LEGACYInvalidatedKey);
     }
     for (size_t i = changeCount; i < _changes.size(); ++i) {
         auto const& change = _changes[i];
@@ -445,7 +445,7 @@ void RLMObservationTracker::cascadeNotification(CascadeNotification const& cs) {
     }
 }
 
-void RLMObservationTracker::didChange() {
+void LEGACYObservationTracker::didChange() {
     if (_info) {
         _info->didChange(_key, _kind, _indexes);
         _info = nullptr;
@@ -459,7 +459,7 @@ void RLMObservationTracker::didChange() {
         change.info->didChange(change.property, NSKeyValueChangeRemoval, change.indexes);
     }
     for (auto info : reverse(_invalidated)) {
-        info->didChange(RLMInvalidatedKey);
+        info->didChange(LEGACYInvalidatedKey);
     }
     _observedTables.clear();
     _changes.clear();
@@ -470,12 +470,12 @@ namespace {
 template<typename Func>
 void forEach(realm::BindingContext::ObserverState const& state, Func&& func) {
     for (auto& change : state.changes) {
-        func(realm::ColKey(change.first), change.second, static_cast<RLMObservationInfo *>(state.info));
+        func(realm::ColKey(change.first), change.second, static_cast<LEGACYObservationInfo *>(state.info));
     }
 }
 }
 
-std::vector<realm::BindingContext::ObserverState> RLMGetObservedRows(RLMSchemaInfo const& schema) {
+std::vector<realm::BindingContext::ObserverState> LEGACYGetObservedRows(LEGACYSchemaInfo const& schema) {
     std::vector<realm::BindingContext::ObserverState> observers;
     for (auto& table : schema) {
         for (auto info : table.second.observedObjects) {
@@ -518,37 +518,37 @@ static NSIndexSet *convert(realm::IndexSet const& in, NSMutableIndexSet *out) {
     return out;
 }
 
-void RLMWillChange(std::vector<realm::BindingContext::ObserverState> const& observed,
+void LEGACYWillChange(std::vector<realm::BindingContext::ObserverState> const& observed,
                    std::vector<void *> const& invalidated) {
     for (auto info : invalidated) {
-        static_cast<RLMObservationInfo *>(info)->willChange(RLMInvalidatedKey);
+        static_cast<LEGACYObservationInfo *>(info)->willChange(LEGACYInvalidatedKey);
     }
     if (!observed.empty()) {
         NSMutableIndexSet *indexes = [NSMutableIndexSet new];
         for (auto const& o : observed) {
-            forEach(o, [&](realm::ColKey colKey, auto const& change, RLMObservationInfo *info) {
+            forEach(o, [&](realm::ColKey colKey, auto const& change, LEGACYObservationInfo *info) {
                 info->willChange(info->columnName(colKey),
                                  convert(change.kind), convert(change.indices, indexes));
             });
         }
     }
     for (auto info : invalidated) {
-        static_cast<RLMObservationInfo *>(info)->prepareForInvalidation();
+        static_cast<LEGACYObservationInfo *>(info)->prepareForInvalidation();
     }
 }
 
-void RLMDidChange(std::vector<realm::BindingContext::ObserverState> const& observed,
+void LEGACYDidChange(std::vector<realm::BindingContext::ObserverState> const& observed,
                   std::vector<void *> const& invalidated) {
     if (!observed.empty()) {
         // Loop in reverse order to avoid O(N^2) behavior in Foundation
         NSMutableIndexSet *indexes = [NSMutableIndexSet new];
         for (auto const& o : reverse(observed)) {
-            forEach(o, [&](realm::ColKey col, auto const& change, RLMObservationInfo *info) {
+            forEach(o, [&](realm::ColKey col, auto const& change, LEGACYObservationInfo *info) {
                 info->didChange(info->columnName(col), convert(change.kind), convert(change.indices, indexes));
             });
         }
     }
     for (auto const& info : reverse(invalidated)) {
-        static_cast<RLMObservationInfo *>(info)->didChange(RLMInvalidatedKey);
+        static_cast<LEGACYObservationInfo *>(info)->didChange(LEGACYInvalidatedKey);
     }
 }

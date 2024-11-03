@@ -20,7 +20,7 @@
 #import <Realm/Realm.h>
 
 // Define your models
-@interface Dog : RLMObject
+@interface Dog : LEGACYObject
 @property NSString *name;
 @property NSInteger age;
 @end
@@ -29,11 +29,11 @@
 // No need for implementation
 @end
 
-RLM_COLLECTION_TYPE(Dog)
+LEGACY_COLLECTION_TYPE(Dog)
 
-@interface Person : RLMObject
+@interface Person : LEGACYObject
 @property NSString      *name;
-@property RLMArray<Dog> *dogs;
+@property LEGACYArray<Dog> *dogs;
 @end
 
 @implementation Person
@@ -47,7 +47,7 @@ RLM_COLLECTION_TYPE(Dog)
     self.window.rootViewController = [[UIViewController alloc] init];
     [self.window makeKeyAndVisible];
 
-    [[NSFileManager defaultManager] removeItemAtURL:[RLMRealmConfiguration defaultConfiguration].fileURL error:nil];
+    [[NSFileManager defaultManager] removeItemAtURL:[LEGACYRealmConfiguration defaultConfiguration].fileURL error:nil];
 
     // Create a standalone object
     Dog *mydog = [[Dog alloc] init];
@@ -58,7 +58,7 @@ RLM_COLLECTION_TYPE(Dog)
     NSLog(@"Name of dog: %@", mydog.name);
 
     // Realms are used to group data together
-    RLMRealm *realm = [RLMRealm defaultRealm]; // Create realm pointing to default file
+    LEGACYRealm *realm = [LEGACYRealm defaultRealm]; // Create realm pointing to default file
 
     // Save your object
     [realm beginWriteTransaction];
@@ -66,10 +66,10 @@ RLM_COLLECTION_TYPE(Dog)
     [realm commitWriteTransaction];
 
     // Query
-    RLMResults *results = [Dog objectsInRealm:realm where:@"name contains 'x'"];
+    LEGACYResults *results = [Dog objectsInRealm:realm where:@"name contains 'x'"];
 
     // Queries are chainable!
-    RLMResults *results2 = [results objectsWhere:@"age > 8"];
+    LEGACYResults *results2 = [results objectsWhere:@"age > 8"];
     NSLog(@"Number of dogs: %li", (unsigned long)results2.count);
 
     // Link objects
@@ -84,8 +84,8 @@ RLM_COLLECTION_TYPE(Dog)
     // Multi-threading
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         @autoreleasepool {
-            RLMRealm *otherRealm = [RLMRealm defaultRealm];
-            RLMResults *otherResults = [Dog objectsInRealm:otherRealm where:@"name contains 'Rex'"];
+            LEGACYRealm *otherRealm = [LEGACYRealm defaultRealm];
+            LEGACYResults *otherResults = [Dog objectsInRealm:otherRealm where:@"name contains 'Rex'"];
             NSLog(@"Number of dogs: %li", (unsigned long)otherResults.count);
         }
     });

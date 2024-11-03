@@ -16,17 +16,17 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-RLMNotification const RLMRealmRefreshRequiredNotification = @"RLMRealmRefreshRequiredNotification";
-RLMNotification const RLMRealmDidChangeNotification = @"RLMRealmDidChangeNotification";
+LEGACYNotification const LEGACYRealmRefreshRequiredNotification = @"LEGACYRealmRefreshRequiredNotification";
+LEGACYNotification const LEGACYRealmDidChangeNotification = @"LEGACYRealmDidChangeNotification";
 
-NSString * const RLMExceptionName = @"RLMException";
+NSString * const LEGACYExceptionName = @"LEGACYException";
 
-NSString * const RLMRealmVersionKey = @"RLMRealmVersion";
+NSString * const LEGACYRealmVersionKey = @"LEGACYRealmVersion";
 
-NSString * const RLMRealmCoreVersionKey = @"RLMRealmCoreVersion";
+NSString * const LEGACYRealmCoreVersionKey = @"LEGACYRealmCoreVersion";
 
-NSString * const RLMInvalidatedKey = @"invalidated";
+NSString * const LEGACYInvalidatedKey = @"invalidated";
 
-NSString * const RLMBackupRealmConfigurationErrorKey = @"RLMBackupRealmConfiguration";
+NSString * const LEGACYBackupRealmConfigurationErrorKey = @"LEGACYBackupRealmConfiguration";

@@ -51,7 +51,7 @@ internal func notFoundToNil(index: UInt) -> Int? {
 }
 
 internal func throwRealmException(_ message: String, userInfo: [AnyHashable: Any]? = nil) -> Never {
-    NSException(name: NSExceptionName(rawValue: RLMExceptionName), reason: message, userInfo: userInfo).raise()
+    NSException(name: NSExceptionName(rawValue: LEGACYExceptionName), reason: message, userInfo: userInfo).raise()
     fatalError() // unreachable
 }
 
@@ -69,10 +69,10 @@ internal func gsub(pattern: String, template: String, string: String, error: NSE
 }
 
 extension ObjectBase {
-    // Must *only* be used to call Realm Objective-C APIs that are exposed on `RLMObject`
-    // but actually operate on `RLMObjectBase`. Do not expose cast value to user.
-    internal func unsafeCastToRLMObject() -> RLMObject {
-        return noWarnUnsafeBitCast(self, to: RLMObject.self)
+    // Must *only* be used to call Realm Objective-C APIs that are exposed on `LEGACYObject`
+    // but actually operate on `LEGACYObjectBase`. Do not expose cast value to user.
+    internal func unsafeCastToLEGACYObject() -> LEGACYObject {
+        return noWarnUnsafeBitCast(self, to: LEGACYObject.self)
     }
 }
 

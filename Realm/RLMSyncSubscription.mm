@@ -16,15 +16,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSyncSubscription_Private.hpp"
+#import "LEGACYSyncSubscription_Private.hpp"
 
-#import "RLMAsyncTask_Private.h"
-#import "RLMError_Private.hpp"
-#import "RLMObjectId_Private.hpp"
-#import "RLMQueryUtil.hpp"
-#import "RLMRealm_Private.hpp"
-#import "RLMScheduler.h"
-#import "RLMUtil.hpp"
+#import "LEGACYAsyncTask_Private.h"
+#import "LEGACYError_Private.hpp"
+#import "LEGACYObjectId_Private.hpp"
+#import "LEGACYQueryUtil.hpp"
+#import "LEGACYRealm_Private.hpp"
+#import "LEGACYScheduler.h"
+#import "LEGACYUtil.hpp"
 
 #import <realm/sync/subscriptions.hpp>
 #import <realm/status_with.hpp>
@@ -32,15 +32,15 @@
 
 #pragma mark - Subscription
 
-@interface RLMSyncSubscription () {
+@interface LEGACYSyncSubscription () {
     std::unique_ptr<realm::sync::Subscription> _subscription;
-    RLMSyncSubscriptionSet *_subscriptionSet;
+    LEGACYSyncSubscriptionSet *_subscriptionSet;
 }
 @end
 
-@implementation RLMSyncSubscription
+@implementation LEGACYSyncSubscription
 
-- (instancetype)initWithSubscription:(realm::sync::Subscription)subscription subscriptionSet:(RLMSyncSubscriptionSet *)subscriptionSet {
+- (instancetype)initWithSubscription:(realm::sync::Subscription)subscription subscriptionSet:(LEGACYSyncSubscriptionSet *)subscriptionSet {
     if (self = [super init]) {
         _subscription = std::make_unique<realm::sync::Subscription>(subscription);
         _subscriptionSet = subscriptionSet;
@@ -49,8 +49,8 @@
     return nil;
 }
 
-- (RLMObjectId *)identifier {
-    return [[RLMObjectId alloc] initWithValue:_subscription->id];
+- (LEGACYObjectId *)identifier {
+    return [[LEGACYObjectId alloc] initWithValue:_subscription->id];
 }
 
 - (nullable NSString *)name {
@@ -62,11 +62,11 @@
 }
 
 - (NSDate *)createdAt {
-    return RLMTimestampToNSDate(_subscription->created_at);
+    return LEGACYTimestampToNSDate(_subscription->created_at);
 }
 
 - (NSDate *)updatedAt {
-    return RLMTimestampToNSDate(_subscription->updated_at);
+    return LEGACYTimestampToNSDate(_subscription->updated_at);
 }
 
 - (NSString *)queryString {
@@ -98,13 +98,13 @@
                                         updateExisting:true];
     }
     else {
-        RLMSyncSubscription *foundSubscription = [_subscriptionSet subscriptionWithClassName:self.objectClassName where:self.queryString];
+        LEGACYSyncSubscription *foundSubscription = [_subscriptionSet subscriptionWithClassName:self.objectClassName where:self.queryString];
         if (foundSubscription) {
             [_subscriptionSet removeSubscription:foundSubscription];
             [_subscriptionSet addSubscriptionWithClassName:self.objectClassName
                                                  predicate:predicate];
         } else {
-            @throw RLMException(@"Cannot update a non-existent subscription.");
+            @throw LEGACYException(@"Cannot update a non-existent subscription.");
         }
     }
 }
@@ -113,13 +113,13 @@
 
 #pragma mark - SubscriptionSet
 
-@interface RLMSyncSubscriptionSet () {
+@interface LEGACYSyncSubscriptionSet () {
     std::unique_ptr<realm::sync::MutableSubscriptionSet> _mutableSubscriptionSet;
-    NSHashTable<RLMSyncSubscriptionEnumerator *> *_enumerators;
+    NSHashTable<LEGACYSyncSubscriptionEnumerator *> *_enumerators;
 }
 @end
 
-@interface RLMSyncSubscriptionEnumerator() {
+@interface LEGACYSyncSubscriptionEnumerator() {
     // The buffer supplied by fast enumeration does not retain the objects given
     // to it, but because we create objects on-demand and don't want them
     // autoreleased (a table can have more rows than the device has memory for
@@ -128,9 +128,9 @@
 }
 @end
 
-@implementation RLMSyncSubscriptionEnumerator
+@implementation LEGACYSyncSubscriptionEnumerator
 
-- (instancetype)initWithSubscriptionSet:(RLMSyncSubscriptionSet *)subscriptionSet {
+- (instancetype)initWithSubscriptionSet:(LEGACYSyncSubscriptionSet *)subscriptionSet {
     if (self = [super init]) {
         _subscriptionSet = subscriptionSet;
         return self;
@@ -168,10 +168,10 @@
 
 @end
 
-NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
+NSUInteger LEGACYFastEnumerate(NSFastEnumerationState *state,
                             NSUInteger len,
-                            RLMSyncSubscriptionSet *collection) {
-    __autoreleasing RLMSyncSubscriptionEnumerator *enumerator;
+                            LEGACYSyncSubscriptionSet *collection) {
+    __autoreleasing LEGACYSyncSubscriptionEnumerator *enumerator;
     if (state->state == 0) {
         enumerator = collection.fastEnumerator;
         state->extra[0] = (long)enumerator;
@@ -184,13 +184,13 @@ NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
     return [enumerator countByEnumeratingWithState:state count:len];
 }
 
-@implementation RLMSyncSubscriptionSet {
+@implementation LEGACYSyncSubscriptionSet {
     std::mutex _collectionEnumeratorMutex;
-    RLMRealm *_realm;
+    LEGACYRealm *_realm;
 }
 
 - (instancetype)initWithSubscriptionSet:(realm::sync::SubscriptionSet)subscriptionSet
-                                  realm:(RLMRealm *)realm {
+                                  realm:(LEGACYRealm *)realm {
     if (self = [super init]) {
         _subscriptionSet = std::make_unique<realm::sync::SubscriptionSet>(subscriptionSet);
         _realm = realm;
@@ -199,8 +199,8 @@ NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
     return nil;
 }
 
-- (RLMSyncSubscriptionEnumerator *)fastEnumerator {
-    return [[RLMSyncSubscriptionEnumerator alloc] initWithSubscriptionSet:self];
+- (LEGACYSyncSubscriptionEnumerator *)fastEnumerator {
+    return [[LEGACYSyncSubscriptionEnumerator alloc] initWithSubscriptionSet:self];
 }
 
 - (NSUInteger)count {
@@ -209,29 +209,29 @@ NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
 
 - (nullable NSError *)error {
     _subscriptionSet->refresh();
-    NSString *errorMessage = RLMStringDataToNSString(_subscriptionSet->error_str());
+    NSString *errorMessage = LEGACYStringDataToNSString(_subscriptionSet->error_str());
     if (errorMessage.length == 0) {
         return nil;
     }
-    return [[NSError alloc] initWithDomain:RLMSyncErrorDomain
-                                      code:RLMSyncErrorInvalidFlexibleSyncSubscriptions
+    return [[NSError alloc] initWithDomain:LEGACYSyncErrorDomain
+                                      code:LEGACYSyncErrorInvalidFlexibleSyncSubscriptions
                                   userInfo:@{NSLocalizedDescriptionKey: errorMessage}];
 }
 
-- (RLMSyncSubscriptionState)state {
+- (LEGACYSyncSubscriptionState)state {
     _subscriptionSet->refresh();
     switch (_subscriptionSet->state()) {
         case realm::sync::SubscriptionSet::State::Uncommitted:
         case realm::sync::SubscriptionSet::State::Pending:
         case realm::sync::SubscriptionSet::State::Bootstrapping:
         case realm::sync::SubscriptionSet::State::AwaitingMark:
-            return RLMSyncSubscriptionStatePending;
+            return LEGACYSyncSubscriptionStatePending;
         case realm::sync::SubscriptionSet::State::Complete:
-            return RLMSyncSubscriptionStateComplete;
+            return LEGACYSyncSubscriptionStateComplete;
         case realm::sync::SubscriptionSet::State::Error:
-            return RLMSyncSubscriptionStateError;
+            return LEGACYSyncSubscriptionStateError;
         case realm::sync::SubscriptionSet::State::Superseded:
-            return RLMSyncSubscriptionStateSuperseded;
+            return LEGACYSyncSubscriptionStateSuperseded;
     }
 }
 
@@ -256,7 +256,7 @@ NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
        timeout:(NSTimeInterval)timeout
     onComplete:(void(^)(NSError *))completionBlock {
     if (_mutableSubscriptionSet) {
-        @throw RLMException(@"Cannot initiate a write transaction on subscription set that is already being updated.");
+        @throw LEGACYException(@"Cannot initiate a write transaction on subscription set that is already being updated.");
     }
     _mutableSubscriptionSet = std::make_unique<realm::sync::MutableSubscriptionSet>(_subscriptionSet->make_mutable_copy());
     realm::util::ScopeExit cleanup([&]() noexcept {
@@ -273,10 +273,10 @@ NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
         _mutableSubscriptionSet = nullptr;
     }
     catch (realm::Exception const& ex) {
-        @throw RLMException(ex);
+        @throw LEGACYException(ex);
     }
     catch (std::exception const& ex) {
-        @throw RLMException(ex);
+        @throw LEGACYException(ex);
     }
 
     if (completionBlock) {
@@ -289,7 +289,7 @@ NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
 - (void)waitForSynchronizationOnQueue:(nullable dispatch_queue_t)queue
                               timeout:(NSTimeInterval)timeout
                       completionBlock:(void(^)(NSError *))completionBlock {
-    RLMAsyncSubscriptionTask *syncSubscriptionTask = [[RLMAsyncSubscriptionTask alloc] initWithSubscriptionSet:self
+    LEGACYAsyncSubscriptionTask *syncSubscriptionTask = [[LEGACYAsyncSubscriptionTask alloc] initWithSubscriptionSet:self
                                                                                                          queue:queue
                                                                                                        timeout:timeout
                                                                                                     completion:completionBlock];
@@ -298,16 +298,16 @@ NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
 
 #pragma mark - Find subscription
 
-- (nullable RLMSyncSubscription *)subscriptionWithName:(NSString *)name {
+- (nullable LEGACYSyncSubscription *)subscriptionWithName:(NSString *)name {
     auto subscription = _subscriptionSet->find([name UTF8String]);
     if (subscription) {
-        return [[RLMSyncSubscription alloc] initWithSubscription:*subscription
+        return [[LEGACYSyncSubscription alloc] initWithSubscription:*subscription
                                                  subscriptionSet:self];
     }
     return nil;
 }
 
-- (nullable RLMSyncSubscription *)subscriptionWithClassName:(NSString *)objectClassName
+- (nullable LEGACYSyncSubscription *)subscriptionWithClassName:(NSString *)objectClassName
                                                       where:(NSString *)predicateFormat, ... {
     va_list args;
     va_start(args, predicateFormat);
@@ -317,34 +317,34 @@ NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
     va_end(args);
 }
 
-- (nullable RLMSyncSubscription *)subscriptionWithClassName:(NSString *)objectClassName
+- (nullable LEGACYSyncSubscription *)subscriptionWithClassName:(NSString *)objectClassName
                                                       where:(NSString *)predicateFormat
                                                        args:(va_list)args {
     return [self subscriptionWithClassName:objectClassName
                                  predicate:[NSPredicate predicateWithFormat:predicateFormat arguments:args]];
 }
 
-- (nullable RLMSyncSubscription *)subscriptionWithClassName:(NSString *)objectClassName
+- (nullable LEGACYSyncSubscription *)subscriptionWithClassName:(NSString *)objectClassName
                                                   predicate:(NSPredicate *)predicate {
-    RLMClassInfo& info = _realm->_info[objectClassName];
-    auto query = RLMPredicateToQuery(predicate, info.rlmObjectSchema, _realm.schema, _realm.group);
+    LEGACYClassInfo& info = _realm->_info[objectClassName];
+    auto query = LEGACYPredicateToQuery(predicate, info.rlmObjectSchema, _realm.schema, _realm.group);
     return [self subscriptionWithQuery:query];
 }
 
-- (nullable RLMSyncSubscription *)subscriptionWithQuery:(realm::Query)query {
+- (nullable LEGACYSyncSubscription *)subscriptionWithQuery:(realm::Query)query {
     auto subscription = _subscriptionSet->find(query);
     if (subscription) {
-        return [[RLMSyncSubscription alloc] initWithSubscription:*subscription
+        return [[LEGACYSyncSubscription alloc] initWithSubscription:*subscription
                                                  subscriptionSet:self];
     }
     return nil;
 }
 
-- (nullable RLMSyncSubscription *)subscriptionWithName:(NSString *)name
+- (nullable LEGACYSyncSubscription *)subscriptionWithName:(NSString *)name
                                                  query:(realm::Query)query {
     auto subscription = _subscriptionSet->find([name UTF8String]);
     if (subscription && subscription->query_string == query.get_description()) {
-        return [[RLMSyncSubscription alloc] initWithSubscription:*subscription
+        return [[LEGACYSyncSubscription alloc] initWithSubscription:*subscription
                                                  subscriptionSet:self];
     } else {
         return nil;
@@ -416,8 +416,8 @@ NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
                       updateExisting:(BOOL)updateExisting {
     [self verifyInWriteTransaction];
 
-    RLMClassInfo& info = _realm->_info[objectClassName];
-    auto query = RLMPredicateToQuery(predicate, info.rlmObjectSchema, _realm.schema, _realm.group);
+    LEGACYClassInfo& info = _realm->_info[objectClassName];
+    auto query = LEGACYPredicateToQuery(predicate, info.rlmObjectSchema, _realm.schema, _realm.group);
 
     [self addSubscriptionWithClassName:objectClassName
                       subscriptionName:name
@@ -425,7 +425,7 @@ NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
                         updateExisting:updateExisting];
 }
 
-- (RLMObjectId *)addSubscriptionWithClassName:(NSString *)objectClassName
+- (LEGACYObjectId *)addSubscriptionWithClassName:(NSString *)objectClassName
                              subscriptionName:(nullable NSString *)name
                                         query:(realm::Query)query
                                updateExisting:(BOOL)updateExisting {
@@ -434,15 +434,15 @@ NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
     if (name) {
         if (updateExisting || !_mutableSubscriptionSet->find(name.UTF8String)) {
             auto it = _mutableSubscriptionSet->insert_or_assign(name.UTF8String, query);
-            return [[RLMObjectId alloc] initWithValue:it.first->id];
+            return [[LEGACYObjectId alloc] initWithValue:it.first->id];
         }
         else {
-            @throw RLMException(@"A subscription named '%@' already exists. If you meant to update the existing subscription please use the `update` method.", name);
+            @throw LEGACYException(@"A subscription named '%@' already exists. If you meant to update the existing subscription please use the `update` method.", name);
         }
     }
     else {
         auto it = _mutableSubscriptionSet->insert_or_assign(query);
-        return [[RLMObjectId alloc] initWithValue:it.first->id];
+        return [[LEGACYObjectId alloc] initWithValue:it.first->id];
     }
 }
 
@@ -476,8 +476,8 @@ NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
 
 - (void)removeSubscriptionWithClassName:(NSString *)objectClassName
                               predicate:(NSPredicate *)predicate {
-    RLMClassInfo& info = _realm->_info[objectClassName];
-    auto query = RLMPredicateToQuery(predicate, info.rlmObjectSchema, _realm.schema, _realm.group);
+    LEGACYClassInfo& info = _realm->_info[objectClassName];
+    auto query = LEGACYPredicateToQuery(predicate, info.rlmObjectSchema, _realm.schema, _realm.group);
     [self removeSubscriptionWithClassName:objectClassName query:query];
 }
 
@@ -491,11 +491,11 @@ NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
     }
 }
 
-- (void)removeSubscription:(RLMSyncSubscription *)subscription {
+- (void)removeSubscription:(LEGACYSyncSubscription *)subscription {
     [self removeSubscriptionWithId:subscription.identifier];
 }
 
-- (void)removeSubscriptionWithId:(RLMObjectId *)objectId {
+- (void)removeSubscriptionWithId:(LEGACYObjectId *)objectId {
     [self verifyInWriteTransaction];
 
     for (auto it = _mutableSubscriptionSet->begin(); it != _mutableSubscriptionSet->end();) {
@@ -544,36 +544,36 @@ NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
 - (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state
                                   objects:(__unused __unsafe_unretained id [])buffer
                                     count:(NSUInteger)len {
-    return RLMFastEnumerate(state, len, self);
+    return LEGACYFastEnumerate(state, len, self);
 }
 
 #pragma mark - SubscriptionSet Collection
 
-- (RLMSyncSubscription *)objectAtIndex:(NSUInteger)index {
+- (LEGACYSyncSubscription *)objectAtIndex:(NSUInteger)index {
     auto size = _subscriptionSet->size();
     if (index >= size) {
-        @throw RLMException(@"Index %llu is out of bounds (must be less than %llu).",
+        @throw LEGACYException(@"Index %llu is out of bounds (must be less than %llu).",
                             (unsigned long long)index, (unsigned long long)size);
     }
     
-    return [[RLMSyncSubscription alloc]initWithSubscription:_subscriptionSet->at(size_t(index))
+    return [[LEGACYSyncSubscription alloc]initWithSubscription:_subscriptionSet->at(size_t(index))
                                             subscriptionSet:self];
 }
 
-- (RLMSyncSubscription *)firstObject {
+- (LEGACYSyncSubscription *)firstObject {
     if (_subscriptionSet->size() < 1) {
         return nil;
     }
-    return [[RLMSyncSubscription alloc]initWithSubscription:_subscriptionSet->at(size_t(0))
+    return [[LEGACYSyncSubscription alloc]initWithSubscription:_subscriptionSet->at(size_t(0))
                                             subscriptionSet:self];
 }
 
-- (RLMSyncSubscription *)lastObject {
+- (LEGACYSyncSubscription *)lastObject {
     if (_subscriptionSet->size() < 1) {
         return nil;
     }
     
-    return [[RLMSyncSubscription alloc]initWithSubscription:_subscriptionSet->at(_subscriptionSet->size()-1)
+    return [[LEGACYSyncSubscription alloc]initWithSubscription:_subscriptionSet->at(_subscriptionSet->size()-1)
                                             subscriptionSet:self];
 }
 
@@ -591,7 +591,7 @@ NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
 
 - (void)verifyInWriteTransaction {
     if (_mutableSubscriptionSet == nil) {
-        @throw RLMException(@"Can only add, remove, or update subscriptions within a write subscription block.");
+        @throw LEGACYException(@"Can only add, remove, or update subscriptions within a write subscription block.");
     }
 }
 

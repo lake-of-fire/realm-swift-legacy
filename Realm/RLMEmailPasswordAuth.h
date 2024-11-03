@@ -16,23 +16,23 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMProviderClient.h>
+#import <Realm/LEGACYProviderClient.h>
 
-@protocol RLMBSON;
+@protocol LEGACYBSON;
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 /// A block type used to report an error
-RLM_SWIFT_SENDABLE // invoked on a background thread
-typedef void(^RLMEmailPasswordAuthOptionalErrorBlock)(NSError * _Nullable);
+LEGACY_SWIFT_SENDABLE // invoked on a background thread
+typedef void(^LEGACYEmailPasswordAuthOptionalErrorBlock)(NSError * _Nullable);
 
 /**
   A client for the email/password authentication provider which
   can be used to obtain a credential for logging in,
   and to perform requests specifically related to the email/password provider.
 */
-RLM_SWIFT_SENDABLE RLM_FINAL // is internally thread-safe
-@interface RLMEmailPasswordAuth : RLMProviderClient
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL // is internally thread-safe
+@interface LEGACYEmailPasswordAuth : LEGACYProviderClient
 
 /**
  Registers a new email identity with the email/password provider,
@@ -45,7 +45,7 @@ RLM_SWIFT_SENDABLE RLM_FINAL // is internally thread-safe
 
 - (void)registerUserWithEmail:(NSString *)email
                      password:(NSString *)password
-                   completion:(RLMEmailPasswordAuthOptionalErrorBlock)completionHandler NS_SWIFT_NAME(registerUser(email:password:completion:));
+                   completion:(LEGACYEmailPasswordAuthOptionalErrorBlock)completionHandler NS_SWIFT_NAME(registerUser(email:password:completion:));
 
 /**
  Confirms an email identity with the email/password provider.
@@ -56,7 +56,7 @@ RLM_SWIFT_SENDABLE RLM_FINAL // is internally thread-safe
 */
 - (void)confirmUser:(NSString *)token
             tokenId:(NSString *)tokenId
-         completion:(RLMEmailPasswordAuthOptionalErrorBlock)completionHandler;
+         completion:(LEGACYEmailPasswordAuthOptionalErrorBlock)completionHandler;
 
 /**
  Re-sends a confirmation email to a user that has registered but
@@ -66,7 +66,7 @@ RLM_SWIFT_SENDABLE RLM_FINAL // is internally thread-safe
  @param completionHandler A callback to be invoked once the call is complete.
 */
 - (void)resendConfirmationEmail:(NSString *)email
-                     completion:(RLMEmailPasswordAuthOptionalErrorBlock)completionHandler;
+                     completion:(LEGACYEmailPasswordAuthOptionalErrorBlock)completionHandler;
 
 /**
  Retries custom confirmation function for a given email address.
@@ -75,7 +75,7 @@ RLM_SWIFT_SENDABLE RLM_FINAL // is internally thread-safe
  @param completionHandler A callback to be invoked once the call is complete.
  */
 - (void)retryCustomConfirmation:(NSString *)email
-                     completion:(RLMEmailPasswordAuthOptionalErrorBlock)completionHandler;
+                     completion:(LEGACYEmailPasswordAuthOptionalErrorBlock)completionHandler;
 
 /**
  Sends a password reset email to the given email address.
@@ -84,7 +84,7 @@ RLM_SWIFT_SENDABLE RLM_FINAL // is internally thread-safe
  @param completionHandler A callback to be invoked once the call is complete.
 */
 - (void)sendResetPasswordEmail:(NSString *)email
-                    completion:(RLMEmailPasswordAuthOptionalErrorBlock)completionHandler;
+                    completion:(LEGACYEmailPasswordAuthOptionalErrorBlock)completionHandler;
 
 /**
  Resets the password of an email identity using the
@@ -98,7 +98,7 @@ RLM_SWIFT_SENDABLE RLM_FINAL // is internally thread-safe
 - (void)resetPasswordTo:(NSString *)password
                   token:(NSString *)token
                 tokenId:(NSString *)tokenId
-             completion:(RLMEmailPasswordAuthOptionalErrorBlock)completionHandler;
+             completion:(LEGACYEmailPasswordAuthOptionalErrorBlock)completionHandler;
 
 /**
  Resets the password of an email identity using the
@@ -111,10 +111,10 @@ RLM_SWIFT_SENDABLE RLM_FINAL // is internally thread-safe
 */
 - (void)callResetPasswordFunction:(NSString *)email
                          password:(NSString *)password
-                             args:(NSArray<id<RLMBSON>> *)args
-                       completion:(RLMEmailPasswordAuthOptionalErrorBlock)completionHandler NS_REFINED_FOR_SWIFT;
+                             args:(NSArray<id<LEGACYBSON>> *)args
+                       completion:(LEGACYEmailPasswordAuthOptionalErrorBlock)completionHandler NS_REFINED_FOR_SWIFT;
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)
 

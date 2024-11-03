@@ -26,7 +26,7 @@ public extension ObjectiveCSupport {
     /// Objective-C representation.
     /// - Parameter value: The AnyRealmValue with the object.
     /// - Returns: Conversion of `value` to its Objective-C representation.
-    static func convert(value: AnyRealmValue?) -> RLMValue? {
+    static func convert(value: AnyRealmValue?) -> LEGACYValue? {
         switch value {
         case let .int(i):
             return i as NSNumber
@@ -43,9 +43,9 @@ public extension ObjectiveCSupport {
         case let .date(d):
             return d as NSDate
         case let .objectId(o):
-            return o as RLMObjectId
+            return o as LEGACYObjectId
         case let .decimal128(o):
-            return o as RLMDecimal128
+            return o as LEGACYDecimal128
         case let .uuid(u):
             return u as NSUUID
         case let .object(o):
@@ -55,67 +55,67 @@ public extension ObjectiveCSupport {
         }
     }
 
-    /// Takes an RLMValue, converts it to its Swift type and
+    /// Takes an LEGACYValue, converts it to its Swift type and
     /// stores it in `AnyRealmValue`.
-    /// - Parameter value: The RLMValue.
-    /// - Returns: The converted RLMValue type as an AnyRealmValue enum.
-    static func convert(value: RLMValue?) -> AnyRealmValue {
+    /// - Parameter value: The LEGACYValue.
+    /// - Returns: The converted LEGACYValue type as an AnyRealmValue enum.
+    static func convert(value: LEGACYValue?) -> AnyRealmValue {
         guard let value = value else {
             return .none
         }
 
         switch value.rlm_valueType {
-        case RLMPropertyType.int:
+        case LEGACYPropertyType.int:
             guard let val = value as? NSNumber else {
                 return .none
             }
             return .int(val.intValue)
-        case RLMPropertyType.bool:
+        case LEGACYPropertyType.bool:
             guard let val = value as? NSNumber else {
                 return .none
             }
             return .bool(val.boolValue)
-        case RLMPropertyType.float:
+        case LEGACYPropertyType.float:
             guard let val = value as? NSNumber else {
                 return .none
             }
             return .float(val.floatValue)
-        case RLMPropertyType.double:
+        case LEGACYPropertyType.double:
             guard let val = value as? NSNumber else {
                 return .none
             }
             return .double(val.doubleValue)
-        case RLMPropertyType.string:
+        case LEGACYPropertyType.string:
             guard let val = value as? String else {
                 return .none
             }
             return .string(val)
-        case RLMPropertyType.data:
+        case LEGACYPropertyType.data:
             guard let val = value as? Data else {
                 return .none
             }
             return .data(val)
-        case RLMPropertyType.date:
+        case LEGACYPropertyType.date:
             guard let val = value as? Date else {
                 return .none
             }
             return .date(val)
-        case RLMPropertyType.objectId:
+        case LEGACYPropertyType.objectId:
             guard let val = value as? ObjectId else {
                 return .none
             }
             return .objectId(val)
-        case RLMPropertyType.decimal128:
+        case LEGACYPropertyType.decimal128:
             guard let val = value as? Decimal128 else {
                 return .none
             }
             return .decimal128(val)
-        case RLMPropertyType.UUID:
+        case LEGACYPropertyType.UUID:
             guard let val = value as? UUID else {
                 return .none
             }
             return .uuid(val)
-        case RLMPropertyType.object:
+        case LEGACYPropertyType.object:
             guard let val = value as? Object else {
                 return .none
             }

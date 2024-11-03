@@ -16,30 +16,30 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMObject_Private.hpp"
+#import "LEGACYObject_Private.hpp"
 
-#import "RLMAccessor.h"
-#import "RLMArray.h"
-#import "RLMCollection_Private.hpp"
-#import "RLMObjectBase_Private.h"
-#import "RLMObjectSchema_Private.hpp"
-#import "RLMObjectStore.h"
-#import "RLMProperty_Private.h"
-#import "RLMQueryUtil.hpp"
-#import "RLMRealm_Private.hpp"
-#import "RLMSchema_Private.h"
+#import "LEGACYAccessor.h"
+#import "LEGACYArray.h"
+#import "LEGACYCollection_Private.hpp"
+#import "LEGACYObjectBase_Private.h"
+#import "LEGACYObjectSchema_Private.hpp"
+#import "LEGACYObjectStore.h"
+#import "LEGACYProperty_Private.h"
+#import "LEGACYQueryUtil.hpp"
+#import "LEGACYRealm_Private.hpp"
+#import "LEGACYSchema_Private.h"
 
 #import <realm/object-store/object.hpp>
 
-// We declare things in RLMObject which are actually implemented in RLMObjectBase
+// We declare things in LEGACYObject which are actually implemented in LEGACYObjectBase
 // for documentation's sake, which leads to -Wunimplemented-method warnings.
 // Other alternatives to this would be to disable -Wunimplemented-method for this
 // file (but then we could miss legitimately missing things), or declaring the
 // inherited things in a category (but they currently aren't nicely grouped for
 // that).
-@implementation RLMObject
+@implementation LEGACYObject
 
-// synthesized in RLMObjectBase
+// synthesized in LEGACYObjectBase
 @dynamic invalidated, realm, objectSchema;
 
 #pragma mark - Designated Initializers
@@ -54,134 +54,134 @@
     if (!(self = [self init])) {
         return nil;
     }
-    RLMInitializeWithValue(self, value, RLMSchema.partialPrivateSharedSchema);
+    LEGACYInitializeWithValue(self, value, LEGACYSchema.partialPrivateSharedSchema);
     return self;
 }
 
 #pragma mark - Class-based Object Creation
 
 + (instancetype)createInDefaultRealmWithValue:(id)value {
-    return (RLMObject *)RLMCreateObjectInRealmWithValue([RLMRealm defaultRealm], [self className], value, RLMUpdatePolicyError);
+    return (LEGACYObject *)LEGACYCreateObjectInRealmWithValue([LEGACYRealm defaultRealm], [self className], value, LEGACYUpdatePolicyError);
 }
 
-+ (instancetype)createInRealm:(RLMRealm *)realm withValue:(id)value {
-    return (RLMObject *)RLMCreateObjectInRealmWithValue(realm, [self className], value, RLMUpdatePolicyError);
++ (instancetype)createInRealm:(LEGACYRealm *)realm withValue:(id)value {
+    return (LEGACYObject *)LEGACYCreateObjectInRealmWithValue(realm, [self className], value, LEGACYUpdatePolicyError);
 }
 
 + (instancetype)createOrUpdateInDefaultRealmWithValue:(id)value {
-    return [self createOrUpdateInRealm:[RLMRealm defaultRealm] withValue:value];
+    return [self createOrUpdateInRealm:[LEGACYRealm defaultRealm] withValue:value];
 }
 
 + (instancetype)createOrUpdateModifiedInDefaultRealmWithValue:(id)value {
-    return [self createOrUpdateModifiedInRealm:[RLMRealm defaultRealm] withValue:value];
+    return [self createOrUpdateModifiedInRealm:[LEGACYRealm defaultRealm] withValue:value];
 }
 
-+ (instancetype)createOrUpdateInRealm:(RLMRealm *)realm withValue:(id)value {
-    RLMVerifyHasPrimaryKey(self);
-    return (RLMObject *)RLMCreateObjectInRealmWithValue(realm, [self className], value, RLMUpdatePolicyUpdateAll);
++ (instancetype)createOrUpdateInRealm:(LEGACYRealm *)realm withValue:(id)value {
+    LEGACYVerifyHasPrimaryKey(self);
+    return (LEGACYObject *)LEGACYCreateObjectInRealmWithValue(realm, [self className], value, LEGACYUpdatePolicyUpdateAll);
 }
 
-+ (instancetype)createOrUpdateModifiedInRealm:(RLMRealm *)realm withValue:(id)value {
-    RLMVerifyHasPrimaryKey(self);
-    return (RLMObject *)RLMCreateObjectInRealmWithValue(realm, [self className], value, RLMUpdatePolicyUpdateChanged);
++ (instancetype)createOrUpdateModifiedInRealm:(LEGACYRealm *)realm withValue:(id)value {
+    LEGACYVerifyHasPrimaryKey(self);
+    return (LEGACYObject *)LEGACYCreateObjectInRealmWithValue(realm, [self className], value, LEGACYUpdatePolicyUpdateChanged);
 }
 
 #pragma mark - Subscripting
 
 - (id)objectForKeyedSubscript:(NSString *)key {
-    return RLMObjectBaseObjectForKeyedSubscript(self, key);
+    return LEGACYObjectBaseObjectForKeyedSubscript(self, key);
 }
 
 - (void)setObject:(id)obj forKeyedSubscript:(NSString *)key {
-    RLMObjectBaseSetObjectForKeyedSubscript(self, key, obj);
+    LEGACYObjectBaseSetObjectForKeyedSubscript(self, key, obj);
 }
 
 #pragma mark - Getting & Querying
 
-+ (RLMResults *)allObjects {
-    return RLMGetObjects(RLMRealm.defaultRealm, self.className, nil);
++ (LEGACYResults *)allObjects {
+    return LEGACYGetObjects(LEGACYRealm.defaultRealm, self.className, nil);
 }
 
-+ (RLMResults *)allObjectsInRealm:(__unsafe_unretained RLMRealm *const)realm {
-    return RLMGetObjects(realm, self.className, nil);
++ (LEGACYResults *)allObjectsInRealm:(__unsafe_unretained LEGACYRealm *const)realm {
+    return LEGACYGetObjects(realm, self.className, nil);
 }
 
-+ (RLMResults *)objectsWhere:(NSString *)predicateFormat, ... {
++ (LEGACYResults *)objectsWhere:(NSString *)predicateFormat, ... {
     va_list args;
     va_start(args, predicateFormat);
-    RLMResults *results = [self objectsWhere:predicateFormat args:args];
+    LEGACYResults *results = [self objectsWhere:predicateFormat args:args];
     va_end(args);
     return results;
 }
 
-+ (RLMResults *)objectsWhere:(NSString *)predicateFormat args:(va_list)args {
++ (LEGACYResults *)objectsWhere:(NSString *)predicateFormat args:(va_list)args {
     return [self objectsWithPredicate:[NSPredicate predicateWithFormat:predicateFormat arguments:args]];
 }
 
-+ (RLMResults *)objectsInRealm:(RLMRealm *)realm where:(NSString *)predicateFormat, ... {
++ (LEGACYResults *)objectsInRealm:(LEGACYRealm *)realm where:(NSString *)predicateFormat, ... {
     va_list args;
     va_start(args, predicateFormat);
-    RLMResults *results = [self objectsInRealm:realm where:predicateFormat args:args];
+    LEGACYResults *results = [self objectsInRealm:realm where:predicateFormat args:args];
     va_end(args);
     return results;
 }
 
-+ (RLMResults *)objectsInRealm:(RLMRealm *)realm where:(NSString *)predicateFormat args:(va_list)args {
++ (LEGACYResults *)objectsInRealm:(LEGACYRealm *)realm where:(NSString *)predicateFormat args:(va_list)args {
     return [self objectsInRealm:realm withPredicate:[NSPredicate predicateWithFormat:predicateFormat arguments:args]];
 }
 
-+ (RLMResults *)objectsWithPredicate:(NSPredicate *)predicate {
-    return RLMGetObjects(RLMRealm.defaultRealm, self.className, predicate);
++ (LEGACYResults *)objectsWithPredicate:(NSPredicate *)predicate {
+    return LEGACYGetObjects(LEGACYRealm.defaultRealm, self.className, predicate);
 }
 
-+ (RLMResults *)objectsInRealm:(RLMRealm *)realm withPredicate:(NSPredicate *)predicate {
-    return RLMGetObjects(realm, self.className, predicate);
++ (LEGACYResults *)objectsInRealm:(LEGACYRealm *)realm withPredicate:(NSPredicate *)predicate {
+    return LEGACYGetObjects(realm, self.className, predicate);
 }
 
 + (instancetype)objectForPrimaryKey:(id)primaryKey {
-    return RLMGetObject(RLMRealm.defaultRealm, self.className, primaryKey);
+    return LEGACYGetObject(LEGACYRealm.defaultRealm, self.className, primaryKey);
 }
 
-+ (instancetype)objectInRealm:(RLMRealm *)realm forPrimaryKey:(id)primaryKey {
-    return RLMGetObject(realm, self.className, primaryKey);
++ (instancetype)objectInRealm:(LEGACYRealm *)realm forPrimaryKey:(id)primaryKey {
+    return LEGACYGetObject(realm, self.className, primaryKey);
 }
 
 #pragma mark - Other Instance Methods
 
-- (BOOL)isEqualToObject:(RLMObject *)object {
-    return [object isKindOfClass:RLMObject.class] && RLMObjectBaseAreEqual(self, object);
+- (BOOL)isEqualToObject:(LEGACYObject *)object {
+    return [object isKindOfClass:LEGACYObject.class] && LEGACYObjectBaseAreEqual(self, object);
 }
 
 - (instancetype)freeze {
-    return RLMObjectFreeze(self);
+    return LEGACYObjectFreeze(self);
 }
 
 - (instancetype)thaw {
-    return RLMObjectThaw(self);
+    return LEGACYObjectThaw(self);
 }
 
 - (BOOL)isFrozen {
     return _realm.isFrozen;
 }
 
-- (RLMNotificationToken *)addNotificationBlock:(RLMObjectChangeBlock)block {
-    return RLMObjectAddNotificationBlock(self, block, nil, nil);
+- (LEGACYNotificationToken *)addNotificationBlock:(LEGACYObjectChangeBlock)block {
+    return LEGACYObjectAddNotificationBlock(self, block, nil, nil);
 }
 
-- (RLMNotificationToken *)addNotificationBlock:(RLMObjectChangeBlock)block
+- (LEGACYNotificationToken *)addNotificationBlock:(LEGACYObjectChangeBlock)block
                                          queue:(nonnull dispatch_queue_t)queue {
-    return RLMObjectAddNotificationBlock(self, block, nil, queue);
+    return LEGACYObjectAddNotificationBlock(self, block, nil, queue);
 }
 
-- (RLMNotificationToken *)addNotificationBlock:(RLMObjectChangeBlock)block
+- (LEGACYNotificationToken *)addNotificationBlock:(LEGACYObjectChangeBlock)block
                                       keyPaths:(NSArray<NSString *> *)keyPaths {
-    return RLMObjectAddNotificationBlock(self, block, keyPaths, nil);
+    return LEGACYObjectAddNotificationBlock(self, block, keyPaths, nil);
 }
 
-- (RLMNotificationToken *)addNotificationBlock:(RLMObjectChangeBlock)block
+- (LEGACYNotificationToken *)addNotificationBlock:(LEGACYObjectChangeBlock)block
                                       keyPaths:(NSArray<NSString *> *)keyPaths
                                          queue:(dispatch_queue_t)queue {
-    return RLMObjectAddNotificationBlock(self, block, keyPaths, queue);
+    return LEGACYObjectAddNotificationBlock(self, block, keyPaths, queue);
 
 }
 
@@ -221,7 +221,7 @@
 
 @end
 
-@implementation RLMDynamicObject
+@implementation LEGACYDynamicObject
 
 + (bool)_realmIgnoreClass {
     return true;
@@ -232,23 +232,23 @@
 }
 
 - (id)valueForUndefinedKey:(NSString *)key {
-    return RLMDynamicGetByName(self, key);
+    return LEGACYDynamicGetByName(self, key);
 }
 
 - (void)setValue:(id)value forUndefinedKey:(NSString *)key {
-    RLMDynamicValidatedSet(self, key, value);
+    LEGACYDynamicValidatedSet(self, key, value);
 }
 
-+ (RLMObjectSchema *)sharedSchema {
++ (LEGACYObjectSchema *)sharedSchema {
     return nil;
 }
 
 @end
 
-BOOL RLMIsObjectOrSubclass(Class klass) {
-    return RLMIsKindOfClass(klass, RLMObjectBase.class);
+BOOL LEGACYIsObjectOrSubclass(Class klass) {
+    return LEGACYIsKindOfClass(klass, LEGACYObjectBase.class);
 }
 
-BOOL RLMIsObjectSubclass(Class klass) {
-    return RLMIsKindOfClass(class_getSuperclass(class_getSuperclass(klass)), RLMObjectBase.class);
+BOOL LEGACYIsObjectSubclass(Class klass) {
+    return LEGACYIsKindOfClass(class_getSuperclass(class_getSuperclass(klass)), LEGACYObjectBase.class);
 }

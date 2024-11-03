@@ -18,7 +18,7 @@
 
 #import <Realm/Realm.h>
 
-@interface Repository : RLMObject
+@interface Repository : LEGACYObject
 
 @property NSString *identifier;
 @property NSString *name;

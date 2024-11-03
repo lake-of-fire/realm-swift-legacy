@@ -28,7 +28,7 @@ import RealmLegacy
  - Note:
  An `RealmProperty` should not be declared as `@objc dynamic` on a Realm Object. Use `let` instead.
  */
-public final class RealmProperty<Value: RealmPropertyType>: RLMSwiftValueStorage {
+public final class RealmProperty<Value: RealmPropertyType>: LEGACYSwiftValueStorage {
     /**
      Used for getting / setting the underlying value.
 
@@ -47,10 +47,10 @@ public final class RealmProperty<Value: RealmPropertyType>: RLMSwiftValueStorage
      */
     public var value: Value {
         get {
-            staticBridgeCast(fromObjectiveC: RLMGetSwiftValueStorage(self) ?? NSNull())
+            staticBridgeCast(fromObjectiveC: LEGACYGetSwiftValueStorage(self) ?? NSNull())
         }
         set {
-            RLMSetSwiftValueStorage(self, staticBridgeCast(fromSwift: newValue))
+            LEGACYSetSwiftValueStorage(self, staticBridgeCast(fromSwift: newValue))
         }
     }
 

@@ -16,63 +16,63 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMAsyncTask.h>
+#import <Realm/LEGACYAsyncTask.h>
 
-#import "RLMRealm_Private.h"
+#import "LEGACYRealm_Private.h"
 
-RLM_HEADER_AUDIT_BEGIN(nullability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability)
 
-@interface RLMAsyncOpenTask ()
-@property (nonatomic, nullable) RLMRealm *localRealm;
+@interface LEGACYAsyncOpenTask ()
+@property (nonatomic, nullable) LEGACYRealm *localRealm;
 
-- (instancetype)initWithConfiguration:(RLMRealmConfiguration *)configuration
-                           confinedTo:(RLMScheduler *)confinement
+- (instancetype)initWithConfiguration:(LEGACYRealmConfiguration *)configuration
+                           confinedTo:(LEGACYScheduler *)confinement
                              download:(bool)waitForDownloadCompletion
-                           completion:(RLMAsyncOpenRealmCallback)completion
+                           completion:(LEGACYAsyncOpenRealmCallback)completion
 __attribute__((objc_direct));
 
-- (instancetype)initWithConfiguration:(RLMRealmConfiguration *)configuration
-                           confinedTo:(RLMScheduler *)confinement
+- (instancetype)initWithConfiguration:(LEGACYRealmConfiguration *)configuration
+                           confinedTo:(LEGACYScheduler *)confinement
                              download:(bool)waitForDownloadCompletion;
 
 - (void)waitWithCompletion:(void (^)(NSError *_Nullable))completion;
-- (void)waitForOpen:(RLMAsyncOpenRealmCallback)completion __attribute__((objc_direct));
+- (void)waitForOpen:(LEGACYAsyncOpenRealmCallback)completion __attribute__((objc_direct));
 @end
 
 // A cancellable task for waiting for downloads on an already-open Realm.
-RLM_SWIFT_SENDABLE
-@interface RLMAsyncDownloadTask : NSObject
-- (instancetype)initWithRealm:(RLMRealm *)realm;
+LEGACY_SWIFT_SENDABLE
+@interface LEGACYAsyncDownloadTask : NSObject
+- (instancetype)initWithRealm:(LEGACYRealm *)realm;
 - (void)cancel;
 - (void)waitWithCompletion:(void (^)(NSError *_Nullable))completion;
 @end
 
 // A cancellable task for beginning an async write
-RLM_SWIFT_SENDABLE
-@interface RLMAsyncWriteTask : NSObject
+LEGACY_SWIFT_SENDABLE
+@interface LEGACYAsyncWriteTask : NSObject
 // Must only be called from within the Actor
-- (instancetype)initWithRealm:(RLMRealm *)realm;
-- (void)setTransactionId:(RLMAsyncTransactionId)transactionID;
+- (instancetype)initWithRealm:(LEGACYRealm *)realm;
+- (void)setTransactionId:(LEGACYAsyncTransactionId)transactionID;
 - (void)complete:(bool)cancel;
 
 // Can be called from any thread
 - (void)wait:(void (^)(void))completion;
 @end
 
-typedef void (^RLMAsyncRefreshCompletion)(bool);
+typedef void (^LEGACYAsyncRefreshCompletion)(bool);
 // A cancellable task for refreshing a Realm
-RLM_SWIFT_SENDABLE
-@interface RLMAsyncRefreshTask : NSObject
+LEGACY_SWIFT_SENDABLE
+@interface LEGACYAsyncRefreshTask : NSObject
 - (void)complete:(bool)didRefresh;
-- (void)wait:(RLMAsyncRefreshCompletion)completion;
-+ (RLMAsyncRefreshTask *)completedRefresh;
+- (void)wait:(LEGACYAsyncRefreshCompletion)completion;
++ (LEGACYAsyncRefreshTask *)completedRefresh;
 @end
 
 // A cancellable task for refreshing a Realm
-RLM_SWIFT_SENDABLE
-@interface RLMAsyncSubscriptionTask : NSObject
+LEGACY_SWIFT_SENDABLE
+@interface LEGACYAsyncSubscriptionTask : NSObject
 
-- (instancetype)initWithSubscriptionSet:(RLMSyncSubscriptionSet *)subscriptionSet
+- (instancetype)initWithSubscriptionSet:(LEGACYSyncSubscriptionSet *)subscriptionSet
                                   queue:(nullable dispatch_queue_t)queue
                                 timeout:(NSTimeInterval)timeout
                              completion:(void(^)(NSError *))completion;
@@ -80,4 +80,4 @@ RLM_SWIFT_SENDABLE
 - (void)waitForSubscription;
 @end
 
-RLM_HEADER_AUDIT_END(nullability)
+LEGACY_HEADER_AUDIT_END(nullability)

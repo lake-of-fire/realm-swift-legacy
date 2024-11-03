@@ -17,31 +17,31 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #import <Foundation/Foundation.h>
-#import <Realm/RLMMongoCollection.h>
+#import <Realm/LEGACYMongoCollection.h>
 #import <XCTest/XCTest.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 /// Used to process watch change events and assert tests.
-@interface RLMWatchTestUtility : XCTestCase <RLMChangeEventDelegate>
+@interface LEGACYWatchTestUtility : XCTestCase <LEGACYChangeEventDelegate>
 
 @property (nonatomic, strong) dispatch_semaphore_t semaphore;
 @property (nonatomic, strong) dispatch_semaphore_t isOpenSemaphore;
 
-/// Sets up an object that subscribes to the RLMChangeEventDelegate
+/// Sets up an object that subscribes to the LEGACYChangeEventDelegate
 /// @param changeEventCount The target amount of change events for the test to succeed
 /// @param expectation The expectation for the test to fulfil.
 - (instancetype)initWithChangeEventCount:(NSUInteger)changeEventCount
                              expectation:(XCTestExpectation *)expectation;
 
-/// Sets up an object that subscribes to the RLMChangeEventDelegate
+/// Sets up an object that subscribes to the LEGACYChangeEventDelegate
 /// @param changeEventCount The target amount of change events for the test to succeed
 /// @param matchingObjectId An objectId that the change event must match.
 /// @param expectation The expectation for the test to fulfil.
 - (instancetype)initWithChangeEventCount:(NSUInteger)changeEventCount
-                        matchingObjectId:(RLMObjectId *)matchingObjectId
+                        matchingObjectId:(LEGACYObjectId *)matchingObjectId
                              expectation:(XCTestExpectation *)expectation;
 
 
 @end
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

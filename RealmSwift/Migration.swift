@@ -52,8 +52,8 @@ public typealias MigrationObjectEnumerateBlock = (_ oldObject: MigrationObject?,
  */
 public func schemaVersionAtURL(_ fileURL: URL, encryptionKey: Data? = nil) throws -> UInt64 {
     var error: NSError?
-    let version = RLMRealm.__schemaVersion(at: fileURL, encryptionKey: encryptionKey, error: &error)
-    guard version != RLMNotVersioned else {
+    let version = LEGACYRealm.__schemaVersion(at: fileURL, encryptionKey: encryptionKey, error: &error)
+    guard version != LEGACYNotVersioned else {
         throw error!
     }
     return version
@@ -69,7 +69,7 @@ extension RealmLegacy {
      - parameter configuration: The Realm configuration used to open and migrate the RealmLegacy.
      */
     public static func performMigration(for configuration: RealmLegacy.Configuration = RealmLegacy.Configuration.defaultConfiguration) throws {
-        try RLMRealm.performMigration(for: configuration.rlmConfiguration)
+        try LEGACYRealm.performMigration(for: configuration.rlmConfiguration)
     }
 }
 
@@ -80,7 +80,7 @@ extension RealmLegacy {
  instance provides access to the old and new database schemas, the objects in the Realm, and provides functionality for
  modifying the Realm during the migration.
  */
-public typealias Migration = RLMMigration
+public typealias Migration = LEGACYMigration
 extension Migration {
     // MARK: Properties
 
@@ -135,7 +135,7 @@ extension Migration {
      - parameter object: An object to be deleted from the Realm being migrated.
      */
     public func delete(_ object: MigrationObject) {
-        __delete(object.unsafeCastToRLMObject())
+        __delete(object.unsafeCastToLEGACYObject())
     }
 
     /**

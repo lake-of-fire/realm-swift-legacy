@@ -16,20 +16,20 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMCollection.h>
+#import <Realm/LEGACYCollection.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@class RLMObject, RLMResults<RLMObjectType>;
+@class LEGACYObject, LEGACYResults<LEGACYObjectType>;
 
 /**
  A collection datatype used for storing distinct objects.
 
  - Note:
- `RLMSet` supports storing primitive and `RLMObject` types. `RLMSet` does not support storing
+ `LEGACYSet` supports storing primitive and `LEGACYObject` types. `LEGACYSet` does not support storing
  Embedded Realm Objects.
  */
-@interface RLMSet<RLMObjectType> : NSObject<RLMCollection>
+@interface LEGACYSet<LEGACYObjectType> : NSObject<LEGACYCollection>
 
 #pragma mark - Properties
 
@@ -41,7 +41,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 /**
  The type of the objects in the set.
  */
-@property (nonatomic, readonly, assign) RLMPropertyType type;
+@property (nonatomic, readonly, assign) LEGACYPropertyType type;
 
 /**
  Indicates whether the objects in the collection can be `nil`.
@@ -49,21 +49,21 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 @property (nonatomic, readonly, getter = isOptional) BOOL optional;
 
 /**
- The objects in the RLMSet as an NSArray value.
+ The objects in the LEGACYSet as an NSArray value.
  */
-@property (nonatomic, readonly) NSArray<RLMObjectType> *allObjects;
+@property (nonatomic, readonly) NSArray<LEGACYObjectType> *allObjects;
 
 /**
  The class name of the objects contained in the set.
 
- Will be `nil` if `type` is not RLMPropertyTypeObject.
+ Will be `nil` if `type` is not LEGACYPropertyTypeObject.
  */
 @property (nonatomic, readonly, copy, nullable) NSString *objectClassName;
 
 /**
  The Realm which manages the set. Returns `nil` for unmanaged set.
  */
-@property (nonatomic, readonly, nullable) RLMRealm *realm;
+@property (nonatomic, readonly, nullable) LEGACYRealm *realm;
 
 /**
  Indicates if the set can no longer be accessed.
@@ -88,14 +88,14 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @param object  An object of the type contained in the set.
  */
-- (void)addObject:(RLMObjectType)object;
+- (void)addObject:(LEGACYObjectType)object;
 
 /**
  Adds an array of distinct objects to the set.
 
  @warning This method may only be called during a write transaction.
 
- @param objects     An enumerable object such as `NSArray`, `NSSet` or `RLMResults` which contains objects of the
+ @param objects     An enumerable object such as `NSArray`, `NSSet` or `LEGACYResults` which contains objects of the
                     same class as the set.
  */
 - (void)addObjects:(id<NSFastEnumeration>)objects;
@@ -107,7 +107,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @param object The object in the set that you want to remove.
  */
-- (void)removeObject:(RLMObjectType)object;
+- (void)removeObject:(LEGACYObjectType)object;
 
 /**
  Removes all objects from the set.
@@ -121,18 +121,18 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @warning This method may only be called during a write transaction.
 
- @param set The RLMSet whose members replace the receiving set's content.
+ @param set The LEGACYSet whose members replace the receiving set's content.
  */
-- (void)setSet:(RLMSet<RLMObjectType> *)set;
+- (void)setSet:(LEGACYSet<LEGACYObjectType> *)set;
 
 /**
  Removes from the receiving set each object that isn’t a member of another given set.
 
  @warning This method may only be called during a write transaction.
 
- @param set The RLMSet with which to perform the intersection.
+ @param set The LEGACYSet with which to perform the intersection.
  */
-- (void)intersectSet:(RLMSet<RLMObjectType> *)set;
+- (void)intersectSet:(LEGACYSet<LEGACYObjectType> *)set;
 
 /**
  Removes each object in another given set from the receiving set, if present.
@@ -141,7 +141,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @param set The set of objects to remove from the receiving set.
  */
-- (void)minusSet:(RLMSet<RLMObjectType> *)set;
+- (void)minusSet:(LEGACYSet<LEGACYObjectType> *)set;
 
 /**
  Adds each object in another given set to the receiving set, if not present.
@@ -150,45 +150,45 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @param set The set of objects to add to the receiving set.
  */
-- (void)unionSet:(RLMSet<RLMObjectType> *)set;
+- (void)unionSet:(LEGACYSet<LEGACYObjectType> *)set;
 
 #pragma mark - Querying a Set
 
 /// :nodoc:
-- (RLMResults<RLMObjectType> *)objectsWhere:(NSString *)predicateFormat, ...;
+- (LEGACYResults<LEGACYObjectType> *)objectsWhere:(NSString *)predicateFormat, ...;
 
 /// :nodoc:
-- (RLMResults<RLMObjectType> *)objectsWhere:(NSString *)predicateFormat args:(va_list)args;
+- (LEGACYResults<LEGACYObjectType> *)objectsWhere:(NSString *)predicateFormat args:(va_list)args;
 
 /// :nodoc:
-- (RLMResults<RLMObjectType> *)objectsWithPredicate:(NSPredicate *)predicate;
+- (LEGACYResults<LEGACYObjectType> *)objectsWithPredicate:(NSPredicate *)predicate;
 
 /// :nodoc:
-- (RLMResults<RLMObjectType> *)sortedResultsUsingKeyPath:(NSString *)keyPath ascending:(BOOL)ascending;
+- (LEGACYResults<LEGACYObjectType> *)sortedResultsUsingKeyPath:(NSString *)keyPath ascending:(BOOL)ascending;
 
 /// :nodoc:
-- (RLMResults<RLMObjectType> *)sortedResultsUsingDescriptors:(NSArray<RLMSortDescriptor *> *)properties;
+- (LEGACYResults<LEGACYObjectType> *)sortedResultsUsingDescriptors:(NSArray<LEGACYSortDescriptor *> *)properties;
 
 /// :nodoc:
-- (RLMResults<RLMObjectType> *)distinctResultsUsingKeyPaths:(NSArray<NSString *> *)keyPaths;
+- (LEGACYResults<LEGACYObjectType> *)distinctResultsUsingKeyPaths:(NSArray<NSString *> *)keyPaths;
 
 /**
  Returns a Boolean value that indicates whether at least one object in the receiving set is also present in another given set.
 
- @param set The RLMSet to compare the receiving set to.
+ @param set The LEGACYSet to compare the receiving set to.
 
  @return YES if at least one object in the receiving set is also present in otherSet, otherwise NO.
  */
-- (BOOL)intersectsSet:(RLMSet<RLMObjectType> *)set;
+- (BOOL)intersectsSet:(LEGACYSet<LEGACYObjectType> *)set;
 
 /**
  Returns a Boolean value that indicates whether every object in the receiving set is also present in another given set.
 
- @param set The RLMSet to compare the receiving set to.
+ @param set The LEGACYSet to compare the receiving set to.
 
  @return YES if every object in the receiving set is also present in otherSet, otherwise NO.
  */
-- (BOOL)isSubsetOfSet:(RLMSet<RLMObjectType> *)set;
+- (BOOL)isSubsetOfSet:(LEGACYSet<LEGACYObjectType> *)set;
 
 /**
  Returns a Boolean value that indicates whether a given object is present in the set.
@@ -197,7 +197,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @return YES if anObject is present in the set, otherwise NO.
  */
-- (BOOL)containsObject:(RLMObjectType)anObject;
+- (BOOL)containsObject:(LEGACYObjectType)anObject;
 
 /**
  Compares the receiving set to another set.
@@ -206,39 +206,39 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @return YES if the contents of otherSet are equal to the contents of the receiving set, otherwise NO.
  */
-- (BOOL)isEqualToSet:(RLMSet<RLMObjectType> *)otherSet;
+- (BOOL)isEqualToSet:(LEGACYSet<LEGACYObjectType> *)otherSet;
 
 #pragma mark - Sectioning a Set
 
 /**
  Sorts and sections this collection from a given property key path, returning the result
- as an instance of `RLMSectionedResults`.
+ as an instance of `LEGACYSectionedResults`.
 
  @param keyPath The property key path to sort on.
  @param ascending The direction to sort in.
  @param keyBlock A callback which is invoked on each element in the Results collection.
                 This callback is to return the section key for the element in the collection.
 
- @return An instance of RLMSectionedResults.
+ @return An instance of LEGACYSectionedResults.
  */
-- (RLMSectionedResults *)sectionedResultsSortedUsingKeyPath:(NSString *)keyPath
+- (LEGACYSectionedResults *)sectionedResultsSortedUsingKeyPath:(NSString *)keyPath
                                                   ascending:(BOOL)ascending
-                                                   keyBlock:(RLMSectionedResultsKeyBlock)keyBlock;
+                                                   keyBlock:(LEGACYSectionedResultsKeyBlock)keyBlock;
 
 /**
  Sorts and sections this collection from a given array of sort descriptors, returning the result
- as an instance of `RLMSectionedResults`.
+ as an instance of `LEGACYSectionedResults`.
 
- @param sortDescriptors  An array of `RLMSortDescriptor`s to sort by.
+ @param sortDescriptors  An array of `LEGACYSortDescriptor`s to sort by.
  @param keyBlock  A callback which is invoked on each element in the Results collection.
                  This callback is to return the section key for the element in the collection.
 
  @note The primary sort descriptor must be responsible for determining the section key.
 
- @return An instance of RLMSectionedResults.
+ @return An instance of LEGACYSectionedResults.
  */
-- (RLMSectionedResults *)sectionedResultsUsingSortDescriptors:(NSArray<RLMSortDescriptor *> *)sortDescriptors
-                                                     keyBlock:(RLMSectionedResultsKeyBlock)keyBlock;
+- (LEGACYSectionedResults *)sectionedResultsUsingSortDescriptors:(NSArray<LEGACYSortDescriptor *> *)sortDescriptors
+                                                     keyBlock:(LEGACYSectionedResultsKeyBlock)keyBlock;
 
 
 #pragma mark - Notifications
@@ -255,7 +255,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  For each call after that, it will contain information about
  which rows in the set were added, removed or modified. If a write transaction
  did not modify any objects in the set, the block is not called at all.
- See the `RLMCollectionChange` documentation for information on how the changes
+ See the `LEGACYCollectionChange` documentation for information on how the changes
  are reported and an example of updating a `UITableView`.
 
  The error parameter is present only for backwards compatibility and will always
@@ -273,8 +273,8 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
      Person *person = [[Person allObjectsInRealm:realm] firstObject];
      NSLog(@"person.dogs.count: %zu", person.dogs.count); // => 0
-     self.token = [person.dogs addNotificationBlock(RLMSet<Dog *> *dogs,
-                                                    RLMCollectionChange *changes,
+     self.token = [person.dogs addNotificationBlock(LEGACYSet<Dog *> *dogs,
+                                                    LEGACYCollectionChange *changes,
                                                     NSError *error) {
          // Only fired once for the example
          NSLog(@"dogs.count: %zu", dogs.count) // => 1
@@ -296,8 +296,8 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  @param block The block to be called each time the set changes.
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMSet<RLMObjectType> *_Nullable set,
-                                                         RLMCollectionChange *_Nullable changes,
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYSet<LEGACYObjectType> *_Nullable set,
+                                                         LEGACYCollectionChange *_Nullable changes,
                                                          NSError *_Nullable error))block
 __attribute__((warn_unused_result));
 
@@ -313,7 +313,7 @@ __attribute__((warn_unused_result));
  For each call after that, it will contain information about
  which rows in the set were added, removed or modified. If a write transaction
  did not modify any objects in the set, the block is not called at all.
- See the `RLMCollectionChange` documentation for information on how the changes
+ See the `LEGACYCollectionChange` documentation for information on how the changes
  are reported and an example of updating a `UITableView`.
 
  The error parameter is present only for backwards compatibility and will always
@@ -333,8 +333,8 @@ __attribute__((warn_unused_result));
  @param queue The serial queue to deliver notifications to.
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMSet<RLMObjectType> *_Nullable set,
-                                                         RLMCollectionChange *_Nullable changes,
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYSet<LEGACYObjectType> *_Nullable set,
+                                                         LEGACYCollectionChange *_Nullable changes,
                                                          NSError *_Nullable error))block
                                          queue:(nullable dispatch_queue_t)queue
 __attribute__((warn_unused_result));
@@ -351,7 +351,7 @@ __attribute__((warn_unused_result));
  For each call after that, it will contain information about
  which rows in the set were added, removed or modified. If a write transaction
  did not modify any objects in the set, the block is not called at all.
- See the `RLMCollectionChange` documentation for information on how the changes
+ See the `LEGACYCollectionChange` documentation for information on how the changes
  are reported and an example of updating a `UITableView`.
 
  The error parameter is present only for backwards compatibility and will always
@@ -373,8 +373,8 @@ __attribute__((warn_unused_result));
  @param queue The serial queue to deliver notifications to.
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMSet<RLMObjectType> *_Nullable set,
-                                                         RLMCollectionChange *_Nullable changes,
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYSet<LEGACYObjectType> *_Nullable set,
+                                                         LEGACYCollectionChange *_Nullable changes,
                                                          NSError *_Nullable error))block
                                       keyPaths:(nullable NSArray<NSString *> *)keyPaths
                                          queue:(nullable dispatch_queue_t)queue
@@ -392,7 +392,7 @@ __attribute__((warn_unused_result));
  For each call after that, it will contain information about
  which rows in the set were added, removed or modified. If a write transaction
  did not modify any objects in the set, the block is not called at all.
- See the `RLMCollectionChange` documentation for information on how the changes
+ See the `LEGACYCollectionChange` documentation for information on how the changes
  are reported and an example of updating a `UITableView`.
 
  The error parameter is present only for backwards compatibility and will always
@@ -418,8 +418,8 @@ __attribute__((warn_unused_result));
  key paths are given, notifications are delivered for every property key path.
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMSet<RLMObjectType> *_Nullable set,
-                                                         RLMCollectionChange *_Nullable changes,
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYSet<LEGACYObjectType> *_Nullable set,
+                                                         LEGACYCollectionChange *_Nullable changes,
                                                          NSError *_Nullable error))block
                                       keyPaths:(nullable NSArray<NSString *> *)keyPaths
 __attribute__((warn_unused_result));
@@ -431,7 +431,7 @@ __attribute__((warn_unused_result));
 
      NSNumber *min = [object.setProperty minOfProperty:@"age"];
 
- @warning You cannot use this method on `RLMObject`,  `RLMArray`,  `RLMSet`, and `NSData` properties.
+ @warning You cannot use this method on `LEGACYObject`,  `LEGACYArray`,  `LEGACYSet`, and `NSData` properties.
 
  @param property The property whose minimum value is desired. Only properties of
                  types `int`, `float`, `double`, and `NSDate` are supported.
@@ -445,7 +445,7 @@ __attribute__((warn_unused_result));
 
      NSNumber *max = [object.setProperty maxOfProperty:@"age"];
 
- @warning You cannot use this method on `RLMObject`, `RLMArray`,  `RLMSet`, and `NSData` properties.
+ @warning You cannot use this method on `LEGACYObject`, `LEGACYArray`,  `LEGACYSet`, and `NSData` properties.
 
  @param property The property whose maximum value is desired. Only properties of
                  types `int`, `float`, `double`, and `NSDate` are supported.
@@ -459,7 +459,7 @@ __attribute__((warn_unused_result));
 
      NSNumber *sum = [object.setProperty sumOfProperty:@"age"];
 
- @warning You cannot use this method on `RLMObject`, `RLMArray`,  `RLMSet and `NSData` properties.
+ @warning You cannot use this method on `LEGACYObject`, `LEGACYArray`,  `LEGACYSet and `NSData` properties.
 
  @param property The property whose values should be summed. Only properties of
                  types `int`, `float`, and `double` are supported.
@@ -473,7 +473,7 @@ __attribute__((warn_unused_result));
 
      NSNumber *average = [object.setProperty averageOfProperty:@"age"];
 
- @warning You cannot use this method on `RLMObject`, `RLMSet`,  `RLMArray`, and `NSData` properties.
+ @warning You cannot use this method on `LEGACYObject`, `LEGACYSet`,  `LEGACYArray`, and `NSData` properties.
 
  @param property The property whose average value should be calculated. Only
                  properties of types `int`, `float`, and `double` are supported.
@@ -497,7 +497,7 @@ __attribute__((warn_unused_result));
  @warning This method may only be called on a managed set.
  @warning Holding onto a frozen set for an extended period while performing
           write transaction on the Realm may result in the Realm file growing
-          to large sizes. See `RLMRealmConfiguration.maximumNumberOfActiveVersions`
+          to large sizes. See `LEGACYRealmConfiguration.maximumNumberOfActiveVersions`
           for more information.
  */
 - (instancetype)freeze;
@@ -513,23 +513,23 @@ __attribute__((warn_unused_result));
 #pragma mark - Unavailable Methods
 
 /**
- `-[RLMSet init]` is not available because `RLMSet`s cannot be created directly.
- ``RLMSet` properties on `RLMObject`s are lazily created when accessed.
+ `-[LEGACYSet init]` is not available because `LEGACYSet`s cannot be created directly.
+ ``LEGACYSet` properties on `LEGACYObject`s are lazily created when accessed.
  */
-- (instancetype)init __attribute__((unavailable("RLMSets cannot be created directly")));
+- (instancetype)init __attribute__((unavailable("LEGACYSets cannot be created directly")));
 
 /**
- `+[RLMSet new]` is not available because `RLMSet`s cannot be created directly.
- `RLMSet` properties on `RLMObject`s are lazily created when accessed.
+ `+[LEGACYSet new]` is not available because `LEGACYSet`s cannot be created directly.
+ `LEGACYSet` properties on `LEGACYObject`s are lazily created when accessed.
  */
-+ (instancetype)new __attribute__((unavailable("RLMSet cannot be created directly")));
++ (instancetype)new __attribute__((unavailable("LEGACYSet cannot be created directly")));
 
 @end
 
 /// :nodoc:
-@interface RLMSet (Swift)
+@interface LEGACYSet (Swift)
 // for use only in Swift class definitions
 - (instancetype)initWithObjectClassName:(NSString *)objectClassName;
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

@@ -16,7 +16,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMApp_Private.hpp"
+#import "LEGACYApp_Private.hpp"
 
 #import <sys/utsname.h>
 #if __has_include(<UIKit/UIDevice.h>)
@@ -24,36 +24,36 @@
 #define REALM_UIDEVICE_AVAILABLE
 #endif
 
-#import "RLMAnalytics.hpp"
-#import "RLMBSON_Private.hpp"
-#import "RLMCredentials_Private.hpp"
-#import "RLMEmailPasswordAuth.h"
-#import "RLMLogger.h"
-#import "RLMPushClient_Private.hpp"
-#import "RLMSyncManager_Private.hpp"
-#import "RLMUser_Private.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYAnalytics.hpp"
+#import "LEGACYBSON_Private.hpp"
+#import "LEGACYCredentials_Private.hpp"
+#import "LEGACYEmailPasswordAuth.h"
+#import "LEGACYLogger.h"
+#import "LEGACYPushClient_Private.hpp"
+#import "LEGACYSyncManager_Private.hpp"
+#import "LEGACYUser_Private.hpp"
+#import "LEGACYUtil.hpp"
 
 #import <realm/object-store/sync/sync_manager.hpp>
 #import <realm/sync/config.hpp>
 
 #if !defined(REALM_COCOA_VERSION)
-#import "RLMVersion.h"
+#import "LEGACYVersion.h"
 #endif
 
 using namespace realm;
 
 #pragma mark CocoaNetworkTransport
 namespace {
-    /// Internal transport struct to bridge RLMNetworkingTransporting to the GenericNetworkTransport.
+    /// Internal transport struct to bridge LEGACYNetworkingTransporting to the GenericNetworkTransport.
     class CocoaNetworkTransport : public realm::app::GenericNetworkTransport {
     public:
-        CocoaNetworkTransport(id<RLMNetworkTransport> transport) : m_transport(transport) {}
+        CocoaNetworkTransport(id<LEGACYNetworkTransport> transport) : m_transport(transport) {}
 
         void send_request_to_server(const app::Request& request,
                                     util::UniqueFunction<void(const app::Response&)>&& completion) override {
-            // Convert the app::Request to an RLMRequest
-            auto rlmRequest = [RLMRequest new];
+            // Convert the app::Request to an LEGACYRequest
+            auto rlmRequest = [LEGACYRequest new];
             rlmRequest.url = @(request.url.data());
             rlmRequest.body = @(request.body.data());
             NSMutableDictionary *headers = [NSMutableDictionary new];
@@ -61,19 +61,19 @@ namespace {
                 headers[@(header.first.data())] = @(header.second.data());
             }
             rlmRequest.headers = headers;
-            rlmRequest.method = static_cast<RLMHTTPMethod>(request.method);
+            rlmRequest.method = static_cast<LEGACYHTTPMethod>(request.method);
             rlmRequest.timeout = request.timeout_ms / 1000.0;
 
             // Send the request through to the Cocoa level transport
             auto completion_ptr = completion.release();
-            [m_transport sendRequestToServer:rlmRequest completion:^(RLMResponse *response) {
+            [m_transport sendRequestToServer:rlmRequest completion:^(LEGACYResponse *response) {
                 util::UniqueFunction<void(const app::Response&)> completion(completion_ptr);
                 std::map<std::string, std::string> bridgingHeaders;
                 [response.headers enumerateKeysAndObjectsUsingBlock:[&](NSString *key, NSString *value, BOOL *) {
                     bridgingHeaders[key.UTF8String] = value.UTF8String;
                 }];
 
-                // Convert the RLMResponse to an app:Response and pass downstream to
+                // Convert the LEGACYResponse to an app:Response and pass downstream to
                 // the object store
                 completion(app::Response{
                     .http_status_code = static_cast<int>(response.httpStatusCode),
@@ -84,16 +84,16 @@ namespace {
             }];
         }
 
-        id<RLMNetworkTransport> transport() const {
+        id<LEGACYNetworkTransport> transport() const {
             return m_transport;
         }
     private:
-        id<RLMNetworkTransport> m_transport;
+        id<LEGACYNetworkTransport> m_transport;
     };
 }
 
-#pragma mark RLMAppConfiguration
-@implementation RLMAppConfiguration {
+#pragma mark LEGACYAppConfiguration
+@implementation LEGACYAppConfiguration {
     realm::app::App::Config _config;
     SyncClientConfig _clientConfig;
 }
@@ -101,15 +101,15 @@ namespace {
 - (instancetype)init {
     if (self = [super init]) {
         self.enableSessionMultiplexing = true;
-        self.encryptMetadata = !getenv("REALM_DISABLE_METADATA_ENCRYPTION") && !RLMIsRunningInPlayground();
-        RLMNSStringToStdString(_clientConfig.base_file_path, RLMDefaultDirectoryForBundleIdentifier(nil));
+        self.encryptMetadata = !getenv("REALM_DISABLE_METADATA_ENCRYPTION") && !LEGACYIsRunningInPlayground();
+        LEGACYNSStringToStdString(_clientConfig.base_file_path, LEGACYDefaultDirectoryForBundleIdentifier(nil));
         configureSyncConnectionParameters(_config);
     }
     return self;
 }
 
 - (instancetype)initWithBaseURL:(nullable NSString *)baseURL
-                      transport:(nullable id<RLMNetworkTransport>)transport
+                      transport:(nullable id<LEGACYNetworkTransport>)transport
                    localAppName:(nullable NSString *)localAppName
                 localAppVersion:(nullable NSString *)localAppVersion {
     return [self initWithBaseURL:baseURL
@@ -120,7 +120,7 @@ namespace {
 }
 
 - (instancetype)initWithBaseURL:(nullable NSString *)baseURL
-                      transport:(nullable id<RLMNetworkTransport>)transport
+                      transport:(nullable id<LEGACYNetworkTransport>)transport
                    localAppName:(nullable NSString *)localAppName
                 localAppVersion:(nullable NSString *)localAppVersion
         defaultRequestTimeoutMS:(NSUInteger)defaultRequestTimeoutMS {
@@ -135,14 +135,14 @@ namespace {
 }
 
 - (instancetype)initWithBaseURL:(nullable NSString *)baseURL
-                      transport:(nullable id<RLMNetworkTransport>)transport {
+                      transport:(nullable id<LEGACYNetworkTransport>)transport {
     return [self initWithBaseURL:baseURL
                        transport:transport
          defaultRequestTimeoutMS:60000];
 }
 
 - (instancetype)initWithBaseURL:(nullable NSString *)baseURL
-                      transport:(nullable id<RLMNetworkTransport>)transport
+                      transport:(nullable id<LEGACYNetworkTransport>)transport
         defaultRequestTimeoutMS:(NSUInteger)defaultRequestTimeoutMS {
     if (self = [self init]) {
         self.baseURL = baseURL;
@@ -156,22 +156,22 @@ static void configureSyncConnectionParameters(realm::app::App::Config& config) {
     // Anonymized BundleId
     NSString *bundleId = [[NSBundle mainBundle] bundleIdentifier];
     NSData *bundleIdData = [bundleId dataUsingEncoding:NSUTF8StringEncoding];
-    RLMNSStringToStdString(config.device_info.bundle_id, RLMHashBase16Data(bundleIdData.bytes, bundleIdData.length));
+    LEGACYNSStringToStdString(config.device_info.bundle_id, LEGACYHashBase16Data(bundleIdData.bytes, bundleIdData.length));
 
     config.device_info.sdk = "Realm Swift";
-    RLMNSStringToStdString(config.device_info.sdk_version, REALM_COCOA_VERSION);
+    LEGACYNSStringToStdString(config.device_info.sdk_version, REALM_COCOA_VERSION);
 
     // Platform info isn't available when running via `swift test`.
     // Non-Xcode SPM builds can't build for anything but macOS, so this is
     // probably unimportant for now and we can just report "unknown"
     auto processInfo = [NSProcessInfo processInfo];
-    RLMNSStringToStdString(config.device_info.platform_version,
+    LEGACYNSStringToStdString(config.device_info.platform_version,
                            [processInfo operatingSystemVersionString] ?: @"unknown");
 
-    RLMNSStringToStdString(config.device_info.framework_version, @__clang_version__);
+    LEGACYNSStringToStdString(config.device_info.framework_version, @__clang_version__);
 
 #ifdef REALM_UIDEVICE_AVAILABLE
-    RLMNSStringToStdString(config.device_info.device_name, [UIDevice currentDevice].model);
+    LEGACYNSStringToStdString(config.device_info.device_name, [UIDevice currentDevice].model);
 #endif
     struct utsname systemInfo;
     uname(&systemInfo);
@@ -190,26 +190,26 @@ static void configureSyncConnectionParameters(realm::app::App::Config& config) {
 }
 
 - (id)copyWithZone:(NSZone *)zone {
-    RLMAppConfiguration *copy = [[RLMAppConfiguration alloc] init];
+    LEGACYAppConfiguration *copy = [[LEGACYAppConfiguration alloc] init];
     copy->_config = _config;
     copy->_clientConfig = _clientConfig;
     return copy;
 }
 
 - (NSString *)appId {
-    return RLMStringViewToNSString(_config.app_id);
+    return LEGACYStringViewToNSString(_config.app_id);
 }
 
 - (void)setAppId:(NSString *)appId {
     if ([appId length] == 0) {
-        @throw RLMException(@"AppId cannot be an empty string");
+        @throw LEGACYException(@"AppId cannot be an empty string");
     }
 
-    RLMNSStringToStdString(_config.app_id, appId);
+    LEGACYNSStringToStdString(_config.app_id, appId);
 }
 
 static NSString *getOptionalString(const std::optional<std::string>& str) {
-    return str ? RLMStringViewToNSString(*str) : nil;
+    return str ? LEGACYStringViewToNSString(*str) : nil;
 }
 
 static void setOptionalString(std::optional<std::string>& dst, NSString *src) {
@@ -218,7 +218,7 @@ static void setOptionalString(std::optional<std::string>& dst, NSString *src) {
     }
     else {
         dst.emplace();
-        RLMNSStringToStdString(*dst, src);
+        LEGACYNSStringToStdString(*dst, src);
     }
 }
 
@@ -230,13 +230,13 @@ static void setOptionalString(std::optional<std::string>& dst, NSString *src) {
     setOptionalString(_config.base_url, baseURL);
 }
 
-- (id<RLMNetworkTransport>)transport {
+- (id<LEGACYNetworkTransport>)transport {
     return static_cast<CocoaNetworkTransport&>(*_config.transport).transport();
 }
 
-- (void)setTransport:(id<RLMNetworkTransport>)transport {
+- (void)setTransport:(id<LEGACYNetworkTransport>)transport {
     if (!transport) {
-        transport = [RLMNetworkTransport new];
+        transport = [LEGACYNetworkTransport new];
     }
     _config.transport = std::make_shared<CocoaNetworkTransport>(transport);
 }
@@ -267,26 +267,26 @@ static void setOptionalString(std::optional<std::string>& dst, NSString *src) {
 }
 
 - (NSURL *)rootDirectory {
-    return [NSURL fileURLWithPath:RLMStringViewToNSString(_clientConfig.base_file_path)];
+    return [NSURL fileURLWithPath:LEGACYStringViewToNSString(_clientConfig.base_file_path)];
 }
 
 - (void)setRootDirectory:(NSURL *)rootDirectory {
-    RLMNSStringToStdString(_clientConfig.base_file_path, rootDirectory.path);
+    LEGACYNSStringToStdString(_clientConfig.base_file_path, rootDirectory.path);
 }
 
-- (RLMSyncTimeoutOptions *)syncTimeouts {
-    return [[RLMSyncTimeoutOptions alloc] initWithOptions:_clientConfig.timeouts];
+- (LEGACYSyncTimeoutOptions *)syncTimeouts {
+    return [[LEGACYSyncTimeoutOptions alloc] initWithOptions:_clientConfig.timeouts];
 }
 
-- (void)setSyncTimeouts:(RLMSyncTimeoutOptions *)syncTimeouts {
+- (void)setSyncTimeouts:(LEGACYSyncTimeoutOptions *)syncTimeouts {
     _clientConfig.timeouts = syncTimeouts->_options;
 }
 
 @end
 
-#pragma mark RLMAppSubscriptionToken
+#pragma mark LEGACYAppSubscriptionToken
 
-@implementation RLMAppSubscriptionToken {
+@implementation LEGACYAppSubscriptionToken {
     std::shared_ptr<app::App> _app;
     std::optional<app::App::Token> _token;
 }
@@ -305,39 +305,39 @@ static void setOptionalString(std::optional<std::string>& dst, NSString *src) {
 }
 @end
 
-#pragma mark RLMApp
-@interface RLMApp() <ASAuthorizationControllerDelegate> {
+#pragma mark LEGACYApp
+@interface LEGACYApp() <ASAuthorizationControllerDelegate> {
     std::shared_ptr<realm::app::App> _app;
-    __weak id<RLMASLoginDelegate> _authorizationDelegate API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0));
+    __weak id<LEGACYASLoginDelegate> _authorizationDelegate API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0));
 }
 
 @end
 
-@implementation RLMApp : NSObject
+@implementation LEGACYApp : NSObject
 
 + (void)initialize {
-    [RLMRealm class];
+    [LEGACYRealm class];
     // Even though there is nothing to log when the App initialises, we want to
     // be able to log anything happening after this e.g. login/register.
-    [RLMLogger class];
+    [LEGACYLogger class];
 }
 
-- (instancetype)initWithApp:(std::shared_ptr<realm::app::App>&&)app config:(RLMAppConfiguration *)config {
+- (instancetype)initWithApp:(std::shared_ptr<realm::app::App>&&)app config:(LEGACYAppConfiguration *)config {
     if (self = [super init]) {
         _app = std::move(app);
         _configuration = config;
-        _syncManager = [[RLMSyncManager alloc] initWithSyncManager:_app->sync_manager()];
+        _syncManager = [[LEGACYSyncManager alloc] initWithSyncManager:_app->sync_manager()];
     }
     return self;
 }
 
-- (instancetype)initWithConfiguration:(RLMAppConfiguration *)configuration {
+- (instancetype)initWithConfiguration:(LEGACYAppConfiguration *)configuration {
     if (self = [super init]) {
-        _app = RLMTranslateError([&] {
+        _app = LEGACYTranslateError([&] {
             return app::App::get_app(app::App::CacheMode::Enabled, configuration.config, configuration.clientConfig);
         });
         _configuration = configuration;
-        _syncManager = [[RLMSyncManager alloc] initWithSyncManager:_app->sync_manager()];
+        _syncManager = [[LEGACYSyncManager alloc] initWithSyncManager:_app->sync_manager()];
     }
     return self;
 }
@@ -356,33 +356,33 @@ static std::mutex& s_appMutex = *new std::mutex();
     app::App::clear_cached_apps();
 }
 
-+ (instancetype)appWithConfiguration:(RLMAppConfiguration *)configuration {
++ (instancetype)appWithConfiguration:(LEGACYAppConfiguration *)configuration {
     std::lock_guard lock(s_appMutex);
     NSString *appId = configuration.appId;
-    if (RLMApp *app = s_apps[appId]) {
+    if (LEGACYApp *app = s_apps[appId]) {
         return app;
     }
-    return s_apps[appId] = [[RLMApp alloc] initWithConfiguration:configuration.copy];
+    return s_apps[appId] = [[LEGACYApp alloc] initWithConfiguration:configuration.copy];
 }
 
-+ (instancetype)appWithId:(NSString *)appId configuration:(RLMAppConfiguration *)configuration {
++ (instancetype)appWithId:(NSString *)appId configuration:(LEGACYAppConfiguration *)configuration {
     std::lock_guard lock(s_appMutex);
-    if (RLMApp *app = s_apps[appId]) {
+    if (LEGACYApp *app = s_apps[appId]) {
         return app;
     }
     configuration = configuration.copy;
     configuration.appId = appId;
-    return s_apps[appId] = [[RLMApp alloc] initWithConfiguration:configuration];
+    return s_apps[appId] = [[LEGACYApp alloc] initWithConfiguration:configuration];
 }
 
 + (instancetype)appWithId:(NSString *)appId {
     std::lock_guard lock(s_appMutex);
-    if (RLMApp *app = s_apps[appId]) {
+    if (LEGACYApp *app = s_apps[appId]) {
         return app;
     }
-    auto config = [[RLMAppConfiguration alloc] init];
+    auto config = [[LEGACYAppConfiguration alloc] init];
     config.appId = appId;
-    return s_apps[appId] = [[RLMApp alloc] initWithConfiguration:config];
+    return s_apps[appId] = [[LEGACYApp alloc] initWithConfiguration:config];
 }
 
 - (NSString *)appId {
@@ -393,59 +393,59 @@ static std::mutex& s_appMutex = *new std::mutex();
     return _app;
 }
 
-- (NSDictionary<NSString *, RLMUser *> *)allUsers {
+- (NSDictionary<NSString *, LEGACYUser *> *)allUsers {
     NSMutableDictionary *buffer = [NSMutableDictionary new];
     for (auto&& user : _app->sync_manager()->all_users()) {
         NSString *identity = @(user->identity().c_str());
-        buffer[identity] = [[RLMUser alloc] initWithUser:std::move(user) app:self];
+        buffer[identity] = [[LEGACYUser alloc] initWithUser:std::move(user) app:self];
     }
     return buffer;
 }
 
-- (RLMUser *)currentUser {
+- (LEGACYUser *)currentUser {
     if (auto user = _app->sync_manager()->get_current_user()) {
-        return [[RLMUser alloc] initWithUser:user app:self];
+        return [[LEGACYUser alloc] initWithUser:user app:self];
     }
     return nil;
 }
 
-- (RLMEmailPasswordAuth *)emailPasswordAuth {
-    return [[RLMEmailPasswordAuth alloc] initWithApp: self];
+- (LEGACYEmailPasswordAuth *)emailPasswordAuth {
+    return [[LEGACYEmailPasswordAuth alloc] initWithApp: self];
 }
 
-- (void)loginWithCredential:(RLMCredentials *)credentials
-                 completion:(RLMUserCompletionBlock)completionHandler {
+- (void)loginWithCredential:(LEGACYCredentials *)credentials
+                 completion:(LEGACYUserCompletionBlock)completionHandler {
     auto completion = ^(std::shared_ptr<SyncUser> user, std::optional<app::AppError> error) {
         if (error) {
             return completionHandler(nil, makeError(*error));
         }
 
-        completionHandler([[RLMUser alloc] initWithUser:user app:self], nil);
+        completionHandler([[LEGACYUser alloc] initWithUser:user app:self], nil);
     };
-    return RLMTranslateError([&] {
+    return LEGACYTranslateError([&] {
         return _app->log_in_with_credentials(credentials.appCredentials, completion);
     });
 }
 
-- (RLMUser *)switchToUser:(RLMUser *)syncUser {
-    return RLMTranslateError([&] {
-        return [[RLMUser alloc] initWithUser:_app->switch_user(syncUser._syncUser) app:self];
+- (LEGACYUser *)switchToUser:(LEGACYUser *)syncUser {
+    return LEGACYTranslateError([&] {
+        return [[LEGACYUser alloc] initWithUser:_app->switch_user(syncUser._syncUser) app:self];
     });
 }
 
-- (RLMPushClient *)pushClientWithServiceName:(NSString *)serviceName {
-    return RLMTranslateError([&] {
-        return [[RLMPushClient alloc] initWithPushClient:_app->push_notification_client(serviceName.UTF8String)];
+- (LEGACYPushClient *)pushClientWithServiceName:(NSString *)serviceName {
+    return LEGACYTranslateError([&] {
+        return [[LEGACYPushClient alloc] initWithPushClient:_app->push_notification_client(serviceName.UTF8String)];
     });
 }
 
 #pragma mark - Sign In With Apple Extension
 
-- (void)setAuthorizationDelegate:(id<RLMASLoginDelegate>)authorizationDelegate API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0)) {
+- (void)setAuthorizationDelegate:(id<LEGACYASLoginDelegate>)authorizationDelegate API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0)) {
     _authorizationDelegate = authorizationDelegate;
 }
 
-- (id<RLMASLoginDelegate>)authorizationDelegate API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0)) {
+- (id<LEGACYASLoginDelegate>)authorizationDelegate API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0)) {
     return _authorizationDelegate;
 }
 
@@ -457,8 +457,8 @@ static std::mutex& s_appMutex = *new std::mutex();
    didCompleteWithAuthorization:(ASAuthorization *)authorization API_AVAILABLE(ios(13.0), macos(10.15), tvos(13.0), watchos(6.0)) {
     NSString *jwt = [[NSString alloc] initWithData:((ASAuthorizationAppleIDCredential *)authorization.credential).identityToken
                                              encoding:NSUTF8StringEncoding];
-       [self loginWithCredential:[RLMCredentials credentialsWithAppleToken:jwt]
-                      completion:^(RLMUser *user, NSError *error) {
+       [self loginWithCredential:[LEGACYCredentials credentialsWithAppleToken:jwt]
+                      completion:^(LEGACYUser *user, NSError *error) {
            if (user) {
                [self.authorizationDelegate authenticationDidCompleteWithUser:user];
            } else {
@@ -472,8 +472,8 @@ static std::mutex& s_appMutex = *new std::mutex();
     [self.authorizationDelegate authenticationDidFailWithError:error];
 }
 
-- (RLMAppSubscriptionToken *)subscribe:(RLMAppNotificationBlock)block {
-    return [[RLMAppSubscriptionToken alloc] initWithApp:_app token:_app->subscribe([block, self] (auto&) {
+- (LEGACYAppSubscriptionToken *)subscribe:(LEGACYAppNotificationBlock)block {
+    return [[LEGACYAppSubscriptionToken alloc] initWithApp:_app token:_app->subscribe([block, self] (auto&) {
         block(self);
     })];
 }

@@ -16,58 +16,58 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMNetworkTransport_Private.hpp"
+#import "LEGACYNetworkTransport_Private.hpp"
 
-#import "RLMApp.h"
-#import "RLMError.h"
-#import "RLMRealmConfiguration.h"
-#import "RLMSyncUtil_Private.hpp"
-#import "RLMSyncManager_Private.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYApp.h"
+#import "LEGACYError.h"
+#import "LEGACYRealmConfiguration.h"
+#import "LEGACYSyncUtil_Private.hpp"
+#import "LEGACYSyncManager_Private.hpp"
+#import "LEGACYUtil.hpp"
 
 #import <realm/object-store/sync/generic_network_transport.hpp>
 #import <realm/util/scope_exit.hpp>
 
 using namespace realm;
 
-static_assert((int)RLMHTTPMethodGET        == (int)app::HttpMethod::get);
-static_assert((int)RLMHTTPMethodPOST       == (int)app::HttpMethod::post);
-static_assert((int)RLMHTTPMethodPUT        == (int)app::HttpMethod::put);
-static_assert((int)RLMHTTPMethodPATCH      == (int)app::HttpMethod::patch);
-static_assert((int)RLMHTTPMethodDELETE     == (int)app::HttpMethod::del);
+static_assert((int)LEGACYHTTPMethodGET        == (int)app::HttpMethod::get);
+static_assert((int)LEGACYHTTPMethodPOST       == (int)app::HttpMethod::post);
+static_assert((int)LEGACYHTTPMethodPUT        == (int)app::HttpMethod::put);
+static_assert((int)LEGACYHTTPMethodPATCH      == (int)app::HttpMethod::patch);
+static_assert((int)LEGACYHTTPMethodDELETE     == (int)app::HttpMethod::del);
 
-#pragma mark RLMSessionDelegate
+#pragma mark LEGACYSessionDelegate
 
-@interface RLMSessionDelegate <NSURLSessionDelegate> : NSObject
-+ (instancetype)delegateWithCompletion:(RLMNetworkTransportCompletionBlock)completion;
+@interface LEGACYSessionDelegate <NSURLSessionDelegate> : NSObject
++ (instancetype)delegateWithCompletion:(LEGACYNetworkTransportCompletionBlock)completion;
 @end
 
-NSString * const RLMHTTPMethodToNSString[] = {
-    [RLMHTTPMethodGET] = @"GET",
-    [RLMHTTPMethodPOST] = @"POST",
-    [RLMHTTPMethodPUT] = @"PUT",
-    [RLMHTTPMethodPATCH] = @"PATCH",
-    [RLMHTTPMethodDELETE] = @"DELETE"
+NSString * const LEGACYHTTPMethodToNSString[] = {
+    [LEGACYHTTPMethodGET] = @"GET",
+    [LEGACYHTTPMethodPOST] = @"POST",
+    [LEGACYHTTPMethodPUT] = @"PUT",
+    [LEGACYHTTPMethodPATCH] = @"PATCH",
+    [LEGACYHTTPMethodDELETE] = @"DELETE"
 };
 
-@implementation RLMRequest
+@implementation LEGACYRequest
 @end
 
-@implementation RLMResponse
+@implementation LEGACYResponse
 @end
 
-@interface RLMEventSessionDelegate <NSURLSessionDelegate> : NSObject
-+ (instancetype)delegateWithEventSubscriber:(id<RLMEventDelegate>)subscriber;
+@interface LEGACYEventSessionDelegate <NSURLSessionDelegate> : NSObject
++ (instancetype)delegateWithEventSubscriber:(id<LEGACYEventDelegate>)subscriber;
 @end;
 
-@implementation RLMNetworkTransport
+@implementation LEGACYNetworkTransport
 
-- (void)sendRequestToServer:(RLMRequest *)request
-                 completion:(RLMNetworkTransportCompletionBlock)completionBlock {
+- (void)sendRequestToServer:(LEGACYRequest *)request
+                 completion:(LEGACYNetworkTransportCompletionBlock)completionBlock {
     // Create the request
     NSURL *requestURL = [[NSURL alloc] initWithString: request.url];
     NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:requestURL];
-    urlRequest.HTTPMethod = RLMHTTPMethodToNSString[request.method];
+    urlRequest.HTTPMethod = LEGACYHTTPMethodToNSString[request.method];
     if (![urlRequest.HTTPMethod isEqualToString:@"GET"]) {
         urlRequest.HTTPBody = [request.body dataUsingEncoding:NSUTF8StringEncoding];
     }
@@ -76,7 +76,7 @@ NSString * const RLMHTTPMethodToNSString[] = {
     for (NSString *key in request.headers) {
         [urlRequest addValue:request.headers[key] forHTTPHeaderField:key];
     }
-    id delegate = [RLMSessionDelegate delegateWithCompletion:completionBlock];
+    id delegate = [LEGACYSessionDelegate delegateWithCompletion:completionBlock];
     auto session = [NSURLSession sessionWithConfiguration:NSURLSessionConfiguration.defaultSessionConfiguration
                                                  delegate:delegate delegateQueue:nil];
 
@@ -86,8 +86,8 @@ NSString * const RLMHTTPMethodToNSString[] = {
     [session finishTasksAndInvalidate];
 }
 
-- (NSURLSession *)doStreamRequest:(nonnull RLMRequest *)request
-                  eventSubscriber:(nonnull id<RLMEventDelegate>)subscriber {
+- (NSURLSession *)doStreamRequest:(nonnull LEGACYRequest *)request
+                  eventSubscriber:(nonnull id<LEGACYEventDelegate>)subscriber {
     NSURLSessionConfiguration *sessionConfig = [NSURLSessionConfiguration defaultSessionConfiguration];
     sessionConfig.timeoutIntervalForRequest = 30;
     sessionConfig.timeoutIntervalForResource = INT_MAX;
@@ -96,7 +96,7 @@ NSString * const RLMHTTPMethodToNSString[] = {
         @"Cache": @"no-cache",
         @"Accept": @"text/event-stream"
     };
-    id delegate = [RLMEventSessionDelegate delegateWithEventSubscriber:subscriber];
+    id delegate = [LEGACYEventSessionDelegate delegateWithEventSubscriber:subscriber];
     auto session = [NSURLSession sessionWithConfiguration:sessionConfig
                                                  delegate:delegate
                                             delegateQueue:nil];
@@ -105,14 +105,14 @@ NSString * const RLMHTTPMethodToNSString[] = {
     return session;
 }
 
-RLMRequest *RLMRequestFromRequest(realm::app::Request const& request) {
-    RLMRequest *rlmRequest = [RLMRequest new];
+LEGACYRequest *LEGACYRequestFromRequest(realm::app::Request const& request) {
+    LEGACYRequest *rlmRequest = [LEGACYRequest new];
     NSMutableDictionary<NSString *, NSString*> *headersDict = [NSMutableDictionary new];
     for (auto &[key, value] : request.headers) {
         headersDict[@(key.c_str())] = @(value.c_str());
     }
     rlmRequest.headers = headersDict;
-    rlmRequest.method = static_cast<RLMHTTPMethod>(request.method);
+    rlmRequest.method = static_cast<LEGACYHTTPMethod>(request.method);
     rlmRequest.timeout = request.timeout_ms;
     rlmRequest.url = @(request.url.c_str());
     rlmRequest.body = @(request.body.c_str());
@@ -121,15 +121,15 @@ RLMRequest *RLMRequestFromRequest(realm::app::Request const& request) {
 
 @end
 
-#pragma mark RLMSessionDelegate
+#pragma mark LEGACYSessionDelegate
 
-@implementation RLMSessionDelegate {
+@implementation LEGACYSessionDelegate {
     NSData *_data;
-    RLMNetworkTransportCompletionBlock _completionBlock;
+    LEGACYNetworkTransportCompletionBlock _completionBlock;
 }
 
-+ (instancetype)delegateWithCompletion:(RLMNetworkTransportCompletionBlock)completion {
-    RLMSessionDelegate *delegate = [RLMSessionDelegate new];
++ (instancetype)delegateWithCompletion:(LEGACYNetworkTransportCompletionBlock)completion {
+    LEGACYSessionDelegate *delegate = [LEGACYSessionDelegate new];
     delegate->_completionBlock = completion;
     return delegate;
 }
@@ -151,7 +151,7 @@ RLMRequest *RLMRequestFromRequest(realm::app::Request const& request) {
               task:(NSURLSessionTask *)task
 didCompleteWithError:(NSError *)error
 {
-    RLMResponse *response = [RLMResponse new];
+    LEGACYResponse *response = [LEGACYResponse new];
     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) task.response;
     response.headers = httpResponse.allHeaderFields;
     response.httpStatusCode = httpResponse.statusCode;
@@ -169,13 +169,13 @@ didCompleteWithError:(NSError *)error
 
 @end
 
-@implementation RLMEventSessionDelegate {
-    id<RLMEventDelegate> _subscriber;
+@implementation LEGACYEventSessionDelegate {
+    id<LEGACYEventDelegate> _subscriber;
     bool _hasOpened;
 }
 
-+ (instancetype)delegateWithEventSubscriber:(id<RLMEventDelegate>)subscriber {
-    RLMEventSessionDelegate *delegate = [RLMEventSessionDelegate new];
++ (instancetype)delegateWithEventSubscriber:(id<LEGACYEventDelegate>)subscriber {
+    LEGACYEventSessionDelegate *delegate = [LEGACYEventSessionDelegate new];
     delegate->_subscriber = subscriber;
     return delegate;
 }
@@ -195,10 +195,10 @@ didCompleteWithError:(NSError *)error
 
     NSString *errorStatus = [NSString stringWithFormat:@"URLSession HTTP error code: %ld",
                              (long)httpResponse.statusCode];
-    NSError *error = [NSError errorWithDomain:RLMAppErrorDomain
-                                         code:RLMAppErrorHttpRequestFailed
+    NSError *error = [NSError errorWithDomain:LEGACYAppErrorDomain
+                                         code:LEGACYAppErrorHttpRequestFailed
                                      userInfo:@{NSLocalizedDescriptionKey: errorStatus,
-                                                RLMHTTPStatusCodeKey: @(httpResponse.statusCode),
+                                                LEGACYHTTPStatusCodeKey: @(httpResponse.statusCode),
                                                 NSURLErrorFailingURLErrorKey: dataTask.currentRequest.URL}];
     return [_subscriber didCloseWithError:error];
 }
@@ -207,7 +207,7 @@ didCompleteWithError:(NSError *)error
               task:(NSURLSessionTask *)task
 didCompleteWithError:(NSError *)error
 {
-    RLMResponse *response = [RLMResponse new];
+    LEGACYResponse *response = [LEGACYResponse new];
     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)task.response;
     response.headers = httpResponse.allHeaderFields;
     response.httpStatusCode = httpResponse.statusCode;
@@ -226,10 +226,10 @@ didCompleteWithError:(NSError *)error
 
     NSString *errorStatus = [NSString stringWithFormat:@"URLSession HTTP error code: %ld",
                              (long)httpResponse.statusCode];
-    NSError *wrappedError = [NSError errorWithDomain:RLMAppErrorDomain
-                                                code:RLMAppErrorHttpRequestFailed
+    NSError *wrappedError = [NSError errorWithDomain:LEGACYAppErrorDomain
+                                                code:LEGACYAppErrorHttpRequestFailed
                                             userInfo:@{NSLocalizedDescriptionKey: errorStatus,
-                                                RLMHTTPStatusCodeKey: @(httpResponse.statusCode),
+                                                LEGACYHTTPStatusCodeKey: @(httpResponse.statusCode),
                                                        NSURLErrorFailingURLErrorKey: task.currentRequest.URL,
                                                        NSUnderlyingErrorKey: error}];
     return [_subscriber didCloseWithError:wrappedError];

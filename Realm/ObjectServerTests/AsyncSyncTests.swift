@@ -41,7 +41,7 @@ class AsyncAwaitSyncTests: SwiftSyncTestCase {
         // async/await is currently incompatible with thread sanitizer and will
         // produce many false positives
         // https://bugs.swift.org/browse/SR-15444
-        if RLMThreadSanitizerEnabled() {
+        if LEGACYThreadSanitizerEnabled() {
             return XCTestSuite(name: "\(type(of: self))")
         }
         return super.defaultTestSuite
@@ -271,7 +271,7 @@ class AsyncAwaitSyncTests: SwiftSyncTestCase {
         // cancellation is *correct*; just that cancellation never results in
         // a hang or crash.
         for i in 0 ..< .max {
-            RLMWaitForRealmToClose(configuration.fileURL!.path)
+            LEGACYWaitForRealmToClose(configuration.fileURL!.path)
             _ = try RealmLegacy.deleteFiles(for: configuration)
 
             let executor = CancellingExecutor(cancelAfter: i)
@@ -463,7 +463,7 @@ class AsyncFlexibleSyncTests: SwiftSyncTestCase {
         // async/await is currently incompatible with thread sanitizer and will
         // produce many false positives
         // https://bugs.swift.org/browse/SR-15444
-        if RLMThreadSanitizerEnabled() || true {
+        if LEGACYThreadSanitizerEnabled() || true {
             return XCTestSuite(name: "\(type(of: self))")
         }
         return super.defaultTestSuite

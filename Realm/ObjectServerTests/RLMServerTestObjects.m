@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #import <Realm/Realm.h>
-#import "RLMServerTestObjects.h"
+#import "LEGACYServerTestObjects.h"
 
 #pragma mark Dog
 
@@ -32,10 +32,10 @@
 }
 
 + (NSDictionary *)defaultPropertyValues {
-    return @{@"_id": [RLMObjectId objectId]};
+    return @{@"_id": [LEGACYObjectId objectId]};
 }
 
-- (instancetype)initWithPrimaryKey:(RLMObjectId *)primaryKey breed:(NSString *)breed name:(NSString *)name {
+- (instancetype)initWithPrimaryKey:(LEGACYObjectId *)primaryKey breed:(NSString *)breed name:(NSString *)name {
     self = [super init];
     if (self) {
         self._id = primaryKey;
@@ -52,7 +52,7 @@
 @implementation Person
 
 + (NSDictionary *)defaultPropertyValues {
-    return @{@"_id": [RLMObjectId objectId]};
+    return @{@"_id": [LEGACYObjectId objectId]};
 }
 
 + (NSString *)primaryKey {
@@ -63,7 +63,7 @@
     return @[@"firstName", @"lastName", @"age"];
 }
 
-- (instancetype)initWithPrimaryKey:(RLMObjectId *)primaryKey age:(NSInteger)age firstName:(NSString *)firstName lastName:(NSString *)lastName {
+- (instancetype)initWithPrimaryKey:(LEGACYObjectId *)primaryKey age:(NSInteger)age firstName:(NSString *)firstName lastName:(NSString *)lastName {
     self = [super init];
     if (self) {
         self._id = primaryKey;
@@ -76,7 +76,7 @@
 
 + (instancetype)john {
     Person *john = [[Person alloc] init];
-    john._id = [RLMObjectId objectId];
+    john._id = [LEGACYObjectId objectId];
     john.age = 30;
     john.firstName = @"John";
     john.lastName = @"Lennon";
@@ -85,7 +85,7 @@
 
 + (instancetype)paul {
     Person *paul = [[Person alloc] init];
-    paul._id = [RLMObjectId objectId];
+    paul._id = [LEGACYObjectId objectId];
     paul.age = 30;
     paul.firstName = @"Paul";
     paul.lastName = @"McCartney";
@@ -94,7 +94,7 @@
 
 + (instancetype)ringo {
     Person *ringo = [[Person alloc] init];
-    ringo._id = [RLMObjectId objectId];
+    ringo._id = [LEGACYObjectId objectId];
     ringo.age = 30;
     ringo.firstName = @"Ringo";
     ringo.lastName = @"Starr";
@@ -103,7 +103,7 @@
 
 + (instancetype)george {
     Person *george = [[Person alloc] init];
-    george._id = [RLMObjectId objectId];
+    george._id = [LEGACYObjectId objectId];
     george.age = 30;
     george.firstName = @"George";
     george.lastName = @"Harrison";
@@ -112,7 +112,7 @@
 
 + (instancetype)stuart {
     Person *stuart = [[Person alloc] init];
-    stuart._id = [RLMObjectId objectId];
+    stuart._id = [LEGACYObjectId objectId];
     stuart.age = 30;
     stuart.firstName = @"Stuart";
     stuart.lastName = @"Sutcliffe";
@@ -126,7 +126,7 @@
 @implementation HugeSyncObject
 
 + (NSDictionary *)defaultPropertyValues {
-    return @{@"_id": [RLMObjectId objectId]};
+    return @{@"_id": [LEGACYObjectId objectId]};
 }
 
 + (NSString *)primaryKey {
@@ -149,7 +149,7 @@
 @implementation AllTypesSyncObject
 
 + (NSDictionary *)defaultPropertyValues {
-    return @{@"_id": [RLMObjectId objectId]};
+    return @{@"_id": [LEGACYObjectId objectId]};
 }
 
 + (NSString *)primaryKey {
@@ -175,7 +175,7 @@
              @"binaryCol": [str dataUsingEncoding:NSUTF8StringEncoding],
              @"dateCol": [NSDate dateWithTimeIntervalSince1970:i],
              @"longCol": @((long long)i * INT_MAX + 1),
-             @"decimalCol": [[RLMDecimal128 alloc] initWithNumber:@(i)],
+             @"decimalCol": [[LEGACYDecimal128 alloc] initWithNumber:@(i)],
              @"uuidCol": i < 4 ? @[[[NSUUID alloc] initWithUUIDString:@"85d4fbee-6ec6-47df-bfa1-615931903d7e"],
                                    [[NSUUID alloc] initWithUUIDString:@"00000000-0000-0000-0000-000000000000"],
                                    [[NSUUID alloc] initWithUUIDString:@"137DECC8-B300-4954-A233-F89909F4FD89"],
@@ -187,12 +187,12 @@
 
 @end
 
-#pragma mark RLMArraySyncObject
+#pragma mark LEGACYArraySyncObject
 
-@implementation RLMArraySyncObject
+@implementation LEGACYArraySyncObject
 
 + (NSDictionary *)defaultPropertyValues {
-    return @{@"_id": [RLMObjectId objectId]};
+    return @{@"_id": [LEGACYObjectId objectId]};
 }
 
 + (NSString *)primaryKey {
@@ -208,12 +208,12 @@
 
 @end
 
-#pragma mark RLMSetSyncObject
+#pragma mark LEGACYSetSyncObject
 
-@implementation RLMSetSyncObject
+@implementation LEGACYSetSyncObject
 
 + (NSDictionary *)defaultPropertyValues {
-    return @{@"_id": [RLMObjectId objectId]};
+    return @{@"_id": [LEGACYObjectId objectId]};
 }
 
 + (NSString *)primaryKey {
@@ -233,12 +233,12 @@
 
 @end
 
-#pragma mark RLMDictionarySyncObject
+#pragma mark LEGACYDictionarySyncObject
 
-@implementation RLMDictionarySyncObject
+@implementation LEGACYDictionarySyncObject
 
 + (NSDictionary *)defaultPropertyValues {
-    return @{@"_id": [RLMObjectId objectId]};
+    return @{@"_id": [LEGACYObjectId objectId]};
 }
 
 + (NSString *)primaryKey {

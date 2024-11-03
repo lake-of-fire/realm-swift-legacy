@@ -17,13 +17,13 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #import <Foundation/Foundation.h>
-#import <Realm/RLMObjectId.h>
+#import <Realm/LEGACYObjectId.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 /// UserAPIKey model for APIKeys recevied from the server.
-RLM_SWIFT_SENDABLE RLM_FINAL // immutable final class
-@interface RLMUserAPIKey : NSObject
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL // immutable final class
+@interface LEGACYUserAPIKey : NSObject
 
 /// Indicates if the API key is disabled or not
 @property (nonatomic, readonly) BOOL disabled;
@@ -36,8 +36,8 @@ RLM_SWIFT_SENDABLE RLM_FINAL // immutable final class
 @property (nonatomic, readonly, nullable) NSString *key;
 
 /// The ObjectId of the API key
-@property (nonatomic, readonly) RLMObjectId *objectId NS_REFINED_FOR_SWIFT;
+@property (nonatomic, readonly) LEGACYObjectId *objectId NS_REFINED_FOR_SWIFT;
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

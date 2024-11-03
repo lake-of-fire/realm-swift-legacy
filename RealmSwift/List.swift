@@ -32,13 +32,13 @@ import RealmLegacy.Private
 
  Lists can be filtered and sorted with the same predicates as `Results<Element>`.
 */
-public final class List<Element: RealmCollectionValue>: RLMSwiftCollectionBase, RealmCollectionImpl {
+public final class List<Element: RealmCollectionValue>: LEGACYSwiftCollectionBase, RealmCollectionImpl {
     internal var lastAccessedNames: NSMutableArray?
 
-    internal var rlmArray: RLMArray<AnyObject> {
-        unsafeDowncast(collection, to: RLMArray<AnyObject>.self)
+    internal var rlmArray: LEGACYArray<AnyObject> {
+        unsafeDowncast(collection, to: LEGACYArray<AnyObject>.self)
     }
-    internal var collection: RLMCollection {
+    internal var collection: LEGACYCollection {
         _rlmCollection
     }
 
@@ -49,7 +49,7 @@ public final class List<Element: RealmCollectionValue>: RLMSwiftCollectionBase, 
         super.init()
     }
     /// :nodoc:
-    public override init(collection: RLMCollection) {
+    public override init(collection: LEGACYCollection) {
         super.init(collection: collection)
     }
 
@@ -208,22 +208,22 @@ public final class List<Element: RealmCollectionValue>: RLMSwiftCollectionBase, 
         rlmArray.exchangeObject(at: UInt(index1), withObjectAt: UInt(index2))
     }
 
-    @objc class func _unmanagedCollection() -> RLMArray<AnyObject> {
+    @objc class func _unmanagedCollection() -> LEGACYArray<AnyObject> {
         if let type = Element.self as? ObjectBase.Type {
-            return RLMArray(objectClassName: type.className())
+            return LEGACYArray(objectClassName: type.className())
         }
         if let type = Element.PersistedType.self as? ObjectBase.Type {
-            return RLMArray(objectClassName: type.className())
+            return LEGACYArray(objectClassName: type.className())
         }
         if let type = Element.PersistedType.self as? _RealmSchemaDiscoverable.Type {
-            return RLMArray(objectType: type._rlmType, optional: type._rlmOptional)
+            return LEGACYArray(objectType: type._rlmType, optional: type._rlmOptional)
         }
         fatalError("Collections of projections must be used with @Projected.")
     }
 
     /// :nodoc:
     @objc public override class func _backingCollectionType() -> AnyClass {
-        return RLMManagedArray.self
+        return LEGACYManagedArray.self
     }
 
     // Printable requires a description property defined in Swift (and not obj-c),
@@ -231,11 +231,11 @@ public final class List<Element: RealmCollectionValue>: RLMSwiftCollectionBase, 
     // generic class.
     /// Returns a human-readable description of the objects contained in the List.
     @objc public override var description: String {
-        return descriptionWithMaxDepth(RLMDescriptionMaxDepth)
+        return descriptionWithMaxDepth(LEGACYDescriptionMaxDepth)
     }
 
     @objc private func descriptionWithMaxDepth(_ depth: UInt) -> String {
-        return RLMDescriptionWithMaxDepth("List", _rlmCollection, depth)
+        return LEGACYDescriptionWithMaxDepth("List", _rlmCollection, depth)
     }
 }
 
@@ -356,8 +356,8 @@ extension List: MutableCollection {
     }
 
     /// :nodoc:
-    public func makeIterator() -> RLMIterator<Element> {
-        return RLMIterator(collection: collection)
+    public func makeIterator() -> LEGACYIterator<Element> {
+        return LEGACYIterator(collection: collection)
     }
 }
 

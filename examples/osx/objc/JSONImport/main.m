@@ -40,10 +40,10 @@ int main(int argc, const char * argv[])
         dateFormatter.dateFormat = @"MMMM dd, yyyy";
         dateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
 
-        [[NSFileManager defaultManager] removeItemAtURL:[RLMRealmConfiguration defaultConfiguration].fileURL
+        [[NSFileManager defaultManager] removeItemAtURL:[LEGACYRealmConfiguration defaultConfiguration].fileURL
                                                    error:nil];
 
-        RLMRealm *realm = [RLMRealm defaultRealm];
+        LEGACYRealm *realm = [LEGACYRealm defaultRealm];
         [realm beginWriteTransaction];
 
         // Add Person objects in realm for every person dictionary in JSON array

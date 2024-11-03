@@ -16,8 +16,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMChildProcessEnvironment.h"
-#import "RLMSyncTestCase.h"
-#import "RLMUser+ObjectServerTests.h"
-#import "RLMWatchTestUtility.h"
+#import "LEGACYChildProcessEnvironment.h"
+#import "LEGACYSyncTestCase.h"
+#import "LEGACYUser+ObjectServerTests.h"
+#import "LEGACYWatchTestUtility.h"
 #import "TestUtils.h"

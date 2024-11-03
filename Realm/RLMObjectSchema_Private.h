@@ -16,14 +16,14 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMObjectSchema.h>
+#import <Realm/LEGACYObjectSchema.h>
 
 #import <objc/runtime.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability)
 
-// RLMObjectSchema private
-@interface RLMObjectSchema () {
+// LEGACYObjectSchema private
+@interface LEGACYObjectSchema () {
 @public
     bool _isSwiftClass;
 }
@@ -32,7 +32,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability)
 @property (nonatomic, readonly) NSString *objectName;
 
 // writable redeclaration
-@property (nonatomic, readwrite, copy) NSArray<RLMProperty *> *properties;
+@property (nonatomic, readwrite, copy) NSArray<LEGACYProperty *> *properties;
 @property (nonatomic, readwrite, assign) bool isSwiftClass;
 @property (nonatomic, readwrite, assign) BOOL isEmbedded;
 @property (nonatomic, readwrite, assign) BOOL isAsymmetric;
@@ -44,32 +44,32 @@ RLM_HEADER_AUDIT_BEGIN(nullability)
 
 @property (nonatomic, readwrite, assign) bool hasCustomEventSerialization;
 
-@property (nonatomic, readwrite, nullable) RLMProperty *primaryKeyProperty;
+@property (nonatomic, readwrite, nullable) LEGACYProperty *primaryKeyProperty;
 
-@property (nonatomic, copy) NSArray<RLMProperty *> *computedProperties;
-@property (nonatomic, readonly, nullable) NSArray<RLMProperty *> *swiftGenericProperties;
+@property (nonatomic, copy) NSArray<LEGACYProperty *> *computedProperties;
+@property (nonatomic, readonly, nullable) NSArray<LEGACYProperty *> *swiftGenericProperties;
 
 // returns a cached or new schema for a given object class
 + (instancetype)schemaForObjectClass:(Class)objectClass;
 @end
 
-@interface RLMObjectSchema (Dynamic)
+@interface LEGACYObjectSchema (Dynamic)
 /**
  This method is useful only in specialized circumstances, for example, when accessing objects
  in a Realm produced externally. If you are simply building an app on Realm, it is not recommended
- to use this method as an [RLMObjectSchema](RLMObjectSchema) is generated automatically for every [RLMObject](RLMObject) subclass.
+ to use this method as an [LEGACYObjectSchema](LEGACYObjectSchema) is generated automatically for every [LEGACYObject](LEGACYObject) subclass.
 
- Initialize an RLMObjectSchema with classname, objectClass, and an array of properties
+ Initialize an LEGACYObjectSchema with classname, objectClass, and an array of properties
 
  @warning This method is useful only in specialized circumstances.
 
  @param objectClassName     The name of the class used to refer to objects of this type.
  @param objectClass         The Objective-C class used when creating instances of this type.
- @param properties          An array of RLMProperty instances describing the managed properties for this type.
+ @param properties          An array of LEGACYProperty instances describing the managed properties for this type.
 
- @return    An initialized instance of RLMObjectSchema.
+ @return    An initialized instance of LEGACYObjectSchema.
  */
 - (instancetype)initWithClassName:(NSString *)objectClassName objectClass:(Class)objectClass properties:(NSArray *)properties;
 @end
 
-RLM_HEADER_AUDIT_END(nullability)
+LEGACY_HEADER_AUDIT_END(nullability)

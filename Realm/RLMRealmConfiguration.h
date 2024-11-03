@@ -16,11 +16,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMRealm.h>
+#import <Realm/LEGACYRealm.h>
 
-@class RLMEventConfiguration, RLMSyncConfiguration;
+@class LEGACYEventConfiguration, LEGACYSyncConfiguration;
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 /**
  A block called when opening a Realm for the first time during the life
@@ -31,22 +31,22 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  Return `YES` to indicate that an attempt to compact the file should be made.
  The compaction will be skipped if another process is accessing it.
  */
-RLM_SWIFT_SENDABLE
-typedef BOOL (^RLMShouldCompactOnLaunchBlock)(NSUInteger totalBytes, NSUInteger bytesUsed);
+LEGACY_SWIFT_SENDABLE
+typedef BOOL (^LEGACYShouldCompactOnLaunchBlock)(NSUInteger totalBytes, NSUInteger bytesUsed);
 
 /**
  A block which receives a subscription set instance, that can be used to add an initial set of subscriptions which will be executed
  when the Realm is first opened.
  */
-RLM_SWIFT_SENDABLE
-typedef void(^RLMFlexibleSyncInitialSubscriptionsBlock)(RLMSyncSubscriptionSet * _Nonnull subscriptions);
+LEGACY_SWIFT_SENDABLE
+typedef void(^LEGACYFlexibleSyncInitialSubscriptionsBlock)(LEGACYSyncSubscriptionSet * _Nonnull subscriptions);
 
 /**
- An `RLMRealmConfiguration` instance describes the different options used to
+ An `LEGACYRealmConfiguration` instance describes the different options used to
  create an instance of a Realm.
 
- `RLMRealmConfiguration` instances are just plain `NSObject`s. Unlike `RLMRealm`s
- and `RLMObject`s, they can be freely shared between threads as long as you do not
+ `LEGACYRealmConfiguration` instances are just plain `NSObject`s. Unlike `LEGACYRealm`s
+ and `LEGACYObject`s, they can be freely shared between threads as long as you do not
  mutate them.
 
  Creating configuration objects for class subsets (by setting the
@@ -54,24 +54,24 @@ typedef void(^RLMFlexibleSyncInitialSubscriptionsBlock)(RLMSyncSubscriptionSet *
  cache and reuse a single configuration object for each distinct configuration rather than
  creating a new object each time you open a Realm.
  */
-@interface RLMRealmConfiguration : NSObject<NSCopying>
+@interface LEGACYRealmConfiguration : NSObject<NSCopying>
 
 #pragma mark - Default Configuration
 
 /**
  Returns the default configuration used to create Realms when no other
- configuration is explicitly specified (i.e. `+[RLMRealm defaultRealm]`).
+ configuration is explicitly specified (i.e. `+[LEGACYRealm defaultRealm]`).
 
  @return The default Realm configuration.
  */
 + (instancetype)defaultConfiguration;
 
 /**
- Sets the default configuration to the given `RLMRealmConfiguration`.
+ Sets the default configuration to the given `LEGACYRealmConfiguration`.
 
  @param configuration The new default Realm configuration.
  */
-+ (void)setDefaultConfiguration:(RLMRealmConfiguration *)configuration;
++ (void)setDefaultConfiguration:(LEGACYRealmConfiguration *)configuration;
 
 #pragma mark - Properties
 
@@ -112,7 +112,7 @@ typedef void(^RLMFlexibleSyncInitialSubscriptionsBlock)(RLMSyncSubscriptionSet *
 @property (nonatomic) uint64_t schemaVersion;
 
 /// The block which migrates the Realm to the current version.
-@property (nonatomic, copy, nullable) RLMMigrationBlock migrationBlock;
+@property (nonatomic, copy, nullable) LEGACYMigrationBlock migrationBlock;
 
 /**
  Whether to recreate the Realm file with the provided schema if a migration is required.
@@ -133,7 +133,7 @@ typedef void(^RLMFlexibleSyncInitialSubscriptionsBlock)(RLMSyncSubscriptionSet *
  Return `YES` to indicate that an attempt to compact the file should be made.
  The compaction will be skipped if another process is accessing it.
  */
-@property (nonatomic, copy, nullable) RLMShouldCompactOnLaunchBlock shouldCompactOnLaunch;
+@property (nonatomic, copy, nullable) LEGACYShouldCompactOnLaunchBlock shouldCompactOnLaunch;
 
 /// The classes managed by the Realm.
 @property (nonatomic, copy, nullable) NSArray *objectClasses;
@@ -174,7 +174,7 @@ typedef void(^RLMFlexibleSyncInitialSubscriptionsBlock)(RLMSyncSubscriptionSet *
 
  Note that to use this parameter with a synced Realm configuration
  the seed Realm must be appropriately copied to a destination with
- `[RLMRealm writeCopyForConfiguration:]` first.
+ `[LEGACYRealm writeCopyForConfiguration:]` first.
 
  This option is mutually exclusive with `inMemoryIdentifier`. Setting a `seedFilePath`
  will nil out the `inMemoryIdentifier`.
@@ -188,10 +188,10 @@ typedef void(^RLMFlexibleSyncInitialSubscriptionsBlock)(RLMSyncSubscriptionSet *
  This property is mutually exclusive with both `inMemoryIdentifier` and `fileURL`;
  setting any one of the three properties will automatically nil out the other two.
 
- @see `RLMSyncConfiguration`
+ @see `LEGACYSyncConfiguration`
  */
-@property (nullable, nonatomic) RLMSyncConfiguration *syncConfiguration;
+@property (nullable, nonatomic) LEGACYSyncConfiguration *syncConfiguration;
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

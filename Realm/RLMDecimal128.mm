@@ -16,9 +16,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMDecimal128_Private.hpp"
+#import "LEGACYDecimal128_Private.hpp"
 
-#import "RLMUtil.hpp"
+#import "LEGACYUtil.hpp"
 
 #import <realm/decimal128.hpp>
 
@@ -36,10 +36,10 @@
 // exists. This shouldn't have any impact on obj-c code other than a small
 // performance hit.
 [[clang::objc_runtime_visible]]
-@interface RealmSwiftDecimal128 : RLMDecimal128
+@interface RealmSwiftDecimal128 : LEGACYDecimal128
 @end
 
-@implementation RLMDecimal128 {
+@implementation LEGACYDecimal128 {
     realm::Decimal128 _value;
 }
 
@@ -61,14 +61,14 @@
 
 - (instancetype)initWithValue:(id)value {
     if ((self = [self init])) {
-        _value = RLMObjcToDecimal128(value);
+        _value = LEGACYObjcToDecimal128(value);
     }
     return self;
 }
 
 - (instancetype)initWithNumber:(NSNumber *)number {
     if ((self = [self init])) {
-        _value = RLMObjcToDecimal128(number);
+        _value = LEGACYObjcToDecimal128(number);
     }
     return self;
 }
@@ -89,7 +89,7 @@
 }
 
 - (id)copyWithZone:(NSZone *)zone {
-    RLMDecimal128 *copy = [[self.class allocWithZone:zone] init];
+    LEGACYDecimal128 *copy = [[self.class allocWithZone:zone] init];
     copy->_value = _value;
     return copy;
 }
@@ -99,11 +99,11 @@
 }
 
 - (BOOL)isEqual:(id)object {
-    if (auto decimal128 = RLMDynamicCast<RLMDecimal128>(object)) {
+    if (auto decimal128 = LEGACYDynamicCast<LEGACYDecimal128>(object)) {
         return _value == decimal128->_value;
     }
-    if (auto number = RLMDynamicCast<NSNumber>(object)) {
-        return _value == RLMObjcToDecimal128(number);
+    if (auto number = LEGACYDynamicCast<NSNumber>(object)) {
+        return _value == LEGACYObjcToDecimal128(number);
     }
     return NO;
 }
@@ -116,7 +116,7 @@
     return self.stringValue;
 }
 
-- (NSComparisonResult)compare:(RLMDecimal128 *)other {
+- (NSComparisonResult)compare:(LEGACYDecimal128 *)other {
     return static_cast<NSComparisonResult>(_value.compare(other->_value));
 }
 
@@ -160,60 +160,60 @@
     return _value.is_nan();
 }
 
-- (RLMDecimal128 *)magnitude {
+- (LEGACYDecimal128 *)magnitude {
     auto result = realm::Decimal128(abs(self.doubleValue));
-    return [[RLMDecimal128 alloc] initWithDecimal128:result];
+    return [[LEGACYDecimal128 alloc] initWithDecimal128:result];
 }
 
 - (void)negate {
     _value = realm::Decimal128(-self.doubleValue);
 }
 
-+ (RLMDecimal128 *)minimumDecimalNumber {
-    return [[RLMDecimal128 alloc] initWithDecimal128:std::numeric_limits<realm::Decimal128>::lowest()];
++ (LEGACYDecimal128 *)minimumDecimalNumber {
+    return [[LEGACYDecimal128 alloc] initWithDecimal128:std::numeric_limits<realm::Decimal128>::lowest()];
 }
 
-+ (RLMDecimal128 *)maximumDecimalNumber {
-    return [[RLMDecimal128 alloc] initWithDecimal128:std::numeric_limits<realm::Decimal128>::max()];
++ (LEGACYDecimal128 *)maximumDecimalNumber {
+    return [[LEGACYDecimal128 alloc] initWithDecimal128:std::numeric_limits<realm::Decimal128>::max()];
 }
 
-- (RLMDecimal128 *)decimalNumberByAdding:(RLMDecimal128 *)decimalNumber {
-    auto rhs = RLMObjcToDecimal128(decimalNumber);
-    return [[RLMDecimal128 alloc] initWithDecimal128:_value+rhs];
+- (LEGACYDecimal128 *)decimalNumberByAdding:(LEGACYDecimal128 *)decimalNumber {
+    auto rhs = LEGACYObjcToDecimal128(decimalNumber);
+    return [[LEGACYDecimal128 alloc] initWithDecimal128:_value+rhs];
 }
 
-- (RLMDecimal128 *)decimalNumberByDividingBy:(RLMDecimal128 *)decimalNumber {
-    auto rhs = RLMObjcToDecimal128(decimalNumber);
-    return [[RLMDecimal128 alloc] initWithDecimal128:_value/rhs];
+- (LEGACYDecimal128 *)decimalNumberByDividingBy:(LEGACYDecimal128 *)decimalNumber {
+    auto rhs = LEGACYObjcToDecimal128(decimalNumber);
+    return [[LEGACYDecimal128 alloc] initWithDecimal128:_value/rhs];
 }
 
-- (RLMDecimal128 *)decimalNumberBySubtracting:(RLMDecimal128 *)decimalNumber {
-    auto rhs = RLMObjcToDecimal128(decimalNumber);
-    return [[RLMDecimal128 alloc] initWithDecimal128:_value-rhs];
+- (LEGACYDecimal128 *)decimalNumberBySubtracting:(LEGACYDecimal128 *)decimalNumber {
+    auto rhs = LEGACYObjcToDecimal128(decimalNumber);
+    return [[LEGACYDecimal128 alloc] initWithDecimal128:_value-rhs];
 }
 
-- (RLMDecimal128 *)decimalNumberByMultiplyingBy:(RLMDecimal128 *)decimalNumber {
-    auto rhs = RLMObjcToDecimal128(decimalNumber);
-    return [[RLMDecimal128 alloc] initWithDecimal128:_value*rhs];
+- (LEGACYDecimal128 *)decimalNumberByMultiplyingBy:(LEGACYDecimal128 *)decimalNumber {
+    auto rhs = LEGACYObjcToDecimal128(decimalNumber);
+    return [[LEGACYDecimal128 alloc] initWithDecimal128:_value*rhs];
 }
 
-- (BOOL)isGreaterThan:(RLMDecimal128 *)decimalNumber {
-    auto rhs = RLMObjcToDecimal128(decimalNumber);
+- (BOOL)isGreaterThan:(LEGACYDecimal128 *)decimalNumber {
+    auto rhs = LEGACYObjcToDecimal128(decimalNumber);
     return _value > rhs;
 }
 
-- (BOOL)isGreaterThanOrEqualTo:(RLMDecimal128 *)decimalNumber {
-    auto rhs = RLMObjcToDecimal128(decimalNumber);
+- (BOOL)isGreaterThanOrEqualTo:(LEGACYDecimal128 *)decimalNumber {
+    auto rhs = LEGACYObjcToDecimal128(decimalNumber);
     return _value >= rhs;
 }
 
-- (BOOL)isLessThan:(RLMDecimal128 *)decimalNumber {
-    auto rhs = RLMObjcToDecimal128(decimalNumber);
+- (BOOL)isLessThan:(LEGACYDecimal128 *)decimalNumber {
+    auto rhs = LEGACYObjcToDecimal128(decimalNumber);
     return _value < rhs;
 }
 
-- (BOOL)isLessThanOrEqualTo:(RLMDecimal128 *)decimalNumber {
-    auto rhs = RLMObjcToDecimal128(decimalNumber);
+- (BOOL)isLessThanOrEqualTo:(LEGACYDecimal128 *)decimalNumber {
+    auto rhs = LEGACYObjcToDecimal128(decimalNumber);
     return _value <= rhs;
 }
 

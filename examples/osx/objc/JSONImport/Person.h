@@ -18,7 +18,7 @@
 
 #import <Realm/Realm.h>
 
-@interface Person : RLMObject
+@interface Person : LEGACYObject
 // Add properties here to define the model
 @property NSString  *fullName;
 @property NSDate    *birthdate;
@@ -26,5 +26,5 @@
 @end
 
 // This protocol enables typed collections. i.e.:
-// RLMArray<Person>
-RLM_COLLECTION_TYPE(Person)
+// LEGACYArray<Person>
+LEGACY_COLLECTION_TYPE(Person)

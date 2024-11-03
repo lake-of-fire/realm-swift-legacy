@@ -22,7 +22,7 @@
 #import <Security/Security.h>
 
 // Model definition
-@interface StringObject : RLMObject
+@interface StringObject : LEGACYObject
 @property NSString *stringProp;
 @end
 
@@ -52,9 +52,9 @@
     // Use an autorelease pool to close the Realm at the end of the block, so
     // that we can try to reopen it with different keys
     @autoreleasepool {
-        RLMRealmConfiguration *configuration = [RLMRealmConfiguration defaultConfiguration];
+        LEGACYRealmConfiguration *configuration = [LEGACYRealmConfiguration defaultConfiguration];
         configuration.encryptionKey = [self getKey];
-        RLMRealm *realm = [RLMRealm realmWithConfiguration:configuration
+        LEGACYRealm *realm = [LEGACYRealm realmWithConfiguration:configuration
                                                      error:nil];
 
         // Add an object
@@ -73,9 +73,9 @@
         (void)status;
 
         NSError *error;
-        RLMRealmConfiguration *configuration = [RLMRealmConfiguration defaultConfiguration];
+        LEGACYRealmConfiguration *configuration = [LEGACYRealmConfiguration defaultConfiguration];
         configuration.encryptionKey = [[NSData alloc] initWithBytes:buffer length:sizeof(buffer)];
-        [RLMRealm realmWithConfiguration:configuration
+        [LEGACYRealm realmWithConfiguration:configuration
                                    error:&error];
         [self log:@"Open with wrong key: %@", error];
     }
@@ -83,15 +83,15 @@
     // Opening wihout supplying a key at all fails
     @autoreleasepool {
         NSError *error;
-        [RLMRealm realmWithConfiguration:[RLMRealmConfiguration defaultConfiguration] error:&error];
+        [LEGACYRealm realmWithConfiguration:[LEGACYRealmConfiguration defaultConfiguration] error:&error];
         [self log:@"Open with no key: %@", error];
     }
 
     // Reopening with the correct key works and can read the data
     @autoreleasepool {
-        RLMRealmConfiguration *configuration = [RLMRealmConfiguration defaultConfiguration];
+        LEGACYRealmConfiguration *configuration = [LEGACYRealmConfiguration defaultConfiguration];
         configuration.encryptionKey = [self getKey];
-        RLMRealm *realm = [RLMRealm realmWithConfiguration:configuration
+        LEGACYRealm *realm = [LEGACYRealm realmWithConfiguration:configuration
                                                      error:nil];
 
         [self log:@"Saved object: %@", [[[StringObject allObjectsInRealm:realm] firstObject] stringProp]];

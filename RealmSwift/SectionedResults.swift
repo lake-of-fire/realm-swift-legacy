@@ -492,7 +492,7 @@ public extension RealmSectionedResult where Element: ObjectBase {
 
 // Shared implementation of SectionedResults and ResultsSection
 private protocol SectionedResultImpl: RealmSectionedResult {
-    associatedtype Collection: RLMSectionedResult
+    associatedtype Collection: LEGACYSectionedResult
     var collection: Collection { get set }
     init(rlmSectionedResult: Collection)
 }
@@ -520,7 +520,7 @@ extension SectionedResultImpl {
     public func observe(keyPaths: [String]?,
                         on queue: DispatchQueue?,
                         _ block: @escaping (SectionedResultsChange<Self>) -> Void) -> NotificationToken {
-        let wrapped = { (collection: RLMSectionedResult, change: RLMSectionedResultsChange) in
+        let wrapped = { (collection: LEGACYSectionedResult, change: LEGACYSectionedResultsChange) in
             block(SectionedResultsChange.fromObjc(value: Self(rlmSectionedResult: collection as! Self.Collection),
                                                   change: change))
         }
@@ -532,8 +532,8 @@ extension SectionedResultImpl {
 /// The container is lazily evaluated, meaning that if the underlying collection has changed a full recalculation of the section keys will take place.
 /// A `SectionedResults` instance can be observed and it also conforms to `ThreadConfined`.
 public struct SectionedResults<Key: _Persistable & Hashable, SectionElement: RealmCollectionValue>: SectionedResultImpl {
-    internal var collection: RLMSectionedResults<RLMValue, RLMValue>
-    internal init(rlmSectionedResult: RLMSectionedResults<RLMValue, RLMValue>) {
+    internal var collection: LEGACYSectionedResults<LEGACYValue, LEGACYValue>
+    internal init(rlmSectionedResult: LEGACYSectionedResults<LEGACYValue, LEGACYValue>) {
         self.collection = rlmSectionedResult
     }
     public typealias Element = ResultsSection<Key, SectionElement>
@@ -575,8 +575,8 @@ public struct SectionedResults<Key: _Persistable & Hashable, SectionElement: Rea
 /// A `ResultsSection` instance can be observed and it also conforms to `ThreadConfined`.
 public struct ResultsSection<Key: _Persistable & Hashable, T: RealmCollectionValue>: SectionedResultImpl {
     public typealias Element = T
-    internal var collection: RLMSection<RLMValue, RLMValue>
-    internal init(rlmSectionedResult: RLMSection<RLMValue, RLMValue>) {
+    internal var collection: LEGACYSection<LEGACYValue, LEGACYValue>
+    internal init(rlmSectionedResult: LEGACYSection<LEGACYValue, LEGACYValue>) {
         self.collection = rlmSectionedResult
     }
 
@@ -645,7 +645,7 @@ extension ResultsSection: Identifiable { }
                 sectionsToInsert: IndexSet, sectionsToDelete: IndexSet)
 
     /// :nodoc:
-    static func fromObjc(value: Collection, change: RLMSectionedResultsChange?) -> SectionedResultsChange {
+    static func fromObjc(value: Collection, change: LEGACYSectionedResultsChange?) -> SectionedResultsChange {
         if let change = change {
             return .update(value,
                            deletions: change.deletions as [IndexPath],
@@ -668,20 +668,20 @@ public typealias RealmSectionedResultsChange = SectionedResultsChange
 @frozen public struct SectionedResultsIterator<Key: _Persistable & Hashable, Element: RealmCollectionValue>: IteratorProtocol {
     private var generatorBase: NSFastEnumerationIterator
 
-    init(collection: RLMSectionedResults<RLMValue, RLMValue>) {
+    init(collection: LEGACYSectionedResults<LEGACYValue, LEGACYValue>) {
         generatorBase = NSFastEnumerationIterator(collection)
     }
 
     /// Advance to the next element and return it, or `nil` if no next element exists.
     public mutating func next() -> ResultsSection<Key, Element>? {
         guard let next = generatorBase.next() else { return nil }
-        return ResultsSection<Key, Element>(rlmSectionedResult: next as! RLMSection<RLMValue, RLMValue>)
+        return ResultsSection<Key, Element>(rlmSectionedResult: next as! LEGACYSection<LEGACYValue, LEGACYValue>)
     }
 }
 
 /// :nodoc:
 @available(*, deprecated, renamed: "SectionedResultsIterator")
-public typealias RLMSectionedResultsIterator = SectionedResultsIterator
+public typealias LEGACYSectionedResultsIterator = SectionedResultsIterator
 
 /**
  An iterator for a `Section` instance.
@@ -689,7 +689,7 @@ public typealias RLMSectionedResultsIterator = SectionedResultsIterator
 @frozen public struct SectionIterator<Element: RealmCollectionValue>: IteratorProtocol {
     private var generatorBase: NSFastEnumerationIterator
 
-    init(collection: RLMSection<RLMValue, RLMValue>) {
+    init(collection: LEGACYSection<LEGACYValue, LEGACYValue>) {
         generatorBase = NSFastEnumerationIterator(collection)
     }
 
@@ -702,4 +702,4 @@ public typealias RLMSectionedResultsIterator = SectionedResultsIterator
 
 /// :nodoc:
 @available(*, deprecated, renamed: "SectionIterator")
-public typealias RLMSectionIterator = SectionIterator
+public typealias LEGACYSectionIterator = SectionIterator

@@ -16,20 +16,20 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSyncTestCase.h"
+#import "LEGACYSyncTestCase.h"
 
-#import "RLMApp_Private.hpp"
+#import "LEGACYApp_Private.hpp"
 
 #if TARGET_OS_OSX
 
 #pragma mark ObjectServer Partition Tests
 
-@interface RLMObjectServerPartitionTests : RLMSyncTestCase
+@interface LEGACYObjectServerPartitionTests : LEGACYSyncTestCase
 @end
 
-@implementation RLMObjectServerPartitionTests
+@implementation LEGACYObjectServerPartitionTests
 
-- (void)roundTripForPartitionValue:(id<RLMBSON>)value {
+- (void)roundTripForPartitionValue:(id<LEGACYBSON>)value {
     NSError *error;
     NSString *appId = [RealmServer.shared
                        createAppWithPartitionKeyType:[self partitionBsonType:value]
@@ -38,13 +38,13 @@
         return XCTFail(@"Could not create app for partition value %@d", value);
     }
 
-    RLMApp *app = [self appWithId:appId];
-    RLMUser *user = [self createUserForApp:app];
-    RLMRealm *realm = [self openRealmForPartitionValue:value user:user];
+    LEGACYApp *app = [self appWithId:appId];
+    LEGACYUser *user = [self createUserForApp:app];
+    LEGACYRealm *realm = [self openRealmForPartitionValue:value user:user];
     CHECK_COUNT(0, Person, realm);
 
-    RLMUser *writeUser = [self createUserForApp:app];
-    RLMRealm *writeRealm = [self openRealmForPartitionValue:value user:writeUser];
+    LEGACYUser *writeUser = [self createUserForApp:app];
+    LEGACYRealm *writeRealm = [self openRealmForPartitionValue:value user:writeUser];
 
     auto write = [&] {
         [self addPersonsToRealm:writeRealm
@@ -63,7 +63,7 @@
 }
 
 - (void)testRoundTripForObjectIdPartitionValue {
-    [self roundTripForPartitionValue:[[RLMObjectId alloc] initWithString:@"1234567890ab1234567890ab" error:nil]];
+    [self roundTripForPartitionValue:[[LEGACYObjectId alloc] initWithString:@"1234567890ab1234567890ab" error:nil]];
 }
 
 - (void)testRoundTripForUUIDPartitionValue {

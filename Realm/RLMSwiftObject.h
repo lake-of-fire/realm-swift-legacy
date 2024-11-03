@@ -16,9 +16,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMObjectBase.h>
+#import <Realm/LEGACYObjectBase.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 /**
  `Object` is a class used to define Realm model objects.
 
@@ -70,7 +70,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  See our [Objective-C guide](https://docs.mongodb.com/realm/sdk/swift/fundamentals/relationships/) for more details.
  */
-@interface RealmSwiftObject : RLMObjectBase
+@interface RealmSwiftObject : LEGACYObjectBase
 @end
 
 /**
@@ -108,7 +108,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  }
  ```
  */
-@interface RealmSwiftEmbeddedObject : RLMObjectBase
+@interface RealmSwiftEmbeddedObject : LEGACYObjectBase
 @end
 
 /**
@@ -135,8 +135,8 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  }
  ```
  */
-@interface RealmSwiftAsymmetricObject : RLMObjectBase
+@interface RealmSwiftAsymmetricObject : LEGACYObjectBase
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)
 

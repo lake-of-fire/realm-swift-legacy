@@ -16,7 +16,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSyncSubscription_Private.h"
+#import "LEGACYSyncSubscription_Private.h"
 
 #import <memory>
 
@@ -28,39 +28,39 @@ namespace realm {
 class Query;
 }
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@interface RLMSyncSubscription ()
-- (instancetype)initWithSubscription:(realm::sync::Subscription)subscription subscriptionSet:(RLMSyncSubscriptionSet *)subscriptionSet;
+@interface LEGACYSyncSubscription ()
+- (instancetype)initWithSubscription:(realm::sync::Subscription)subscription subscriptionSet:(LEGACYSyncSubscriptionSet *)subscriptionSet;
 @end
 
-@interface RLMSyncSubscriptionSet () {
+@interface LEGACYSyncSubscriptionSet () {
 @public 
     std::unique_ptr<realm::sync::SubscriptionSet> _subscriptionSet;
 }
 
-- (instancetype)initWithSubscriptionSet:(realm::sync::SubscriptionSet)subscriptionSet realm:(RLMRealm *)realm;
+- (instancetype)initWithSubscriptionSet:(realm::sync::SubscriptionSet)subscriptionSet realm:(LEGACYRealm *)realm;
 
 - (void)update:(__attribute__((noescape)) void(^)(void))block
          queue:(nullable dispatch_queue_t)queue
        timeout:(NSTimeInterval)timeout
     onComplete:(void(^)(NSError *))completionBlock;
 
-- (RLMObjectId *)addSubscriptionWithClassName:(NSString *)objectClassName
+- (LEGACYObjectId *)addSubscriptionWithClassName:(NSString *)objectClassName
                              subscriptionName:(nullable NSString *)name
                                         query:(realm::Query)query
                                updateExisting:(BOOL)updateExisting;
 
-- (nullable RLMSyncSubscription *)subscriptionWithQuery:(realm::Query)query;
+- (nullable LEGACYSyncSubscription *)subscriptionWithQuery:(realm::Query)query;
 
 // Return subscription that matches name *and* query
-- (nullable RLMSyncSubscription *)subscriptionWithName:(NSString *)name
+- (nullable LEGACYSyncSubscription *)subscriptionWithName:(NSString *)name
                                                  query:(realm::Query)query;
 
 - (void)removeSubscriptionWithClassName:(NSString *)objectClassName
                                   query:(realm::Query)query;
 
-- (void)removeSubscriptionWithId:(RLMObjectId *)objectId;
+- (void)removeSubscriptionWithId:(LEGACYObjectId *)objectId;
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

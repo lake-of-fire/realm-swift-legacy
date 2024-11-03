@@ -16,31 +16,31 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@class RLMProperty;
+@class LEGACYProperty;
 
 /**
  This class represents Realm model object schemas.
 
- When using Realm, `RLMObjectSchema` instances allow performing migrations and
+ When using Realm, `LEGACYObjectSchema` instances allow performing migrations and
  introspecting the database's schema.
 
  Object schemas map to tables in the core database.
  */
-RLM_SWIFT_SENDABLE RLM_FINAL // not actually immutable, but the public API kinda is
-@interface RLMObjectSchema : NSObject<NSCopying>
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL // not actually immutable, but the public API kinda is
+@interface LEGACYObjectSchema : NSObject<NSCopying>
 
 #pragma mark - Properties
 
 /**
- An array of `RLMProperty` instances representing the managed properties of a class described by the schema.
+ An array of `LEGACYProperty` instances representing the managed properties of a class described by the schema.
 
- @see `RLMProperty`
+ @see `LEGACYProperty`
  */
-@property (nonatomic, readonly, copy) NSArray<RLMProperty *> *properties;
+@property (nonatomic, readonly, copy) NSArray<LEGACYProperty *> *properties;
 
 /**
  The name of the class the schema describes.
@@ -50,7 +50,7 @@ RLM_SWIFT_SENDABLE RLM_FINAL // not actually immutable, but the public API kinda
 /**
  The property which serves as the primary key for the class the schema describes, if any.
  */
-@property (nonatomic, readonly, nullable) RLMProperty *primaryKeyProperty;
+@property (nonatomic, readonly, nullable) LEGACYProperty *primaryKeyProperty;
 
 /**
  Whether this object type is embedded.
@@ -65,19 +65,19 @@ RLM_SWIFT_SENDABLE RLM_FINAL // not actually immutable, but the public API kinda
 #pragma mark - Methods
 
 /**
- Retrieves an `RLMProperty` object by the property name.
+ Retrieves an `LEGACYProperty` object by the property name.
 
  @param propertyName The property's name.
 
- @return An `RLMProperty` object, or `nil` if there is no property with the given name.
+ @return An `LEGACYProperty` object, or `nil` if there is no property with the given name.
  */
-- (nullable RLMProperty *)objectForKeyedSubscript:(NSString *)propertyName;
+- (nullable LEGACYProperty *)objectForKeyedSubscript:(NSString *)propertyName;
 
 /**
- Returns whether two `RLMObjectSchema` instances are equal.
+ Returns whether two `LEGACYObjectSchema` instances are equal.
  */
-- (BOOL)isEqualToObjectSchema:(RLMObjectSchema *)objectSchema;
+- (BOOL)isEqualToObjectSchema:(LEGACYObjectSchema *)objectSchema;
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

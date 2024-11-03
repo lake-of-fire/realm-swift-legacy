@@ -16,16 +16,16 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMCredentials_Private.hpp"
+#import "LEGACYCredentials_Private.hpp"
 
-#import "RLMBSON_Private.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYBSON_Private.hpp"
+#import "LEGACYUtil.hpp"
 
 #import <realm/util/bson/bson.hpp>
 
 using namespace realm::app;
 
-@implementation RLMCredentials
+@implementation LEGACYCredentials
 - (instancetype)initWithAppCredentials:(AppCredentials&&)credentials {
     if (self = [super init]) {
         _appCredentials = std::move(credentials);
@@ -35,19 +35,19 @@ using namespace realm::app;
     return nil;
 }
 
-+ (instancetype)credentialsWithFacebookToken:(RLMCredentialsToken)token {
++ (instancetype)credentialsWithFacebookToken:(LEGACYCredentialsToken)token {
     return [[self alloc] initWithAppCredentials:AppCredentials::facebook(token.UTF8String)];
 }
 
-+ (instancetype)credentialsWithGoogleAuthCode:(RLMCredentialsToken)token {
++ (instancetype)credentialsWithGoogleAuthCode:(LEGACYCredentialsToken)token {
     return [[self alloc] initWithAppCredentials:AppCredentials::google(AuthCode(token.UTF8String))];
 }
 
-+ (instancetype)credentialsWithGoogleIdToken:(RLMCredentialsToken)token {
++ (instancetype)credentialsWithGoogleIdToken:(LEGACYCredentialsToken)token {
     return [[self alloc] initWithAppCredentials:AppCredentials::google(IdToken(token.UTF8String))];
 }
 
-+ (instancetype)credentialsWithAppleToken:(RLMCredentialsToken)token {
++ (instancetype)credentialsWithAppleToken:(LEGACYCredentialsToken)token {
     return [[self alloc] initWithAppCredentials:AppCredentials::apple(token.UTF8String)];
 }
 
@@ -61,8 +61,8 @@ using namespace realm::app;
     return [[self alloc] initWithAppCredentials:AppCredentials::custom(token.UTF8String)];
 }
 
-+ (instancetype)credentialsWithFunctionPayload:(NSDictionary<NSString *, id<RLMBSON>> *)payload {
-    return [[self alloc] initWithAppCredentials:AppCredentials::function(static_cast<realm::bson::BsonDocument>(RLMConvertRLMBSONToBson(payload)))];
++ (instancetype)credentialsWithFunctionPayload:(NSDictionary<NSString *, id<LEGACYBSON>> *)payload {
+    return [[self alloc] initWithAppCredentials:AppCredentials::function(static_cast<realm::bson::BsonDocument>(LEGACYConvertRLMBSONToBson(payload)))];
 }
 
 + (instancetype)credentialsWithUserAPIKey:(NSString *)apiKey {
@@ -78,7 +78,7 @@ using namespace realm::app;
 }
 
 - (BOOL)isEqual:(id)object {
-    if (auto that = RLMDynamicCast<RLMCredentials>(object)) {
+    if (auto that = LEGACYDynamicCast<LEGACYCredentials>(object)) {
         return [self.provider isEqualToString:that.provider]
             && self.appCredentials.serialize_as_json() == that.appCredentials.serialize_as_json();
     }

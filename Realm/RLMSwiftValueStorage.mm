@@ -16,12 +16,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSwiftValueStorage.h"
+#import "LEGACYSwiftValueStorage.h"
 
-#import "RLMAccessor.hpp"
-#import "RLMObject_Private.hpp"
-#import "RLMProperty_Private.h"
-#import "RLMUtil.hpp"
+#import "LEGACYAccessor.hpp"
+#import "LEGACYObject_Private.hpp"
+#import "LEGACYProperty_Private.h"
+#import "LEGACYUtil.hpp"
 
 #import <realm/object-store/object.hpp>
 
@@ -41,14 +41,14 @@ public:
 
     void set(__unsafe_unretained const id newValue) override {
         @autoreleasepool {
-            RLMObjectBase *object = _parent;
+            LEGACYObjectBase *object = _parent;
             [object willChangeValueForKey:_property];
             _value = newValue;
             [object didChangeValueForKey:_property];
         }
     }
 
-    void attach(__unsafe_unretained RLMObjectBase *const obj, NSString *property) {
+    void attach(__unsafe_unretained LEGACYObjectBase *const obj, NSString *property) {
         if (!_property) {
             _property = property;
             _parent = obj;
@@ -62,13 +62,13 @@ public:
 private:
     id _value;
     NSString *_property;
-    __weak RLMObjectBase *_parent;
+    __weak LEGACYObjectBase *_parent;
 
 };
 
 class ManagedSwiftValueStorage : public SwiftValueStorageBase {
 public:
-    ManagedSwiftValueStorage(RLMObjectBase *obj, RLMProperty *prop)
+    ManagedSwiftValueStorage(LEGACYObjectBase *obj, LEGACYProperty *prop)
     : _realm(obj->_realm)
     , _object(obj->_realm->_realm, *obj->_info->objectSchema, obj->_row)
     , _columnName(prop.columnName.UTF8String)
@@ -91,58 +91,58 @@ public:
 
 private:
     // We have to hold onto a strong reference to the Realm as
-    // RLMAccessorContext holds a non-retaining one.
-    __unused RLMRealm *_realm;
+    // LEGACYAccessorContext holds a non-retaining one.
+    __unused LEGACYRealm *_realm;
     realm::Object _object;
     std::string _columnName;
-    RLMAccessorContext _ctx;
+    LEGACYAccessorContext _ctx;
 };
 } // anonymous namespace
 
-@interface RLMSwiftValueStorage () {
+@interface LEGACYSwiftValueStorage () {
     std::unique_ptr<SwiftValueStorageBase> _impl;
 }
 @end
 
-@implementation RLMSwiftValueStorage
+@implementation LEGACYSwiftValueStorage
 - (instancetype)init {
     return self;
 }
 
 - (BOOL)isKindOfClass:(Class)aClass {
-    return [RLMGetSwiftValueStorage(self) isKindOfClass:aClass] || RLMIsKindOfClass(object_getClass(self), aClass);
+    return [LEGACYGetSwiftValueStorage(self) isKindOfClass:aClass] || LEGACYIsKindOfClass(object_getClass(self), aClass);
 }
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)sel {
-    return [RLMGetSwiftValueStorage(self) methodSignatureForSelector:sel];
+    return [LEGACYGetSwiftValueStorage(self) methodSignatureForSelector:sel];
 }
 
 - (void)forwardInvocation:(NSInvocation *)invocation {
-    [invocation invokeWithTarget:RLMGetSwiftValueStorage(self)];
+    [invocation invokeWithTarget:LEGACYGetSwiftValueStorage(self)];
 }
 
 - (id)forwardingTargetForSelector:(__unused SEL)sel {
-    return RLMGetSwiftValueStorage(self);
+    return LEGACYGetSwiftValueStorage(self);
 }
 
 - (BOOL)respondsToSelector:(SEL)aSelector {
-    return [RLMGetSwiftValueStorage(self) respondsToSelector:aSelector];
+    return [LEGACYGetSwiftValueStorage(self) respondsToSelector:aSelector];
 }
 
 - (void)doesNotRecognizeSelector:(SEL)aSelector {
-    [RLMGetSwiftValueStorage(self) doesNotRecognizeSelector:aSelector];
+    [LEGACYGetSwiftValueStorage(self) doesNotRecognizeSelector:aSelector];
 }
 
-id RLMGetSwiftValueStorage(__unsafe_unretained RLMSwiftValueStorage *const self) {
+id LEGACYGetSwiftValueStorage(__unsafe_unretained LEGACYSwiftValueStorage *const self) {
     try {
-        return self->_impl ? RLMCoerceToNil(self->_impl->get()) : nil;
+        return self->_impl ? LEGACYCoerceToNil(self->_impl->get()) : nil;
     }
     catch (std::exception const& err) {
-        @throw RLMException(err);
+        @throw LEGACYException(err);
     }
 }
 
-void RLMSetSwiftValueStorage(__unsafe_unretained RLMSwiftValueStorage *const self, __unsafe_unretained const id value) {
+void LEGACYSetSwiftValueStorage(__unsafe_unretained LEGACYSwiftValueStorage *const self, __unsafe_unretained const id value) {
     try {
         if (!self->_impl && value) {
             self->_impl.reset(new UnmanagedSwiftValueStorage);
@@ -152,20 +152,20 @@ void RLMSetSwiftValueStorage(__unsafe_unretained RLMSwiftValueStorage *const sel
         }
     }
     catch (std::exception const& err) {
-        @throw RLMException(err);
+        @throw LEGACYException(err);
     }
 }
 
-void RLMInitializeManagedSwiftValueStorage(__unsafe_unretained RLMSwiftValueStorage *const self,
-                                  __unsafe_unretained RLMObjectBase *const parent,
-                                  __unsafe_unretained RLMProperty *const prop) {
+void LEGACYInitializeManagedSwiftValueStorage(__unsafe_unretained LEGACYSwiftValueStorage *const self,
+                                  __unsafe_unretained LEGACYObjectBase *const parent,
+                                  __unsafe_unretained LEGACYProperty *const prop) {
     REALM_ASSERT(parent->_realm);
     self->_impl.reset(new ManagedSwiftValueStorage(parent, prop));
 }
 
-void RLMInitializeUnmanagedSwiftValueStorage(__unsafe_unretained RLMSwiftValueStorage *const self,
-                                    __unsafe_unretained RLMObjectBase *const parent,
-                                    __unsafe_unretained RLMProperty *const prop) {
+void LEGACYInitializeUnmanagedSwiftValueStorage(__unsafe_unretained LEGACYSwiftValueStorage *const self,
+                                    __unsafe_unretained LEGACYObjectBase *const parent,
+                                    __unsafe_unretained LEGACYProperty *const prop) {
     if (parent->_realm) {
         return;
     }
@@ -175,7 +175,7 @@ void RLMInitializeUnmanagedSwiftValueStorage(__unsafe_unretained RLMSwiftValueSt
     static_cast<UnmanagedSwiftValueStorage&>(*self->_impl).attach(parent, prop.name);
 }
 
-NSString *RLMSwiftValueStorageGetPropertyName(RLMSwiftValueStorage *const self) {
+NSString *LEGACYSwiftValueStorageGetPropertyName(LEGACYSwiftValueStorage *const self) {
     return self->_impl->propertyName();
 }
 

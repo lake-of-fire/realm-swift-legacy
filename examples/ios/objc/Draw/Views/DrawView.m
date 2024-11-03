@@ -27,8 +27,8 @@
 
 @property DrawPath *drawPath;
 @property NSString *pathID;
-@property RLMResults *paths;
-@property RLMNotificationToken *notificationToken;
+@property LEGACYResults *paths;
+@property LEGACYNotificationToken *notificationToken;
 @property CanvasView *canvasView;
 @property SwatchesView *swatchesView;
 @property NSString *currentColorName;
@@ -42,7 +42,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         typeof(self) __weak weakSelf = self;
-        self.notificationToken = [[RLMRealm defaultRealm] addNotificationBlock:^(NSString *notification, RLMRealm *realm) {
+        self.notificationToken = [[LEGACYRealm defaultRealm] addNotificationBlock:^(NSString *notification, LEGACYRealm *realm) {
         
             if (weakSelf.paths.count == 0) {
                 [weakSelf.canvasView clearCanvas];
@@ -105,7 +105,7 @@
     [self.drawPath.points addObject:drawPoint];
     
     // Add the draw path to the Realm
-    RLMRealm *defaultRealm = [RLMRealm defaultRealm];
+    LEGACYRealm *defaultRealm = [LEGACYRealm defaultRealm];
     [defaultRealm transactionWithBlock:^{
         [defaultRealm addObject:self.drawPath];
     }];
@@ -115,11 +115,11 @@
 
 - (void)addPoint:(CGPoint)point
 {
-    [[RLMRealm defaultRealm] transactionWithBlock:^{
+    [[LEGACYRealm defaultRealm] transactionWithBlock:^{
         if (self.drawPath.isInvalidated) {
             self.drawPath = [[DrawPath alloc] init];
             self.drawPath.color = self.currentColorName ?: @"Black";
-            [[RLMRealm defaultRealm] addObject:self.drawPath];
+            [[LEGACYRealm defaultRealm] addObject:self.drawPath];
         }
 
         DrawPoint *newPoint = [DrawPoint createInDefaultRealmWithValue:@[@(point.x), @(point.y)]];
@@ -139,7 +139,7 @@
 {
     CGPoint point = [[touches anyObject] locationInView:self.canvasView];
     [self addPoint:point];
-    [[RLMRealm defaultRealm] transactionWithBlock:^{ self.drawPath.completed = YES; }];
+    [[LEGACYRealm defaultRealm] transactionWithBlock:^{ self.drawPath.completed = YES; }];
     self.drawPath = nil;
 }
 
@@ -167,8 +167,8 @@
     [alertController addAction:[UIAlertAction actionWithTitle:@"Reset"
                                                         style:UIAlertActionStyleDefault
                                                       handler:^(UIAlertAction *action) {
-        [[RLMRealm defaultRealm] transactionWithBlock:^{
-            [[RLMRealm defaultRealm] deleteAllObjects];
+        [[LEGACYRealm defaultRealm] transactionWithBlock:^{
+            [[LEGACYRealm defaultRealm] deleteAllObjects];
         }];
         
        [weakSelf.canvasView clearCanvas];

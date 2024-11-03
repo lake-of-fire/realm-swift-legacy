@@ -16,11 +16,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMUUID_Private.hpp"
+#import "LEGACYUUID_Private.hpp"
 
 #import <realm/uuid.hpp>
 
-@implementation NSUUID (RLMUUIDSupport)
+@implementation NSUUID (LEGACYUUIDSupport)
 
 - (instancetype)initWithRealmUUID:(realm::UUID)rUuid {
     self = [self initWithUUIDBytes:rUuid.to_bytes().data()];

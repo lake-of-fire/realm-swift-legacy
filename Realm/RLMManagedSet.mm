@@ -16,20 +16,20 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSet_Private.hpp"
+#import "LEGACYSet_Private.hpp"
 
-#import "RLMAccessor.hpp"
-#import "RLMObjectSchema_Private.hpp"
-#import "RLMObjectStore.h"
-#import "RLMObject_Private.hpp"
-#import "RLMObservation.hpp"
-#import "RLMProperty_Private.h"
-#import "RLMQueryUtil.hpp"
-#import "RLMRealm_Private.hpp"
-#import "RLMSchema.h"
-#import "RLMSectionedResults_Private.hpp"
-#import "RLMThreadSafeReference_Private.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYAccessor.hpp"
+#import "LEGACYObjectSchema_Private.hpp"
+#import "LEGACYObjectStore.h"
+#import "LEGACYObject_Private.hpp"
+#import "LEGACYObservation.hpp"
+#import "LEGACYProperty_Private.h"
+#import "LEGACYQueryUtil.hpp"
+#import "LEGACYRealm_Private.hpp"
+#import "LEGACYSchema.h"
+#import "LEGACYSectionedResults_Private.hpp"
+#import "LEGACYThreadSafeReference_Private.hpp"
+#import "LEGACYUtil.hpp"
 
 #import <realm/collection.hpp>
 #import <realm/object-store/set.hpp>
@@ -38,33 +38,33 @@
 #import <realm/object-store/results.hpp>
 #import <realm/object-store/shared_realm.hpp>
 
-@interface RLMManagedSetHandoverMetadata : NSObject
+@interface LEGACYManagedSetHandoverMetadata : NSObject
 @property (nonatomic) NSString *parentClassName;
 @property (nonatomic) NSString *key;
 @end
 
-@implementation RLMManagedSetHandoverMetadata
+@implementation LEGACYManagedSetHandoverMetadata
 @end
 
-@interface RLMManagedSet () <RLMThreadConfined_Private>
+@interface LEGACYManagedSet () <LEGACYThreadConfined_Private>
 @end
 
 //
-// RLMSet implementation
+// LEGACYSet implementation
 //
-@implementation RLMManagedSet {
+@implementation LEGACYManagedSet {
 @public
     realm::object_store::Set _backingSet;
-    RLMRealm *_realm;
-    RLMClassInfo *_objectInfo;
-    RLMClassInfo *_ownerInfo;
-    std::unique_ptr<RLMObservationInfo> _observationInfo;
+    LEGACYRealm *_realm;
+    LEGACYClassInfo *_objectInfo;
+    LEGACYClassInfo *_ownerInfo;
+    std::unique_ptr<LEGACYObservationInfo> _observationInfo;
 }
 
-- (RLMManagedSet *)initWithBackingCollection:(realm::object_store::Set)set
-                                  parentInfo:(RLMClassInfo *)parentInfo
-                                    property:(__unsafe_unretained RLMProperty *const)property {
-    if (property.type == RLMPropertyTypeObject)
+- (LEGACYManagedSet *)initWithBackingCollection:(realm::object_store::Set)set
+                                  parentInfo:(LEGACYClassInfo *)parentInfo
+                                    property:(__unsafe_unretained LEGACYProperty *const)property {
+    if (property.type == LEGACYPropertyTypeObject)
         self = [self initWithObjectClassName:property.objectClassName];
     else
         self = [self initWithObjectType:property.type
@@ -74,7 +74,7 @@
         REALM_ASSERT(set.get_realm() == _realm->_realm);
         _backingSet = std::move(set);
         _ownerInfo = parentInfo;
-        if (property.type == RLMPropertyTypeObject)
+        if (property.type == LEGACYPropertyTypeObject)
             _objectInfo = &parentInfo->linkTargetType(property.index);
         else
             _objectInfo = _ownerInfo;
@@ -83,40 +83,40 @@
     return self;
 }
 
-- (RLMManagedSet *)initWithParent:(__unsafe_unretained RLMObjectBase *const)parentObject
-                         property:(__unsafe_unretained RLMProperty *const)property {
-    __unsafe_unretained RLMRealm *const realm = parentObject->_realm;
+- (LEGACYManagedSet *)initWithParent:(__unsafe_unretained LEGACYObjectBase *const)parentObject
+                         property:(__unsafe_unretained LEGACYProperty *const)property {
+    __unsafe_unretained LEGACYRealm *const realm = parentObject->_realm;
     auto col = parentObject->_info->tableColumn(property);
     return [self initWithBackingCollection:realm::object_store::Set(realm->_realm, parentObject->_row, col)
                                 parentInfo:parentObject->_info
                                   property:property];
 }
 
-- (RLMManagedSet *)initWithParent:(realm::Obj)parent
-                         property:(__unsafe_unretained RLMProperty *const)property
-                       parentInfo:(RLMClassInfo&)info {
+- (LEGACYManagedSet *)initWithParent:(realm::Obj)parent
+                         property:(__unsafe_unretained LEGACYProperty *const)property
+                       parentInfo:(LEGACYClassInfo&)info {
     auto col = info.tableColumn(property);
     return [self initWithBackingCollection:realm::object_store::Set(info.realm->_realm, parent, col)
                                 parentInfo:&info
                                   property:property];
 }
 
-void RLMValidateSetObservationKey(__unsafe_unretained NSString *const keyPath,
-                                  __unsafe_unretained RLMSet *const set) {
-    if (![keyPath isEqualToString:RLMInvalidatedKey]) {
-        @throw RLMException(@"[<%@ %p> addObserver:forKeyPath:options:context:] is not supported. Key path: %@",
+void LEGACYValidateSetObservationKey(__unsafe_unretained NSString *const keyPath,
+                                  __unsafe_unretained LEGACYSet *const set) {
+    if (![keyPath isEqualToString:LEGACYInvalidatedKey]) {
+        @throw LEGACYException(@"[<%@ %p> addObserver:forKeyPath:options:context:] is not supported. Key path: %@",
                             [set class], set, keyPath);
     }
 }
 
-void RLMEnsureSetObservationInfo(std::unique_ptr<RLMObservationInfo>& info,
+void LEGACYEnsureSetObservationInfo(std::unique_ptr<LEGACYObservationInfo>& info,
                                    __unsafe_unretained NSString *const keyPath,
-                                   __unsafe_unretained RLMSet *const set,
+                                   __unsafe_unretained LEGACYSet *const set,
                                    __unsafe_unretained id const observed) {
-    RLMValidateSetObservationKey(keyPath, set);
-    if (!info && set.class == [RLMManagedSet class]) {
-        auto lv = static_cast<RLMManagedSet *>(set);
-        info = std::make_unique<RLMObservationInfo>(*lv->_ownerInfo,
+    LEGACYValidateSetObservationKey(keyPath, set);
+    if (!info && set.class == [LEGACYManagedSet class]) {
+        auto lv = static_cast<LEGACYManagedSet *>(set);
+        info = std::make_unique<LEGACYObservationInfo>(*lv->_ownerInfo,
                                                     lv->_backingSet.get_parent_object_key(),
                                                     observed);
     }
@@ -128,13 +128,13 @@ static auto translateErrors(Function&& f) {
     return translateCollectionError(static_cast<Function&&>(f), @"Set");
 }
 
-static void changeSet(__unsafe_unretained RLMManagedSet *const set,
+static void changeSet(__unsafe_unretained LEGACYManagedSet *const set,
                       dispatch_block_t f) {
     translateErrors([&] { set->_backingSet.verify_in_transaction(); });
 
-    RLMObservationTracker tracker(set->_realm, false);
+    LEGACYObservationTracker tracker(set->_realm, false);
     tracker.trackDeletions();
-    auto obsInfo = RLMGetObservationInfo(set->_observationInfo.get(),
+    auto obsInfo = LEGACYGetObservationInfo(set->_observationInfo.get(),
                                          set->_backingSet.get_parent_object_key(),
                                          *set->_ownerInfo);
     if (obsInfo) {
@@ -147,7 +147,7 @@ static void changeSet(__unsafe_unretained RLMManagedSet *const set,
 //
 // public method implementations
 //
-- (RLMRealm *)realm {
+- (LEGACYRealm *)realm {
     return _realm;
 }
 
@@ -167,7 +167,7 @@ static void changeSet(__unsafe_unretained RLMManagedSet *const set,
     return translateErrors([&] { return !_backingSet.is_valid(); });
 }
 
-- (RLMClassInfo *)objectInfo {
+- (LEGACYClassInfo *)objectInfo {
     return _objectInfo;
 }
 
@@ -187,47 +187,47 @@ static void changeSet(__unsafe_unretained RLMManagedSet *const set,
 - (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state
                                   objects:(__unused __unsafe_unretained id [])buffer
                                     count:(NSUInteger)len {
-    return RLMFastEnumerate(state, len, self);
+    return LEGACYFastEnumerate(state, len, self);
 }
 
-static void RLMInsertObject(RLMManagedSet *set, id object) {
-    RLMSetValidateMatchingObjectType(set, object);
+static void LEGACYInsertObject(LEGACYManagedSet *set, id object) {
+    LEGACYSetValidateMatchingObjectType(set, object);
     changeSet(set, ^{
-        RLMAccessorContext context(*set->_objectInfo);
+        LEGACYAccessorContext context(*set->_objectInfo);
         set->_backingSet.insert(context, object);
     });
 }
 
-static void RLMRemoveObject(RLMManagedSet *set, id object) {
-    RLMSetValidateMatchingObjectType(set, object);
+static void LEGACYRemoveObject(LEGACYManagedSet *set, id object) {
+    LEGACYSetValidateMatchingObjectType(set, object);
     changeSet(set, ^{
-        RLMAccessorContext context(*set->_objectInfo);
+        LEGACYAccessorContext context(*set->_objectInfo);
         set->_backingSet.remove(context, object);
     });
 }
 
-static void ensureInWriteTransaction(NSString *message, RLMManagedSet *set, RLMManagedSet *otherSet) {
+static void ensureInWriteTransaction(NSString *message, LEGACYManagedSet *set, LEGACYManagedSet *otherSet) {
     if (!set.realm.inWriteTransaction && !otherSet.realm.inWriteTransaction) {
-        @throw RLMException(@"Can only perform %@ in a Realm in a write transaction - call beginWriteTransaction on an RLMRealm instance first.", message);
+        @throw LEGACYException(@"Can only perform %@ in a Realm in a write transaction - call beginWriteTransaction on an LEGACYRealm instance first.", message);
     }
 }
 
 - (void)addObject:(id)object {
-    RLMInsertObject(self, object);
+    LEGACYInsertObject(self, object);
 }
 
 - (void)addObjects:(id<NSFastEnumeration>)objects {
     changeSet(self, ^{
-        RLMAccessorContext context(*_objectInfo);
+        LEGACYAccessorContext context(*_objectInfo);
         for (id obj in objects) {
-            RLMSetValidateMatchingObjectType(self, obj);
+            LEGACYSetValidateMatchingObjectType(self, obj);
             _backingSet.insert(context, obj);
         }
     });
 }
 
 - (void)removeObject:(id)object {
-    RLMRemoveObject(self, object);
+    LEGACYRemoveObject(self, object);
 }
 
 - (void)removeAllObjects {
@@ -238,25 +238,25 @@ static void ensureInWriteTransaction(NSString *message, RLMManagedSet *set, RLMM
 
 - (void)replaceAllObjectsWithObjects:(NSArray *)objects {
     changeSet(self, ^{
-        RLMAccessorContext context(*_objectInfo);
+        LEGACYAccessorContext context(*_objectInfo);
         _backingSet.assign(context, objects);
     });
 }
 
-- (RLMManagedSet *)managedObjectFrom:(RLMSet *)set {
-    auto managedSet = RLMDynamicCast<RLMManagedSet>(set);
+- (LEGACYManagedSet *)managedObjectFrom:(LEGACYSet *)set {
+    auto managedSet = LEGACYDynamicCast<LEGACYManagedSet>(set);
     if (!managedSet) {
-        @throw RLMException(@"Right hand side value must be a managed Set.");
+        @throw LEGACYException(@"Right hand side value must be a managed Set.");
     }
     if (_type != managedSet->_type) {
-        @throw RLMException(@"Cannot intersect sets of type '%@' and '%@'.",
-                            RLMTypeToString(_type), RLMTypeToString(managedSet->_type));
+        @throw LEGACYException(@"Cannot intersect sets of type '%@' and '%@'.",
+                            LEGACYTypeToString(_type), LEGACYTypeToString(managedSet->_type));
     }
     if (_realm != managedSet->_realm) {
-        @throw RLMException(@"Cannot insersect sets managed by different Realms.");
+        @throw LEGACYException(@"Cannot insersect sets managed by different Realms.");
     }
     if (_objectInfo != managedSet->_objectInfo) {
-        @throw RLMException(@"Cannot intersect sets of type '%@' and '%@'.",
+        @throw LEGACYException(@"Cannot intersect sets of type '%@' and '%@'.",
                             _objectInfo->rlmObjectSchema.className,
                             managedSet->_objectInfo->rlmObjectSchema.className);
 
@@ -264,56 +264,56 @@ static void ensureInWriteTransaction(NSString *message, RLMManagedSet *set, RLMM
     return managedSet;
 }
 
-- (BOOL)isSubsetOfSet:(RLMSet<id> *)set {
-    RLMManagedSet *rhs = [self managedObjectFrom:set];
+- (BOOL)isSubsetOfSet:(LEGACYSet<id> *)set {
+    LEGACYManagedSet *rhs = [self managedObjectFrom:set];
     return _backingSet.is_subset_of(rhs->_backingSet);
 }
 
-- (BOOL)intersectsSet:(RLMSet<id> *)set {
-    RLMManagedSet *rhs = [self managedObjectFrom:set];
+- (BOOL)intersectsSet:(LEGACYSet<id> *)set {
+    LEGACYManagedSet *rhs = [self managedObjectFrom:set];
     return _backingSet.intersects(rhs->_backingSet);
 }
 
 - (BOOL)containsObject:(id)obj {
-    RLMSetValidateMatchingObjectType(self, obj);
-    RLMAccessorContext context(*_objectInfo);
+    LEGACYSetValidateMatchingObjectType(self, obj);
+    LEGACYAccessorContext context(*_objectInfo);
     auto r = _backingSet.find(context, obj);
     return r != realm::npos;
 }
 
-- (BOOL)isEqualToSet:(RLMSet<id> *)set {
-    RLMManagedSet *rhs = [self managedObjectFrom:set];
+- (BOOL)isEqualToSet:(LEGACYSet<id> *)set {
+    LEGACYManagedSet *rhs = [self managedObjectFrom:set];
     return [self isEqual:rhs];
 }
 
-- (void)setSet:(RLMSet<id> *)set {
-    RLMManagedSet *rhs = [self managedObjectFrom:set];
-    ensureInWriteTransaction(@"[RLMSet setSet:]", self, rhs);
+- (void)setSet:(LEGACYSet<id> *)set {
+    LEGACYManagedSet *rhs = [self managedObjectFrom:set];
+    ensureInWriteTransaction(@"[LEGACYSet setSet:]", self, rhs);
     changeSet(self, ^{
-        RLMAccessorContext context(*_objectInfo);
+        LEGACYAccessorContext context(*_objectInfo);
         _backingSet.assign(context, rhs);
     });
 }
 
-- (void)intersectSet:(RLMSet<id> *)set {
-    RLMManagedSet *rhs = [self managedObjectFrom:set];
-    ensureInWriteTransaction(@"[RLMSet intersectSet:]", self, rhs);
+- (void)intersectSet:(LEGACYSet<id> *)set {
+    LEGACYManagedSet *rhs = [self managedObjectFrom:set];
+    ensureInWriteTransaction(@"[LEGACYSet intersectSet:]", self, rhs);
     changeSet(self, ^{
         _backingSet.assign_intersection(rhs->_backingSet);
     });
 }
 
-- (void)unionSet:(RLMSet<id> *)set {
-    RLMManagedSet *rhs = [self managedObjectFrom:set];
-    ensureInWriteTransaction(@"[RLMSet unionSet:]", self, rhs);
+- (void)unionSet:(LEGACYSet<id> *)set {
+    LEGACYManagedSet *rhs = [self managedObjectFrom:set];
+    ensureInWriteTransaction(@"[LEGACYSet unionSet:]", self, rhs);
     changeSet(self, ^{
         _backingSet.assign_union(rhs->_backingSet);
     });
 }
 
-- (void)minusSet:(RLMSet<id> *)set {
-    RLMManagedSet *rhs = [self managedObjectFrom:set];
-    ensureInWriteTransaction(@"[RLMSet minusSet:]", self, rhs);
+- (void)minusSet:(LEGACYSet<id> *)set {
+    LEGACYManagedSet *rhs = [self managedObjectFrom:set];
+    ensureInWriteTransaction(@"[LEGACYSet minusSet:]", self, rhs);
     changeSet(self, ^{
         _backingSet.assign_difference(rhs->_backingSet);
     });
@@ -321,7 +321,7 @@ static void ensureInWriteTransaction(NSString *message, RLMManagedSet *set, RLMM
 
 - (id)objectAtIndex:(NSUInteger)index {
     return translateErrors([&] {
-        RLMAccessorContext context(*_objectInfo);
+        LEGACYAccessorContext context(*_objectInfo);
         return _backingSet.get(context, index);
     });
 }
@@ -329,7 +329,7 @@ static void ensureInWriteTransaction(NSString *message, RLMManagedSet *set, RLMM
 - (NSArray *)objectsAtIndexes:(NSIndexSet *)indexes {
     size_t count = self.count;
     NSMutableArray *result = [[NSMutableArray alloc] initWithCapacity:indexes.count];
-    RLMAccessorContext context(*_objectInfo);
+    LEGACYAccessorContext context(*_objectInfo);
     for (NSUInteger i = indexes.firstIndex; i != NSNotFound; i = [indexes indexGreaterThanIndex:i]) {
         if (i >= count) {
             return nil;
@@ -341,14 +341,14 @@ static void ensureInWriteTransaction(NSString *message, RLMManagedSet *set, RLMM
 
 - (id)firstObject {
     return translateErrors([&] {
-        RLMAccessorContext context(*_objectInfo);
+        LEGACYAccessorContext context(*_objectInfo);
         return _backingSet.size() ? _backingSet.get(context, 0) : nil;
     });
 }
 
 - (id)lastObject {
     return translateErrors([&] {
-        RLMAccessorContext context(*_objectInfo);
+        LEGACYAccessorContext context(*_objectInfo);
         size_t size = _backingSet.size();
         return size ? _backingSet.get(context, size - 1) : nil;
     });
@@ -356,9 +356,9 @@ static void ensureInWriteTransaction(NSString *message, RLMManagedSet *set, RLMM
 
 - (id)valueForKeyPath:(NSString *)keyPath {
     if ([keyPath hasPrefix:@"@"]) {
-        // Delegate KVC collection operators to RLMResults
+        // Delegate KVC collection operators to LEGACYResults
         return translateErrors([&] {
-            auto results = [RLMResults resultsWithObjectInfo:*_objectInfo results:_backingSet.as_results()];
+            auto results = [LEGACYResults resultsWithObjectInfo:*_objectInfo results:_backingSet.as_results()];
             return [results valueForKeyPath:keyPath];
         });
     }
@@ -370,32 +370,32 @@ static void ensureInWriteTransaction(NSString *message, RLMManagedSet *set, RLMM
     // normal array KVC semantics, but observing @things works very oddly (when
     // it's part of a key path, it's triggered automatically when array index
     // changes occur, and can't be sent explicitly, but works normally when it's
-    // the entire key path), and an RLMManagedSet *can't* have objects where
+    // the entire key path), and an LEGACYManagedSet *can't* have objects where
     // invalidated is true, so we're not losing much.
     return translateErrors([&]() -> id {
-        if ([key isEqualToString:RLMInvalidatedKey]) {
+        if ([key isEqualToString:LEGACYInvalidatedKey]) {
             return @(!_backingSet.is_valid());
         }
 
         _backingSet.verify_attached();
-        return  [NSSet setWithArray:RLMCollectionValueForKey(_backingSet, key, *_objectInfo)];
+        return  [NSSet setWithArray:LEGACYCollectionValueForKey(_backingSet, key, *_objectInfo)];
     });
     return nil;
 }
 
 - (void)setValue:(id)value forKey:(NSString *)key {
     if ([key isEqualToString:@"self"]) {
-        RLMSetValidateMatchingObjectType(self, value);
-        RLMAccessorContext context(*_objectInfo);
+        LEGACYSetValidateMatchingObjectType(self, value);
+        LEGACYAccessorContext context(*_objectInfo);
         translateErrors([&] {
             _backingSet.remove_all();
             _backingSet.insert(context, value);
             return;
         });
-    } else if (_type == RLMPropertyTypeObject) {
-        RLMSetValidateMatchingObjectType(self, value);
+    } else if (_type == LEGACYPropertyTypeObject) {
+        LEGACYSetValidateMatchingObjectType(self, value);
         translateErrors([&] { _backingSet.verify_in_transaction(); });
-        RLMCollectionSetValueForKey(self, key, value);
+        LEGACYCollectionSetValueForKey(self, key, value);
     }
     else {
         [self setValue:value forUndefinedKey:key];
@@ -403,70 +403,70 @@ static void ensureInWriteTransaction(NSString *message, RLMManagedSet *set, RLMM
 }
 
 - (id)minOfProperty:(NSString *)property {
-    auto column = columnForProperty(property, _backingSet, _objectInfo, _type, RLMCollectionTypeSet);
+    auto column = columnForProperty(property, _backingSet, _objectInfo, _type, LEGACYCollectionTypeSet);
     auto value = translateErrors([&] { return _backingSet.min(column); });
-    return value ? RLMMixedToObjc(*value) : nil;
+    return value ? LEGACYMixedToObjc(*value) : nil;
 }
 
 - (id)maxOfProperty:(NSString *)property {
-    auto column = columnForProperty(property, _backingSet, _objectInfo, _type, RLMCollectionTypeSet);
+    auto column = columnForProperty(property, _backingSet, _objectInfo, _type, LEGACYCollectionTypeSet);
     auto value = translateErrors([&] { return _backingSet.max(column); });
-    return value ? RLMMixedToObjc(*value) : nil;
+    return value ? LEGACYMixedToObjc(*value) : nil;
 }
 
 - (id)sumOfProperty:(NSString *)property {
-    auto column = columnForProperty(property, _backingSet, _objectInfo, _type, RLMCollectionTypeSet);
-    return RLMMixedToObjc(translateErrors([&] { return _backingSet.sum(column); }));
+    auto column = columnForProperty(property, _backingSet, _objectInfo, _type, LEGACYCollectionTypeSet);
+    return LEGACYMixedToObjc(translateErrors([&] { return _backingSet.sum(column); }));
 }
 
 - (id)averageOfProperty:(NSString *)property {
-    auto column = columnForProperty(property, _backingSet, _objectInfo, _type, RLMCollectionTypeSet);
+    auto column = columnForProperty(property, _backingSet, _objectInfo, _type, LEGACYCollectionTypeSet);
     auto value = translateErrors([&] { return _backingSet.average(column); });
-    return value ? RLMMixedToObjc(*value) : nil;
+    return value ? LEGACYMixedToObjc(*value) : nil;
 }
 
 - (void)deleteObjectsFromRealm {
-    if (_type != RLMPropertyTypeObject) {
-        @throw RLMException(@"Cannot delete objects from RLMSet<%@>: only RLMObjects can be deleted.", RLMTypeToString(_type));
+    if (_type != LEGACYPropertyTypeObject) {
+        @throw LEGACYException(@"Cannot delete objects from LEGACYSet<%@>: only LEGACYObjects can be deleted.", LEGACYTypeToString(_type));
     }
     // delete all target rows from the realm
-    RLMObservationTracker tracker(_realm, true);
+    LEGACYObservationTracker tracker(_realm, true);
     translateErrors([&] { _backingSet.delete_all(); });
 }
 
-- (RLMResults *)sortedResultsUsingDescriptors:(NSArray<RLMSortDescriptor *> *)properties {
+- (LEGACYResults *)sortedResultsUsingDescriptors:(NSArray<LEGACYSortDescriptor *> *)properties {
     return translateErrors([&] {
-        return [RLMResults  resultsWithObjectInfo:*_objectInfo
-                                          results:_backingSet.sort(RLMSortDescriptorsToKeypathArray(properties))];
+        return [LEGACYResults  resultsWithObjectInfo:*_objectInfo
+                                          results:_backingSet.sort(LEGACYSortDescriptorsToKeypathArray(properties))];
     });
 }
 
-- (RLMResults *)distinctResultsUsingKeyPaths:(NSArray<NSString *> *)keyPaths {
+- (LEGACYResults *)distinctResultsUsingKeyPaths:(NSArray<NSString *> *)keyPaths {
     return translateErrors([&] {
-        auto results = [RLMResults resultsWithObjectInfo:*_objectInfo results:_backingSet.as_results()];
+        auto results = [LEGACYResults resultsWithObjectInfo:*_objectInfo results:_backingSet.as_results()];
         return [results distinctResultsUsingKeyPaths:keyPaths];
     });
 }
 
-- (RLMResults *)objectsWithPredicate:(NSPredicate *)predicate {
-    if (_type != RLMPropertyTypeObject) {
-        @throw RLMException(@"Querying is currently only implemented for sets of Realm Objects");
+- (LEGACYResults *)objectsWithPredicate:(NSPredicate *)predicate {
+    if (_type != LEGACYPropertyTypeObject) {
+        @throw LEGACYException(@"Querying is currently only implemented for sets of Realm Objects");
     }
-    auto query = RLMPredicateToQuery(predicate, _objectInfo->rlmObjectSchema, _realm.schema, _realm.group);
+    auto query = LEGACYPredicateToQuery(predicate, _objectInfo->rlmObjectSchema, _realm.schema, _realm.group);
     auto results = translateErrors([&] { return _backingSet.filter(std::move(query)); });
-    return [RLMResults resultsWithObjectInfo:*_objectInfo results:std::move(results)];
+    return [LEGACYResults resultsWithObjectInfo:*_objectInfo results:std::move(results)];
 }
 
-- (RLMSectionedResults *)sectionedResultsSortedUsingKeyPath:(NSString *)keyPath
+- (LEGACYSectionedResults *)sectionedResultsSortedUsingKeyPath:(NSString *)keyPath
                                                   ascending:(BOOL)ascending
-                                                   keyBlock:(RLMSectionedResultsKeyBlock)keyBlock {
-    return [[RLMSectionedResults alloc] initWithResults:[self sortedResultsUsingKeyPath:keyPath ascending:ascending]
+                                                   keyBlock:(LEGACYSectionedResultsKeyBlock)keyBlock {
+    return [[LEGACYSectionedResults alloc] initWithResults:[self sortedResultsUsingKeyPath:keyPath ascending:ascending]
                                                keyBlock:keyBlock];
 }
 
-- (RLMSectionedResults *)sectionedResultsUsingSortDescriptors:(NSArray<RLMSortDescriptor *> *)sortDescriptors
-                                                     keyBlock:(RLMSectionedResultsKeyBlock)keyBlock {
-    return [[RLMSectionedResults alloc] initWithResults:[self sortedResultsUsingDescriptors:sortDescriptors]
+- (LEGACYSectionedResults *)sectionedResultsUsingSortDescriptors:(NSArray<LEGACYSortDescriptor *> *)sortDescriptors
+                                                     keyBlock:(LEGACYSectionedResultsKeyBlock)keyBlock {
+    return [[LEGACYSectionedResults alloc] initWithResults:[self sortedResultsUsingDescriptors:sortDescriptors]
                                                keyBlock:keyBlock];
 }
 
@@ -474,13 +474,13 @@ static void ensureInWriteTransaction(NSString *message, RLMManagedSet *set, RLMM
          forKeyPath:(NSString *)keyPath
             options:(NSKeyValueObservingOptions)options
             context:(void *)context {
-    RLMEnsureSetObservationInfo(_observationInfo, keyPath, self, self);
+    LEGACYEnsureSetObservationInfo(_observationInfo, keyPath, self, self);
     [super addObserver:observer forKeyPath:keyPath options:options context:context];
 }
 
-- (RLMFastEnumerator *)fastEnumerator {
+- (LEGACYFastEnumerator *)fastEnumerator {
     return translateErrors([&] {
-        return [[RLMFastEnumerator alloc] initWithBackingCollection:_backingSet
+        return [[LEGACYFastEnumerator alloc] initWithBackingCollection:_backingSet
                                                          collection:self
                                                           classInfo:*_objectInfo];
     });
@@ -494,7 +494,7 @@ static void ensureInWriteTransaction(NSString *message, RLMManagedSet *set, RLMM
     return _realm.isFrozen;
 }
 
-- (instancetype)resolveInRealm:(RLMRealm *)realm {
+- (instancetype)resolveInRealm:(LEGACYRealm *)realm {
     auto& parentInfo = _ownerInfo->resolve(realm);
     return translateErrors([&] {
         return [[self.class alloc] initWithBackingCollection:_backingSet.freeze(realm->_realm)
@@ -519,7 +519,7 @@ static void ensureInWriteTransaction(NSString *message, RLMManagedSet *set, RLMM
 
 - (realm::NotificationToken)addNotificationCallback:(id)block
 keyPaths:(std::optional<std::vector<std::vector<std::pair<realm::TableKey, realm::ColKey>>>>&&)keyPaths {
-    return _backingSet.add_notification_callback(RLMWrapCollectionChangeCallback(block, self, false), std::move(keyPaths));
+    return _backingSet.add_notification_callback(LEGACYWrapCollectionChangeCallback(block, self, false), std::move(keyPaths));
 }
 
 #pragma mark - Thread Confined Protocol Conformance
@@ -528,22 +528,22 @@ keyPaths:(std::optional<std::vector<std::vector<std::pair<realm::TableKey, realm
     return _backingSet;
 }
 
-- (RLMManagedSetHandoverMetadata *)objectiveCMetadata {
-    RLMManagedSetHandoverMetadata *metadata = [[RLMManagedSetHandoverMetadata alloc] init];
+- (LEGACYManagedSetHandoverMetadata *)objectiveCMetadata {
+    LEGACYManagedSetHandoverMetadata *metadata = [[LEGACYManagedSetHandoverMetadata alloc] init];
     metadata.parentClassName = _ownerInfo->rlmObjectSchema.className;
     metadata.key = _key;
     return metadata;
 }
 
 + (instancetype)objectWithThreadSafeReference:(realm::ThreadSafeReference)reference
-                                     metadata:(RLMManagedSetHandoverMetadata *)metadata
-                                        realm:(RLMRealm *)realm {
+                                     metadata:(LEGACYManagedSetHandoverMetadata *)metadata
+                                        realm:(LEGACYRealm *)realm {
     auto set = reference.resolve<realm::object_store::Set>(realm->_realm);
     if (!set.is_valid()) {
         return nil;
     }
-    RLMClassInfo *parentInfo = &realm->_info[metadata.parentClassName];
-    return [[RLMManagedSet alloc] initWithBackingCollection:std::move(set)
+    LEGACYClassInfo *parentInfo = &realm->_info[metadata.parentClassName];
+    return [[LEGACYManagedSet alloc] initWithBackingCollection:std::move(set)
                                                  parentInfo:parentInfo
                                                    property:parentInfo->rlmObjectSchema[metadata.key]];
 }

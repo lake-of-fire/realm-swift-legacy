@@ -16,12 +16,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSyncTestCase.h"
+#import "LEGACYSyncTestCase.h"
 
 #if TARGET_OS_OSX
 
 // Each of these test suites compares either Person or non-realm-object values
-#define RLMAssertEqual(lft, rgt) do { \
+#define LEGACYAssertEqual(lft, rgt) do { \
     if (isObject) { \
         XCTAssertEqualObjects(lft.firstName, \
                               ((Person *)rgt).firstName); \
@@ -30,23 +30,23 @@
     } \
 } while (0)
 
-#pragma mark RLMSet Sync Tests
+#pragma mark LEGACYSet Sync Tests
 
-@interface RLMSetObjectServerTests : RLMSyncTestCase
+@interface LEGACYSetObjectServerTests : LEGACYSyncTestCase
 @end
 
-@implementation RLMSetObjectServerTests
+@implementation LEGACYSetObjectServerTests
 - (NSArray *)defaultObjectTypes {
-    return @[RLMSetSyncObject.self, Person.self];
+    return @[LEGACYSetSyncObject.self, Person.self];
 }
 
-- (void)roundTripWithPropertyGetter:(RLMSet *(^)(id))propertyGetter
+- (void)roundTripWithPropertyGetter:(LEGACYSet *(^)(id))propertyGetter
                              values:(NSArray *)values
-                otherPropertyGetter:(RLMSet *(^)(id))otherPropertyGetter
+                otherPropertyGetter:(LEGACYSet *(^)(id))otherPropertyGetter
                         otherValues:(NSArray *)otherValues
                            isObject:(BOOL)isObject {
-    RLMRealm *readRealm = [self openRealm];
-    RLMRealm *writeRealm = [self openRealm];
+    LEGACYRealm *readRealm = [self openRealm];
+    LEGACYRealm *writeRealm = [self openRealm];
     auto write = [&](auto fn) {
         [writeRealm transactionWithBlock:^{
             fn();
@@ -55,24 +55,24 @@
         [self waitForDownloadsForRealm:readRealm];
     };
 
-    CHECK_COUNT(0, RLMSetSyncObject, readRealm);
+    CHECK_COUNT(0, LEGACYSetSyncObject, readRealm);
 
-    __block RLMSetSyncObject *writeObj;
+    __block LEGACYSetSyncObject *writeObj;
     write(^{
-        writeObj = [RLMSetSyncObject createInRealm:writeRealm
-                                         withValue:@{@"_id": [RLMObjectId objectId]}];
+        writeObj = [LEGACYSetSyncObject createInRealm:writeRealm
+                                         withValue:@{@"_id": [LEGACYObjectId objectId]}];
     });
-    CHECK_COUNT(1, RLMSetSyncObject, readRealm);
+    CHECK_COUNT(1, LEGACYSetSyncObject, readRealm);
 
     write(^{
         [propertyGetter(writeObj) addObjects:values];
         [otherPropertyGetter(writeObj) addObjects:otherValues];
     });
-    CHECK_COUNT(1, RLMSetSyncObject, readRealm);
-    RLMResults<RLMSetSyncObject *> *results = [RLMSetSyncObject allObjectsInRealm:readRealm];
-    RLMSetSyncObject *obj = results.firstObject;
-    RLMSet<Person *> *set = propertyGetter(obj);
-    RLMSet<Person *> *otherSet = otherPropertyGetter(obj);
+    CHECK_COUNT(1, LEGACYSetSyncObject, readRealm);
+    LEGACYResults<LEGACYSetSyncObject *> *results = [LEGACYSetSyncObject allObjectsInRealm:readRealm];
+    LEGACYSetSyncObject *obj = results.firstObject;
+    LEGACYSet<Person *> *set = propertyGetter(obj);
+    LEGACYSet<Person *> *otherSet = otherPropertyGetter(obj);
     XCTAssertEqual(set.count, values.count);
     XCTAssertEqual(otherSet.count, otherValues.count);
 
@@ -84,7 +84,7 @@
             [propertyGetter(writeObj) intersectSet:otherPropertyGetter(writeObj)];
         }
     });
-    CHECK_COUNT(1, RLMSetSyncObject, readRealm);
+    CHECK_COUNT(1, LEGACYSetSyncObject, readRealm);
     if (!isObject) {
         XCTAssertTrue([propertyGetter(obj) intersectsSet:propertyGetter(obj)]);
         XCTAssertEqual(propertyGetter(obj).count, 1U);
@@ -99,17 +99,17 @@
 }
 
 - (void)testIntSet {
-    [self roundTripWithPropertyGetter:^RLMSet *(RLMSetSyncObject *obj) { return obj.intSet; }
+    [self roundTripWithPropertyGetter:^LEGACYSet *(LEGACYSetSyncObject *obj) { return obj.intSet; }
                                values:@[@123, @234, @345]
-                  otherPropertyGetter:^RLMSet *(RLMSetSyncObject *obj) { return obj.otherIntSet; }
+                  otherPropertyGetter:^LEGACYSet *(LEGACYSetSyncObject *obj) { return obj.otherIntSet; }
                           otherValues:@[@345, @567, @789]
                              isObject:NO];
 }
 
 - (void)testStringSet {
-    [self roundTripWithPropertyGetter:^RLMSet *(RLMSetSyncObject *obj) { return obj.stringSet; }
+    [self roundTripWithPropertyGetter:^LEGACYSet *(LEGACYSetSyncObject *obj) { return obj.stringSet; }
                                values:@[@"Who", @"What", @"When"]
-                  otherPropertyGetter:^RLMSet *(RLMSetSyncObject *obj) { return obj.otherStringSet; }
+                  otherPropertyGetter:^LEGACYSet *(LEGACYSetSyncObject *obj) { return obj.otherStringSet; }
                           otherValues:@[@"When", @"Strings", @"Collide"]
                              isObject:NO];
 }
@@ -122,51 +122,51 @@
     };
 
     NSData *duplicateData = createData(1024U);
-    [self roundTripWithPropertyGetter:^RLMSet *(RLMSetSyncObject *obj) { return obj.dataSet; }
+    [self roundTripWithPropertyGetter:^LEGACYSet *(LEGACYSetSyncObject *obj) { return obj.dataSet; }
                                values:@[duplicateData, createData(1024U), createData(1024U)]
-                  otherPropertyGetter:^RLMSet *(RLMSetSyncObject *obj) { return obj.otherDataSet; }
+                  otherPropertyGetter:^LEGACYSet *(LEGACYSetSyncObject *obj) { return obj.otherDataSet; }
                           otherValues:@[duplicateData, createData(1024U), createData(1024U)]
                              isObject:NO];
 }
 
 - (void)testDoubleSet {
-    [self roundTripWithPropertyGetter:^RLMSet *(RLMSetSyncObject *obj) { return obj.doubleSet; }
+    [self roundTripWithPropertyGetter:^LEGACYSet *(LEGACYSetSyncObject *obj) { return obj.doubleSet; }
                                values:@[@123.456, @234.456, @345.567]
-                  otherPropertyGetter:^RLMSet *(RLMSetSyncObject *obj) { return obj.otherDoubleSet; }
+                  otherPropertyGetter:^LEGACYSet *(LEGACYSetSyncObject *obj) { return obj.otherDoubleSet; }
                           otherValues:@[@123.456, @434.456, @545.567]
                              isObject:NO];
 }
 
 - (void)testObjectIdSet {
-    [self roundTripWithPropertyGetter:^RLMSet *(RLMSetSyncObject *obj) { return obj.objectIdSet; }
-                               values:@[[[RLMObjectId alloc] initWithString:@"6058f12b957ba06156586a7c" error:nil],
-                                        [[RLMObjectId alloc] initWithString:@"6058f12682b2fbb1f334ef1d" error:nil],
-                                        [[RLMObjectId alloc] initWithString:@"6058f12d42e5a393e67538d0" error:nil]]
-                  otherPropertyGetter:^RLMSet *(RLMSetSyncObject *obj) { return obj.otherObjectIdSet; }
-                          otherValues:@[[[RLMObjectId alloc] initWithString:@"6058f12b957ba06156586a7c" error:nil],
-                                        [[RLMObjectId alloc] initWithString:@"6058f12682b2fbb1f334ef1e" error:nil],
-                                        [[RLMObjectId alloc] initWithString:@"6058f12d42e5a393e67538df" error:nil]]
+    [self roundTripWithPropertyGetter:^LEGACYSet *(LEGACYSetSyncObject *obj) { return obj.objectIdSet; }
+                               values:@[[[LEGACYObjectId alloc] initWithString:@"6058f12b957ba06156586a7c" error:nil],
+                                        [[LEGACYObjectId alloc] initWithString:@"6058f12682b2fbb1f334ef1d" error:nil],
+                                        [[LEGACYObjectId alloc] initWithString:@"6058f12d42e5a393e67538d0" error:nil]]
+                  otherPropertyGetter:^LEGACYSet *(LEGACYSetSyncObject *obj) { return obj.otherObjectIdSet; }
+                          otherValues:@[[[LEGACYObjectId alloc] initWithString:@"6058f12b957ba06156586a7c" error:nil],
+                                        [[LEGACYObjectId alloc] initWithString:@"6058f12682b2fbb1f334ef1e" error:nil],
+                                        [[LEGACYObjectId alloc] initWithString:@"6058f12d42e5a393e67538df" error:nil]]
                              isObject:NO];
 }
 
 - (void)testDecimalSet {
-    [self roundTripWithPropertyGetter:^RLMSet *(RLMSetSyncObject *obj) { return obj.decimalSet; }
-                               values:@[[[RLMDecimal128 alloc] initWithNumber:@123.456],
-                                        [[RLMDecimal128 alloc] initWithNumber:@223.456],
-                                        [[RLMDecimal128 alloc] initWithNumber:@323.456]]
-                  otherPropertyGetter:^RLMSet *(RLMSetSyncObject *obj) { return obj.otherDecimalSet; }
-                          otherValues:@[[[RLMDecimal128 alloc] initWithNumber:@123.456],
-                                        [[RLMDecimal128 alloc] initWithNumber:@423.456],
-                                        [[RLMDecimal128 alloc] initWithNumber:@523.456]]
+    [self roundTripWithPropertyGetter:^LEGACYSet *(LEGACYSetSyncObject *obj) { return obj.decimalSet; }
+                               values:@[[[LEGACYDecimal128 alloc] initWithNumber:@123.456],
+                                        [[LEGACYDecimal128 alloc] initWithNumber:@223.456],
+                                        [[LEGACYDecimal128 alloc] initWithNumber:@323.456]]
+                  otherPropertyGetter:^LEGACYSet *(LEGACYSetSyncObject *obj) { return obj.otherDecimalSet; }
+                          otherValues:@[[[LEGACYDecimal128 alloc] initWithNumber:@123.456],
+                                        [[LEGACYDecimal128 alloc] initWithNumber:@423.456],
+                                        [[LEGACYDecimal128 alloc] initWithNumber:@523.456]]
                              isObject:NO];
 }
 
 - (void)testUUIDSet {
-    [self roundTripWithPropertyGetter:^RLMSet *(RLMSetSyncObject *obj) { return obj.uuidSet; }
+    [self roundTripWithPropertyGetter:^LEGACYSet *(LEGACYSetSyncObject *obj) { return obj.uuidSet; }
                                values:@[[[NSUUID alloc] initWithUUIDString:@"6b28ec45-b29a-4b0a-bd6a-343c7f6d90fd"],
                                         [[NSUUID alloc] initWithUUIDString:@"6b28ec45-b29a-4b0a-bd6a-343c7f6d90fe"],
                                         [[NSUUID alloc] initWithUUIDString:@"6b28ec45-b29a-4b0a-bd6a-343c7f6d90ff"]]
-                  otherPropertyGetter:^RLMSet *(RLMSetSyncObject *obj) { return obj.otherUuidSet; }
+                  otherPropertyGetter:^LEGACYSet *(LEGACYSetSyncObject *obj) { return obj.otherUuidSet; }
                           otherValues:@[[[NSUUID alloc] initWithUUIDString:@"6b28ec45-b29a-4b0a-bd6a-343c7f6d90fd"],
                                         [[NSUUID alloc] initWithUUIDString:@"6b28ec45-b29a-4b0a-bd6a-343c7f6d90ae"],
                                         [[NSUUID alloc] initWithUUIDString:@"6b28ec45-b29a-4b0a-bd6a-343c7f6d90bf"]]
@@ -174,40 +174,40 @@
 }
 
 - (void)testObjectSet {
-    [self roundTripWithPropertyGetter:^RLMSet *(RLMSetSyncObject *obj) { return obj.objectSet; }
+    [self roundTripWithPropertyGetter:^LEGACYSet *(LEGACYSetSyncObject *obj) { return obj.objectSet; }
                                values:@[[Person john], [Person paul], [Person ringo]]
-                  otherPropertyGetter:^RLMSet *(RLMSetSyncObject *obj) { return obj.otherObjectSet; }
+                  otherPropertyGetter:^LEGACYSet *(LEGACYSetSyncObject *obj) { return obj.otherObjectSet; }
                           otherValues:@[[Person john], [Person paul], [Person ringo]]
                              isObject:YES];
 }
 
 - (void)testAnySet {
-    [self roundTripWithPropertyGetter:^RLMSet *(RLMSetSyncObject *obj) { return obj.anySet; }
+    [self roundTripWithPropertyGetter:^LEGACYSet *(LEGACYSetSyncObject *obj) { return obj.anySet; }
                                values:@[@123, @"Hey", NSNull.null]
-                  otherPropertyGetter:^RLMSet *(RLMSetSyncObject *obj) { return obj.otherAnySet; }
+                  otherPropertyGetter:^LEGACYSet *(LEGACYSetSyncObject *obj) { return obj.otherAnySet; }
                           otherValues:@[[[NSUUID alloc] initWithUUIDString:@"6b28ec45-b29a-4b0a-bd6a-343c7f6d90fd"],
                                         @123,
-                                        [[RLMObjectId alloc] initWithString:@"6058f12682b2fbb1f334ef1d" error:nil]]
+                                        [[LEGACYObjectId alloc] initWithString:@"6058f12682b2fbb1f334ef1d" error:nil]]
                              isObject:NO];
 }
 
 @end
 
-#pragma mark RLMArray Sync Tests
+#pragma mark LEGACYArray Sync Tests
 
-@interface RLMArrayObjectServerTests : RLMSyncTestCase
+@interface LEGACYArrayObjectServerTests : LEGACYSyncTestCase
 @end
 
-@implementation RLMArrayObjectServerTests
+@implementation LEGACYArrayObjectServerTests
 - (NSArray *)defaultObjectTypes {
-    return @[RLMArraySyncObject.self, Person.self];
+    return @[LEGACYArraySyncObject.self, Person.self];
 }
 
-- (void)roundTripWithPropertyGetter:(RLMArray *(^)(id))propertyGetter
+- (void)roundTripWithPropertyGetter:(LEGACYArray *(^)(id))propertyGetter
                              values:(NSArray *)values
                            isObject:(BOOL)isObject {
-    RLMRealm *readRealm = [self openRealm];
-    RLMRealm *writeRealm = [self openRealm];
+    LEGACYRealm *readRealm = [self openRealm];
+    LEGACYRealm *writeRealm = [self openRealm];
     auto write = [&](auto fn) {
         [writeRealm transactionWithBlock:^{
             fn();
@@ -216,25 +216,25 @@
         [self waitForDownloadsForRealm:readRealm];
     };
 
-    CHECK_COUNT(0, RLMArraySyncObject, readRealm);
-    __block RLMArraySyncObject *writeObj;
+    CHECK_COUNT(0, LEGACYArraySyncObject, readRealm);
+    __block LEGACYArraySyncObject *writeObj;
     write(^{
-        writeObj = [RLMArraySyncObject createInRealm:writeRealm
-                                           withValue:@{@"_id": [RLMObjectId objectId]}];
+        writeObj = [LEGACYArraySyncObject createInRealm:writeRealm
+                                           withValue:@{@"_id": [LEGACYObjectId objectId]}];
     });
-    CHECK_COUNT(1, RLMArraySyncObject, readRealm);
+    CHECK_COUNT(1, LEGACYArraySyncObject, readRealm);
 
     write(^{
         [propertyGetter(writeObj) addObjects:values];
         [propertyGetter(writeObj) addObjects:values];
     });
-    CHECK_COUNT(1, RLMArraySyncObject, readRealm);
-    RLMResults<RLMArraySyncObject *> *results = [RLMArraySyncObject allObjectsInRealm:readRealm];
-    RLMArraySyncObject *obj = results.firstObject;
-    RLMArray<Person *> *array = propertyGetter(obj);
+    CHECK_COUNT(1, LEGACYArraySyncObject, readRealm);
+    LEGACYResults<LEGACYArraySyncObject *> *results = [LEGACYArraySyncObject allObjectsInRealm:readRealm];
+    LEGACYArraySyncObject *obj = results.firstObject;
+    LEGACYArray<Person *> *array = propertyGetter(obj);
     XCTAssertEqual(array.count, values.count*2);
     for (NSUInteger i = 0; i < values.count; i++) {
-        RLMAssertEqual(array[i], values[i]);
+        LEGACYAssertEqual(array[i], values[i]);
     }
 
     write(^{
@@ -248,29 +248,29 @@
         [propertyGetter(writeObj) replaceObjectAtIndex:0
                                             withObject:values[1]];
     });
-    RLMAssertEqual(array[0], values[1]);
+    LEGACYAssertEqual(array[0], values[1]);
 }
 
 - (void)testIntArray {
-    [self roundTripWithPropertyGetter:^RLMArray *(RLMArraySyncObject *obj) { return obj.intArray; }
+    [self roundTripWithPropertyGetter:^LEGACYArray *(LEGACYArraySyncObject *obj) { return obj.intArray; }
                                values:@[@123, @234, @345]
                              isObject:NO];
 }
 
 - (void)testBoolArray {
-    [self roundTripWithPropertyGetter:^RLMArray *(RLMArraySyncObject *obj) { return obj.boolArray; }
+    [self roundTripWithPropertyGetter:^LEGACYArray *(LEGACYArraySyncObject *obj) { return obj.boolArray; }
                                values:@[@YES, @NO, @YES]
                              isObject:NO];
 }
 
 - (void)testStringArray {
-    [self roundTripWithPropertyGetter:^RLMArray *(RLMArraySyncObject *obj) { return obj.stringArray; }
+    [self roundTripWithPropertyGetter:^LEGACYArray *(LEGACYArraySyncObject *obj) { return obj.stringArray; }
                                values:@[@"Hello...", @"It's", @"Me"]
                              isObject:NO];
 }
 
 - (void)testDataArray {
-    [self roundTripWithPropertyGetter:^RLMArray *(RLMArraySyncObject *obj) { return obj.dataArray; }
+    [self roundTripWithPropertyGetter:^LEGACYArray *(LEGACYArraySyncObject *obj) { return obj.dataArray; }
                                values:@[[NSData dataWithBytes:(unsigned char[]){0x0a}
                                                        length:1],
                                         [NSData dataWithBytes:(unsigned char[]){0x0b}
@@ -281,29 +281,29 @@
 }
 
 - (void)testDoubleArray {
-    [self roundTripWithPropertyGetter:^RLMArray *(RLMArraySyncObject *obj) { return obj.doubleArray; }
+    [self roundTripWithPropertyGetter:^LEGACYArray *(LEGACYArraySyncObject *obj) { return obj.doubleArray; }
                                values:@[@123.456, @789.456, @987.344]
                              isObject:NO];
 }
 
 - (void)testObjectIdArray {
-    [self roundTripWithPropertyGetter:^RLMArray *(RLMArraySyncObject *obj) { return obj.objectIdArray; }
-                               values:@[[[RLMObjectId alloc] initWithString:@"6058f12b957ba06156586a7c" error:nil],
-                                        [[RLMObjectId alloc] initWithString:@"6058f12682b2fbb1f334ef1d" error:nil],
-                                        [[RLMObjectId alloc] initWithString:@"6058f12d42e5a393e67538d0" error:nil]]
+    [self roundTripWithPropertyGetter:^LEGACYArray *(LEGACYArraySyncObject *obj) { return obj.objectIdArray; }
+                               values:@[[[LEGACYObjectId alloc] initWithString:@"6058f12b957ba06156586a7c" error:nil],
+                                        [[LEGACYObjectId alloc] initWithString:@"6058f12682b2fbb1f334ef1d" error:nil],
+                                        [[LEGACYObjectId alloc] initWithString:@"6058f12d42e5a393e67538d0" error:nil]]
                              isObject:NO];
 }
 
 - (void)testDecimalArray {
-    [self roundTripWithPropertyGetter:^RLMArray *(RLMArraySyncObject *obj) { return obj.decimalArray; }
-                               values:@[[[RLMDecimal128 alloc] initWithNumber:@123.456],
-                                        [[RLMDecimal128 alloc] initWithNumber:@456.456],
-                                        [[RLMDecimal128 alloc] initWithNumber:@789.456]]
+    [self roundTripWithPropertyGetter:^LEGACYArray *(LEGACYArraySyncObject *obj) { return obj.decimalArray; }
+                               values:@[[[LEGACYDecimal128 alloc] initWithNumber:@123.456],
+                                        [[LEGACYDecimal128 alloc] initWithNumber:@456.456],
+                                        [[LEGACYDecimal128 alloc] initWithNumber:@789.456]]
                              isObject:NO];
 }
 
 - (void)testUUIDArray {
-    [self roundTripWithPropertyGetter:^RLMArray *(RLMArraySyncObject *obj) { return obj.uuidArray; }
+    [self roundTripWithPropertyGetter:^LEGACYArray *(LEGACYArraySyncObject *obj) { return obj.uuidArray; }
                                values:@[[[NSUUID alloc] initWithUUIDString:@"6b28ec45-b29a-4b0a-bd6a-343c7f6d90fd"],
                                         [[NSUUID alloc] initWithUUIDString:@"6b28ec45-b29a-4b0a-bd6a-343c7f6d90fe"],
                                         [[NSUUID alloc] initWithUUIDString:@"6b28ec45-b29a-4b0a-bd6a-343c7f6d90ff"]]
@@ -311,34 +311,34 @@
 }
 
 - (void)testObjectArray {
-    [self roundTripWithPropertyGetter:^RLMArray *(RLMArraySyncObject *obj) { return obj.objectArray; }
+    [self roundTripWithPropertyGetter:^LEGACYArray *(LEGACYArraySyncObject *obj) { return obj.objectArray; }
                                values:@[[Person john], [Person paul], [Person ringo]]
                              isObject:YES];
 }
 
 - (void)testAnyArray {
-    [self roundTripWithPropertyGetter:^RLMArray *(RLMArraySyncObject *obj) { return obj.anyArray; }
+    [self roundTripWithPropertyGetter:^LEGACYArray *(LEGACYArraySyncObject *obj) { return obj.anyArray; }
                                values:@[@1234, @"I'm a String", NSNull.null]
                              isObject:NO];
 }
 
 @end
 
-#pragma mark RLMDictionary Sync Tests
+#pragma mark LEGACYDictionary Sync Tests
 
-@interface RLMDictionaryObjectServerTests : RLMSyncTestCase
+@interface LEGACYDictionaryObjectServerTests : LEGACYSyncTestCase
 @end
 
-@implementation RLMDictionaryObjectServerTests
+@implementation LEGACYDictionaryObjectServerTests
 - (NSArray *)defaultObjectTypes {
-    return @[RLMDictionarySyncObject.self, Person.self];
+    return @[LEGACYDictionarySyncObject.self, Person.self];
 }
 
-- (void)roundTripWithPropertyGetter:(RLMDictionary *(^)(id))propertyGetter
+- (void)roundTripWithPropertyGetter:(LEGACYDictionary *(^)(id))propertyGetter
                              values:(NSDictionary *)values
                            isObject:(BOOL)isObject {
-    RLMRealm *readRealm = [self openRealm];
-    RLMRealm *writeRealm = [self openRealm];
+    LEGACYRealm *readRealm = [self openRealm];
+    LEGACYRealm *writeRealm = [self openRealm];
     auto write = [&](auto fn) {
         [writeRealm transactionWithBlock:^{
             fn();
@@ -347,30 +347,30 @@
         [self waitForDownloadsForRealm:readRealm];
     };
 
-    CHECK_COUNT(0, RLMDictionarySyncObject, readRealm);
+    CHECK_COUNT(0, LEGACYDictionarySyncObject, readRealm);
 
-    __block RLMDictionarySyncObject *writeObj;
+    __block LEGACYDictionarySyncObject *writeObj;
     write(^{
-        writeObj = [RLMDictionarySyncObject createInRealm:writeRealm
-                                                withValue:@{@"_id": [RLMObjectId objectId]}];
+        writeObj = [LEGACYDictionarySyncObject createInRealm:writeRealm
+                                                withValue:@{@"_id": [LEGACYObjectId objectId]}];
     });
-    CHECK_COUNT(1, RLMDictionarySyncObject, readRealm);
+    CHECK_COUNT(1, LEGACYDictionarySyncObject, readRealm);
 
     write(^{
         [propertyGetter(writeObj) addEntriesFromDictionary:values];
     });
-    CHECK_COUNT(1, RLMDictionarySyncObject, readRealm);
-    RLMResults<RLMDictionarySyncObject *> *results = [RLMDictionarySyncObject allObjectsInRealm:readRealm];
-    RLMDictionarySyncObject *obj = results.firstObject;
-    RLMDictionary<NSString *, Person *> *dict = propertyGetter(obj);
+    CHECK_COUNT(1, LEGACYDictionarySyncObject, readRealm);
+    LEGACYResults<LEGACYDictionarySyncObject *> *results = [LEGACYDictionarySyncObject allObjectsInRealm:readRealm];
+    LEGACYDictionarySyncObject *obj = results.firstObject;
+    LEGACYDictionary<NSString *, Person *> *dict = propertyGetter(obj);
     XCTAssertEqual(dict.count, values.count);
     for (NSString *key in values) {
-        RLMAssertEqual(dict[key], values[key]);
+        LEGACYAssertEqual(dict[key], values[key]);
     }
 
     write(^{
         int i = 0;
-        RLMDictionary *dict = propertyGetter(writeObj);
+        LEGACYDictionary *dict = propertyGetter(writeObj);
         for (NSString *key in dict) {
             dict[key] = nil;
             if (++i >= 3) {
@@ -378,33 +378,33 @@
             }
         }
     });
-    CHECK_COUNT(1, RLMDictionarySyncObject, readRealm);
+    CHECK_COUNT(1, LEGACYDictionarySyncObject, readRealm);
     XCTAssertEqual(dict.count, 2U);
 
     write(^{
-        RLMDictionary *dict = propertyGetter(writeObj);
+        LEGACYDictionary *dict = propertyGetter(writeObj);
         NSArray *keys = dict.allKeys;
         dict[keys[0]] = dict[keys[1]];
     });
-    CHECK_COUNT(1, RLMDictionarySyncObject, readRealm);
+    CHECK_COUNT(1, LEGACYDictionarySyncObject, readRealm);
     XCTAssertEqual(dict.count, 2U);
     NSArray *keys = dict.allKeys;
-    RLMAssertEqual(dict[keys[0]], dict[keys[1]]);
+    LEGACYAssertEqual(dict[keys[0]], dict[keys[1]]);
 }
 
 - (void)testIntDictionary {
-    [self roundTripWithPropertyGetter:^RLMDictionary *(RLMDictionarySyncObject *obj) { return obj.intDictionary; }
+    [self roundTripWithPropertyGetter:^LEGACYDictionary *(LEGACYDictionarySyncObject *obj) { return obj.intDictionary; }
                                values:@{@"0": @123, @"1": @234, @"2": @345, @"3": @567, @"4": @789}
                              isObject:NO];
 }
 - (void)testStringDictionary {
-    [self roundTripWithPropertyGetter:^RLMDictionary *(RLMDictionarySyncObject *obj) { return obj.stringDictionary; }
+    [self roundTripWithPropertyGetter:^LEGACYDictionary *(LEGACYDictionarySyncObject *obj) { return obj.stringDictionary; }
                                values:@{@"0": @"Who", @"1": @"What", @"2": @"When", @"3": @"Strings", @"4": @"Collide"}
                              isObject:NO];
 }
 
 - (void)testDataDictionary {
-    [self roundTripWithPropertyGetter:^RLMDictionary *(RLMDictionarySyncObject *obj) { return obj.dataDictionary; }
+    [self roundTripWithPropertyGetter:^LEGACYDictionary *(LEGACYDictionarySyncObject *obj) { return obj.dataDictionary; }
                                values:@{@"0": [NSData dataWithBytes:(unsigned char[]){0x0a} length:1],
                                         @"1": [NSData dataWithBytes:(unsigned char[]){0x0b} length:1],
                                         @"2": [NSData dataWithBytes:(unsigned char[]){0x0c} length:1],
@@ -414,33 +414,33 @@
 }
 
 - (void)testDoubleDictionary {
-    [self roundTripWithPropertyGetter:^RLMDictionary *(RLMDictionarySyncObject *obj) { return obj.doubleDictionary; }
+    [self roundTripWithPropertyGetter:^LEGACYDictionary *(LEGACYDictionarySyncObject *obj) { return obj.doubleDictionary; }
                                values:@{@"0": @123.456, @"1": @234.456, @"2": @345.567, @"3": @434.456, @"4": @545.567}
                              isObject:NO];
 }
 
 - (void)testObjectIdDictionary {
-    [self roundTripWithPropertyGetter:^RLMDictionary *(RLMDictionarySyncObject *obj) { return obj.objectIdDictionary; }
-                               values:@{@"0": [[RLMObjectId alloc] initWithString:@"6058f12b957ba06156586a7c" error:nil],
-                                        @"1": [[RLMObjectId alloc] initWithString:@"6058f12682b2fbb1f334ef1d" error:nil],
-                                        @"2": [[RLMObjectId alloc] initWithString:@"6058f12d42e5a393e67538d0" error:nil],
-                                        @"3": [[RLMObjectId alloc] initWithString:@"6058f12682b2fbb1f334ef1e" error:nil],
-                                        @"4": [[RLMObjectId alloc] initWithString:@"6058f12d42e5a393e67538df" error:nil]}
+    [self roundTripWithPropertyGetter:^LEGACYDictionary *(LEGACYDictionarySyncObject *obj) { return obj.objectIdDictionary; }
+                               values:@{@"0": [[LEGACYObjectId alloc] initWithString:@"6058f12b957ba06156586a7c" error:nil],
+                                        @"1": [[LEGACYObjectId alloc] initWithString:@"6058f12682b2fbb1f334ef1d" error:nil],
+                                        @"2": [[LEGACYObjectId alloc] initWithString:@"6058f12d42e5a393e67538d0" error:nil],
+                                        @"3": [[LEGACYObjectId alloc] initWithString:@"6058f12682b2fbb1f334ef1e" error:nil],
+                                        @"4": [[LEGACYObjectId alloc] initWithString:@"6058f12d42e5a393e67538df" error:nil]}
                              isObject:NO];
 }
 
 - (void)testDecimalDictionary {
-    [self roundTripWithPropertyGetter:^RLMDictionary *(RLMDictionarySyncObject *obj) { return obj.decimalDictionary; }
-                               values:@{@"0": [[RLMDecimal128 alloc] initWithNumber:@123.456],
-                                        @"1": [[RLMDecimal128 alloc] initWithNumber:@223.456],
-                                        @"2": [[RLMDecimal128 alloc] initWithNumber:@323.456],
-                                        @"3": [[RLMDecimal128 alloc] initWithNumber:@423.456],
-                                        @"4": [[RLMDecimal128 alloc] initWithNumber:@523.456]}
+    [self roundTripWithPropertyGetter:^LEGACYDictionary *(LEGACYDictionarySyncObject *obj) { return obj.decimalDictionary; }
+                               values:@{@"0": [[LEGACYDecimal128 alloc] initWithNumber:@123.456],
+                                        @"1": [[LEGACYDecimal128 alloc] initWithNumber:@223.456],
+                                        @"2": [[LEGACYDecimal128 alloc] initWithNumber:@323.456],
+                                        @"3": [[LEGACYDecimal128 alloc] initWithNumber:@423.456],
+                                        @"4": [[LEGACYDecimal128 alloc] initWithNumber:@523.456]}
                              isObject:NO];
 }
 
 - (void)testUUIDDictionary {
-    [self roundTripWithPropertyGetter:^RLMDictionary *(RLMDictionarySyncObject *obj) { return obj.uuidDictionary; }
+    [self roundTripWithPropertyGetter:^LEGACYDictionary *(LEGACYDictionarySyncObject *obj) { return obj.uuidDictionary; }
                                values:@{@"0": [[NSUUID alloc] initWithUUIDString:@"6b28ec45-b29a-4b0a-bd6a-343c7f6d90fd"],
                                         @"1": [[NSUUID alloc] initWithUUIDString:@"6b28ec45-b29a-4b0a-bd6a-343c7f6d90fe"],
                                         @"2": [[NSUUID alloc] initWithUUIDString:@"6b28ec45-b29a-4b0a-bd6a-343c7f6d90ff"],
@@ -450,7 +450,7 @@
 }
 
 - (void)testObjectDictionary {
-    [self roundTripWithPropertyGetter:^RLMDictionary *(RLMDictionarySyncObject *obj) { return obj.objectDictionary; }
+    [self roundTripWithPropertyGetter:^LEGACYDictionary *(LEGACYDictionarySyncObject *obj) { return obj.objectDictionary; }
                                values:@{@"0": [Person john],
                                         @"1": [Person paul],
                                         @"2": [Person ringo],
@@ -460,12 +460,12 @@
 }
 
 - (void)testAnyDictionary {
-    [self roundTripWithPropertyGetter:^RLMDictionary *(RLMDictionarySyncObject *obj) { return obj.anyDictionary; }
+    [self roundTripWithPropertyGetter:^LEGACYDictionary *(LEGACYDictionarySyncObject *obj) { return obj.anyDictionary; }
                                values:@{@"0": @123,
                                         @"1": @"Hey",
                                         @"2": NSNull.null,
                                         @"3": [[NSUUID alloc] initWithUUIDString:@"6b28ec45-b29a-4b0a-bd6a-343c7f6d90fd"],
-                                        @"4": [[RLMObjectId alloc] initWithString:@"6058f12682b2fbb1f334ef1d" error:nil]}
+                                        @"4": [[LEGACYObjectId alloc] initWithString:@"6058f12682b2fbb1f334ef1d" error:nil]}
                              isObject:NO];
 }
 @end

@@ -16,17 +16,17 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMScheduler.h"
+#import "LEGACYScheduler.h"
 
-#import "RLMUtil.hpp"
+#import "LEGACYUtil.hpp"
 
 #include <realm/object-store/util/scheduler.hpp>
 
-@interface RLMMainRunLoopScheduler : RLMScheduler
+@interface LEGACYMainRunLoopScheduler : LEGACYScheduler
 @end
 
-RLM_HIDDEN
-@implementation RLMMainRunLoopScheduler
+LEGACY_HIDDEN
+@implementation LEGACYMainRunLoopScheduler
 - (std::shared_ptr<realm::util::Scheduler>)osScheduler {
     return realm::util::Scheduler::make_runloop(CFRunLoopGetMain());
 }
@@ -43,9 +43,9 @@ RLM_HIDDEN
 // Swift. The locking here is _almost_ unnecessary as this is set from a static
 // initializer before the value can ever be read, but mixed use of the obj-c and
 // Swift APIs could potentially race on the read.
-static auto& g_mainActorLock = *new RLMUnfairMutex;
+static auto& g_mainActorLock = *new LEGACYUnfairMutex;
 static id g_mainActor;
-void RLMSetMainActor(id actor) {
+void LEGACYSetMainActor(id actor) {
     std::lock_guard lock(g_mainActorLock);
     g_mainActor = actor;
 }
@@ -59,11 +59,11 @@ void RLMSetMainActor(id actor) {
 }
 @end
 
-@interface RLMDispatchQueueScheduler : RLMScheduler
+@interface LEGACYDispatchQueueScheduler : LEGACYScheduler
 @end
 
-RLM_HIDDEN
-@implementation RLMDispatchQueueScheduler {
+LEGACY_HIDDEN
+@implementation LEGACYDispatchQueueScheduler {
     dispatch_queue_t _queue;
 }
 
@@ -80,14 +80,14 @@ RLM_HIDDEN
 
 - (std::shared_ptr<realm::util::Scheduler>)osScheduler {
     if (_queue == dispatch_get_main_queue()) {
-        return RLMScheduler.mainRunLoop.osScheduler;
+        return LEGACYScheduler.mainRunLoop.osScheduler;
     }
     return realm::util::Scheduler::make_dispatch((__bridge void *)_queue);
 }
 
 - (void *)cacheKey {
     if (_queue == dispatch_get_main_queue()) {
-        return RLMScheduler.mainRunLoop.cacheKey;
+        return LEGACYScheduler.mainRunLoop.cacheKey;
     }
     return (__bridge void *)_queue;
 }
@@ -131,11 +131,11 @@ private:
 };
 }
 
-@interface RLMActorScheduler : RLMScheduler
+@interface LEGACYActorScheduler : LEGACYScheduler
 @end
 
-RLM_HIDDEN
-@implementation RLMActorScheduler {
+LEGACY_HIDDEN
+@implementation LEGACYActorScheduler {
     id _actor;
     void (^_invoke)(dispatch_block_t);
     void (^_verify)();
@@ -167,34 +167,34 @@ RLM_HIDDEN
 }
 @end
 
-@implementation RLMScheduler
-+ (RLMScheduler *)currentRunLoop {
+@implementation LEGACYScheduler
++ (LEGACYScheduler *)currentRunLoop {
     if (pthread_main_np()) {
-        return RLMScheduler.mainRunLoop;
+        return LEGACYScheduler.mainRunLoop;
     }
 
-    static RLMScheduler *currentRunLoopScheduler = [[RLMScheduler alloc] init];
+    static LEGACYScheduler *currentRunLoopScheduler = [[LEGACYScheduler alloc] init];
     return currentRunLoopScheduler;
 }
 
-+ (RLMScheduler *)mainRunLoop {
-    static RLMScheduler *mainRunLoopScheduler = [[RLMMainRunLoopScheduler alloc] init];
++ (LEGACYScheduler *)mainRunLoop {
+    static LEGACYScheduler *mainRunLoopScheduler = [[LEGACYMainRunLoopScheduler alloc] init];
     return mainRunLoopScheduler;
 }
 
-+ (RLMScheduler *)dispatchQueue:(dispatch_queue_t)queue {
++ (LEGACYScheduler *)dispatchQueue:(dispatch_queue_t)queue {
     if (queue) {
-        return [[RLMDispatchQueueScheduler alloc] initWithQueue:queue];
+        return [[LEGACYDispatchQueueScheduler alloc] initWithQueue:queue];
     }
-    return RLMScheduler.currentRunLoop;
+    return LEGACYScheduler.currentRunLoop;
 }
 
-+ (RLMScheduler *)actor:(id)actor invoke:(void (^)(dispatch_block_t))invoke verify:(void (^)())verify {
-    auto mainRunLoopScheduler = RLMScheduler.mainRunLoop;
++ (LEGACYScheduler *)actor:(id)actor invoke:(void (^)(dispatch_block_t))invoke verify:(void (^)())verify {
+    auto mainRunLoopScheduler = LEGACYScheduler.mainRunLoop;
     if (actor == mainRunLoopScheduler.actor) {
         return mainRunLoopScheduler;
     }
-    return [[RLMActorScheduler alloc] initWithActor:actor invoke:invoke verify:verify];
+    return [[LEGACYActorScheduler alloc] initWithActor:actor invoke:invoke verify:verify];
 }
 
 - (void)invoke:(dispatch_block_t)block {

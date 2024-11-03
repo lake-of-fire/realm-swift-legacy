@@ -16,48 +16,48 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMValue.h"
-#import "RLMUtil.hpp"
+#import "LEGACYValue.h"
+#import "LEGACYUtil.hpp"
 
 #pragma mark NSData
 
-@implementation NSData (RLMValue)
+@implementation NSData (LEGACYValue)
 
-- (RLMPropertyType)rlm_valueType {
-    return RLMPropertyTypeData;
+- (LEGACYPropertyType)rlm_valueType {
+    return LEGACYPropertyTypeData;
 }
 
 @end
 
 #pragma mark NSDate
 
-@implementation NSDate (RLMValue)
+@implementation NSDate (LEGACYValue)
 
-- (RLMPropertyType)rlm_valueType {
-    return RLMPropertyTypeDate;
+- (LEGACYPropertyType)rlm_valueType {
+    return LEGACYPropertyTypeDate;
 }
 
 @end
 
 #pragma mark NSNumber
 
-@implementation NSNumber (RLMValue)
+@implementation NSNumber (LEGACYValue)
 
-- (RLMPropertyType)rlm_valueType {
+- (LEGACYPropertyType)rlm_valueType {
     if ([self objCType][0] == 'c' && (self.intValue == 0 || self.intValue == 1)) {
-        return RLMPropertyTypeBool;
+        return LEGACYPropertyTypeBool;
     }
     else if (numberIsInteger(self)) {
-        return RLMPropertyTypeInt;
+        return LEGACYPropertyTypeInt;
     }
     else if (*@encode(float) == [self objCType][0]) {
-        return RLMPropertyTypeFloat;
+        return LEGACYPropertyTypeFloat;
     }
     else if (*@encode(double) == [self objCType][0]) {
-        return RLMPropertyTypeDouble;
+        return LEGACYPropertyTypeDouble;
     }
     else {
-        @throw RLMException(@"Unknown numeric type on type RLMValue.");
+        @throw LEGACYException(@"Unknown numeric type on type LEGACYValue.");
     }
 }
 
@@ -65,60 +65,60 @@
 
 #pragma mark NSNull
 
-@implementation NSNull (RLMValue)
+@implementation NSNull (LEGACYValue)
 
-- (RLMPropertyType)rlm_valueType {
-    return RLMPropertyTypeAny;
+- (LEGACYPropertyType)rlm_valueType {
+    return LEGACYPropertyTypeAny;
 }
 
 @end
 
 #pragma mark NSString
 
-@implementation NSString (RLMValue)
+@implementation NSString (LEGACYValue)
 
-- (RLMPropertyType)rlm_valueType {
-    return RLMPropertyTypeString;
+- (LEGACYPropertyType)rlm_valueType {
+    return LEGACYPropertyTypeString;
 }
 
 @end
 
 #pragma mark NSUUID
 
-@implementation NSUUID (RLMValue)
+@implementation NSUUID (LEGACYValue)
 
-- (RLMPropertyType)rlm_valueType {
-    return RLMPropertyTypeUUID;
+- (LEGACYPropertyType)rlm_valueType {
+    return LEGACYPropertyTypeUUID;
 }
 
 @end
 
-#pragma mark RLMDecimal128
+#pragma mark LEGACYDecimal128
 
-@implementation RLMDecimal128 (RLMValue)
+@implementation LEGACYDecimal128 (LEGACYValue)
 
-- (RLMPropertyType)rlm_valueType {
-    return RLMPropertyTypeDecimal128;
+- (LEGACYPropertyType)rlm_valueType {
+    return LEGACYPropertyTypeDecimal128;
 }
 
 @end
 
-#pragma mark RLMObjectBase
+#pragma mark LEGACYObjectBase
 
-@implementation RLMObjectBase (RLMValue)
+@implementation LEGACYObjectBase (LEGACYValue)
 
-- (RLMPropertyType)rlm_valueType {
-    return RLMPropertyTypeObject;
+- (LEGACYPropertyType)rlm_valueType {
+    return LEGACYPropertyTypeObject;
 }
 
 @end
 
-#pragma mark RLMObjectId
+#pragma mark LEGACYObjectId
 
-@implementation RLMObjectId (RLMValue)
+@implementation LEGACYObjectId (LEGACYValue)
 
-- (RLMPropertyType)rlm_valueType {
-    return RLMPropertyTypeObjectId;
+- (LEGACYPropertyType)rlm_valueType {
+    return LEGACYPropertyTypeObjectId;
 }
 
 @end

@@ -16,35 +16,35 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMCollection_Private.hpp"
+#import "LEGACYCollection_Private.hpp"
 
-#import "RLMAccessor.hpp"
-#import "RLMArray_Private.hpp"
-#import "RLMDictionary_Private.hpp"
-#import "RLMObjectSchema_Private.hpp"
-#import "RLMObjectStore.h"
-#import "RLMObject_Private.hpp"
-#import "RLMObservation.hpp"
-#import "RLMProperty_Private.h"
-#import "RLMSet_Private.hpp"
-#import "RLMSwiftCollectionBase.h"
+#import "LEGACYAccessor.hpp"
+#import "LEGACYArray_Private.hpp"
+#import "LEGACYDictionary_Private.hpp"
+#import "LEGACYObjectSchema_Private.hpp"
+#import "LEGACYObjectStore.h"
+#import "LEGACYObject_Private.hpp"
+#import "LEGACYObservation.hpp"
+#import "LEGACYProperty_Private.h"
+#import "LEGACYSet_Private.hpp"
+#import "LEGACYSwiftCollectionBase.h"
 
 #import <realm/object-store/dictionary.hpp>
 #import <realm/object-store/list.hpp>
 #import <realm/object-store/results.hpp>
 #import <realm/object-store/set.hpp>
 
-static const int RLMEnumerationBufferSize = 16;
+static const int LEGACYEnumerationBufferSize = 16;
 
-@implementation RLMFastEnumerator {
+@implementation LEGACYFastEnumerator {
     // The buffer supplied by fast enumeration does not retain the objects given
     // to it, but because we create objects on-demand and don't want them
     // autoreleased (a table can have more rows than the device has memory for
     // accessor objects) we need a thing to retain them.
-    id _strongBuffer[RLMEnumerationBufferSize];
+    id _strongBuffer[LEGACYEnumerationBufferSize];
 
-    RLMRealm *_realm;
-    RLMClassInfo *_info;
+    LEGACYRealm *_realm;
+    LEGACYClassInfo *_info;
 
     // A pointer to either _snapshot or a Results from the source collection,
     // to avoid having to copy the Results when not in a write transaction
@@ -58,7 +58,7 @@ static const int RLMEnumerationBufferSize = 16;
 
 - (instancetype)initWithBackingCollection:(realm::object_store::Collection const&)backingCollection
                                collection:(id)collection
-                                classInfo:(RLMClassInfo&)info {
+                                classInfo:(LEGACYClassInfo&)info {
     self = [super init];
     if (self) {
         _info = &info;
@@ -78,8 +78,8 @@ static const int RLMEnumerationBufferSize = 16;
 }
 
 - (instancetype)initWithBackingDictionary:(realm::object_store::Dictionary const&)backingDictionary
-                               dictionary:(RLMManagedDictionary *)dictionary
-                                classInfo:(RLMClassInfo&)info {
+                               dictionary:(LEGACYManagedDictionary *)dictionary
+                                classInfo:(LEGACYClassInfo&)info {
     self = [super init];
     if (self) {
         _info = &info;
@@ -100,7 +100,7 @@ static const int RLMEnumerationBufferSize = 16;
 
 - (instancetype)initWithResults:(realm::Results&)results
                      collection:(id)collection
-                      classInfo:(RLMClassInfo&)info {
+                      classInfo:(LEGACYClassInfo&)info {
     self = [super init];
     if (self) {
         _info = &info;
@@ -134,19 +134,19 @@ static const int RLMEnumerationBufferSize = 16;
                                     count:(NSUInteger)len {
     [_realm verifyThread];
     if (!_results->is_valid()) {
-        @throw RLMException(@"Collection is no longer valid");
+        @throw LEGACYException(@"Collection is no longer valid");
     }
     // The fast enumeration buffer size is currently a hardcoded number in the
     // compiler so this can't actually happen, but just in case it changes in
     // the future...
-    if (len > RLMEnumerationBufferSize) {
-        len = RLMEnumerationBufferSize;
+    if (len > LEGACYEnumerationBufferSize) {
+        len = LEGACYEnumerationBufferSize;
     }
 
     NSUInteger batchCount = 0, count = state->extra[1];
 
     @autoreleasepool {
-        RLMAccessorContext ctx(*_info);
+        LEGACYAccessorContext ctx(*_info);
         for (NSUInteger index = state->state; index < count && batchCount < len; ++index) {
             _strongBuffer[batchCount] = _results->get(ctx, index);
             batchCount++;
@@ -176,10 +176,10 @@ static const int RLMEnumerationBufferSize = 16;
 }
 @end
 
-NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
+NSUInteger LEGACYFastEnumerate(NSFastEnumerationState *state,
                             NSUInteger len,
-                            id<RLMCollectionPrivate> collection) {
-    __autoreleasing RLMFastEnumerator *enumerator;
+                            id<LEGACYCollectionPrivate> collection) {
+    __autoreleasing LEGACYFastEnumerator *enumerator;
     if (state->state == 0) {
         enumerator = collection.fastEnumerator;
         state->extra[0] = (long)enumerator;
@@ -192,13 +192,13 @@ NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
     return [enumerator countByEnumeratingWithState:state count:len];
 }
 
-@interface RLMArrayHolder : NSObject
+@interface LEGACYArrayHolder : NSObject
 @end
-@implementation RLMArrayHolder {
+@implementation LEGACYArrayHolder {
     std::unique_ptr<id[]> items;
 }
 
-NSUInteger RLMUnmanagedFastEnumerate(id collection, NSFastEnumerationState *state) {
+NSUInteger LEGACYUnmanagedFastEnumerate(id collection, NSFastEnumerationState *state) {
     if (state->state != 0) {
         return 0;
     }
@@ -206,11 +206,11 @@ NSUInteger RLMUnmanagedFastEnumerate(id collection, NSFastEnumerationState *stat
     // We need to enumerate a copy of the backing array so that it doesn't
     // reflect changes made during enumeration. This copy has to be autoreleased
     // (since there's nowhere for us to store a strong reference), and uses
-    // RLMArrayHolder rather than an NSArray because NSArray doesn't guarantee
+    // LEGACYArrayHolder rather than an NSArray because NSArray doesn't guarantee
     // that it'll use a single contiguous block of memory, and if it doesn't
     // we'd need to forward multiple calls to this method to the same NSArray,
     // which would require holding a reference to it somewhere.
-    __autoreleasing RLMArrayHolder *copy = [[RLMArrayHolder alloc] init];
+    __autoreleasing LEGACYArrayHolder *copy = [[LEGACYArrayHolder alloc] init];
     copy->items = std::make_unique<id[]>([collection count]);
 
     NSUInteger i = 0;
@@ -229,7 +229,7 @@ NSUInteger RLMUnmanagedFastEnumerate(id collection, NSFastEnumerationState *stat
 @end
 
 template<typename Collection>
-NSArray *RLMCollectionValueForKey(Collection& collection, NSString *key, RLMClassInfo& info) {
+NSArray *LEGACYCollectionValueForKey(Collection& collection, NSString *key, LEGACYClassInfo& info) {
     size_t count = collection.size();
     if (count == 0) {
         return @[];
@@ -237,7 +237,7 @@ NSArray *RLMCollectionValueForKey(Collection& collection, NSString *key, RLMClas
 
     NSMutableArray *array = [NSMutableArray arrayWithCapacity:count];
     if ([key isEqualToString:@"self"]) {
-        RLMAccessorContext context(info);
+        LEGACYAccessorContext context(info);
         for (size_t i = 0; i < count; ++i) {
             [array addObject:collection.get(context, i) ?: NSNull.null];
         }
@@ -245,14 +245,14 @@ NSArray *RLMCollectionValueForKey(Collection& collection, NSString *key, RLMClas
     }
 
     if (collection.get_type() != realm::PropertyType::Object) {
-        RLMAccessorContext context(info);
+        LEGACYAccessorContext context(info);
         for (size_t i = 0; i < count; ++i) {
             [array addObject:[collection.get(context, i) valueForKey:key] ?: NSNull.null];
         }
         return array;
     }
 
-    RLMObject *accessor = RLMCreateManagedAccessor(info.rlmObjectSchema.accessorClass, &info);
+    LEGACYObject *accessor = LEGACYCreateManagedAccessor(info.rlmObjectSchema.accessorClass, &info);
     auto prop = info.rlmObjectSchema[key];
 
     // Collection properties need to be handled specially since we need to create
@@ -264,7 +264,7 @@ NSArray *RLMCollectionValueForKey(Collection& collection, NSString *key, RLMClas
             // object accessor each time
             Class cls = [[prop.swiftAccessor get:prop on:accessor] class];
             for (size_t i = 0; i < count; ++i) {
-                RLMSwiftCollectionBase *base = [[cls alloc] init];
+                LEGACYSwiftCollectionBase *base = [[cls alloc] init];
                 base._rlmCollection = [[[cls _backingCollectionType] alloc]
                                        initWithParent:collection.get(i) property:prop parentInfo:info];
                 [array addObject:base];
@@ -286,56 +286,56 @@ NSArray *RLMCollectionValueForKey(Collection& collection, NSString *key, RLMClas
 
 realm::ColKey columnForProperty(NSString *propertyName,
                                 realm::object_store::Collection const& backingCollection,
-                                RLMClassInfo *objectInfo,
-                                RLMPropertyType propertyType,
-                                RLMCollectionType collectionType) {
+                                LEGACYClassInfo *objectInfo,
+                                LEGACYPropertyType propertyType,
+                                LEGACYCollectionType collectionType) {
     if (backingCollection.get_type() == realm::PropertyType::Object) {
         return objectInfo->tableColumn(propertyName);
     }
     if (![propertyName isEqualToString:@"self"]) {
         NSString *collectionTypeName;
         switch (collectionType) {
-            case RLMCollectionTypeArray:
+            case LEGACYCollectionTypeArray:
                 collectionTypeName = @"Arrays";
                 break;
-            case RLMCollectionTypeSet:
+            case LEGACYCollectionTypeSet:
                 collectionTypeName = @"Sets";
                 break;
-            case RLMCollectionTypeDictionary:
+            case LEGACYCollectionTypeDictionary:
                 collectionTypeName = @"Dictionaries";
                 break;
         }
-        @throw RLMException(@"%@ of '%@' can only be aggregated on \"self\"",
-                            collectionTypeName, RLMTypeToString(propertyType));
+        @throw LEGACYException(@"%@ of '%@' can only be aggregated on \"self\"",
+                            collectionTypeName, LEGACYTypeToString(propertyType));
     }
     return {};
 }
 
-template NSArray *RLMCollectionValueForKey(realm::Results&, NSString *, RLMClassInfo&);
-template NSArray *RLMCollectionValueForKey(realm::List&, NSString *, RLMClassInfo&);
-template NSArray *RLMCollectionValueForKey(realm::object_store::Set&, NSString *, RLMClassInfo&);
+template NSArray *LEGACYCollectionValueForKey(realm::Results&, NSString *, LEGACYClassInfo&);
+template NSArray *LEGACYCollectionValueForKey(realm::List&, NSString *, LEGACYClassInfo&);
+template NSArray *LEGACYCollectionValueForKey(realm::object_store::Set&, NSString *, LEGACYClassInfo&);
 
-void RLMCollectionSetValueForKey(id<RLMCollectionPrivate> collection, NSString *key, id value) {
+void LEGACYCollectionSetValueForKey(id<LEGACYCollectionPrivate> collection, NSString *key, id value) {
     realm::TableView tv = [collection tableView];
     if (tv.size() == 0) {
         return;
     }
 
-    RLMClassInfo *info = collection.objectInfo;
-    RLMObject *accessor = RLMCreateManagedAccessor(info->rlmObjectSchema.accessorClass, info);
+    LEGACYClassInfo *info = collection.objectInfo;
+    LEGACYObject *accessor = LEGACYCreateManagedAccessor(info->rlmObjectSchema.accessorClass, info);
     for (size_t i = 0; i < tv.size(); i++) {
         accessor->_row = tv[i];
-        RLMInitializeSwiftAccessor(accessor, false);
+        LEGACYInitializeSwiftAccessor(accessor, false);
         [accessor setValue:value forKey:key];
     }
 }
 
-void RLMAssignToCollection(id<RLMCollection> collection, id value) {
+void LEGACYAssignToCollection(id<LEGACYCollection> collection, id value) {
     [(id)collection replaceAllObjectsWithObjects:value];
 }
 
-NSString *RLMDescriptionWithMaxDepth(NSString *name,
-                                     id<RLMCollection> collection,
+NSString *LEGACYDescriptionWithMaxDepth(NSString *name,
+                                     id<LEGACYCollection> collection,
                                      NSUInteger depth) {
     if (depth == 0) {
         return @"<Maximum depth exceeded>";
@@ -343,7 +343,7 @@ NSString *RLMDescriptionWithMaxDepth(NSString *name,
 
     const NSUInteger maxObjects = 100;
     auto str = [NSMutableString stringWithFormat:@"%@<%@> <%p> (\n", name,
-                [collection objectClassName] ?: RLMTypeToString([collection type]),
+                [collection objectClassName] ?: LEGACYTypeToString([collection type]),
                 (void *)collection];
     size_t index = 0, skipped = 0;
     for (id obj in collection) {
@@ -376,19 +376,19 @@ NSString *RLMDescriptionWithMaxDepth(NSString *name,
     return str;
 }
 
-std::vector<std::pair<std::string, bool>> RLMSortDescriptorsToKeypathArray(NSArray<RLMSortDescriptor *> *properties) {
+std::vector<std::pair<std::string, bool>> LEGACYSortDescriptorsToKeypathArray(NSArray<LEGACYSortDescriptor *> *properties) {
     std::vector<std::pair<std::string, bool>> keypaths;
     keypaths.reserve(properties.count);
-    for (RLMSortDescriptor *desc in properties) {
+    for (LEGACYSortDescriptor *desc in properties) {
         if ([desc.keyPath rangeOfString:@"@"].location != NSNotFound) {
-            @throw RLMException(@"Cannot sort on key path '%@': KVC collection operators are not supported.", desc.keyPath);
+            @throw LEGACYException(@"Cannot sort on key path '%@': KVC collection operators are not supported.", desc.keyPath);
         }
         keypaths.push_back({desc.keyPath.UTF8String, desc.ascending});
     }
     return keypaths;
 }
 
-@implementation RLMCollectionChange {
+@implementation LEGACYCollectionChange {
     realm::CollectionChangeSet _indices;
 }
 
@@ -421,19 +421,19 @@ static NSArray *toArray(realm::IndexSet const& set) {
 }
 
 - (NSArray<NSIndexPath *> *)deletionsInSection:(NSUInteger)section {
-    return RLMToIndexPathArray(_indices.deletions, section);
+    return LEGACYToIndexPathArray(_indices.deletions, section);
 }
 
 - (NSArray<NSIndexPath *> *)insertionsInSection:(NSUInteger)section {
-    return RLMToIndexPathArray(_indices.insertions, section);
+    return LEGACYToIndexPathArray(_indices.insertions, section);
 }
 
 - (NSArray<NSIndexPath *> *)modificationsInSection:(NSUInteger)section {
-    return RLMToIndexPathArray(_indices.modifications, section);
+    return LEGACYToIndexPathArray(_indices.modifications, section);
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"<RLMCollectionChange: %p> insertions: %@, deletions: %@, modifications: %@",
+    return [NSString stringWithFormat:@"<LEGACYCollectionChange: %p> insertions: %@, deletions: %@, modifications: %@",
             (__bridge void *)self, self.insertions, self.deletions, self.modifications];
 }
 
@@ -454,23 +454,23 @@ struct CollectionCallbackWrapper {
             block(collection, nil, nil);
         }
         else if (!changes.collection_root_was_deleted || !changes.deletions.empty()) {
-            block(collection, [[RLMCollectionChange alloc] initWithChanges:changes], nil);
+            block(collection, [[LEGACYCollectionChange alloc] initWithChanges:changes], nil);
         }
     }
 };
 } // anonymous namespace
 
-@interface RLMCancellationToken : RLMNotificationToken
+@interface LEGACYCancellationToken : LEGACYNotificationToken
 @end
 
-RLM_HIDDEN
-@implementation RLMCancellationToken {
-    __unsafe_unretained RLMRealm *_realm;
+LEGACY_HIDDEN
+@implementation LEGACYCancellationToken {
+    __unsafe_unretained LEGACYRealm *_realm;
     realm::NotificationToken _token;
-    RLMUnfairMutex _mutex;
+    LEGACYUnfairMutex _mutex;
 }
 
-- (RLMRealm *)realm {
+- (LEGACYRealm *)realm {
     std::lock_guard lock(_mutex);
     return _realm;
 }
@@ -492,50 +492,50 @@ RLM_HIDDEN
     return false;
 }
 
-RLMNotificationToken *RLMAddNotificationBlock(id c, id block,
+LEGACYNotificationToken *LEGACYAddNotificationBlock(id c, id block,
                                               NSArray<NSString *> *keyPaths,
                                               dispatch_queue_t queue) {
-    id<RLMThreadConfined, RLMCollectionPrivate> collection = c;
-    RLMRealm *realm = collection.realm;
+    id<LEGACYThreadConfined, LEGACYCollectionPrivate> collection = c;
+    LEGACYRealm *realm = collection.realm;
     if (!realm) {
-        @throw RLMException(@"Change notifications are only supported on managed collections.");
+        @throw LEGACYException(@"Change notifications are only supported on managed collections.");
     }
-    auto token = [[RLMCancellationToken alloc] init];
+    auto token = [[LEGACYCancellationToken alloc] init];
     token->_realm = realm;
 
-    RLMClassInfo *info = collection.objectInfo;
+    LEGACYClassInfo *info = collection.objectInfo;
     if (!queue) {
         [realm verifyNotificationsAreSupported:true];
         try {
             token->_token = [collection addNotificationCallback:block keyPaths:info->keyPathArrayFromStringArray(keyPaths)];
         }
         catch (const realm::Exception& e) {
-            @throw RLMException(e);
+            @throw LEGACYException(e);
         }
         return token;
     }
 
-    RLMThreadSafeReference *tsr = [RLMThreadSafeReference referenceWithThreadConfined:collection];
-    RLMRealmConfiguration *config = realm.configuration;
+    LEGACYThreadSafeReference *tsr = [LEGACYThreadSafeReference referenceWithThreadConfined:collection];
+    LEGACYRealmConfiguration *config = realm.configuration;
     dispatch_async(queue, ^{
         std::lock_guard lock(token->_mutex);
         if (!token->_realm) {
             return;
         }
-        RLMRealm *realm = token->_realm = [RLMRealm realmWithConfiguration:config queue:queue error:nil];
+        LEGACYRealm *realm = token->_realm = [LEGACYRealm realmWithConfiguration:config queue:queue error:nil];
         id collection = [realm resolveThreadSafeReference:tsr];
         token->_token = [collection addNotificationCallback:block keyPaths:info->keyPathArrayFromStringArray(keyPaths)];
     });
     return token;
 }
 
-realm::CollectionChangeCallback RLMWrapCollectionChangeCallback(void (^block)(id, id, NSError *),
+realm::CollectionChangeCallback LEGACYWrapCollectionChangeCallback(void (^block)(id, id, NSError *),
                                                                 id collection, bool skipFirst) {
     return CollectionCallbackWrapper{block, collection, skipFirst};
 }
 @end
 
-NSArray *RLMToIndexPathArray(realm::IndexSet const& set, NSUInteger section) {
+NSArray *LEGACYToIndexPathArray(realm::IndexSet const& set, NSUInteger section) {
     NSMutableArray *ret = [NSMutableArray new];
     NSUInteger path[2] = {section, 0};
     for (auto index : set.as_indexes()) {

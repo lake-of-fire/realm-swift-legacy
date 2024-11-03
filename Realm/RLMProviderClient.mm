@@ -16,15 +16,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMProviderClient_Private.hpp"
+#import "LEGACYProviderClient_Private.hpp"
 
-#import "RLMApp_Private.hpp"
+#import "LEGACYApp_Private.hpp"
 
 #import <realm/object-store/sync/app.hpp>
 #import <realm/util/optional.hpp>
 
-@implementation RLMProviderClient
-- (instancetype)initWithApp:(RLMApp *)app {
+@implementation LEGACYProviderClient
+- (instancetype)initWithApp:(LEGACYApp *)app {
     self = [super init];
     if (self) {
         _app = app;
@@ -33,7 +33,7 @@
 }
 
 realm::util::UniqueFunction<void(std::optional<realm::app::AppError>)>
-RLMWrapCompletion(RLMProviderClientOptionalErrorBlock completion) {
+LEGACYWrapCompletion(LEGACYProviderClientOptionalErrorBlock completion) {
     return [completion](std::optional<realm::app::AppError> error) {
         if (error) {
             return completion(makeError(*error));

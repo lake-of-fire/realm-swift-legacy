@@ -51,7 +51,7 @@ public protocol _Persistable: _RealmSchemaDiscoverable, _HasPersistedType where 
     static func _rlmSetProperty(_ obj: ObjectBase, _ key: PropertyKey, _ value: Self)
     // Set the swiftAccessor for this type if the default PersistedPropertyAccessor
     // is not suitable.
-    static func _rlmSetAccessor(_ prop: RLMProperty)
+    static func _rlmSetAccessor(_ prop: LEGACYProperty)
     // Do the values of this type need to be cached on the Persisted?
     static var _rlmRequiresCaching: Bool { get }
     // Get the zero/empty/nil value for this type. Used to supply a default
@@ -72,7 +72,7 @@ public protocol _PersistableInsideOptional: _Persistable where PersistedType: _P
 }
 
 extension _PersistableInsideOptional {
-    public static func _rlmSetAccessor(_ prop: RLMProperty) {
+    public static func _rlmSetAccessor(_ prop: LEGACYProperty) {
         if prop.optional {
             prop.swiftAccessor = PersistedPropertyAccessor<Optional<Self>>.self
         } else {

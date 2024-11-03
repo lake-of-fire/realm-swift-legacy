@@ -16,16 +16,16 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMRealm.h>
+#import <Realm/LEGACYRealm.h>
 
-#import <Realm/RLMObjectSchema.h>
-#import <Realm/RLMProperty.h>
+#import <Realm/LEGACYObjectSchema.h>
+#import <Realm/LEGACYProperty.h>
 
-@class RLMResults<RLMObjectType>;
+@class LEGACYResults<LEGACYObjectType>;
 
-RLM_HEADER_AUDIT_BEGIN(nullability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability)
 
-@interface RLMRealm (Dynamic)
+@interface LEGACYRealm (Dynamic)
 
 #pragma mark - Getting Objects from a Realm
 
@@ -34,66 +34,66 @@ RLM_HEADER_AUDIT_BEGIN(nullability)
 
  @warning This method is useful only in specialized circumstances, for example, when building components
           that integrate with Realm. The preferred way to get objects of a single class is to use the class
-          methods on `RLMObject`.
+          methods on `LEGACYObject`.
 
- @param className   The name of the `RLMObject` subclass to retrieve on (e.g. `MyClass.className`).
+ @param className   The name of the `LEGACYObject` subclass to retrieve on (e.g. `MyClass.className`).
 
- @return    An `RLMResults` containing all objects in the Realm of the given type.
+ @return    An `LEGACYResults` containing all objects in the Realm of the given type.
 
- @see       `+[RLMObject allObjects]`
+ @see       `+[LEGACYObject allObjects]`
  */
-- (RLMResults<RLMObject *> *)allObjects:(NSString *)className;
+- (LEGACYResults<LEGACYObject *> *)allObjects:(NSString *)className;
 
 /**
  Returns all objects matching the given predicate from the Realm.
 
  @warning This method is useful only in specialized circumstances, for example, when building components
           that integrate with Realm. The preferred way to get objects of a single class is to use the class
-          methods on `RLMObject`.
+          methods on `LEGACYObject`.
 
  @param className       The type of objects you are looking for (name of the class).
  @param predicateFormat A predicate format string, optionally followed by a variable number of arguments.
 
- @return    An `RLMResults` containing results matching the given predicate.
+ @return    An `LEGACYResults` containing results matching the given predicate.
 
- @see       `+[RLMObject objectsWhere:]`
+ @see       `+[LEGACYObject objectsWhere:]`
  */
-- (RLMResults<RLMObject *> *)objects:(NSString *)className where:(NSString *)predicateFormat, ...;
+- (LEGACYResults<LEGACYObject *> *)objects:(NSString *)className where:(NSString *)predicateFormat, ...;
 
 /**
  Returns all objects matching the given predicate from the Realm.
 
  @warning This method is useful only in specialized circumstances, for example, when building components
           that integrate with Realm. The preferred way to get objects of a single class is to use the class
-          methods on `RLMObject`.
+          methods on `LEGACYObject`.
 
  @param className   The type of objects you are looking for (name of the class).
  @param predicate   The predicate with which to filter the objects.
 
- @return    An `RLMResults` containing results matching the given predicate.
+ @return    An `LEGACYResults` containing results matching the given predicate.
 
- @see       `+[RLMObject objectsWhere:]`
+ @see       `+[LEGACYObject objectsWhere:]`
  */
-- (RLMResults<RLMObject *> *)objects:(NSString *)className withPredicate:(NSPredicate *)predicate;
+- (LEGACYResults<LEGACYObject *> *)objects:(NSString *)className withPredicate:(NSPredicate *)predicate;
 
 /**
  Returns the object of the given type with the given primary key from the Realm.
 
  @warning This method is useful only in specialized circumstances, for example, when building components
           that integrate with Realm. The preferred way to get an object of a single class is to use the class
-          methods on `RLMObject`.
+          methods on `LEGACYObject`.
 
  @param className   The class name for the object you are looking for.
  @param primaryKey  The primary key value for the object you are looking for.
 
  @return    An object, or `nil` if an object with the given primary key does not exist.
 
- @see       `+[RLMObject objectForPrimaryKey:]`
+ @see       `+[LEGACYObject objectForPrimaryKey:]`
  */
-- (nullable RLMObject *)objectWithClassName:(NSString *)className forPrimaryKey:(id)primaryKey;
+- (nullable LEGACYObject *)objectWithClassName:(NSString *)className forPrimaryKey:(id)primaryKey;
 
 /**
- Creates an `RLMObject` instance of type `className` in the Realm, and populates it using a given object.
+ Creates an `LEGACYObject` instance of type `className` in the Realm, and populates it using a given object.
 
  The `value` argument is used to populate the object. It can be a key-value coding compliant object, an array or
  dictionary returned from the methods in `NSJSONSerialization`, or an array containing one element for each managed
@@ -105,14 +105,14 @@ RLM_HEADER_AUDIT_BEGIN(nullability)
 
  @warning This method is useful only in specialized circumstances, for example, when building components
           that integrate with Realm. If you are simply building an app on Realm, it is recommended to
-          use `[RLMObject createInDefaultRealmWithValue:]`.
+          use `[LEGACYObject createInDefaultRealmWithValue:]`.
 
  @param value    The value used to populate the object.
 
- @return    An `RLMObject` instance of type `className`.
+ @return    An `LEGACYObject` instance of type `className`.
  */
--(RLMObject *)createObject:(NSString *)className withValue:(id)value;
+-(LEGACYObject *)createObject:(NSString *)className withValue:(id)value;
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability)
+LEGACY_HEADER_AUDIT_END(nullability)

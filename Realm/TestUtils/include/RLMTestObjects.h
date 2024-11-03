@@ -18,15 +18,15 @@
 
 #import <Realm/Realm.h>
 
-#define RLM_GENERIC_ARRAY(CLASS) RLMArray<CLASS *><CLASS>
-#define RLM_GENERIC_SET(CLASS) RLMSet<CLASS *><CLASS>
+#define LEGACY_GENERIC_ARRAY(CLASS) LEGACYArray<CLASS *><CLASS>
+#define LEGACY_GENERIC_SET(CLASS) LEGACYSet<CLASS *><CLASS>
 
 #pragma mark - Abstract Objects
 #pragma mark -
 
 #pragma mark SingleTypeObjects
 
-@interface StringObject : RLMObject
+@interface StringObject : LEGACYObject
 
 @property NSString *stringCol;
 
@@ -34,13 +34,13 @@
 
 @end
 
-@interface IntObject : RLMObject
+@interface IntObject : LEGACYObject
 
 @property int intCol;
 
 @end
 
-@interface AllIntSizesObject : RLMObject
+@interface AllIntSizesObject : LEGACYObject
 // int8_t not supported due to being ambiguous with BOOL
 
 @property int16_t int16;
@@ -49,93 +49,93 @@
 
 @end
 
-@interface FloatObject : RLMObject
+@interface FloatObject : LEGACYObject
 
 @property float floatCol;
 
 @end
 
-@interface DoubleObject : RLMObject
+@interface DoubleObject : LEGACYObject
 
 @property double doubleCol;
 
 @end
 
-@interface BoolObject : RLMObject
+@interface BoolObject : LEGACYObject
 
 @property BOOL boolCol;
 
 @end
 
-@interface DateObject : RLMObject
+@interface DateObject : LEGACYObject
 
 @property NSDate *dateCol;
 
 @end
 
-@interface BinaryObject : RLMObject
+@interface BinaryObject : LEGACYObject
 
 @property NSData *binaryCol;
 
 @end
 
-@interface DecimalObject : RLMObject
-@property RLMDecimal128 *decimalCol;
+@interface DecimalObject : LEGACYObject
+@property LEGACYDecimal128 *decimalCol;
 @end
 
-@interface UTF8Object : RLMObject
+@interface UTF8Object : LEGACYObject
 @property NSString *柱колоéнǢкƱаم;
 @end
 
-@interface IndexedStringObject : RLMObject
+@interface IndexedStringObject : LEGACYObject
 @property NSString *stringCol;
 @end
 
-RLM_COLLECTION_TYPE(StringObject)
-RLM_COLLECTION_TYPE(IntObject)
+LEGACY_COLLECTION_TYPE(StringObject)
+LEGACY_COLLECTION_TYPE(IntObject)
 
-@interface LinkStringObject : RLMObject
+@interface LinkStringObject : LEGACYObject
 @property StringObject *objectCol;
 @end
 
-@interface LinkIndexedStringObject : RLMObject
+@interface LinkIndexedStringObject : LEGACYObject
 @property IndexedStringObject *objectCol;
 @end
 
-@interface RequiredPropertiesObject : RLMObject
+@interface RequiredPropertiesObject : LEGACYObject
 @property NSString *stringCol;
 @property NSData *binaryCol;
 @property NSDate *dateCol;
 @end
 
-@interface IgnoredURLObject : RLMObject
+@interface IgnoredURLObject : LEGACYObject
 @property NSString *name;
 @property NSURL *url;
 @end
 
-@interface EmbeddedIntObject : RLMEmbeddedObject
+@interface EmbeddedIntObject : LEGACYEmbeddedObject
 @property int intCol;
 @end
-RLM_COLLECTION_TYPE(EmbeddedIntObject)
+LEGACY_COLLECTION_TYPE(EmbeddedIntObject)
 
-@interface EmbeddedIntParentObject : RLMObject
+@interface EmbeddedIntParentObject : LEGACYObject
 @property int pk;
 @property EmbeddedIntObject *object;
-@property RLMArray<EmbeddedIntObject> *array;
+@property LEGACYArray<EmbeddedIntObject> *array;
 @end
 
-@interface UuidObject: RLMObject
+@interface UuidObject: LEGACYObject
 @property NSUUID *uuidCol;
 @end
 
-@interface MixedObject: RLMObject
-@property id<RLMValue> anyCol;
-@property RLMArray<RLMValue> *anyArray;
+@interface MixedObject: LEGACYObject
+@property id<LEGACYValue> anyCol;
+@property LEGACYArray<LEGACYValue> *anyArray;
 @end
 
 #pragma mark AllTypesObject
 
-@interface AllTypesObject : RLMObject
+@interface AllTypesObject : LEGACYObject
 @property BOOL          boolCol;
 @property int           intCol;
 @property float         floatCol;
@@ -145,13 +145,13 @@ RLM_COLLECTION_TYPE(EmbeddedIntObject)
 @property NSDate       *dateCol;
 @property bool          cBoolCol;
 @property int64_t       longCol;
-@property RLMDecimal128 *decimalCol;
-@property RLMObjectId  *objectIdCol;
+@property LEGACYDecimal128 *decimalCol;
+@property LEGACYObjectId  *objectIdCol;
 @property NSUUID       *uuidCol;
 @property StringObject *objectCol;
 @property MixedObject  *mixedObjectCol;
-@property (readonly) RLMLinkingObjects *linkingObjectsCol;
-@property id<RLMValue> anyCol;
+@property (readonly) LEGACYLinkingObjects *linkingObjectsCol;
+@property id<LEGACYValue> anyCol;
 
 + (NSDictionary *)values:(int)i stringObject:(StringObject *)so;
 + (NSDictionary *)values:(int)i
@@ -159,218 +159,218 @@ RLM_COLLECTION_TYPE(EmbeddedIntObject)
              mixedObject:(MixedObject *)mo;
 @end
 
-RLM_COLLECTION_TYPE(AllTypesObject)
+LEGACY_COLLECTION_TYPE(AllTypesObject)
 
-@interface LinkToAllTypesObject : RLMObject
+@interface LinkToAllTypesObject : LEGACYObject
 @property AllTypesObject *allTypesCol;
 @end
 
-@interface ArrayOfAllTypesObject : RLMObject
-@property RLM_GENERIC_ARRAY(AllTypesObject) *array;
+@interface ArrayOfAllTypesObject : LEGACYObject
+@property LEGACY_GENERIC_ARRAY(AllTypesObject) *array;
 @end
 
-@interface SetOfAllTypesObject : RLMObject
-@property RLM_GENERIC_SET(AllTypesObject) *set;
+@interface SetOfAllTypesObject : LEGACYObject
+@property LEGACY_GENERIC_SET(AllTypesObject) *set;
 @end
 
-@interface DictionaryOfAllTypesObject : RLMObject
-@property RLMDictionary<NSString *, AllTypesObject*><RLMString, AllTypesObject> *dictionary;
+@interface DictionaryOfAllTypesObject : LEGACYObject
+@property LEGACYDictionary<NSString *, AllTypesObject*><LEGACYString, AllTypesObject> *dictionary;
 @end
 
-@interface AllOptionalTypes : RLMObject
-@property NSNumber<RLMInt> *intObj;
-@property NSNumber<RLMFloat> *floatObj;
-@property NSNumber<RLMDouble> *doubleObj;
-@property NSNumber<RLMBool> *boolObj;
+@interface AllOptionalTypes : LEGACYObject
+@property NSNumber<LEGACYInt> *intObj;
+@property NSNumber<LEGACYFloat> *floatObj;
+@property NSNumber<LEGACYDouble> *doubleObj;
+@property NSNumber<LEGACYBool> *boolObj;
 @property NSString *string;
 @property NSData *data;
 @property NSDate *date;
-@property RLMDecimal128 *decimal;
-@property RLMObjectId *objectId;
+@property LEGACYDecimal128 *decimal;
+@property LEGACYObjectId *objectId;
 @property NSUUID *uuidCol;
 @end
 
-@interface AllOptionalTypesPK : RLMObject
+@interface AllOptionalTypesPK : LEGACYObject
 @property int pk;
 
-@property NSNumber<RLMInt> *intObj;
-@property NSNumber<RLMFloat> *floatObj;
-@property NSNumber<RLMDouble> *doubleObj;
-@property NSNumber<RLMBool> *boolObj;
+@property NSNumber<LEGACYInt> *intObj;
+@property NSNumber<LEGACYFloat> *floatObj;
+@property NSNumber<LEGACYDouble> *doubleObj;
+@property NSNumber<LEGACYBool> *boolObj;
 @property NSString *string;
 @property NSData *data;
 @property NSDate *date;
-@property RLMDecimal128 *decimal;
-@property RLMObjectId *objectId;
+@property LEGACYDecimal128 *decimal;
+@property LEGACYObjectId *objectId;
 @property NSUUID *uuidCol;
 @end
 
-@interface AllPrimitiveArrays : RLMObject
-@property RLMArray<RLMInt> *intObj;
-@property RLMArray<RLMFloat> *floatObj;
-@property RLMArray<RLMDouble> *doubleObj;
-@property RLMArray<RLMBool> *boolObj;
-@property RLMArray<RLMString> *stringObj;
-@property RLMArray<RLMDate> *dateObj;
-@property RLMArray<RLMData> *dataObj;
-@property RLMArray<RLMDecimal128> *decimalObj;
-@property RLMArray<RLMObjectId> *objectIdObj;
-@property RLMArray<RLMUUID> *uuidObj;
-@property RLMArray<RLMValue> *anyBoolObj;
-@property RLMArray<RLMValue> *anyIntObj;
-@property RLMArray<RLMValue> *anyFloatObj;
-@property RLMArray<RLMValue> *anyDoubleObj;
-@property RLMArray<RLMValue> *anyStringObj;
-@property RLMArray<RLMValue> *anyDataObj;
-@property RLMArray<RLMValue> *anyDateObj;
-@property RLMArray<RLMValue> *anyDecimalObj;
-@property RLMArray<RLMValue> *anyObjectIdObj;
-@property RLMArray<RLMValue> *anyUUIDObj;
+@interface AllPrimitiveArrays : LEGACYObject
+@property LEGACYArray<LEGACYInt> *intObj;
+@property LEGACYArray<LEGACYFloat> *floatObj;
+@property LEGACYArray<LEGACYDouble> *doubleObj;
+@property LEGACYArray<LEGACYBool> *boolObj;
+@property LEGACYArray<LEGACYString> *stringObj;
+@property LEGACYArray<LEGACYDate> *dateObj;
+@property LEGACYArray<LEGACYData> *dataObj;
+@property LEGACYArray<LEGACYDecimal128> *decimalObj;
+@property LEGACYArray<LEGACYObjectId> *objectIdObj;
+@property LEGACYArray<LEGACYUUID> *uuidObj;
+@property LEGACYArray<LEGACYValue> *anyBoolObj;
+@property LEGACYArray<LEGACYValue> *anyIntObj;
+@property LEGACYArray<LEGACYValue> *anyFloatObj;
+@property LEGACYArray<LEGACYValue> *anyDoubleObj;
+@property LEGACYArray<LEGACYValue> *anyStringObj;
+@property LEGACYArray<LEGACYValue> *anyDataObj;
+@property LEGACYArray<LEGACYValue> *anyDateObj;
+@property LEGACYArray<LEGACYValue> *anyDecimalObj;
+@property LEGACYArray<LEGACYValue> *anyObjectIdObj;
+@property LEGACYArray<LEGACYValue> *anyUUIDObj;
 @end
 
-@interface AllOptionalPrimitiveArrays : RLMObject
-@property RLMArray<RLMInt> *intObj;
-@property RLMArray<RLMFloat> *floatObj;
-@property RLMArray<RLMDouble> *doubleObj;
-@property RLMArray<RLMBool> *boolObj;
-@property RLMArray<RLMString> *stringObj;
-@property RLMArray<RLMDate> *dateObj;
-@property RLMArray<RLMData> *dataObj;
-@property RLMArray<RLMDecimal128> *decimalObj;
-@property RLMArray<RLMObjectId> *objectIdObj;
-@property RLMArray<RLMUUID> *uuidObj;
+@interface AllOptionalPrimitiveArrays : LEGACYObject
+@property LEGACYArray<LEGACYInt> *intObj;
+@property LEGACYArray<LEGACYFloat> *floatObj;
+@property LEGACYArray<LEGACYDouble> *doubleObj;
+@property LEGACYArray<LEGACYBool> *boolObj;
+@property LEGACYArray<LEGACYString> *stringObj;
+@property LEGACYArray<LEGACYDate> *dateObj;
+@property LEGACYArray<LEGACYData> *dataObj;
+@property LEGACYArray<LEGACYDecimal128> *decimalObj;
+@property LEGACYArray<LEGACYObjectId> *objectIdObj;
+@property LEGACYArray<LEGACYUUID> *uuidObj;
 @end
 
-@interface AllPrimitiveSets : RLMObject
-@property RLMSet<RLMInt> *intObj;
-@property RLMSet<RLMInt> *intObj2;
-@property RLMSet<RLMFloat> *floatObj;
-@property RLMSet<RLMFloat> *floatObj2;
-@property RLMSet<RLMDouble> *doubleObj;
-@property RLMSet<RLMDouble> *doubleObj2;
-@property RLMSet<RLMBool> *boolObj;
-@property RLMSet<RLMBool> *boolObj2;
-@property RLMSet<RLMString> *stringObj;
-@property RLMSet<RLMString> *stringObj2;
-@property RLMSet<RLMDate> *dateObj;
-@property RLMSet<RLMDate> *dateObj2;
-@property RLMSet<RLMData> *dataObj;
-@property RLMSet<RLMData> *dataObj2;
-@property RLMSet<RLMDecimal128> *decimalObj;
-@property RLMSet<RLMDecimal128> *decimalObj2;
-@property RLMSet<RLMObjectId> *objectIdObj;
-@property RLMSet<RLMObjectId> *objectIdObj2;
-@property RLMSet<RLMUUID> *uuidObj;
-@property RLMSet<RLMUUID> *uuidObj2;
+@interface AllPrimitiveSets : LEGACYObject
+@property LEGACYSet<LEGACYInt> *intObj;
+@property LEGACYSet<LEGACYInt> *intObj2;
+@property LEGACYSet<LEGACYFloat> *floatObj;
+@property LEGACYSet<LEGACYFloat> *floatObj2;
+@property LEGACYSet<LEGACYDouble> *doubleObj;
+@property LEGACYSet<LEGACYDouble> *doubleObj2;
+@property LEGACYSet<LEGACYBool> *boolObj;
+@property LEGACYSet<LEGACYBool> *boolObj2;
+@property LEGACYSet<LEGACYString> *stringObj;
+@property LEGACYSet<LEGACYString> *stringObj2;
+@property LEGACYSet<LEGACYDate> *dateObj;
+@property LEGACYSet<LEGACYDate> *dateObj2;
+@property LEGACYSet<LEGACYData> *dataObj;
+@property LEGACYSet<LEGACYData> *dataObj2;
+@property LEGACYSet<LEGACYDecimal128> *decimalObj;
+@property LEGACYSet<LEGACYDecimal128> *decimalObj2;
+@property LEGACYSet<LEGACYObjectId> *objectIdObj;
+@property LEGACYSet<LEGACYObjectId> *objectIdObj2;
+@property LEGACYSet<LEGACYUUID> *uuidObj;
+@property LEGACYSet<LEGACYUUID> *uuidObj2;
 
-@property RLMSet<RLMValue> *anyBoolObj;
-@property RLMSet<RLMValue> *anyBoolObj2;
-@property RLMSet<RLMValue> *anyIntObj;
-@property RLMSet<RLMValue> *anyIntObj2;
-@property RLMSet<RLMValue> *anyFloatObj;
-@property RLMSet<RLMValue> *anyFloatObj2;
-@property RLMSet<RLMValue> *anyDoubleObj;
-@property RLMSet<RLMValue> *anyDoubleObj2;
-@property RLMSet<RLMValue> *anyStringObj;
-@property RLMSet<RLMValue> *anyStringObj2;
-@property RLMSet<RLMValue> *anyDataObj;
-@property RLMSet<RLMValue> *anyDataObj2;
-@property RLMSet<RLMValue> *anyDateObj;
-@property RLMSet<RLMValue> *anyDateObj2;
-@property RLMSet<RLMValue> *anyDecimalObj;
-@property RLMSet<RLMValue> *anyDecimalObj2;
-@property RLMSet<RLMValue> *anyObjectIdObj;
-@property RLMSet<RLMValue> *anyObjectIdObj2;
-@property RLMSet<RLMValue> *anyUUIDObj;
-@property RLMSet<RLMValue> *anyUUIDObj2;
+@property LEGACYSet<LEGACYValue> *anyBoolObj;
+@property LEGACYSet<LEGACYValue> *anyBoolObj2;
+@property LEGACYSet<LEGACYValue> *anyIntObj;
+@property LEGACYSet<LEGACYValue> *anyIntObj2;
+@property LEGACYSet<LEGACYValue> *anyFloatObj;
+@property LEGACYSet<LEGACYValue> *anyFloatObj2;
+@property LEGACYSet<LEGACYValue> *anyDoubleObj;
+@property LEGACYSet<LEGACYValue> *anyDoubleObj2;
+@property LEGACYSet<LEGACYValue> *anyStringObj;
+@property LEGACYSet<LEGACYValue> *anyStringObj2;
+@property LEGACYSet<LEGACYValue> *anyDataObj;
+@property LEGACYSet<LEGACYValue> *anyDataObj2;
+@property LEGACYSet<LEGACYValue> *anyDateObj;
+@property LEGACYSet<LEGACYValue> *anyDateObj2;
+@property LEGACYSet<LEGACYValue> *anyDecimalObj;
+@property LEGACYSet<LEGACYValue> *anyDecimalObj2;
+@property LEGACYSet<LEGACYValue> *anyObjectIdObj;
+@property LEGACYSet<LEGACYValue> *anyObjectIdObj2;
+@property LEGACYSet<LEGACYValue> *anyUUIDObj;
+@property LEGACYSet<LEGACYValue> *anyUUIDObj2;
 
 @end
 
-@interface AllOptionalPrimitiveSets : RLMObject
-@property RLMSet<RLMInt> *intObj;
-@property RLMSet<RLMInt> *intObj2;
-@property RLMSet<RLMFloat> *floatObj;
-@property RLMSet<RLMFloat> *floatObj2;
-@property RLMSet<RLMDouble> *doubleObj;
-@property RLMSet<RLMDouble> *doubleObj2;
-@property RLMSet<RLMBool> *boolObj;
-@property RLMSet<RLMBool> *boolObj2;
-@property RLMSet<RLMString> *stringObj;
-@property RLMSet<RLMString> *stringObj2;
-@property RLMSet<RLMDate> *dateObj;
-@property RLMSet<RLMDate> *dateObj2;
-@property RLMSet<RLMData> *dataObj;
-@property RLMSet<RLMData> *dataObj2;
-@property RLMSet<RLMDecimal128> *decimalObj;
-@property RLMSet<RLMDecimal128> *decimalObj2;
-@property RLMSet<RLMObjectId> *objectIdObj;
-@property RLMSet<RLMObjectId> *objectIdObj2;
-@property RLMSet<RLMUUID> *uuidObj;
-@property RLMSet<RLMUUID> *uuidObj2;
+@interface AllOptionalPrimitiveSets : LEGACYObject
+@property LEGACYSet<LEGACYInt> *intObj;
+@property LEGACYSet<LEGACYInt> *intObj2;
+@property LEGACYSet<LEGACYFloat> *floatObj;
+@property LEGACYSet<LEGACYFloat> *floatObj2;
+@property LEGACYSet<LEGACYDouble> *doubleObj;
+@property LEGACYSet<LEGACYDouble> *doubleObj2;
+@property LEGACYSet<LEGACYBool> *boolObj;
+@property LEGACYSet<LEGACYBool> *boolObj2;
+@property LEGACYSet<LEGACYString> *stringObj;
+@property LEGACYSet<LEGACYString> *stringObj2;
+@property LEGACYSet<LEGACYDate> *dateObj;
+@property LEGACYSet<LEGACYDate> *dateObj2;
+@property LEGACYSet<LEGACYData> *dataObj;
+@property LEGACYSet<LEGACYData> *dataObj2;
+@property LEGACYSet<LEGACYDecimal128> *decimalObj;
+@property LEGACYSet<LEGACYDecimal128> *decimalObj2;
+@property LEGACYSet<LEGACYObjectId> *objectIdObj;
+@property LEGACYSet<LEGACYObjectId> *objectIdObj2;
+@property LEGACYSet<LEGACYUUID> *uuidObj;
+@property LEGACYSet<LEGACYUUID> *uuidObj2;
 @end
 
-@interface AllPrimitiveRLMValues : RLMObject
-@property id<RLMValue> nullVal;
-@property id<RLMValue> intVal;
-@property id<RLMValue> floatVal;
-@property id<RLMValue> doubleVal;
-@property id<RLMValue> boolVal;
-@property id<RLMValue> stringVal;
-@property id<RLMValue> dateVal;
-@property id<RLMValue> dataVal;
-@property id<RLMValue> decimalVal;
-@property id<RLMValue> objectIdVal;
-@property id<RLMValue> uuidVal;
+@interface AllPrimitiveLEGACYValues : LEGACYObject
+@property id<LEGACYValue> nullVal;
+@property id<LEGACYValue> intVal;
+@property id<LEGACYValue> floatVal;
+@property id<LEGACYValue> doubleVal;
+@property id<LEGACYValue> boolVal;
+@property id<LEGACYValue> stringVal;
+@property id<LEGACYValue> dateVal;
+@property id<LEGACYValue> dataVal;
+@property id<LEGACYValue> decimalVal;
+@property id<LEGACYValue> objectIdVal;
+@property id<LEGACYValue> uuidVal;
 @end
 
-@interface AllDictionariesObject : RLMObject
-@property RLMDictionary<NSString *, NSNumber *><RLMString, RLMInt> *intDict;
-@property RLMDictionary<NSString *, NSNumber *><RLMString, RLMFloat> *floatDict;
-@property RLMDictionary<NSString *, NSNumber *><RLMString, RLMDouble> *doubleDict;
-@property RLMDictionary<NSString *, NSNumber *><RLMString, RLMBool> *boolDict;
-@property RLMDictionary<NSString *, NSString *><RLMString, RLMString> *stringDict;
-@property RLMDictionary<NSString *, NSDate *><RLMString, RLMDate> *dateDict;
-@property RLMDictionary<NSString *, NSData *><RLMString, RLMData> *dataDict;
-@property RLMDictionary<NSString *, RLMDecimal128 *><RLMString, RLMDecimal128> *decimalDict;
-@property RLMDictionary<NSString *, RLMObjectId *><RLMString, RLMObjectId> *objectIdDict;
-@property RLMDictionary<NSString *, NSUUID *><RLMString, RLMUUID> *uuidDict;
-@property RLMDictionary<NSString *, StringObject *><RLMString, StringObject> *stringObjDict;
+@interface AllDictionariesObject : LEGACYObject
+@property LEGACYDictionary<NSString *, NSNumber *><LEGACYString, LEGACYInt> *intDict;
+@property LEGACYDictionary<NSString *, NSNumber *><LEGACYString, LEGACYFloat> *floatDict;
+@property LEGACYDictionary<NSString *, NSNumber *><LEGACYString, LEGACYDouble> *doubleDict;
+@property LEGACYDictionary<NSString *, NSNumber *><LEGACYString, LEGACYBool> *boolDict;
+@property LEGACYDictionary<NSString *, NSString *><LEGACYString, LEGACYString> *stringDict;
+@property LEGACYDictionary<NSString *, NSDate *><LEGACYString, LEGACYDate> *dateDict;
+@property LEGACYDictionary<NSString *, NSData *><LEGACYString, LEGACYData> *dataDict;
+@property LEGACYDictionary<NSString *, LEGACYDecimal128 *><LEGACYString, LEGACYDecimal128> *decimalDict;
+@property LEGACYDictionary<NSString *, LEGACYObjectId *><LEGACYString, LEGACYObjectId> *objectIdDict;
+@property LEGACYDictionary<NSString *, NSUUID *><LEGACYString, LEGACYUUID> *uuidDict;
+@property LEGACYDictionary<NSString *, StringObject *><LEGACYString, StringObject> *stringObjDict;
 @end
 
-@interface AllPrimitiveDictionaries : RLMObject
-@property RLMDictionary<NSString *, NSNumber *><RLMString, RLMInt> *intObj;
-@property RLMDictionary<NSString *, NSNumber *><RLMString, RLMFloat> *floatObj;
-@property RLMDictionary<NSString *, NSNumber *><RLMString, RLMDouble> *doubleObj;
-@property RLMDictionary<NSString *, NSNumber *><RLMString, RLMBool> *boolObj;
-@property RLMDictionary<NSString *, NSString *><RLMString, RLMString> *stringObj;
-@property RLMDictionary<NSString *, NSDate *><RLMString, RLMDate> *dateObj;
-@property RLMDictionary<NSString *, NSData *><RLMString, RLMData> *dataObj;
-@property RLMDictionary<NSString *, RLMDecimal128 *><RLMString, RLMDecimal128> *decimalObj;
-@property RLMDictionary<NSString *, RLMObjectId *><RLMString, RLMObjectId> *objectIdObj;
-@property RLMDictionary<NSString *, NSUUID *><RLMString, RLMUUID> *uuidObj;
-@property RLMDictionary<NSString *, NSObject *><RLMString, RLMValue> *anyBoolObj;
-@property RLMDictionary<NSString *, NSObject *><RLMString, RLMValue> *anyIntObj;
-@property RLMDictionary<NSString *, NSObject *><RLMString, RLMValue> *anyFloatObj;
-@property RLMDictionary<NSString *, NSObject *><RLMString, RLMValue> *anyDoubleObj;
-@property RLMDictionary<NSString *, NSObject *><RLMString, RLMValue> *anyStringObj;
-@property RLMDictionary<NSString *, NSObject *><RLMString, RLMValue> *anyDataObj;
-@property RLMDictionary<NSString *, NSObject *><RLMString, RLMValue> *anyDateObj;
-@property RLMDictionary<NSString *, NSObject *><RLMString, RLMValue> *anyDecimalObj;
-@property RLMDictionary<NSString *, NSObject *><RLMString, RLMValue> *anyObjectIdObj;
-@property RLMDictionary<NSString *, NSObject *><RLMString, RLMValue> *anyUUIDObj;
+@interface AllPrimitiveDictionaries : LEGACYObject
+@property LEGACYDictionary<NSString *, NSNumber *><LEGACYString, LEGACYInt> *intObj;
+@property LEGACYDictionary<NSString *, NSNumber *><LEGACYString, LEGACYFloat> *floatObj;
+@property LEGACYDictionary<NSString *, NSNumber *><LEGACYString, LEGACYDouble> *doubleObj;
+@property LEGACYDictionary<NSString *, NSNumber *><LEGACYString, LEGACYBool> *boolObj;
+@property LEGACYDictionary<NSString *, NSString *><LEGACYString, LEGACYString> *stringObj;
+@property LEGACYDictionary<NSString *, NSDate *><LEGACYString, LEGACYDate> *dateObj;
+@property LEGACYDictionary<NSString *, NSData *><LEGACYString, LEGACYData> *dataObj;
+@property LEGACYDictionary<NSString *, LEGACYDecimal128 *><LEGACYString, LEGACYDecimal128> *decimalObj;
+@property LEGACYDictionary<NSString *, LEGACYObjectId *><LEGACYString, LEGACYObjectId> *objectIdObj;
+@property LEGACYDictionary<NSString *, NSUUID *><LEGACYString, LEGACYUUID> *uuidObj;
+@property LEGACYDictionary<NSString *, NSObject *><LEGACYString, LEGACYValue> *anyBoolObj;
+@property LEGACYDictionary<NSString *, NSObject *><LEGACYString, LEGACYValue> *anyIntObj;
+@property LEGACYDictionary<NSString *, NSObject *><LEGACYString, LEGACYValue> *anyFloatObj;
+@property LEGACYDictionary<NSString *, NSObject *><LEGACYString, LEGACYValue> *anyDoubleObj;
+@property LEGACYDictionary<NSString *, NSObject *><LEGACYString, LEGACYValue> *anyStringObj;
+@property LEGACYDictionary<NSString *, NSObject *><LEGACYString, LEGACYValue> *anyDataObj;
+@property LEGACYDictionary<NSString *, NSObject *><LEGACYString, LEGACYValue> *anyDateObj;
+@property LEGACYDictionary<NSString *, NSObject *><LEGACYString, LEGACYValue> *anyDecimalObj;
+@property LEGACYDictionary<NSString *, NSObject *><LEGACYString, LEGACYValue> *anyObjectIdObj;
+@property LEGACYDictionary<NSString *, NSObject *><LEGACYString, LEGACYValue> *anyUUIDObj;
 @end
 
-@interface AllOptionalPrimitiveDictionaries : RLMObject
-@property RLMDictionary<NSString *, NSNumber *><RLMString, RLMInt> *intObj;
-@property RLMDictionary<NSString *, NSNumber *><RLMString, RLMFloat> *floatObj;
-@property RLMDictionary<NSString *, NSNumber *><RLMString, RLMDouble> *doubleObj;
-@property RLMDictionary<NSString *, NSNumber *><RLMString, RLMBool> *boolObj;
-@property RLMDictionary<NSString *, NSString *><RLMString, RLMString> *stringObj;
-@property RLMDictionary<NSString *, NSDate *><RLMString, RLMDate> *dateObj;
-@property RLMDictionary<NSString *, NSData *><RLMString, RLMData> *dataObj;
-@property RLMDictionary<NSString *, RLMDecimal128 *><RLMString, RLMDecimal128> *decimalObj;
-@property RLMDictionary<NSString *, RLMObjectId *><RLMString, RLMObjectId> *objectIdObj;
-@property RLMDictionary<NSString *, NSUUID *><RLMString, RLMUUID> *uuidObj;
+@interface AllOptionalPrimitiveDictionaries : LEGACYObject
+@property LEGACYDictionary<NSString *, NSNumber *><LEGACYString, LEGACYInt> *intObj;
+@property LEGACYDictionary<NSString *, NSNumber *><LEGACYString, LEGACYFloat> *floatObj;
+@property LEGACYDictionary<NSString *, NSNumber *><LEGACYString, LEGACYDouble> *doubleObj;
+@property LEGACYDictionary<NSString *, NSNumber *><LEGACYString, LEGACYBool> *boolObj;
+@property LEGACYDictionary<NSString *, NSString *><LEGACYString, LEGACYString> *stringObj;
+@property LEGACYDictionary<NSString *, NSDate *><LEGACYString, LEGACYDate> *dateObj;
+@property LEGACYDictionary<NSString *, NSData *><LEGACYString, LEGACYData> *dataObj;
+@property LEGACYDictionary<NSString *, LEGACYDecimal128 *><LEGACYString, LEGACYDecimal128> *decimalObj;
+@property LEGACYDictionary<NSString *, LEGACYObjectId *><LEGACYString, LEGACYObjectId> *objectIdObj;
+@property LEGACYDictionary<NSString *, NSUUID *><LEGACYString, LEGACYUUID> *uuidObj;
 @end
 
 #pragma mark - Real Life Objects
@@ -378,7 +378,7 @@ RLM_COLLECTION_TYPE(AllTypesObject)
 
 #pragma mark EmployeeObject
 
-@interface EmployeeObject : RLMObject
+@interface EmployeeObject : LEGACYObject
 
 @property NSString *name;
 @property int age;
@@ -386,22 +386,22 @@ RLM_COLLECTION_TYPE(AllTypesObject)
 
 @end
 
-RLM_COLLECTION_TYPE(EmployeeObject)
+LEGACY_COLLECTION_TYPE(EmployeeObject)
 
 #pragma mark CompanyObject
 
-@interface CompanyObject : RLMObject
+@interface CompanyObject : LEGACYObject
 
 @property NSString *name;
-@property RLM_GENERIC_ARRAY(EmployeeObject) *employees;
-@property RLM_GENERIC_SET(EmployeeObject) *employeeSet;
-@property RLMDictionary<NSString *, EmployeeObject *><RLMString, EmployeeObject> *employeeDict;
+@property LEGACY_GENERIC_ARRAY(EmployeeObject) *employees;
+@property LEGACY_GENERIC_SET(EmployeeObject) *employeeSet;
+@property LEGACYDictionary<NSString *, EmployeeObject *><LEGACYString, EmployeeObject> *employeeDict;
 
 @end
 
 #pragma mark LinkToCompanyObject
 
-@interface LinkToCompanyObject : RLMObject
+@interface LinkToCompanyObject : LEGACYObject
 
 @property CompanyObject *company;
 
@@ -409,29 +409,29 @@ RLM_COLLECTION_TYPE(EmployeeObject)
 
 #pragma mark DogObject
 
-@interface DogObject : RLMObject
+@interface DogObject : LEGACYObject
 @property NSString *dogName;
 @property int age;
-@property (readonly) RLMLinkingObjects *owners;
+@property (readonly) LEGACYLinkingObjects *owners;
 @end
 
-RLM_COLLECTION_TYPE(DogObject)
+LEGACY_COLLECTION_TYPE(DogObject)
 
-@interface DogArrayObject : RLMObject
-@property RLM_GENERIC_ARRAY(DogObject) *dogs;
+@interface DogArrayObject : LEGACYObject
+@property LEGACY_GENERIC_ARRAY(DogObject) *dogs;
 @end
 
-@interface DogSetObject : RLMObject
-@property RLM_GENERIC_SET(DogObject) *dogs;
+@interface DogSetObject : LEGACYObject
+@property LEGACY_GENERIC_SET(DogObject) *dogs;
 @end
 
-@interface DogDictionaryObject : RLMObject
-@property RLMDictionary<NSString *, DogObject *><RLMString, DogObject> *dogs;
+@interface DogDictionaryObject : LEGACYObject
+@property LEGACYDictionary<NSString *, DogObject *><LEGACYString, DogObject> *dogs;
 @end
 
 #pragma mark OwnerObject
 
-@interface OwnerObject : RLMObject
+@interface OwnerObject : LEGACYObject
 
 @property NSString *name;
 @property DogObject *dog;
@@ -443,7 +443,7 @@ RLM_COLLECTION_TYPE(DogObject)
 
 #pragma mark CustomAccessorsObject
 
-@interface CustomAccessorsObject : RLMObject
+@interface CustomAccessorsObject : LEGACYObject
 
 @property (getter = getThatName) NSString *name;
 @property (setter = setTheInt:)  int age;
@@ -452,7 +452,7 @@ RLM_COLLECTION_TYPE(DogObject)
 
 #pragma mark BaseClassStringObject
 
-@interface BaseClassStringObject : RLMObject
+@interface BaseClassStringObject : LEGACYObject
 
 @property int intCol;
 
@@ -466,66 +466,66 @@ RLM_COLLECTION_TYPE(DogObject)
 
 #pragma mark CircleObject
 
-@interface CircleObject : RLMObject
+@interface CircleObject : LEGACYObject
 
 @property NSString *data;
 @property CircleObject *next;
 
 @end
 
-RLM_COLLECTION_TYPE(CircleObject);
+LEGACY_COLLECTION_TYPE(CircleObject);
 
 #pragma mark CircleArrayObject
 
-@interface CircleArrayObject : RLMObject
-@property RLM_GENERIC_ARRAY(CircleObject) *circles;
+@interface CircleArrayObject : LEGACYObject
+@property LEGACY_GENERIC_ARRAY(CircleObject) *circles;
 @end
 
 #pragma mark CircleSetObject
 
-@interface CircleSetObject : RLMObject
-@property RLM_GENERIC_SET(CircleObject) *circles;
+@interface CircleSetObject : LEGACYObject
+@property LEGACY_GENERIC_SET(CircleObject) *circles;
 @end
 
 #pragma mark CircleDictionaryObject
 
-@interface CircleDictionaryObject : RLMObject
-@property RLMDictionary<NSString *, CircleObject *><RLMString, CircleObject> *circles;
+@interface CircleDictionaryObject : LEGACYObject
+@property LEGACYDictionary<NSString *, CircleObject *><LEGACYString, CircleObject> *circles;
 @end
 
 #pragma mark ArrayPropertyObject
 
-@interface ArrayPropertyObject : RLMObject
+@interface ArrayPropertyObject : LEGACYObject
 
 @property NSString *name;
-@property RLM_GENERIC_ARRAY(StringObject) *array;
-@property RLM_GENERIC_ARRAY(IntObject) *intArray;
+@property LEGACY_GENERIC_ARRAY(StringObject) *array;
+@property LEGACY_GENERIC_ARRAY(IntObject) *intArray;
 
 @end
 
 #pragma mark SetPropertyObject
 
-@interface SetPropertyObject : RLMObject
+@interface SetPropertyObject : LEGACYObject
 
 @property NSString *name;
-@property RLM_GENERIC_SET(StringObject) *set;
-@property RLM_GENERIC_SET(IntObject) *intSet;
+@property LEGACY_GENERIC_SET(StringObject) *set;
+@property LEGACY_GENERIC_SET(IntObject) *intSet;
 
 @end
 
 #pragma mark DictionaryPropertyObject
 
-@interface DictionaryPropertyObject : RLMObject
-@property RLMDictionary<NSString *, StringObject *><RLMString, StringObject> *stringDictionary;
-@property RLMDictionary<NSString *, NSNumber *><RLMString, RLMInt> *intDictionary;
-@property RLMDictionary<NSString *, NSString *><RLMString, RLMString> *primitiveStringDictionary;
-@property RLMDictionary<NSString *, EmbeddedIntObject *><RLMString, EmbeddedIntObject> *embeddedDictionary;
-@property RLMDictionary<NSString *, IntObject *><RLMString, IntObject> *intObjDictionary;
+@interface DictionaryPropertyObject : LEGACYObject
+@property LEGACYDictionary<NSString *, StringObject *><LEGACYString, StringObject> *stringDictionary;
+@property LEGACYDictionary<NSString *, NSNumber *><LEGACYString, LEGACYInt> *intDictionary;
+@property LEGACYDictionary<NSString *, NSString *><LEGACYString, LEGACYString> *primitiveStringDictionary;
+@property LEGACYDictionary<NSString *, EmbeddedIntObject *><LEGACYString, EmbeddedIntObject> *embeddedDictionary;
+@property LEGACYDictionary<NSString *, IntObject *><LEGACYString, IntObject> *intObjDictionary;
 @end
 
 #pragma mark DynamicObject
 
-@interface DynamicTestObject : RLMObject
+@interface DynamicTestObject : LEGACYObject
 
 @property NSString *stringCol;
 @property int intCol;
@@ -534,57 +534,57 @@ RLM_COLLECTION_TYPE(CircleObject);
 
 #pragma mark AggregateObject
 
-@interface AggregateObject : RLMObject
+@interface AggregateObject : LEGACYObject
 
 @property int     intCol;
 @property float   floatCol;
 @property double  doubleCol;
 @property BOOL    boolCol;
 @property NSDate *dateCol;
-@property id<RLMValue> anyCol;
+@property id<LEGACYValue> anyCol;
 
 @end
 
-RLM_COLLECTION_TYPE(AggregateObject)
-@interface AggregateArrayObject : RLMObject
-@property RLMArray<AggregateObject *><AggregateObject> *array;
+LEGACY_COLLECTION_TYPE(AggregateObject)
+@interface AggregateArrayObject : LEGACYObject
+@property LEGACYArray<AggregateObject *><AggregateObject> *array;
 @end
 
-@interface AggregateSetObject : RLMObject
-@property RLMSet<AggregateObject *><AggregateObject> *set;
+@interface AggregateSetObject : LEGACYObject
+@property LEGACYSet<AggregateObject *><AggregateObject> *set;
 @end
 
-@interface AggregateDictionaryObject : RLMObject
-@property RLMDictionary<NSString *, AggregateObject *><RLMString, AggregateObject> *dictionary;
+@interface AggregateDictionaryObject : LEGACYObject
+@property LEGACYDictionary<NSString *, AggregateObject *><LEGACYString, AggregateObject> *dictionary;
 @end
 
 #pragma mark PrimaryStringObject
 
-@interface PrimaryStringObject : RLMObject
+@interface PrimaryStringObject : LEGACYObject
 @property NSString *stringCol;
 @property int intCol;
 @end
 
-@interface PrimaryNullableStringObject : RLMObject
+@interface PrimaryNullableStringObject : LEGACYObject
 @property NSString *stringCol;
 @property int intCol;
 @end
 
-@interface PrimaryIntObject : RLMObject
+@interface PrimaryIntObject : LEGACYObject
 @property int intCol;
 @end
-RLM_COLLECTION_TYPE(PrimaryIntObject);
+LEGACY_COLLECTION_TYPE(PrimaryIntObject);
 
-@interface PrimaryInt64Object : RLMObject
+@interface PrimaryInt64Object : LEGACYObject
 @property int64_t int64Col;
 @end
 
-@interface PrimaryNullableIntObject : RLMObject
-@property NSNumber<RLMInt> *optIntCol;
+@interface PrimaryNullableIntObject : LEGACYObject
+@property NSNumber<LEGACYInt> *optIntCol;
 @property int value;
 @end
 
-@interface ReadOnlyPropertyObject : RLMObject
+@interface ReadOnlyPropertyObject : LEGACYObject
 @property (readonly) NSNumber *readOnlyUnsupportedProperty;
 @property (readonly) int readOnlySupportedProperty;
 @property (readonly) int readOnlyPropertyMadeReadWriteInClassExtension;
@@ -592,159 +592,159 @@ RLM_COLLECTION_TYPE(PrimaryIntObject);
 
 #pragma mark IntegerArrayPropertyObject
 
-@interface IntegerArrayPropertyObject : RLMObject
+@interface IntegerArrayPropertyObject : LEGACYObject
 
 @property NSInteger number;
-@property RLM_GENERIC_ARRAY(IntObject) *array;
+@property LEGACY_GENERIC_ARRAY(IntObject) *array;
 
 @end
 
 #pragma mark IntegerSetPropertyObject
 
-@interface IntegerSetPropertyObject : RLMObject
+@interface IntegerSetPropertyObject : LEGACYObject
 
 @property NSInteger number;
-@property RLM_GENERIC_SET(IntObject) *set;
+@property LEGACY_GENERIC_SET(IntObject) *set;
 
 @end
 
 #pragma mark IntegerDictionaryPropertyObject
 
-@interface IntegerDictionaryPropertyObject : RLMObject
+@interface IntegerDictionaryPropertyObject : LEGACYObject
 
 @property NSInteger number;
-@property RLMDictionary<NSString *, IntObject *><RLMString, IntObject> *dictionary;
+@property LEGACYDictionary<NSString *, IntObject *><LEGACYString, IntObject> *dictionary;
 
 @end
 
-@interface NumberObject : RLMObject
-@property NSNumber<RLMInt> *intObj;
-@property NSNumber<RLMFloat> *floatObj;
-@property NSNumber<RLMDouble> *doubleObj;
-@property NSNumber<RLMBool> *boolObj;
+@interface NumberObject : LEGACYObject
+@property NSNumber<LEGACYInt> *intObj;
+@property NSNumber<LEGACYFloat> *floatObj;
+@property NSNumber<LEGACYDouble> *doubleObj;
+@property NSNumber<LEGACYBool> *boolObj;
 @end
 
 @interface NumberDefaultsObject : NumberObject
 @end
 
-@interface RequiredNumberObject : RLMObject
-@property NSNumber<RLMInt> *intObj;
-@property NSNumber<RLMFloat> *floatObj;
-@property NSNumber<RLMDouble> *doubleObj;
-@property NSNumber<RLMBool> *boolObj;
+@interface RequiredNumberObject : LEGACYObject
+@property NSNumber<LEGACYInt> *intObj;
+@property NSNumber<LEGACYFloat> *floatObj;
+@property NSNumber<LEGACYDouble> *doubleObj;
+@property NSNumber<LEGACYBool> *boolObj;
 @end
 
 #pragma mark CustomInitializerObject
 
-@interface CustomInitializerObject : RLMObject
+@interface CustomInitializerObject : LEGACYObject
 @property NSString *stringCol;
 @end
 
 #pragma mark AbstractObject
 
-@interface AbstractObject : RLMObject
+@interface AbstractObject : LEGACYObject
 @end
 
 #pragma mark PersonObject
 
 @class PersonObject;
-RLM_COLLECTION_TYPE(PersonObject);
+LEGACY_COLLECTION_TYPE(PersonObject);
 
-@interface PersonObject : RLMObject
+@interface PersonObject : LEGACYObject
 @property NSString *name;
 @property NSInteger age;
-@property RLMArray<PersonObject> *children;
-@property (readonly) RLMLinkingObjects *parents;
+@property LEGACYArray<PersonObject> *children;
+@property (readonly) LEGACYLinkingObjects *parents;
 @end
 
 @interface PrimaryEmployeeObject : EmployeeObject
 @end
-RLM_COLLECTION_TYPE(PrimaryEmployeeObject);
+LEGACY_COLLECTION_TYPE(PrimaryEmployeeObject);
 
-@interface LinkToPrimaryEmployeeObject : RLMObject
+@interface LinkToPrimaryEmployeeObject : LEGACYObject
 @property PrimaryEmployeeObject *wrapped;
 @end
 
-@interface PrimaryCompanyObject : RLMObject
+@interface PrimaryCompanyObject : LEGACYObject
 @property NSString *name;
-@property RLM_GENERIC_ARRAY(PrimaryEmployeeObject) *employees;
-@property RLM_GENERIC_SET(PrimaryEmployeeObject) *employeeSet;
-@property RLMDictionary<NSString *, PrimaryEmployeeObject *><RLMString, PrimaryEmployeeObject> *employeeDict;
+@property LEGACY_GENERIC_ARRAY(PrimaryEmployeeObject) *employees;
+@property LEGACY_GENERIC_SET(PrimaryEmployeeObject) *employeeSet;
+@property LEGACYDictionary<NSString *, PrimaryEmployeeObject *><LEGACYString, PrimaryEmployeeObject> *employeeDict;
 @property PrimaryEmployeeObject *intern;
 @property LinkToPrimaryEmployeeObject *wrappedIntern;
 @end
-RLM_COLLECTION_TYPE(PrimaryCompanyObject);
+LEGACY_COLLECTION_TYPE(PrimaryCompanyObject);
 
-@interface ArrayOfPrimaryCompanies : RLMObject
-@property RLM_GENERIC_ARRAY(PrimaryCompanyObject) *companies;
+@interface ArrayOfPrimaryCompanies : LEGACYObject
+@property LEGACY_GENERIC_ARRAY(PrimaryCompanyObject) *companies;
 @end
 
-@interface SetOfPrimaryCompanies : RLMObject
-@property RLM_GENERIC_SET(PrimaryCompanyObject) *companies;
+@interface SetOfPrimaryCompanies : LEGACYObject
+@property LEGACY_GENERIC_SET(PrimaryCompanyObject) *companies;
 @end
 
 #pragma mark ComputedPropertyNotExplicitlyIgnoredObject
 
-@interface ComputedPropertyNotExplicitlyIgnoredObject : RLMObject
+@interface ComputedPropertyNotExplicitlyIgnoredObject : LEGACYObject
 @property NSString *_URLBacking;
 @property NSURL *URL;
 @end
 
-@interface RenamedProperties : RLMObject
+@interface RenamedProperties : LEGACYObject
 @property (nonatomic) int intCol;
 @property NSString *stringCol;
 @end
 
-@interface RenamedProperties1 : RLMObject
+@interface RenamedProperties1 : LEGACYObject
 @property (nonatomic) int propA;
 @property (nonatomic) NSString *propB;
-@property (readonly, nonatomic) RLMLinkingObjects *linking1;
-@property (readonly, nonatomic) RLMLinkingObjects *linking2;
+@property (readonly, nonatomic) LEGACYLinkingObjects *linking1;
+@property (readonly, nonatomic) LEGACYLinkingObjects *linking2;
 @end
 
-@interface RenamedProperties2 : RLMObject
+@interface RenamedProperties2 : LEGACYObject
 @property (nonatomic) int propC;
 @property (nonatomic) NSString *propD;
-@property (readonly, nonatomic) RLMLinkingObjects *linking1;
-@property (readonly, nonatomic) RLMLinkingObjects *linking2;
+@property (readonly, nonatomic) LEGACYLinkingObjects *linking1;
+@property (readonly, nonatomic) LEGACYLinkingObjects *linking2;
 @end
 
-RLM_COLLECTION_TYPE(RenamedProperties1)
-RLM_COLLECTION_TYPE(RenamedProperties2)
-RLM_COLLECTION_TYPE(RenamedProperties)
+LEGACY_COLLECTION_TYPE(RenamedProperties1)
+LEGACY_COLLECTION_TYPE(RenamedProperties2)
+LEGACY_COLLECTION_TYPE(RenamedProperties)
 
-@interface LinkToRenamedProperties : RLMObject
+@interface LinkToRenamedProperties : LEGACYObject
 @property (nonatomic) RenamedProperties *link;
-@property (nonatomic) RLM_GENERIC_ARRAY(RenamedProperties) *array;
-@property (nonatomic) RLM_GENERIC_SET(RenamedProperties) *set;
-@property (nonatomic) RLMDictionary<NSString *, RenamedProperties *><RLMString, RenamedProperties> *dictionary;
+@property (nonatomic) LEGACY_GENERIC_ARRAY(RenamedProperties) *array;
+@property (nonatomic) LEGACY_GENERIC_SET(RenamedProperties) *set;
+@property (nonatomic) LEGACYDictionary<NSString *, RenamedProperties *><LEGACYString, RenamedProperties> *dictionary;
 @end
 
-@interface LinkToRenamedProperties1 : RLMObject
+@interface LinkToRenamedProperties1 : LEGACYObject
 @property (nonatomic) RenamedProperties1 *linkA;
 @property (nonatomic) RenamedProperties2 *linkB;
-@property (nonatomic) RLM_GENERIC_ARRAY(RenamedProperties1) *array;
-@property (nonatomic) RLM_GENERIC_SET(RenamedProperties1) *set;
-@property (nonatomic) RLMDictionary<NSString *, RenamedProperties1 *><RLMString, RenamedProperties1> *dictionary;
+@property (nonatomic) LEGACY_GENERIC_ARRAY(RenamedProperties1) *array;
+@property (nonatomic) LEGACY_GENERIC_SET(RenamedProperties1) *set;
+@property (nonatomic) LEGACYDictionary<NSString *, RenamedProperties1 *><LEGACYString, RenamedProperties1> *dictionary;
 @end
 
-@interface LinkToRenamedProperties2 : RLMObject
+@interface LinkToRenamedProperties2 : LEGACYObject
 @property (nonatomic) RenamedProperties2 *linkC;
 @property (nonatomic) RenamedProperties1 *linkD;
-@property (nonatomic) RLM_GENERIC_ARRAY(RenamedProperties2) *array;
-@property (nonatomic) RLM_GENERIC_SET(RenamedProperties2) *set;
-@property (nonatomic) RLMDictionary<NSString *, RenamedProperties2 *><RLMString, RenamedProperties2> *dictionary;
+@property (nonatomic) LEGACY_GENERIC_ARRAY(RenamedProperties2) *array;
+@property (nonatomic) LEGACY_GENERIC_SET(RenamedProperties2) *set;
+@property (nonatomic) LEGACYDictionary<NSString *, RenamedProperties2 *><LEGACYString, RenamedProperties2> *dictionary;
 @end
 
-@interface RenamedPrimaryKey : RLMObject
+@interface RenamedPrimaryKey : LEGACYObject
 @property (nonatomic) int pk;
 @property (nonatomic) int value;
 @end
 
 #pragma mark FakeObject
 
-@interface FakeObject : RLMObject
+@interface FakeObject : LEGACYObject
 @end
 
-@interface FakeEmbeddedObject : RLMEmbeddedObject
+@interface FakeEmbeddedObject : LEGACYEmbeddedObject
 @end

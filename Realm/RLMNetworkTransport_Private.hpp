@@ -16,10 +16,10 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMNetworkTransport.h"
+#import "LEGACYNetworkTransport.h"
 
 namespace realm::app {
 struct Request;
 }
 
-RLMRequest *RLMRequestFromRequest(realm::app::Request const& request);
+LEGACYRequest *LEGACYRequestFromRequest(realm::app::Request const& request);

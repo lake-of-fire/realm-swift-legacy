@@ -16,11 +16,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSyncTestCase.h"
-#import "RLMUser+ObjectServerTests.h"
-#import "RLMWatchTestUtility.h"
-#import "RLMBSON_Private.hpp"
-#import "RLMUser_Private.hpp"
+#import "LEGACYSyncTestCase.h"
+#import "LEGACYUser+ObjectServerTests.h"
+#import "LEGACYWatchTestUtility.h"
+#import "LEGACYBSON_Private.hpp"
+#import "LEGACYUser_Private.hpp"
 
 #import <realm/object-store/sync/sync_manager.hpp>
 #import <realm/util/bson/bson.hpp>
@@ -29,10 +29,10 @@
 
 #if TARGET_OS_OSX
 
-@interface RLMMongoClientTests : RLMSyncTestCase
+@interface LEGACYMongoClientTests : LEGACYSyncTestCase
 @end
 
-@implementation RLMMongoClientTests
+@implementation LEGACYMongoClientTests
 - (NSArray *)defaultObjectTypes {
     return @[Dog.self];
 }
@@ -43,16 +43,16 @@
 }
 
 - (void)testFindOneAndModifyOptions {
-    NSDictionary<NSString *, id<RLMBSON>> *projection = @{@"name": @1, @"breed": @1};
-    NSArray<id<RLMBSON>> *sorting = @[@{@"age": @1}, @{@"coat": @1}];
+    NSDictionary<NSString *, id<LEGACYBSON>> *projection = @{@"name": @1, @"breed": @1};
+    NSArray<id<LEGACYBSON>> *sorting = @[@{@"age": @1}, @{@"coat": @1}];
 
-    RLMFindOneAndModifyOptions *findOneAndModifyOptions1 = [[RLMFindOneAndModifyOptions alloc] init];
+    LEGACYFindOneAndModifyOptions *findOneAndModifyOptions1 = [[LEGACYFindOneAndModifyOptions alloc] init];
     XCTAssertNil(findOneAndModifyOptions1.projection);
     XCTAssertEqual(findOneAndModifyOptions1.sorting.count, 0U);
     XCTAssertFalse(findOneAndModifyOptions1.shouldReturnNewDocument);
     XCTAssertFalse(findOneAndModifyOptions1.upsert);
 
-    RLMFindOneAndModifyOptions *findOneAndModifyOptions2 = [[RLMFindOneAndModifyOptions alloc] init];
+    LEGACYFindOneAndModifyOptions *findOneAndModifyOptions2 = [[LEGACYFindOneAndModifyOptions alloc] init];
     findOneAndModifyOptions2.projection = projection;
     findOneAndModifyOptions2.sorting = sorting;
     findOneAndModifyOptions2.shouldReturnNewDocument = YES;
@@ -66,7 +66,7 @@
     XCTAssertFalse([findOneAndModifyOptions2.sorting isEqual:@{}]);
     XCTAssertTrue([findOneAndModifyOptions2.sorting isEqual:sorting]);
 
-    RLMFindOneAndModifyOptions *findOneAndModifyOptions3 = [[RLMFindOneAndModifyOptions alloc]
+    LEGACYFindOneAndModifyOptions *findOneAndModifyOptions3 = [[LEGACYFindOneAndModifyOptions alloc]
                                                             initWithProjection:projection
                                                             sorting:sorting
                                                             upsert:YES
@@ -86,7 +86,7 @@
     XCTAssertEqual(findOneAndModifyOptions3.sorting.count, 0U);
     XCTAssertTrue([findOneAndModifyOptions3.sorting isEqual:@[]]);
 
-    RLMFindOneAndModifyOptions *findOneAndModifyOptions4 = [[RLMFindOneAndModifyOptions alloc]
+    LEGACYFindOneAndModifyOptions *findOneAndModifyOptions4 = [[LEGACYFindOneAndModifyOptions alloc]
                                                             initWithProjection:nil
                                                             sorting:@[]
                                                             upsert:NO
@@ -98,10 +98,10 @@
 }
 
 - (void)testFindOptions {
-    NSDictionary<NSString *, id<RLMBSON>> *projection = @{@"name": @1, @"breed": @1};
-    NSArray<id<RLMBSON>> *sorting = @[@{@"age": @1}, @{@"coat": @1}];
+    NSDictionary<NSString *, id<LEGACYBSON>> *projection = @{@"name": @1, @"breed": @1};
+    NSArray<id<LEGACYBSON>> *sorting = @[@{@"age": @1}, @{@"coat": @1}];
 
-    RLMFindOptions *findOptions1 = [[RLMFindOptions alloc] init];
+    LEGACYFindOptions *findOptions1 = [[LEGACYFindOptions alloc] init];
     XCTAssertNil(findOptions1.projection);
     XCTAssertEqual(findOptions1.sorting.count, 0U);
     XCTAssertEqual(findOptions1.limit, 0);
@@ -114,14 +114,14 @@
     XCTAssertEqual(findOptions1.sorting.count, 2U);
     XCTAssertTrue([findOptions1.sorting isEqual:sorting]);
 
-    RLMFindOptions *findOptions2 = [[RLMFindOptions alloc] initWithProjection:projection
+    LEGACYFindOptions *findOptions2 = [[LEGACYFindOptions alloc] initWithProjection:projection
                                                                       sorting:sorting];
     XCTAssertTrue([findOptions2.projection isEqual:projection]);
     XCTAssertEqual(findOptions2.sorting.count, 2U);
     XCTAssertEqual(findOptions2.limit, 0);
     XCTAssertTrue([findOptions2.sorting isEqual:sorting]);
 
-    RLMFindOptions *findOptions3 = [[RLMFindOptions alloc] initWithLimit:37
+    LEGACYFindOptions *findOptions3 = [[LEGACYFindOptions alloc] initWithLimit:37
                                                               projection:projection
                                                                  sorting:sorting];
     XCTAssertTrue([findOptions3.projection isEqual:projection]);
@@ -134,7 +134,7 @@
     XCTAssertNil(findOptions3.projection);
     XCTAssertEqual(findOptions3.sorting.count, 0U);
 
-    RLMFindOptions *findOptions4 = [[RLMFindOptions alloc] initWithProjection:nil
+    LEGACYFindOptions *findOptions4 = [[LEGACYFindOptions alloc] initWithProjection:nil
                                                                       sorting:@[]];
     XCTAssertNil(findOptions4.projection);
     XCTAssertEqual(findOptions4.sorting.count, 0U);
@@ -142,12 +142,12 @@
 }
 
 - (void)testMongoInsert {
-    RLMMongoCollection *collection = [self.anonymousUser collectionForType:Dog.class app:self.app];
+    LEGACYMongoCollection *collection = [self.anonymousUser collectionForType:Dog.class app:self.app];
 
     XCTestExpectation *insertOneExpectation = [self expectationWithDescription:@"should insert one document"];
-    [collection insertOneDocument:@{@"name": @"fido", @"breed": @"cane corso"} completion:^(id<RLMBSON> objectId, NSError *error) {
-        XCTAssertEqual(objectId.bsonType, RLMBSONTypeObjectId);
-        XCTAssertNotEqualObjects(((RLMObjectId *)objectId).stringValue, @"");
+    [collection insertOneDocument:@{@"name": @"fido", @"breed": @"cane corso"} completion:^(id<LEGACYBSON> objectId, NSError *error) {
+        XCTAssertEqual(objectId.bsonType, LEGACYBSONTypeObjectId);
+        XCTAssertNotEqualObjects(((LEGACYObjectId *)objectId).stringValue, @"");
         XCTAssertNil(error);
         [insertOneExpectation fulfill];
     }];
@@ -158,7 +158,7 @@
         @{@"name": @"fido", @"breed": @"cane corso"},
         @{@"name": @"fido", @"breed": @"cane corso"},
         @{@"name": @"rex", @"breed": @"tibetan mastiff"}]
-                         completion:^(NSArray<id<RLMBSON>> *objectIds, NSError *error) {
+                         completion:^(NSArray<id<LEGACYBSON>> *objectIds, NSError *error) {
         XCTAssertGreaterThan(objectIds.count, 0U);
         XCTAssertNil(error);
         [insertManyExpectation fulfill];
@@ -166,7 +166,7 @@
     [self waitForExpectationsWithTimeout:60.0 handler:nil];
 
     XCTestExpectation *findExpectation = [self expectationWithDescription:@"should find documents"];
-    RLMFindOptions *options = [[RLMFindOptions alloc] initWithLimit:0 projection:nil sorting:@[]];
+    LEGACYFindOptions *options = [[LEGACYFindOptions alloc] initWithLimit:0 projection:nil sorting:@[]];
     [collection findWhere:@{@"name": @"fido", @"breed": @"cane corso"}
                   options:options
                completion:^(NSArray<NSDictionary *> *documents, NSError *error) {
@@ -178,14 +178,14 @@
 }
 
 - (void)testMongoFind {
-    RLMMongoCollection *collection = [self.anonymousUser collectionForType:Dog.class app:self.app];
+    LEGACYMongoCollection *collection = [self.anonymousUser collectionForType:Dog.class app:self.app];
 
     XCTestExpectation *insertManyExpectation = [self expectationWithDescription:@"should insert one document"];
     [collection insertManyDocuments:@[
         @{@"name": @"fido", @"breed": @"cane corso"},
         @{@"name": @"fido", @"breed": @"cane corso"},
         @{@"name": @"rex", @"breed": @"tibetan mastiff"}]
-                         completion:^(NSArray<id<RLMBSON>> *objectIds, NSError *error) {
+                         completion:^(NSArray<id<LEGACYBSON>> *objectIds, NSError *error) {
         XCTAssertGreaterThan(objectIds.count, 0U);
         XCTAssertNil(error);
         [insertManyExpectation fulfill];
@@ -193,7 +193,7 @@
     [self waitForExpectationsWithTimeout:60.0 handler:nil];
 
     XCTestExpectation *findExpectation = [self expectationWithDescription:@"should find documents"];
-    RLMFindOptions *options = [[RLMFindOptions alloc] initWithLimit:0 projection:nil sorting:@[]];
+    LEGACYFindOptions *options = [[LEGACYFindOptions alloc] initWithLimit:0 projection:nil sorting:@[]];
     [collection findWhere:@{@"name": @"fido", @"breed": @"cane corso"}
                   options:options
                completion:^(NSArray<NSDictionary *> *documents, NSError *error) {
@@ -253,14 +253,14 @@
 }
 
 - (void)testMongoAggregateAndCount {
-    RLMMongoCollection *collection = [self.anonymousUser collectionForType:Dog.class app:self.app];
+    LEGACYMongoCollection *collection = [self.anonymousUser collectionForType:Dog.class app:self.app];
 
     XCTestExpectation *insertManyExpectation = [self expectationWithDescription:@"should insert one document"];
     [collection insertManyDocuments:@[
         @{@"name": @"fido", @"breed": @"cane corso"},
         @{@"name": @"fido", @"breed": @"cane corso"},
         @{@"name": @"rex", @"breed": @"tibetan mastiff"}]
-                         completion:^(NSArray<id<RLMBSON>> *objectIds, NSError *error) {
+                         completion:^(NSArray<id<LEGACYBSON>> *objectIds, NSError *error) {
         XCTAssertEqual(objectIds.count, 3U);
         XCTAssertNil(error);
         [insertManyExpectation fulfill];
@@ -270,7 +270,7 @@
     XCTestExpectation *aggregateExpectation1 = [self expectationWithDescription:@"should aggregate documents"];
     [collection aggregateWithPipeline:@[@{@"name" : @"fido"}]
                            completion:^(NSArray<NSDictionary *> *documents, NSError *error) {
-        RLMValidateErrorContains(error, RLMAppErrorDomain, RLMAppErrorMongoDBError,
+        LEGACYValidateErrorContains(error, LEGACYAppErrorDomain, LEGACYAppErrorMongoDBError,
                                  @"Unrecognized pipeline stage name: 'name'");
         XCTAssertNil(documents);
         [aggregateExpectation1 fulfill];
@@ -308,13 +308,13 @@
 }
 
 - (void)testMongoUpdate {
-    RLMMongoCollection *collection = [self.anonymousUser collectionForType:Dog.class app:self.app];
+    LEGACYMongoCollection *collection = [self.anonymousUser collectionForType:Dog.class app:self.app];
 
     XCTestExpectation *updateExpectation1 = [self expectationWithDescription:@"should update document"];
     [collection updateOneDocumentWhere:@{@"name" : @"scrabby doo"}
                         updateDocument:@{@"name" : @"scooby"}
                                 upsert:YES
-                            completion:^(RLMUpdateResult *result, NSError *error) {
+                            completion:^(LEGACYUpdateResult *result, NSError *error) {
         XCTAssertNotNil(result);
         XCTAssertNotNil(result.documentId);
         XCTAssertEqual(result.modifiedCount, (NSUInteger)0);
@@ -328,7 +328,7 @@
     [collection updateOneDocumentWhere:@{@"name" : @"scooby"}
                         updateDocument:@{@"name" : @"fred"}
                                 upsert:NO
-                            completion:^(RLMUpdateResult *result, NSError *error) {
+                            completion:^(LEGACYUpdateResult *result, NSError *error) {
         XCTAssertNotNil(result);
         XCTAssertNil(result.documentId);
         XCTAssertEqual(result.modifiedCount, (NSUInteger)1);
@@ -341,7 +341,7 @@
     XCTestExpectation *updateExpectation3 = [self expectationWithDescription:@"should update document"];
     [collection updateOneDocumentWhere:@{@"name" : @"fred"}
                         updateDocument:@{@"name" : @"scrabby"}
-                            completion:^(RLMUpdateResult *result, NSError *error) {
+                            completion:^(LEGACYUpdateResult *result, NSError *error) {
         XCTAssertNotNil(result);
         XCTAssertNil(result.documentId);
         XCTAssertEqual(result.modifiedCount, (NSUInteger)1);
@@ -354,7 +354,7 @@
     XCTestExpectation *updateManyExpectation1 = [self expectationWithDescription:@"should update many documents"];
     [collection updateManyDocumentsWhere:@{@"name" : @"scrabby"}
                           updateDocument:@{@"name" : @"fred"}
-                              completion:^(RLMUpdateResult *result, NSError *error) {
+                              completion:^(LEGACYUpdateResult *result, NSError *error) {
         XCTAssertNotNil(result);
         XCTAssertNil(result.documentId);
         XCTAssertEqual(result.modifiedCount, (NSUInteger)1);
@@ -368,7 +368,7 @@
     [collection updateManyDocumentsWhere:@{@"name" : @"john"}
                           updateDocument:@{@"name" : @"alex"}
                                   upsert:YES
-                              completion:^(RLMUpdateResult *result, NSError *error) {
+                              completion:^(LEGACYUpdateResult *result, NSError *error) {
         XCTAssertNotNil(result);
         XCTAssertNotNil(result.documentId);
         XCTAssertEqual(result.modifiedCount, (NSUInteger)0);
@@ -380,10 +380,10 @@
 }
 
 - (void)testMongoFindAndModify {
-    RLMMongoCollection *collection = [self.anonymousUser collectionForType:Dog.class app:self.app];
+    LEGACYMongoCollection *collection = [self.anonymousUser collectionForType:Dog.class app:self.app];
 
-    NSArray<id<RLMBSON>> *sorting = @[@{@"name": @1}, @{@"breed": @1}];
-    RLMFindOneAndModifyOptions *findAndModifyOptions = [[RLMFindOneAndModifyOptions alloc]
+    NSArray<id<LEGACYBSON>> *sorting = @[@{@"name": @1}, @{@"breed": @1}];
+    LEGACYFindOneAndModifyOptions *findAndModifyOptions = [[LEGACYFindOneAndModifyOptions alloc]
                                                         initWithProjection:@{@"name" : @1, @"breed" : @1}
                                                         sorting:sorting
                                                         upsert:YES
@@ -433,10 +433,10 @@
 }
 
 - (void)testMongoDelete {
-    RLMMongoCollection *collection = [self.anonymousUser collectionForType:Dog.class app:self.app];
+    LEGACYMongoCollection *collection = [self.anonymousUser collectionForType:Dog.class app:self.app];
 
-    NSArray<RLMObjectId *> *objectIds = [self prepareDogDocumentsIn:collection];
-    RLMObjectId *rexObjectId = objectIds[1];
+    NSArray<LEGACYObjectId *> *objectIds = [self prepareDogDocumentsIn:collection];
+    LEGACYObjectId *rexObjectId = objectIds[1];
 
     XCTestExpectation *deleteOneExpectation1 = [self expectationWithDescription:@"should delete first document in collection"];
     [collection deleteOneDocumentWhere:@{@"_id" : rexObjectId}
@@ -477,7 +477,7 @@
 
     XCTestExpectation *findOneAndDeleteExpectation1 = [self expectationWithDescription:@"should find one and delete"];
     [collection findOneAndDeleteWhere:@{@"name": @"john"}
-                           completion:^(NSDictionary<NSString *, id<RLMBSON>> *document, NSError *error) {
+                           completion:^(NSDictionary<NSString *, id<LEGACYBSON>> *document, NSError *error) {
         XCTAssertNotNil(document);
         NSString *name = (NSString *)document[@"name"];
         XCTAssertTrue([name isEqualToString:@"john"]);
@@ -487,9 +487,9 @@
     [self waitForExpectationsWithTimeout:60.0 handler:nil];
 
     XCTestExpectation *findOneAndDeleteExpectation2 = [self expectationWithDescription:@"should find one and delete"];
-    NSDictionary<NSString *, id<RLMBSON>> *projection = @{@"name": @1, @"breed": @1};
-    NSArray<id<RLMBSON>> *sortDescriptors = @[@{@"_id": @1}, @{@"breed": @1}];
-    RLMFindOneAndModifyOptions *findOneAndModifyOptions = [[RLMFindOneAndModifyOptions alloc]
+    NSDictionary<NSString *, id<LEGACYBSON>> *projection = @{@"name": @1, @"breed": @1};
+    NSArray<id<LEGACYBSON>> *sortDescriptors = @[@{@"_id": @1}, @{@"breed": @1}];
+    LEGACYFindOneAndModifyOptions *findOneAndModifyOptions = [[LEGACYFindOneAndModifyOptions alloc]
                                                            initWithProjection:projection
                                                            sorting:sortDescriptors
                                                            upsert:YES
@@ -497,7 +497,7 @@
 
     [collection findOneAndDeleteWhere:@{@"name": @"john"}
                               options:findOneAndModifyOptions
-                           completion:^(NSDictionary<NSString *, id<RLMBSON>> *document, NSError *error) {
+                           completion:^(NSDictionary<NSString *, id<LEGACYBSON>> *document, NSError *error) {
         XCTAssertNil(document);
         // FIXME: when a projection is used, the server reports the error
         // "expected pre-image to match projection matcher" when there are no
@@ -523,17 +523,17 @@
 - (void)performWatchTest:(nullable dispatch_queue_t)delegateQueue {
     XCTestExpectation *expectation = [self expectationWithDescription:@"watch collection and receive change event 3 times"];
 
-    RLMMongoCollection *collection = [self.anonymousUser collectionForType:Dog.class app:self.app];
+    LEGACYMongoCollection *collection = [self.anonymousUser collectionForType:Dog.class app:self.app];
 
-    RLMWatchTestUtility *testUtility =
-        [[RLMWatchTestUtility alloc] initWithChangeEventCount:3
+    LEGACYWatchTestUtility *testUtility =
+        [[LEGACYWatchTestUtility alloc] initWithChangeEventCount:3
                                                   expectation:expectation];
 
-    RLMChangeStream *changeStream = [collection watchWithDelegate:testUtility delegateQueue:delegateQueue];
+    LEGACYChangeStream *changeStream = [collection watchWithDelegate:testUtility delegateQueue:delegateQueue];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         WAIT_FOR_SEMAPHORE(testUtility.isOpenSemaphore, 30.0);
         for (int i = 0; i < 3; i++) {
-            [collection insertOneDocument:@{@"name": @"fido"} completion:^(id<RLMBSON> objectId, NSError *error) {
+            [collection insertOneDocument:@{@"name": @"fido"} completion:^(id<LEGACYBSON> objectId, NSError *error) {
                 XCTAssertNil(error);
                 XCTAssertNotNil(objectId);
             }];
@@ -554,8 +554,8 @@
     [self performWatchWithMatchFilterTest:asyncQueue];
 }
 
-- (NSArray<RLMObjectId *> *)prepareDogDocumentsIn:(RLMMongoCollection *)collection {
-    __block NSArray<RLMObjectId *> *objectIds;
+- (NSArray<LEGACYObjectId *> *)prepareDogDocumentsIn:(LEGACYMongoCollection *)collection {
+    __block NSArray<LEGACYObjectId *> *objectIds;
     XCTestExpectation *ex = [self expectationWithDescription:@"delete existing documents"];
     [collection deleteManyDocumentsWhere:@{} completion:^(NSInteger, NSError *error) {
         XCTAssertNil(error);
@@ -568,10 +568,10 @@
         @{@"name": @"fido", @"breed": @"cane corso"},
         @{@"name": @"rex", @"breed": @"tibetan mastiff"},
         @{@"name": @"john", @"breed": @"tibetan mastiff"}]
-                         completion:^(NSArray<id<RLMBSON>> *ids, NSError *error) {
+                         completion:^(NSArray<id<LEGACYBSON>> *ids, NSError *error) {
         XCTAssertEqual(ids.count, 3U);
-        for (id<RLMBSON> objectId in ids) {
-            XCTAssertEqual(objectId.bsonType, RLMBSONTypeObjectId);
+        for (id<LEGACYBSON> objectId in ids) {
+            XCTAssertEqual(objectId.bsonType, LEGACYBSONTypeObjectId);
         }
         XCTAssertNil(error);
         objectIds = (NSArray *)ids;
@@ -582,17 +582,17 @@
 }
 
 - (void)performWatchWithMatchFilterTest:(nullable dispatch_queue_t)delegateQueue {
-    RLMMongoCollection *collection = [self.anonymousUser collectionForType:Dog.class app:self.app];
-    NSArray<RLMObjectId *> *objectIds = [self prepareDogDocumentsIn:collection];
+    LEGACYMongoCollection *collection = [self.anonymousUser collectionForType:Dog.class app:self.app];
+    NSArray<LEGACYObjectId *> *objectIds = [self prepareDogDocumentsIn:collection];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"watch collection and receive change event 3 times"];
 
-    RLMWatchTestUtility *testUtility =
-        [[RLMWatchTestUtility alloc] initWithChangeEventCount:3
+    LEGACYWatchTestUtility *testUtility =
+        [[LEGACYWatchTestUtility alloc] initWithChangeEventCount:3
                                              matchingObjectId:objectIds[0]
                                                   expectation:expectation];
 
-    RLMChangeStream *changeStream = [collection watchWithMatchFilter:@{@"fullDocument._id": objectIds[0]}
+    LEGACYChangeStream *changeStream = [collection watchWithMatchFilter:@{@"fullDocument._id": objectIds[0]}
                                                             delegate:testUtility
                                                        delegateQueue:delegateQueue];
 
@@ -601,13 +601,13 @@
         for (int i = 0; i < 3; i++) {
             [collection updateOneDocumentWhere:@{@"_id": objectIds[0]}
                                 updateDocument:@{@"breed": @"king charles", @"name": [NSString stringWithFormat:@"fido-%d", i]}
-                                    completion:^(RLMUpdateResult *, NSError *error) {
+                                    completion:^(LEGACYUpdateResult *, NSError *error) {
                 XCTAssertNil(error);
             }];
 
             [collection updateOneDocumentWhere:@{@"_id": objectIds[1]}
                                 updateDocument:@{@"breed": @"french bulldog", @"name": [NSString stringWithFormat:@"fido-%d", i]}
-                                    completion:^(RLMUpdateResult *, NSError *error) {
+                                    completion:^(LEGACYUpdateResult *, NSError *error) {
                 XCTAssertNil(error);
             }];
             WAIT_FOR_SEMAPHORE(testUtility.semaphore, 30.0);
@@ -627,17 +627,17 @@
 }
 
 - (void)performWatchWithFilterIdsTest:(nullable dispatch_queue_t)delegateQueue {
-    RLMMongoCollection *collection = [self.anonymousUser collectionForType:Dog.class app:self.app];
-    NSArray<RLMObjectId *> *objectIds = [self prepareDogDocumentsIn:collection];
+    LEGACYMongoCollection *collection = [self.anonymousUser collectionForType:Dog.class app:self.app];
+    NSArray<LEGACYObjectId *> *objectIds = [self prepareDogDocumentsIn:collection];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"watch collection and receive change event 3 times"];
 
-    RLMWatchTestUtility *testUtility =
-        [[RLMWatchTestUtility alloc] initWithChangeEventCount:3
+    LEGACYWatchTestUtility *testUtility =
+        [[LEGACYWatchTestUtility alloc] initWithChangeEventCount:3
                                              matchingObjectId:objectIds[0]
                                                   expectation:expectation];
 
-    RLMChangeStream *changeStream = [collection watchWithFilterIds:@[objectIds[0]]
+    LEGACYChangeStream *changeStream = [collection watchWithFilterIds:@[objectIds[0]]
                                                           delegate:testUtility
                                                      delegateQueue:delegateQueue];
 
@@ -646,13 +646,13 @@
         for (int i = 0; i < 3; i++) {
             [collection updateOneDocumentWhere:@{@"_id": objectIds[0]}
                                 updateDocument:@{@"breed": @"king charles", @"name": [NSString stringWithFormat:@"fido-%d", i]}
-                                    completion:^(RLMUpdateResult *, NSError *error) {
+                                    completion:^(LEGACYUpdateResult *, NSError *error) {
                 XCTAssertNil(error);
             }];
 
             [collection updateOneDocumentWhere:@{@"_id": objectIds[1]}
                                 updateDocument:@{@"breed": @"french bulldog", @"name": [NSString stringWithFormat:@"fido-%d", i]}
-                                    completion:^(RLMUpdateResult *, NSError *error) {
+                                    completion:^(LEGACYUpdateResult *, NSError *error) {
                 XCTAssertNil(error);
             }];
             WAIT_FOR_SEMAPHORE(testUtility.semaphore, 30.0);
@@ -673,27 +673,27 @@
 }
 
 - (void)performMultipleWatchStreamsTest:(nullable dispatch_queue_t)delegateQueue {
-    RLMMongoCollection *collection = [self.anonymousUser collectionForType:Dog.class app:self.app];
-    NSArray<RLMObjectId *> *objectIds = [self prepareDogDocumentsIn:collection];
+    LEGACYMongoCollection *collection = [self.anonymousUser collectionForType:Dog.class app:self.app];
+    NSArray<LEGACYObjectId *> *objectIds = [self prepareDogDocumentsIn:collection];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"watch collection and receive change event 3 times"];
     expectation.expectedFulfillmentCount = 2;
 
-    RLMWatchTestUtility *testUtility1 =
-        [[RLMWatchTestUtility alloc] initWithChangeEventCount:3
+    LEGACYWatchTestUtility *testUtility1 =
+        [[LEGACYWatchTestUtility alloc] initWithChangeEventCount:3
                                              matchingObjectId:objectIds[0]
                                                   expectation:expectation];
 
-    RLMWatchTestUtility *testUtility2 =
-        [[RLMWatchTestUtility alloc] initWithChangeEventCount:3
+    LEGACYWatchTestUtility *testUtility2 =
+        [[LEGACYWatchTestUtility alloc] initWithChangeEventCount:3
                                              matchingObjectId:objectIds[1]
                                                   expectation:expectation];
 
-    RLMChangeStream *changeStream1 = [collection watchWithFilterIds:@[objectIds[0]]
+    LEGACYChangeStream *changeStream1 = [collection watchWithFilterIds:@[objectIds[0]]
                                                            delegate:testUtility1
                                                       delegateQueue:delegateQueue];
 
-    RLMChangeStream *changeStream2 = [collection watchWithFilterIds:@[objectIds[1]]
+    LEGACYChangeStream *changeStream2 = [collection watchWithFilterIds:@[objectIds[1]]
                                                            delegate:testUtility2
                                                       delegateQueue:delegateQueue];
 
@@ -703,19 +703,19 @@
         for (int i = 0; i < 3; i++) {
             [collection updateOneDocumentWhere:@{@"_id": objectIds[0]}
                                 updateDocument:@{@"breed": @"king charles", @"name": [NSString stringWithFormat:@"fido-%d", i]}
-                                    completion:^(RLMUpdateResult *, NSError *error) {
+                                    completion:^(LEGACYUpdateResult *, NSError *error) {
                 XCTAssertNil(error);
             }];
 
             [collection updateOneDocumentWhere:@{@"_id": objectIds[1]}
                                 updateDocument:@{@"breed": @"french bulldog", @"name": [NSString stringWithFormat:@"fido-%d", i]}
-                                    completion:^(RLMUpdateResult *, NSError *error) {
+                                    completion:^(LEGACYUpdateResult *, NSError *error) {
                 XCTAssertNil(error);
             }];
 
             [collection updateOneDocumentWhere:@{@"_id": objectIds[2]}
                                 updateDocument:@{@"breed": @"german shepard", @"name": [NSString stringWithFormat:@"fido-%d", i]}
-                                    completion:^(RLMUpdateResult *, NSError *error) {
+                                    completion:^(LEGACYUpdateResult *, NSError *error) {
                 XCTAssertNil(error);
             }];
             WAIT_FOR_SEMAPHORE(testUtility1.semaphore, 30.0);
@@ -730,9 +730,9 @@
 
 #pragma mark - File paths
 
-static NSString *newPathForPartitionValue(RLMUser *user, id<RLMBSON> partitionValue) {
+static NSString *newPathForPartitionValue(LEGACYUser *user, id<LEGACYBSON> partitionValue) {
     std::stringstream s;
-    s << RLMConvertRLMBSONToBson(partitionValue);
+    s << LEGACYConvertRLMBSONToBson(partitionValue);
     // Intentionally not passing the correct partition value here as we (accidentally?)
     // don't use the filename generated from the partition value
     realm::SyncConfig config(user._syncUser, "null");
@@ -740,7 +740,7 @@ static NSString *newPathForPartitionValue(RLMUser *user, id<RLMBSON> partitionVa
 }
 
 - (void)testSyncFilePaths {
-    RLMUser *user = self.anonymousUser;
+    LEGACYUser *user = self.anonymousUser;
     auto configuration = [user configurationWithPartitionValue:@"abc"];
     XCTAssertTrue([configuration.fileURL.path
                    hasSuffix:([NSString stringWithFormat:@"mongodb-realm/%@/%@/%%22abc%%22.realm",
@@ -762,7 +762,7 @@ static NSString *newPathForPartitionValue(RLMUser *user, id<RLMBSON> partitionVa
                           newPathForPartitionValue(user, nil));
 }
 
-static NSString *oldPathForPartitionValue(RLMUser *user, NSString *oldName) {
+static NSString *oldPathForPartitionValue(LEGACYUser *user, NSString *oldName) {
     realm::SyncConfig config(user._syncUser, "null");
     return [NSString stringWithFormat:@"%@/%s%@.realm",
             [@(user._syncUser->sync_manager()->path_for_realm(config).c_str()) stringByDeletingLastPathComponent],
@@ -770,15 +770,15 @@ static NSString *oldPathForPartitionValue(RLMUser *user, NSString *oldName) {
 }
 
 - (void)testLegacyFilePathsAreUsedIfFilesArePresent {
-    RLMUser *user = self.anonymousUser;
+    LEGACYUser *user = self.anonymousUser;
 
-    auto testPartitionValue = [&](id<RLMBSON> partitionValue, NSString *oldName) {
+    auto testPartitionValue = [&](id<LEGACYBSON> partitionValue, NSString *oldName) {
         NSURL *url = [NSURL fileURLWithPath:oldPathForPartitionValue(user, oldName)];
         @autoreleasepool {
             auto configuration = [user configurationWithPartitionValue:partitionValue];
             configuration.fileURL = url;
             configuration.objectClasses = @[Person.class];
-            RLMRealm *realm = [RLMRealm realmWithConfiguration:configuration error:nil];
+            LEGACYRealm *realm = [LEGACYRealm realmWithConfiguration:configuration error:nil];
             [realm beginWriteTransaction];
             [Person createInRealm:realm withValue:[Person george]];
             [realm commitWriteTransaction];
@@ -787,7 +787,7 @@ static NSString *oldPathForPartitionValue(RLMUser *user, NSString *oldName) {
         auto configuration = [user configurationWithPartitionValue:partitionValue];
         configuration.objectClasses = @[Person.class];
         XCTAssertEqualObjects(configuration.fileURL, url);
-        RLMRealm *realm = [RLMRealm realmWithConfiguration:configuration error:nil];
+        LEGACYRealm *realm = [LEGACYRealm realmWithConfiguration:configuration error:nil];
         XCTAssertEqual([Person allObjectsInRealm:realm].count, 1U);
     };
 

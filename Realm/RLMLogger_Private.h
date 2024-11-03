@@ -16,12 +16,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMLogger.h>
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYLogger.h>
+#import <Realm/LEGACYConstants.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability)
 
-@interface RLMLogger()
+@interface LEGACYLogger()
 
 /**
  Log a message to the supplied level.
@@ -29,8 +29,8 @@ RLM_HEADER_AUDIT_BEGIN(nullability)
  @param logLevel The log level for the message.
  @param message The message to log.
  */
-- (void)logWithLevel:(RLMLogLevel)logLevel message:(NSString *)message, ... NS_SWIFT_UNAVAILABLE("");
-- (void)logLevel:(RLMLogLevel)logLevel message:(NSString *)message;
+- (void)logWithLevel:(LEGACYLogLevel)logLevel message:(NSString *)message, ... NS_SWIFT_UNAVAILABLE("");
+- (void)logLevel:(LEGACYLogLevel)logLevel message:(NSString *)message;
 @end
 
-RLM_HEADER_AUDIT_END(nullability)
+LEGACY_HEADER_AUDIT_END(nullability)

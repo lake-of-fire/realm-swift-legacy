@@ -42,16 +42,16 @@
     return YES;
 }
 
-- (void)addExampleDataToRealm:(void (^)(RLMRealm*))examplesData {
+- (void)addExampleDataToRealm:(void (^)(LEGACYRealm*))examplesData {
     NSURL *url = [self realmUrlFor:schemaVersion usingTemplate:false];
-    RLMRealmConfiguration *configuration = [RLMRealmConfiguration defaultConfiguration];
+    LEGACYRealmConfiguration *configuration = [LEGACYRealmConfiguration defaultConfiguration];
     configuration.fileURL = url;
     configuration.schemaVersion = schemaVersion;
-    [RLMRealmConfiguration setDefaultConfiguration:configuration];
+    [LEGACYRealmConfiguration setDefaultConfiguration:configuration];
     NSError *error;
-    RLMRealm *realm = [RLMRealm realmWithConfiguration:configuration error:&error];
+    LEGACYRealm *realm = [LEGACYRealm realmWithConfiguration:configuration error:&error];
     if (error) {
-        @throw [NSException exceptionWithName:@"RLMExampleException" reason:@"Could not open realm." userInfo:nil];
+        @throw [NSException exceptionWithName:@"LEGACYExampleException" reason:@"Could not open realm." userInfo:nil];
     }
     [realm beginWriteTransaction];
     exampleData(realm);
@@ -62,26 +62,26 @@
 - (void)performMigration {
     for (NSInteger oldSchemaVersion = 0; oldSchemaVersion < schemaVersion; oldSchemaVersion++) {
         NSURL *realmUrl = [self realmUrlFor:oldSchemaVersion usingTemplate:true];
-        RLMRealmConfiguration *realmConfiguration = [RLMRealmConfiguration defaultConfiguration];
+        LEGACYRealmConfiguration *realmConfiguration = [LEGACYRealmConfiguration defaultConfiguration];
         realmConfiguration.fileURL = realmUrl;
         realmConfiguration.schemaVersion = schemaVersion;
         realmConfiguration.migrationBlock = migrationBlock;
-        [RLMRealmConfiguration setDefaultConfiguration:realmConfiguration];
+        [LEGACYRealmConfiguration setDefaultConfiguration:realmConfiguration];
         NSError *error;
-        [RLMRealm performMigrationForConfiguration:realmConfiguration error:&error];
+        [LEGACYRealm performMigrationForConfiguration:realmConfiguration error:&error];
         if (error) {
-            @throw [NSException exceptionWithName:@"RLMExampleException" reason:@"Could not migrate realm." userInfo:nil];
+            @throw [NSException exceptionWithName:@"LEGACYExampleException" reason:@"Could not migrate realm." userInfo:nil];
         }
-        RLMRealm *realm = [RLMRealm realmWithConfiguration:realmConfiguration error:&error];
+        LEGACYRealm *realm = [LEGACYRealm realmWithConfiguration:realmConfiguration error:&error];
         if (error) {
-            @throw [NSException exceptionWithName:@"RLMExampleException" reason:@"Could not open realm." userInfo:nil];
+            @throw [NSException exceptionWithName:@"LEGACYExampleException" reason:@"Could not open realm." userInfo:nil];
         }
         migrationCheck(realm);
     }
 }
 
 - (NSURL*)realmUrlFor:(NSInteger)schemaVersion usingTemplate:(BOOL)usingTemplate {
-    NSURL *defaultRealmURL = [RLMRealmConfiguration defaultConfiguration].fileURL;
+    NSURL *defaultRealmURL = [LEGACYRealmConfiguration defaultConfiguration].fileURL;
     NSURL *defaultRealmParentURL = [defaultRealmURL URLByDeletingLastPathComponent];
     NSString *fileName = [NSString stringWithFormat:@"default-v%ld", schemaVersion];
     NSString *fileExtension = @"realm";
@@ -91,7 +91,7 @@
         NSError *error;
         [[NSFileManager defaultManager] removeItemAtPath:destinationUrl.path error:&error];
         if (error) {
-            @throw [NSException exceptionWithName:@"RLMExampleException" reason:@"Could not remove realm file." userInfo:nil];
+            @throw [NSException exceptionWithName:@"LEGACYExampleException" reason:@"Could not remove realm file." userInfo:nil];
         }
     }
     if (usingTemplate) {
@@ -99,7 +99,7 @@
         NSError *error;
         [[NSFileManager defaultManager] copyItemAtPath:bundleUrl.path toPath:destinationUrl.path error:&error];
         if (error) {
-            @throw [NSException exceptionWithName:@"RLMExampleException" reason:@"Could not copy realm template to new path." userInfo:nil];
+            @throw [NSException exceptionWithName:@"LEGACYExampleException" reason:@"Could not copy realm template to new path." userInfo:nil];
         }
     }
 

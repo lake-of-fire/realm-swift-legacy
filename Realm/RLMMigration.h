@@ -16,47 +16,47 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@class RLMSchema;
-@class RLMArray;
-@class RLMObject;
+@class LEGACYSchema;
+@class LEGACYArray;
+@class LEGACYObject;
 
 /**
  A block type which provides both the old and new versions of an object in the Realm. Object
  properties can only be accessed using keyed subscripting.
 
- @see `-[RLMMigration enumerateObjects:block:]`
+ @see `-[LEGACYMigration enumerateObjects:block:]`
 
  @param oldObject The object from the original Realm (read-only).
  @param newObject The object from the migrated Realm (read-write).
 */
-typedef void (^RLMObjectMigrationBlock)(RLMObject * __nullable oldObject, RLMObject * __nullable newObject);
+typedef void (^LEGACYObjectMigrationBlock)(LEGACYObject * __nullable oldObject, LEGACYObject * __nullable newObject);
 
 /**
- `RLMMigration` instances encapsulate information intended to facilitate a schema migration.
+ `LEGACYMigration` instances encapsulate information intended to facilitate a schema migration.
 
- A `RLMMigration` instance is passed into a user-defined `RLMMigrationBlock` block when updating
+ A `LEGACYMigration` instance is passed into a user-defined `LEGACYMigrationBlock` block when updating
  the version of a Realm. This instance provides access to the old and new database schemas, the
  objects in the Realm, and provides functionality for modifying the Realm during the migration.
  */
-@interface RLMMigration : NSObject
+@interface LEGACYMigration : NSObject
 
 #pragma mark - Properties
 
 /**
- Returns the old `RLMSchema`. This is the schema which describes the Realm before the
+ Returns the old `LEGACYSchema`. This is the schema which describes the Realm before the
  migration is applied.
  */
-@property (nonatomic, readonly) RLMSchema *oldSchema NS_REFINED_FOR_SWIFT;
+@property (nonatomic, readonly) LEGACYSchema *oldSchema NS_REFINED_FOR_SWIFT;
 
 /**
- Returns the new `RLMSchema`. This is the schema which describes the Realm after the
+ Returns the new `LEGACYSchema`. This is the schema which describes the Realm after the
  migration is applied.
  */
-@property (nonatomic, readonly) RLMSchema *newSchema NS_REFINED_FOR_SWIFT;
+@property (nonatomic, readonly) LEGACYSchema *newSchema NS_REFINED_FOR_SWIFT;
 
 
 #pragma mark - Altering Objects during a Migration
@@ -65,17 +65,17 @@ typedef void (^RLMObjectMigrationBlock)(RLMObject * __nullable oldObject, RLMObj
  Enumerates all the objects of a given type in the Realm, providing both the old and new versions
  of each object. Within the block, object properties can only be accessed using keyed subscripting.
 
- @param className   The name of the `RLMObject` class to enumerate.
+ @param className   The name of the `LEGACYObject` class to enumerate.
 
  @warning   All objects returned are of a type specific to the current migration and should not be cast
-            to `className`. Instead, treat them as `RLMObject`s and use keyed subscripting to access
+            to `className`. Instead, treat them as `LEGACYObject`s and use keyed subscripting to access
             properties.
  */
 - (void)enumerateObjects:(NSString *)className
-                   block:(__attribute__((noescape)) RLMObjectMigrationBlock)block NS_REFINED_FOR_SWIFT;
+                   block:(__attribute__((noescape)) LEGACYObjectMigrationBlock)block NS_REFINED_FOR_SWIFT;
 
 /**
- Creates and returns an `RLMObject` instance of type `className` in the Realm being migrated.
+ Creates and returns an `LEGACYObject` instance of type `className` in the Realm being migrated.
 
  The `value` argument is used to populate the object. It can be a key-value coding compliant object, an array or
  dictionary returned from the methods in `NSJSONSerialization`, or an array containing one element for each managed
@@ -85,10 +85,10 @@ typedef void (^RLMObjectMigrationBlock)(RLMObject * __nullable oldObject, RLMObj
  When passing in an `NSArray` as the `value` argument, all properties must be present, valid and in the same order as
  the properties defined in the model.
 
- @param className   The name of the `RLMObject` class to create.
+ @param className   The name of the `LEGACYObject` class to create.
  @param value       The value used to populate the object.
  */
-- (RLMObject *)createObject:(NSString *)className withValue:(id)value NS_REFINED_FOR_SWIFT;
+- (LEGACYObject *)createObject:(NSString *)className withValue:(id)value NS_REFINED_FOR_SWIFT;
 
 /**
  Deletes an object from a Realm during a migration.
@@ -97,15 +97,15 @@ typedef void (^RLMObjectMigrationBlock)(RLMObject * __nullable oldObject, RLMObj
 
  @param object  Object to be deleted from the Realm being migrated.
  */
-- (void)deleteObject:(RLMObject *)object NS_REFINED_FOR_SWIFT;
+- (void)deleteObject:(LEGACYObject *)object NS_REFINED_FOR_SWIFT;
 
 /**
  Deletes the data for the class with the given name.
 
- All objects of the given class will be deleted. If the `RLMObject` subclass no longer exists in your program,
+ All objects of the given class will be deleted. If the `LEGACYObject` subclass no longer exists in your program,
  any remaining metadata for the class will be removed from the Realm file.
 
- @param  name The name of the `RLMObject` class to delete.
+ @param  name The name of the `LEGACYObject` class to delete.
 
  @return A Boolean value indicating whether there was any data to delete.
  */
@@ -126,4 +126,4 @@ typedef void (^RLMObjectMigrationBlock)(RLMObject * __nullable oldObject, RLMObj
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

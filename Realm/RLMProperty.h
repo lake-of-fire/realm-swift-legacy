@@ -16,47 +16,47 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
-
-/// :nodoc:
-@protocol RLMInt @end
-/// :nodoc:
-@protocol RLMBool @end
-/// :nodoc:
-@protocol RLMDouble @end
-/// :nodoc:
-@protocol RLMFloat @end
-/// :nodoc:
-@protocol RLMString @end
-/// :nodoc:
-@protocol RLMDate @end
-/// :nodoc:
-@protocol RLMData @end
-/// :nodoc:
-@protocol RLMDecimal128 @end
-/// :nodoc:
-@protocol RLMObjectId @end
-/// :nodoc:
-@protocol RLMUUID @end
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 /// :nodoc:
-@interface NSNumber ()<RLMInt, RLMBool, RLMDouble, RLMFloat>
+@protocol LEGACYInt @end
+/// :nodoc:
+@protocol LEGACYBool @end
+/// :nodoc:
+@protocol LEGACYDouble @end
+/// :nodoc:
+@protocol LEGACYFloat @end
+/// :nodoc:
+@protocol LEGACYString @end
+/// :nodoc:
+@protocol LEGACYDate @end
+/// :nodoc:
+@protocol LEGACYData @end
+/// :nodoc:
+@protocol LEGACYDecimal128 @end
+/// :nodoc:
+@protocol LEGACYObjectId @end
+/// :nodoc:
+@protocol LEGACYUUID @end
+
+/// :nodoc:
+@interface NSNumber ()<LEGACYInt, LEGACYBool, LEGACYDouble, LEGACYFloat>
 @end
 
 /**
- `RLMProperty` instances represent properties managed by a Realm in the context
+ `LEGACYProperty` instances represent properties managed by a Realm in the context
  of an object schema. Such properties may be persisted to a Realm file or
  computed from other data from the Realm.
 
- When using Realm, `RLMProperty` instances allow performing migrations and
+ When using Realm, `LEGACYProperty` instances allow performing migrations and
  introspecting the database's schema.
 
  These property instances map to columns in the core database.
  */
-RLM_SWIFT_SENDABLE RLM_FINAL // not actually immutable, but the public API kinda is
-@interface RLMProperty : NSObject
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL // not actually immutable, but the public API kinda is
+@interface LEGACYProperty : NSObject
 
 #pragma mark - Properties
 
@@ -68,19 +68,19 @@ RLM_SWIFT_SENDABLE RLM_FINAL // not actually immutable, but the public API kinda
 /**
  The type of the property.
 
- @see `RLMPropertyType`
+ @see `LEGACYPropertyType`
  */
-@property (nonatomic, readonly) RLMPropertyType type;
+@property (nonatomic, readonly) LEGACYPropertyType type;
 
 /**
  Indicates whether this property is indexed.
 
- @see `RLMObject`
+ @see `LEGACYObject`
  */
 @property (nonatomic, readonly) BOOL indexed;
 
 /**
- For `RLMObject` and `RLMCollection` properties, the name of the class of object stored in the property.
+ For `LEGACYObject` and `LEGACYCollection` properties, the name of the class of object stored in the property.
  */
 @property (nonatomic, readonly, copy, nullable) NSString *objectClassName;
 
@@ -119,16 +119,16 @@ RLM_SWIFT_SENDABLE RLM_FINAL // not actually immutable, but the public API kinda
 /**
  Returns whether a given property object is equal to the receiver.
  */
-- (BOOL)isEqualToProperty:(RLMProperty *)property;
+- (BOOL)isEqualToProperty:(LEGACYProperty *)property;
 
 @end
 
 
 /**
- An `RLMPropertyDescriptor` instance represents a specific property on a given class.
+ An `LEGACYPropertyDescriptor` instance represents a specific property on a given class.
  */
-RLM_SWIFT_SENDABLE RLM_FINAL
-@interface RLMPropertyDescriptor : NSObject
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL
+@interface LEGACYPropertyDescriptor : NSObject
 
 /**
  Creates and returns a property descriptor.
@@ -146,4 +146,4 @@ RLM_SWIFT_SENDABLE RLM_FINAL
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

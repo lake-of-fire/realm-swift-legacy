@@ -19,7 +19,7 @@
 import RealmLegacy.Private
 
 /// The Id of the asynchronous transaction.
-public typealias AsyncTransactionId = RLMAsyncTransactionId
+public typealias AsyncTransactionId = LEGACYAsyncTransactionId
 
 /**
  A `Realm` instance (also referred to as "a Realm") represents a Realm database.
@@ -34,12 +34,12 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
  the code which uses the Realm within an `autoreleasepool {}` and ensure you have no other strong
  references to it.
 
- - warning: Non-frozen `RLMRealm` instances are thread-confined and cannot be
+ - warning: Non-frozen `LEGACYRealm` instances are thread-confined and cannot be
  shared across threads or dispatch queues. Trying to do so will cause an
- exception to be thrown. You must obtain an instance of `RLMRealm` on each
+ exception to be thrown. You must obtain an instance of `LEGACYRealm` on each
  thread or queue you want to interact with the Realm on. Realms can be confined
  to a dispatch queue rather than the thread they are opened on by explicitly
- passing in the queue when obtaining the `RLMRealm` instance. If this is not
+ passing in the queue when obtaining the `LEGACYRealm` instance. If this is not
  done, trying to use the same instance in multiple blocks dispatch to the same
  queue may fail as queues are not always run on the same thread.
  */
@@ -51,7 +51,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
     public var schema: Schema { return Schema(rlmRealm.schema) }
 
     /// The `Configuration` value that was used to create the `Realm` instance.
-    public var configuration: Configuration { return Configuration.fromRLMRealmConfiguration(rlmRealm.configuration) }
+    public var configuration: Configuration { return Configuration.fromLEGACYRealmConfiguration(rlmRealm.configuration) }
 
     /// Indicates if the Realm contains any objects.
     public var isEmpty: Bool { return rlmRealm.isEmpty }
@@ -75,7 +75,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      */
     public init(queue: DispatchQueue? = nil) throws {
         _ = RealmLegacy.initMainActor
-        let rlmRealm = try RLMRealm(configuration: RLMRealmConfiguration.rawDefault(), queue: queue)
+        let rlmRealm = try LEGACYRealm(configuration: LEGACYRealmConfiguration.rawDefault(), queue: queue)
         self.init(rlmRealm)
     }
 
@@ -92,7 +92,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      */
     public init(configuration: Configuration, queue: DispatchQueue? = nil) throws {
         _ = RealmLegacy.initMainActor
-        let rlmRealm = try RLMRealm(configuration: configuration.rlmConfiguration, queue: queue)
+        let rlmRealm = try LEGACYRealm(configuration: configuration.rlmConfiguration, queue: queue)
         self.init(rlmRealm)
     }
 
@@ -105,14 +105,14 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      */
     public init(fileURL: URL) throws {
         _ = RealmLegacy.initMainActor
-        let configuration = RLMRealmConfiguration.default()
+        let configuration = LEGACYRealmConfiguration.default()
         configuration.fileURL = fileURL
-        self.init(try RLMRealm(configuration: configuration))
+        self.init(try LEGACYRealm(configuration: configuration))
     }
 
     private static let initMainActor: Void = {
         if #available(macOS 10.15, iOS 13.0, watchOS 6.0, tvOS 13.0, *) {
-            RLMSetMainActor(MainActor.shared)
+            LEGACYSetMainActor(MainActor.shared)
         }
     }()
 
@@ -142,7 +142,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
     public static func asyncOpen(configuration: RealmLegacy.Configuration = .defaultConfiguration,
                                  callbackQueue: DispatchQueue = .main,
                                  callback: @escaping (Result<RealmLegacy, Swift.Error>) -> Void) -> AsyncOpenTask {
-        return AsyncOpenTask(rlmTask: RLMRealm.asyncOpen(with: configuration.rlmConfiguration, callbackQueue: callbackQueue, callback: { rlmRealm, error in
+        return AsyncOpenTask(rlmTask: LEGACYRealm.asyncOpen(with: configuration.rlmConfiguration, callbackQueue: callbackQueue, callback: { rlmRealm, error in
             if let realm = rlmRealm.flatMap(RealmLegacy.init) {
                 callback(.success(realm))
             } else {
@@ -184,7 +184,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      asynchronously, and may not exist yet when RealmLegacy.asyncOpen() returns.
      */
     @frozen public struct AsyncOpenTask {
-        internal let rlmTask: RLMAsyncOpenTask
+        internal let rlmTask: LEGACYAsyncOpenTask
 
         /**
          Cancel the asynchronous open.
@@ -551,7 +551,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
         if update != .error && object.objectSchema.primaryKeyProperty == nil {
             throwRealmException("'\(object.objectSchema.className)' does not have a primary key and can not be updated")
         }
-        RLMAddObjectToRealm(object, rlmRealm, RLMUpdatePolicy(rawValue: UInt(update.rawValue))!)
+        LEGACYAddObjectToRealm(object, rlmRealm, LEGACYUpdatePolicy(rawValue: UInt(update.rawValue))!)
     }
 
     /// :nodoc:
@@ -612,11 +612,11 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
     @discardableResult
     public func create<T: Object>(_ type: T.Type, value: Any = [String: Any](), update: UpdatePolicy = .error) -> T {
         if update != .error {
-            RLMVerifyHasPrimaryKey(type)
+            LEGACYVerifyHasPrimaryKey(type)
         }
         let typeName = (type as Object.Type).className()
-        return unsafeDowncast(RLMCreateObjectInRealmWithValue(rlmRealm, typeName, value,
-                                                              RLMUpdatePolicy(rawValue: UInt(update.rawValue))!), to: type)
+        return unsafeDowncast(LEGACYCreateObjectInRealmWithValue(rlmRealm, typeName, value,
+                                                              LEGACYUpdatePolicy(rawValue: UInt(update.rawValue))!), to: type)
     }
 
     /**
@@ -662,8 +662,8 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
         if update != .error && schema[typeName]?.primaryKeyProperty == nil {
             throwRealmException("'\(typeName)' does not have a primary key and can not be updated")
         }
-        return noWarnUnsafeBitCast(RLMCreateObjectInRealmWithValue(rlmRealm, typeName, value,
-                                                                   RLMUpdatePolicy(rawValue: UInt(update.rawValue))!),
+        return noWarnUnsafeBitCast(LEGACYCreateObjectInRealmWithValue(rlmRealm, typeName, value,
+                                                                   LEGACYUpdatePolicy(rawValue: UInt(update.rawValue))!),
                                    to: DynamicObject.self)
     }
 
@@ -677,7 +677,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      - parameter object: The object to be deleted.
      */
     public func delete(_ object: ObjectBase) {
-        RLMDeleteObjectFromRealm(object, rlmRealm)
+        LEGACYDeleteObjectFromRealm(object, rlmRealm)
     }
 
     /**
@@ -746,7 +746,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      - warning: This method may only be called during a write transaction.
      */
     public func deleteAll() {
-        RLMDeleteAllObjectsFromRealm(rlmRealm)
+        LEGACYDeleteAllObjectsFromRealm(rlmRealm)
     }
 
     // MARK: Object Retrieval
@@ -759,7 +759,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      - returns: A `Results` containing the objects.
      */
     public func objects<Element: RealmFetchable>(_ type: Element.Type) -> Results<Element> {
-        return Results(RLMGetObjects(rlmRealm, type.className(), nil))
+        return Results(LEGACYGetObjects(rlmRealm, type.className(), nil))
     }
 
     /**
@@ -775,7 +775,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      :nodoc:
      */
     public func dynamicObjects(_ typeName: String) -> Results<DynamicObject> {
-        return Results<DynamicObject>(RLMGetObjects(rlmRealm, typeName, nil))
+        return Results<DynamicObject>(LEGACYGetObjects(rlmRealm, typeName, nil))
     }
 
     /**
@@ -791,8 +791,8 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      - returns: An object of type `type`, or `nil` if no instance with the given primary key exists.
      */
     public func object<Element: Object, KeyType>(ofType type: Element.Type, forPrimaryKey key: KeyType) -> Element? {
-        return unsafeBitCast(RLMGetObject(rlmRealm, (type as Object.Type).className(),
-                                          dynamicBridgeCast(fromSwift: key)) as! RLMObjectBase?,
+        return unsafeBitCast(LEGACYGetObject(rlmRealm, (type as Object.Type).className(),
+                                          dynamicBridgeCast(fromSwift: key)) as! LEGACYObjectBase?,
                              to: Optional<Element>.self)
     }
 
@@ -819,7 +819,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      :nodoc:
      */
     public func dynamicObject(ofType typeName: String, forPrimaryKey key: Any) -> DynamicObject? {
-        return unsafeBitCast(RLMGetObject(rlmRealm, typeName, key) as! RLMObjectBase?, to: Optional<DynamicObject>.self)
+        return unsafeBitCast(LEGACYGetObject(rlmRealm, typeName, key) as! LEGACYObjectBase?, to: Optional<DynamicObject>.self)
     }
 
     // MARK: Notifications
@@ -848,9 +848,9 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
     public func observe(_ block: @escaping NotificationBlock) -> NotificationToken {
         return rlmRealm.addNotificationBlock { rlmNotification, _ in
             switch rlmNotification {
-            case RLMNotification.DidChange:
+            case LEGACYNotification.DidChange:
                 block(.didChange, self)
-            case RLMNotification.RefreshRequired:
+            case LEGACYNotification.RefreshRequired:
                 block(.refreshRequired, self)
             default:
                 fatalError("Unhandled notification type: \(rlmNotification)")
@@ -957,7 +957,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      `Realm.Configuration.maximumNumberOfActiveVersions` for more information.
      */
     public func freeze<T: ObjectBase>(_ obj: T) -> T {
-        return RLMObjectFreeze(obj) as! T
+        return LEGACYObjectFreeze(obj) as! T
     }
 
     /**
@@ -967,7 +967,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      Will return self if called on an already live object.
      */
     public func thaw<T: ObjectBase>(_ obj: T) -> T? {
-        return RLMObjectThaw(obj) as? T
+        return LEGACYObjectThaw(obj) as? T
     }
 
     /**
@@ -1057,7 +1057,7 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      @return true if the Realm file for the given configuration exists on disk, false otherwise.
      */
     public static func fileExists(for config: Configuration) -> Bool {
-        return RLMRealm.fileExists(for: config.rlmConfiguration)
+        return LEGACYRealm.fileExists(for: config.rlmConfiguration)
     }
 
     /**
@@ -1079,13 +1079,13 @@ public typealias AsyncTransactionId = RLMAsyncTransactionId
      @return true if any files were deleted, false otherwise.
      */
     public static func deleteFiles(for config: Configuration) throws -> Bool {
-        return try RLMRealm.deleteFiles(for: config.rlmConfiguration)
+        return try LEGACYRealm.deleteFiles(for: config.rlmConfiguration)
     }
 
     // MARK: Internal
 
-    internal var rlmRealm: RLMRealm
-    internal init(_ rlmRealm: RLMRealm) {
+    internal var rlmRealm: LEGACYRealm
+    internal init(_ rlmRealm: LEGACYRealm) {
         self.rlmRealm = rlmRealm
     }
 }
@@ -1123,7 +1123,7 @@ extension RealmLegacy {
      */
     public func create<T: AsymmetricObject>(_ type: T.Type, value: Any = [String: Any]()) {
         let typeName = (type as AsymmetricObject.Type).className()
-        RLMCreateAsymmetricObjectInRealm(rlmRealm, typeName, value)
+        LEGACYCreateAsymmetricObjectInRealm(rlmRealm, typeName, value)
     }
 }
 
@@ -1148,7 +1148,7 @@ extension RealmLegacy {
          autorefresh occurs, `refresh()` is called, after an implicit refresh from `write(_:)`/`beginWrite()`, or after
          a local write transaction is committed.
          */
-        case didChange = "RLMRealmDidChangeNotification"
+        case didChange = "LEGACYRealmDidChangeNotification"
 
         /**
          This notification is posted when a write transaction has been committed to a Realm on a different thread for
@@ -1161,7 +1161,7 @@ extension RealmLegacy {
          `refresh()` after doing some work. Refreshing the Realm is optional, but not refreshing the Realm may lead to
          large Realm files. This is because an extra copy of the data must be kept for the stale RealmLegacy.
          */
-        case refreshRequired = "RLMRealmRefreshRequiredNotification"
+        case refreshRequired = "LEGACYRealmRefreshRequiredNotification"
     }
 }
 
@@ -1225,7 +1225,7 @@ extension RealmLegacy {
     @MainActor
     public init(configuration: RealmLegacy.Configuration = .defaultConfiguration,
                 downloadBeforeOpen: OpenBehavior = .never) async throws {
-        let scheduler = RLMScheduler.dispatchQueue(.main)
+        let scheduler = LEGACYScheduler.dispatchQueue(.main)
         let rlmRealm = try await openRealm(configuration: configuration, scheduler: scheduler,
                                            actor: MainActor.shared, downloadBeforeOpen: downloadBeforeOpen)
         self = RealmLegacy(rlmRealm.wrappedValue)
@@ -1265,7 +1265,7 @@ extension RealmLegacy {
     public init<A: Actor>(configuration: RealmLegacy.Configuration = .defaultConfiguration,
                           actor: A,
                           downloadBeforeOpen: OpenBehavior = .never) async throws {
-        let scheduler = RLMScheduler.actor(actor, invoke: actor.invoke, verify: await actor.verifier())
+        let scheduler = LEGACYScheduler.actor(actor, invoke: actor.invoke, verify: await actor.verifier())
         let rlmRealm = try await openRealm(configuration: configuration, scheduler: scheduler,
                                             actor: actor, downloadBeforeOpen: downloadBeforeOpen)
         self = RealmLegacy(rlmRealm.wrappedValue)
@@ -1373,7 +1373,7 @@ extension RealmLegacy {
         guard rlmRealm.actor as? Actor != nil else {
             fatalError("asyncRefresh() can only be called on main thread or actor-isolated Realms")
         }
-        guard let task = RLMRealmRefreshAsync(rlmRealm) else {
+        guard let task = LEGACYRealmRefreshAsync(rlmRealm) else {
             return false
         }
         return await withTaskCancellationHandler {
@@ -1387,27 +1387,27 @@ extension RealmLegacy {
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 private func openRealm<A: Actor>(configuration: RealmLegacy.Configuration,
-                                 scheduler: RLMScheduler,
+                                 scheduler: LEGACYScheduler,
                                  actor: isolated A,
                                  downloadBeforeOpen: RealmLegacy.OpenBehavior
-) async throws -> Unchecked<RLMRealm> {
-    let scheduler = RLMScheduler.actor(actor, invoke: actor.invoke, verify: actor.verifier())
+) async throws -> Unchecked<LEGACYRealm> {
+    let scheduler = LEGACYScheduler.actor(actor, invoke: actor.invoke, verify: actor.verifier())
     let rlmConfiguration = configuration.rlmConfiguration
 
     // If we already have a cached Realm for this actor, just reuse it
     // If this Realm is open but with a different scheduler, open it synchronously.
     // The overhead of dispatching to a different thread and back is more expensive
     // than the fast path of obtaining a new instance for an already open RealmLegacy.
-    var realm = RLMGetCachedRealm(rlmConfiguration, scheduler)
-    if realm == nil, let cachedRealm = RLMGetAnyCachedRealm(rlmConfiguration) {
+    var realm = LEGACYGetCachedRealm(rlmConfiguration, scheduler)
+    if realm == nil, let cachedRealm = LEGACYGetAnyCachedRealm(rlmConfiguration) {
         try withExtendedLifetime(cachedRealm) {
-            realm = try RLMRealm(configuration: rlmConfiguration, confinedTo: scheduler)
+            realm = try LEGACYRealm(configuration: rlmConfiguration, confinedTo: scheduler)
         }
     }
     if let realm = realm {
         // This can't be hit on the first open so .once == .never
         if downloadBeforeOpen == .always {
-            let task = RLMAsyncDownloadTask(realm: realm)
+            let task = LEGACYAsyncDownloadTask(realm: realm)
             try await task.waitWithCancellationHandler()
         }
         return Unchecked(realm)
@@ -1415,7 +1415,7 @@ private func openRealm<A: Actor>(configuration: RealmLegacy.Configuration,
 
     // We're doing the first open and hitting the expensive path, so do an async
     // open on a background thread
-    let task = RLMAsyncOpenTask(configuration: rlmConfiguration, confinedTo: scheduler,
+    let task = LEGACYAsyncOpenTask(configuration: rlmConfiguration, confinedTo: scheduler,
                                 download: shouldAsyncOpen(configuration, downloadBeforeOpen))
     // progress notifications?
     do {
@@ -1455,8 +1455,8 @@ extension TaskWithCancellation {
         }
     }
 }
-extension RLMAsyncOpenTask: TaskWithCancellation {}
-extension RLMAsyncDownloadTask: TaskWithCancellation {}
+extension LEGACYAsyncOpenTask: TaskWithCancellation {}
+extension LEGACYAsyncDownloadTask: TaskWithCancellation {}
 
 @available(macOS 10.15, tvOS 13.0, iOS 13.0, watchOS 6.0, *)
 internal extension Actor {
@@ -1535,7 +1535,7 @@ extension Projection: RealmFetchable {
 
  - note: By default default log threshold level is `.info`, and logging strings are output to Apple System Logger.
 */
-public typealias Logger = RLMLogger
+public typealias Logger = LEGACYLogger
 extension Logger {
     /**
      Log a message to the supplied level.

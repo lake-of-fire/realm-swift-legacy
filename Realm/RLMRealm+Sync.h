@@ -18,21 +18,21 @@
 
 #import <Foundation/Foundation.h>
 
-#import <Realm/RLMRealm.h>
+#import <Realm/LEGACYRealm.h>
 
-@class RLMResults, RLMSyncSession;
+@class LEGACYResults, LEGACYSyncSession;
 
-RLM_HEADER_AUDIT_BEGIN(nullability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability)
 
 ///
-@interface RLMRealm (Sync)
+@interface LEGACYRealm (Sync)
 
 /**
- Get the RLMSyncSession used by this Realm. Will be nil if this is not a
+ Get the LEGACYSyncSession used by this Realm. Will be nil if this is not a
  synchronized Realm.
 */
-@property (nonatomic, nullable, readonly) RLMSyncSession *syncSession;
+@property (nonatomic, nullable, readonly) LEGACYSyncSession *syncSession;
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability)
+LEGACY_HEADER_AUDIT_END(nullability)

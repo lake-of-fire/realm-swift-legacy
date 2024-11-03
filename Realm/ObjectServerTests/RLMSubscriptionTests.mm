@@ -16,14 +16,14 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSyncTestCase.h"
-#import "RLMSyncSubscription_Private.h"
-#import "RLMApp_Private.hpp"
+#import "LEGACYSyncTestCase.h"
+#import "LEGACYSyncSubscription_Private.h"
+#import "LEGACYApp_Private.hpp"
 
-@interface RLMSubscriptionTests : RLMSyncTestCase
+@interface LEGACYSubscriptionTests : LEGACYSyncTestCase
 @end
 
-@implementation RLMSubscriptionTests
+@implementation LEGACYSubscriptionTests
 - (NSArray *)defaultObjectTypes {
     return @[Dog.self, Person.self];
 }
@@ -32,7 +32,7 @@
     return [self createFlexibleSyncAppWithError:error];
 }
 
-- (RLMRealmConfiguration *)configurationForUser:(RLMUser *)user {
+- (LEGACYRealmConfiguration *)configurationForUser:(LEGACYUser *)user {
     return [user flexibleSyncConfiguration];
 }
 
@@ -41,7 +41,7 @@
                                                         types:@[Person.self]
                                                    persistent:false
                                                         error:nil];
-    RLMApp *app = [self appWithId:appId];
+    LEGACYApp *app = [self appWithId:appId];
     XCTAssertNotNil(app);
 }
 
@@ -50,45 +50,45 @@
 }
 
 - (void)testGetSubscriptionsWhenLocalRealm {
-    RLMRealmConfiguration *configuration = [RLMRealmConfiguration defaultConfiguration];
+    LEGACYRealmConfiguration *configuration = [LEGACYRealmConfiguration defaultConfiguration];
     configuration.objectClasses = @[Person.self];
-    RLMRealm *realm = [RLMRealm realmWithConfiguration:configuration error:nil];
-    RLMAssertThrowsWithReason(realm.subscriptions, @"This Realm was not configured with flexible sync");
+    LEGACYRealm *realm = [LEGACYRealm realmWithConfiguration:configuration error:nil];
+    LEGACYAssertThrowsWithReason(realm.subscriptions, @"This Realm was not configured with flexible sync");
 }
 
 - (void)testGetSubscriptionsWhenPbsRealm {
-    RLMRealmConfiguration *config = [self.createUser configurationWithPartitionValue:nil];
+    LEGACYRealmConfiguration *config = [self.createUser configurationWithPartitionValue:nil];
     config.objectClasses = @[];
-    RLMRealm *realm = [RLMRealm realmWithConfiguration:config error:nil];
-    RLMAssertThrowsWithReason(realm.subscriptions, @"This Realm was not configured with flexible sync");
+    LEGACYRealm *realm = [LEGACYRealm realmWithConfiguration:config error:nil];
+    LEGACYAssertThrowsWithReason(realm.subscriptions, @"This Realm was not configured with flexible sync");
 }
 
 - (void)testFlexibleSyncRealmFilePath {
-    RLMUser *user = [self createUser];
-    RLMRealmConfiguration *config = [user flexibleSyncConfiguration];
+    LEGACYUser *user = [self createUser];
+    LEGACYRealmConfiguration *config = [user flexibleSyncConfiguration];
     NSString *expected = [NSString stringWithFormat:@"mongodb-realm/%@/%@/flx_sync_default.realm", self.appId, user.identifier];
     XCTAssertTrue([config.fileURL.path hasSuffix:expected]);
 }
 
 - (void)testGetSubscriptionsWhenFlexibleSync {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
     XCTAssertNotNil(subs);
     XCTAssertEqual(subs.version, 0UL);
     XCTAssertEqual(subs.count, 0UL);
 }
 
 - (void)testGetSubscriptionsWhenSameVersion {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs1 = realm.subscriptions;
-    RLMSyncSubscriptionSet *subs2 = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs1 = realm.subscriptions;
+    LEGACYSyncSubscriptionSet *subs2 = realm.subscriptions;
     XCTAssertEqual(subs1.version, 0UL);
     XCTAssertEqual(subs2.version, 0UL);
 }
 
 - (void)testCheckVersionAfterAddSubscription {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
     XCTAssertNotNil(subs);
     XCTAssertEqual(subs.version, 0UL);
     XCTAssertEqual(subs.count, 0UL);
@@ -103,8 +103,8 @@
 }
 
 - (void)testEmptyWriteSubscriptions {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
     XCTAssertNotNil(subs);
     XCTAssertEqual(subs.version, 0UL);
     XCTAssertEqual(subs.count, 0UL);
@@ -116,15 +116,15 @@
 }
 
 - (void)testAddAndFindSubscriptionByQuery {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
 
     [subs update:^{
         [subs addSubscriptionWithClassName:Person.className
                                      where:@"age > 15"];
     }];
 
-    RLMSyncSubscription *foundSubscription = [subs subscriptionWithClassName:Person.className
+    LEGACYSyncSubscription *foundSubscription = [subs subscriptionWithClassName:Person.className
                                                                        where:@"age > 15"];
     XCTAssertNotNil(foundSubscription);
     XCTAssertNil(foundSubscription.name);
@@ -132,8 +132,8 @@
 }
 
 - (void)testAddAndFindSubscriptionWithCompoundQuery {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
     XCTAssertNotNil(subs);
     XCTAssertEqual(subs.version, 0UL);
     XCTAssertEqual(subs.count, 0UL);
@@ -146,7 +146,7 @@
     XCTAssertEqual(subs.version, 1UL);
     XCTAssertEqual(subs.count, 1UL);
 
-    RLMSyncSubscription *foundSubscription = [subs subscriptionWithClassName:Person.className
+    LEGACYSyncSubscription *foundSubscription = [subs subscriptionWithClassName:Person.className
                                                                        where:@"firstName == %@ and lastName == %@", @"John", @"Doe"];
     XCTAssertNotNil(foundSubscription);
     XCTAssertNil(foundSubscription.name);
@@ -154,8 +154,8 @@
 }
 
 - (void)testAddAndFindSubscriptionWithPredicate {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
     XCTAssertNotNil(subs);
     XCTAssertEqual(subs.version, 0UL);
     XCTAssertEqual(subs.count, 0UL);
@@ -168,7 +168,7 @@
     XCTAssertEqual(subs.version, 1UL);
     XCTAssertEqual(subs.count, 1UL);
 
-    RLMSyncSubscription *foundSubscription = [subs subscriptionWithClassName:Person.className
+    LEGACYSyncSubscription *foundSubscription = [subs subscriptionWithClassName:Person.className
                                                                    predicate:[NSPredicate predicateWithFormat:@"age == %d", 20]];
     XCTAssertNotNil(foundSubscription);
     XCTAssertNil(foundSubscription.name);
@@ -176,15 +176,15 @@
 }
 
 - (void)testAddSubscriptionWithoutWriteThrow {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
-    RLMAssertThrowsWithReason([subs addSubscriptionWithClassName:Person.className where:@"age > 15"],
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYAssertThrowsWithReason([subs addSubscriptionWithClassName:Person.className where:@"age > 15"],
                               @"Can only add, remove, or update subscriptions within a write subscription block.");
 }
 
 - (void)testAddAndFindSubscriptionByName {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
     XCTAssertNotNil(realm.subscriptions);
     XCTAssertEqual(realm.subscriptions.version, 0UL);
     XCTAssertEqual(realm.subscriptions.count, 0UL);
@@ -195,15 +195,15 @@
                                      where:@"age > 15"];
     }];
 
-    RLMSyncSubscription *foundSubscription = [subs subscriptionWithName:@"person_older_15"];
+    LEGACYSyncSubscription *foundSubscription = [subs subscriptionWithName:@"person_older_15"];
     XCTAssertNotNil(foundSubscription);
     XCTAssert(foundSubscription.name, @"person_older_15");
     XCTAssert(foundSubscription.queryString, @"age > 15");
 }
 
 - (void)testAddDuplicateSubscription {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
 
     [subs update:^{
         [subs addSubscriptionWithClassName:Person.className
@@ -217,14 +217,14 @@
 }
 
 - (void)testAddDuplicateNamedSubscriptionWillThrow {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
 
     [subs update:^{
         [subs addSubscriptionWithClassName:Person.className
                           subscriptionName:@"person_age"
                                      where:@"age > 15"];
-        RLMAssertThrowsWithReason([subs addSubscriptionWithClassName:Person.className
+        LEGACYAssertThrowsWithReason([subs addSubscriptionWithClassName:Person.className
                                                     subscriptionName:@"person_age"
                                                                where:@"age > 20"],
                                   @"A subscription named 'person_age' already exists. If you meant to update the existing subscription please use the `update` method.");
@@ -233,7 +233,7 @@
     XCTAssertEqual(subs.version, 1UL);
     XCTAssertEqual(subs.count, 1UL);
 
-    RLMSyncSubscription *foundSubscription = [subs subscriptionWithName:@"person_age"];
+    LEGACYSyncSubscription *foundSubscription = [subs subscriptionWithName:@"person_age"];
     XCTAssertNotNil(foundSubscription);
 
     XCTAssertEqualObjects(foundSubscription.name, @"person_age");
@@ -242,8 +242,8 @@
 }
 
 - (void)testAddDuplicateSubscriptionWithPredicate {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
 
     [subs update:^{
         [subs addSubscriptionWithClassName:Person.className
@@ -257,8 +257,8 @@
 }
 
 - (void)testAddDuplicateSubscriptionWithDifferentName {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
 
     [subs update:^{
         [subs addSubscriptionWithClassName:Person.className
@@ -272,10 +272,10 @@
     XCTAssertEqual(subs.version, 1UL);
     XCTAssertEqual(subs.count, 2UL);
 
-    RLMSyncSubscription *foundSubscription = [subs subscriptionWithName:@"person_age_1"];
+    LEGACYSyncSubscription *foundSubscription = [subs subscriptionWithName:@"person_age_1"];
     XCTAssertNotNil(foundSubscription);
 
-    RLMSyncSubscription *foundSubscription2 = [subs subscriptionWithName:@"person_age_2"];
+    LEGACYSyncSubscription *foundSubscription2 = [subs subscriptionWithName:@"person_age_2"];
     XCTAssertNotNil(foundSubscription2);
 
     XCTAssertNotEqualObjects(foundSubscription.name, foundSubscription2.name);
@@ -284,8 +284,8 @@
 }
 
 - (void)testOverrideNamedWithUnnamedSubscription {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
 
     [subs update:^{
         [subs addSubscriptionWithClassName:Person.className
@@ -300,8 +300,8 @@
 }
 
 - (void)testOverrideUnnamedWithNamedSubscription {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
 
     [subs update:^{
         [subs addSubscriptionWithClassName:Person.className
@@ -316,8 +316,8 @@
 }
 
 - (void)testAddSubscriptionInDifferentWriteBlocks {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
 
     [subs update:^{
         [subs addSubscriptionWithClassName:Person.className
@@ -334,16 +334,16 @@
     XCTAssertEqual(realm.subscriptions.version, 2UL);
     XCTAssertEqual(realm.subscriptions.count, 2UL);
 
-    RLMSyncSubscription *foundSubscription = [subs subscriptionWithName:@"person_age_1"];
+    LEGACYSyncSubscription *foundSubscription = [subs subscriptionWithName:@"person_age_1"];
     XCTAssertNotNil(foundSubscription);
 
-    RLMSyncSubscription *foundSubscription2 = [subs subscriptionWithName:@"person_age_2"];
+    LEGACYSyncSubscription *foundSubscription2 = [subs subscriptionWithName:@"person_age_2"];
     XCTAssertNotNil(foundSubscription2);
 }
 
 - (void)testRemoveSubscriptionByName {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
 
     [subs update:^{
         [subs addSubscriptionWithClassName:Person.className
@@ -364,16 +364,16 @@
     XCTAssertEqual(subs.version, 2UL);
     XCTAssertEqual(subs.count, 1UL);
 
-    RLMSyncSubscription *foundSubscription = [subs subscriptionWithName:@"person_age_1"];
+    LEGACYSyncSubscription *foundSubscription = [subs subscriptionWithName:@"person_age_1"];
     XCTAssertNil(foundSubscription);
 
-    RLMSyncSubscription *foundSubscription2 = [subs subscriptionWithName:@"person_age_2"];
+    LEGACYSyncSubscription *foundSubscription2 = [subs subscriptionWithName:@"person_age_2"];
     XCTAssertNotNil(foundSubscription2);
 }
 
 - (void)testRemoveSubscriptionWithoutWriteThrow {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
 
     [subs update:^{
         [subs addSubscriptionWithClassName:Person.className
@@ -383,12 +383,12 @@
 
     XCTAssertEqual(subs.version, 1UL);
     XCTAssertEqual(subs.count, 1UL);
-    RLMAssertThrowsWithReason([subs removeSubscriptionWithName:@"person_age_1"], @"Can only add, remove, or update subscriptions within a write subscription block.");
+    LEGACYAssertThrowsWithReason([subs removeSubscriptionWithName:@"person_age_1"], @"Can only add, remove, or update subscriptions within a write subscription block.");
 }
 
 - (void)testRemoveSubscriptionByQuery {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
 
     [subs update:^{
         [subs addSubscriptionWithClassName:Person.className
@@ -413,19 +413,19 @@
     XCTAssertEqual(subs.version, 2UL);
     XCTAssertEqual(subs.count, 1UL);
 
-    RLMSyncSubscription *foundSubscription = [subs subscriptionWithName:@"person_age"];
+    LEGACYSyncSubscription *foundSubscription = [subs subscriptionWithName:@"person_age"];
     XCTAssertNotNil(foundSubscription);
 
-    RLMSyncSubscription *foundSubscription2 = [subs subscriptionWithName:@"person_firstname"];
+    LEGACYSyncSubscription *foundSubscription2 = [subs subscriptionWithName:@"person_firstname"];
     XCTAssertNil(foundSubscription2);
 
-    RLMSyncSubscription *foundSubscription3 = [subs subscriptionWithName:@"person_lastname"];
+    LEGACYSyncSubscription *foundSubscription3 = [subs subscriptionWithName:@"person_lastname"];
     XCTAssertNil(foundSubscription3);
 }
 
 - (void)testRemoveSubscription {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
 
     [subs update:^{
         [subs addSubscriptionWithClassName:Person.className
@@ -442,7 +442,7 @@
     XCTAssertEqual(subs.version, 1UL);
     XCTAssertEqual(subs.count, 3UL);
 
-    RLMSyncSubscription *foundSubscription = [subs subscriptionWithName:@"person_age"];
+    LEGACYSyncSubscription *foundSubscription = [subs subscriptionWithName:@"person_age"];
     XCTAssertNotNil(foundSubscription);
 
     [subs update:^{
@@ -452,7 +452,7 @@
     XCTAssertEqual(subs.version, 2UL);
     XCTAssertEqual(subs.count, 2UL);
 
-    RLMSyncSubscription *foundSubscription2 = [subs subscriptionWithName:@"person_firstname"];
+    LEGACYSyncSubscription *foundSubscription2 = [subs subscriptionWithName:@"person_firstname"];
     XCTAssertNotNil(foundSubscription2);
 
     [subs update:^{
@@ -464,8 +464,8 @@
 }
 
 - (void)testRemoveAllSubscription {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
 
     [subs update:^{
         [subs addSubscriptionWithClassName:Person.className
@@ -489,13 +489,13 @@
     XCTAssertEqual(subs.version, 2UL);
     XCTAssertEqual(subs.count, 0UL);
 
-    RLMSyncSubscription *foundSubscription = [subs subscriptionWithName:@"person_age_3"];
+    LEGACYSyncSubscription *foundSubscription = [subs subscriptionWithName:@"person_age_3"];
     XCTAssertNil(foundSubscription);
 }
 
 - (void)testRemoveAllSubscriptionForType {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
 
     [subs update:^{
         [subs addSubscriptionWithClassName:Person.className
@@ -519,7 +519,7 @@
     XCTAssertEqual(subs.version, 2UL);
     XCTAssertEqual(subs.count, 1UL);
 
-    RLMSyncSubscription *foundSubscription = [subs subscriptionWithName:@"dog_name"];
+    LEGACYSyncSubscription *foundSubscription = [subs subscriptionWithName:@"dog_name"];
     XCTAssertNotNil(foundSubscription);
 
     [subs update:^{
@@ -531,8 +531,8 @@
 }
 
 - (void)testUpdateSubscriptionQuery {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
 
     [subs update:^{
         [subs addSubscriptionWithClassName:Person.className
@@ -543,7 +543,7 @@
     XCTAssertEqual(subs.version, 1UL);
     XCTAssertEqual(subs.count, 1UL);
 
-    RLMSyncSubscription *foundSubscription = [subs subscriptionWithName:@"person_age"];
+    LEGACYSyncSubscription *foundSubscription = [subs subscriptionWithName:@"person_age"];
     XCTAssertNotNil(foundSubscription);
 
     [subs update:^{
@@ -553,15 +553,15 @@
     XCTAssertEqual(subs.version, 2UL);
     XCTAssertEqual(subs.count, 1UL);
 
-    RLMSyncSubscription *foundSubscription2 = [subs subscriptionWithName:@"person_age"];
+    LEGACYSyncSubscription *foundSubscription2 = [subs subscriptionWithName:@"person_age"];
     XCTAssertNotNil(foundSubscription2);
     XCTAssertEqualObjects(foundSubscription2.queryString, @"age > 20");
     XCTAssertEqualObjects(foundSubscription2.objectClassName, @"Person");
 }
 
 - (void)testUpdateSubscriptionQueryWithoutWriteThrow {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
 
     [subs update:^{
         [subs addSubscriptionWithClassName:Person.className
@@ -572,15 +572,15 @@
     XCTAssertEqual(subs.version, 1UL);
     XCTAssertEqual(subs.count, 1UL);
 
-    RLMSyncSubscription *foundSubscription = [subs subscriptionWithName:@"subscription_1"];
+    LEGACYSyncSubscription *foundSubscription = [subs subscriptionWithName:@"subscription_1"];
     XCTAssertNotNil(foundSubscription);
 
-    RLMAssertThrowsWithReason([foundSubscription updateSubscriptionWithPredicate:[NSPredicate predicateWithFormat:@"name == 'Tomas'"]], @"Can only add, remove, or update subscriptions within a write subscription block.");
+    LEGACYAssertThrowsWithReason([foundSubscription updateSubscriptionWithPredicate:[NSPredicate predicateWithFormat:@"name == 'Tomas'"]], @"Can only add, remove, or update subscriptions within a write subscription block.");
 }
 
 - (void)testSubscriptionSetIterate {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
 
     double numberOfSubs = 100;
     [subs update:^{
@@ -596,10 +596,10 @@
 
     __weak id objects[(unsigned long)pow(numberOfSubs, 2.0) + (unsigned long)numberOfSubs];
     NSInteger count = 0;
-    for (RLMSyncSubscription *sub in subs) {
+    for (LEGACYSyncSubscription *sub in subs) {
         XCTAssertNotNil(sub);
         objects[count++] = sub;
-        for (RLMSyncSubscription *sub in subs) {
+        for (LEGACYSyncSubscription *sub in subs) {
             objects[count++] = sub;
         }
     }
@@ -607,8 +607,8 @@
 }
 
 - (void)testSubscriptionSetFirstAndLast {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
 
     XCTAssertNil(subs.firstObject);
     XCTAssertNil(subs.lastObject);
@@ -625,18 +625,18 @@
     XCTAssertEqual(subs.version, 1UL);
     XCTAssertEqual(subs.count, (unsigned long)numberOfSubs);
 
-    RLMSyncSubscription *firstSubscription = subs.firstObject;
+    LEGACYSyncSubscription *firstSubscription = subs.firstObject;
     XCTAssertEqualObjects(firstSubscription.name, @"person_age_1");
     XCTAssertEqualObjects(firstSubscription.queryString, @"age > 1");
 
-    RLMSyncSubscription *lastSubscription = subs.lastObject;
+    LEGACYSyncSubscription *lastSubscription = subs.lastObject;
     XCTAssertEqualObjects(lastSubscription.name, ([NSString stringWithFormat:@"person_age_%d", numberOfSubs]));
     XCTAssertEqualObjects(lastSubscription.queryString, ([NSString stringWithFormat:@"age > %d", numberOfSubs]));
 }
 
 - (void)testSubscriptionSetSubscript {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
 
     XCTAssertEqual(subs.count, 0UL);
 
@@ -652,16 +652,16 @@
     XCTAssertEqual(subs.version, 1UL);
     XCTAssertEqual(subs.count, (unsigned long)numberOfSubs);
 
-    RLMSyncSubscription *firstSubscription = subs[0];
+    LEGACYSyncSubscription *firstSubscription = subs[0];
     XCTAssertEqualObjects(firstSubscription.name, @"person_age_1");
     XCTAssertEqualObjects(firstSubscription.queryString, @"age > 1");
 
-    RLMSyncSubscription *lastSubscription = subs[numberOfSubs-1];
+    LEGACYSyncSubscription *lastSubscription = subs[numberOfSubs-1];
     XCTAssertEqualObjects(lastSubscription.name, ([NSString stringWithFormat:@"person_age_%d", numberOfSubs]));
     XCTAssertEqualObjects(lastSubscription.queryString, ([NSString stringWithFormat:@"age > %d", numberOfSubs]));
 
     int index = (numberOfSubs/2);
-    RLMSyncSubscription *objectAtIndexSubscription = [subs objectAtIndex:index];
+    LEGACYSyncSubscription *objectAtIndexSubscription = [subs objectAtIndex:index];
     XCTAssertEqualObjects(objectAtIndexSubscription.name, ([NSString stringWithFormat:@"person_age_%d", index+1]));
     XCTAssertEqualObjects(objectAtIndexSubscription.queryString, ([NSString stringWithFormat:@"age > %d", index+1]));
 }

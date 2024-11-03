@@ -16,14 +16,14 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMObjectBase.h>
+#import <Realm/LEGACYObjectBase.h>
 
-@class RLMArray<RLMObjectType>;
+@class LEGACYArray<LEGACYObjectType>;
 
-RLM_HEADER_AUDIT_BEGIN(nullability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability)
 
-// RLMObjectBase private
-@interface RLMObjectBase ()
+// LEGACYObjectBase private
+@interface LEGACYObjectBase ()
 @property (nonatomic, nullable) NSMutableArray *lastAccessedNames;
 
 + (void)initializeLinkedObjectSchemas;
@@ -31,4 +31,4 @@ RLM_HEADER_AUDIT_BEGIN(nullability)
 + (bool)isAsymmetric;
 @end
 
-RLM_HEADER_AUDIT_END(nullability)
+LEGACY_HEADER_AUDIT_END(nullability)

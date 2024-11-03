@@ -16,58 +16,58 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMObjectId.h>
-#import <Realm/RLMDecimal128.h>
+#import <Realm/LEGACYObjectId.h>
+#import <Realm/LEGACYDecimal128.h>
 
-#pragma mark RLMBSONType
+#pragma mark LEGACYBSONType
 
 /**
  Allowed BSON types.
  */
-typedef NS_ENUM(NSUInteger, RLMBSONType) {
+typedef NS_ENUM(NSUInteger, LEGACYBSONType) {
     /// BSON Null type
-    RLMBSONTypeNull,
+    LEGACYBSONTypeNull,
     /// BSON Int32 type
-    RLMBSONTypeInt32,
+    LEGACYBSONTypeInt32,
     /// BSON Int64 type
-    RLMBSONTypeInt64,
+    LEGACYBSONTypeInt64,
     /// BSON Bool type
-    RLMBSONTypeBool,
+    LEGACYBSONTypeBool,
     /// BSON Double type
-    RLMBSONTypeDouble,
+    LEGACYBSONTypeDouble,
     /// BSON String type
-    RLMBSONTypeString,
+    LEGACYBSONTypeString,
     /// BSON Binary type
-    RLMBSONTypeBinary,
+    LEGACYBSONTypeBinary,
     /// BSON Timestamp type
-    RLMBSONTypeTimestamp,
+    LEGACYBSONTypeTimestamp,
     /// BSON Datetime type
-    RLMBSONTypeDatetime,
+    LEGACYBSONTypeDatetime,
     /// BSON ObjectId type
-    RLMBSONTypeObjectId,
+    LEGACYBSONTypeObjectId,
     /// BSON Decimal128 type
-    RLMBSONTypeDecimal128,
+    LEGACYBSONTypeDecimal128,
     /// BSON RegularExpression type
-    RLMBSONTypeRegularExpression,
+    LEGACYBSONTypeRegularExpression,
     /// BSON MaxKey type
-    RLMBSONTypeMaxKey,
+    LEGACYBSONTypeMaxKey,
     /// BSON MinKey type
-    RLMBSONTypeMinKey,
+    LEGACYBSONTypeMinKey,
     /// BSON Document type
-    RLMBSONTypeDocument,
+    LEGACYBSONTypeDocument,
     /// BSON Array type
-    RLMBSONTypeArray,
+    LEGACYBSONTypeArray,
     /// BSON UUID type
-    RLMBSONTypeUUID
+    LEGACYBSONTypeUUID
 };
 
-#pragma mark RLMBSON
+#pragma mark LEGACYBSON
 
 /**
  Protocol representing a BSON value. BSON is a computer data interchange format.
  The name "BSON" is based on the term JSON and stands for "Binary JSON".
  
- The following types conform to RLMBSON:
+ The following types conform to LEGACYBSON:
  
  `NSNull`
  `NSNumber`
@@ -75,24 +75,24 @@ typedef NS_ENUM(NSUInteger, RLMBSONType) {
  `NSData`
  `NSDateInterval`
  `NSDate`
- `RLMObjectId`
- `RLMDecimal128`
+ `LEGACYObjectId`
+ `LEGACYDecimal128`
  `NSRegularExpression`
- `RLMMaxKey`
- `RLMMinKey`
+ `LEGACYMaxKey`
+ `LEGACYMinKey`
  `NSDictionary`
  `NSArray`
  `NSUUID`
  
- @see RLMBSONType
+ @see LEGACYBSONType
  @see bsonspec.org
  */
-@protocol RLMBSON
+@protocol LEGACYBSON
 
 /**
  The BSON type for the conforming interface.
  */
-@property (readonly) RLMBSONType bsonType NS_REFINED_FOR_SWIFT;
+@property (readonly) LEGACYBSONType bsonType NS_REFINED_FOR_SWIFT;
 
 /**
  Whether or not this BSON is equal to another.
@@ -104,71 +104,71 @@ typedef NS_ENUM(NSUInteger, RLMBSONType) {
 @end
 
 /// :nodoc:
-@interface NSNull (RLMBSON)<RLMBSON>
+@interface NSNull (LEGACYBSON)<LEGACYBSON>
 @end
 
 /// :nodoc:
-@interface NSNumber (RLMBSON)<RLMBSON>
+@interface NSNumber (LEGACYBSON)<LEGACYBSON>
 @end
 
 /// :nodoc:
-@interface NSString (RLMBSON)<RLMBSON>
+@interface NSString (LEGACYBSON)<LEGACYBSON>
 @end
 
 /// :nodoc:
-@interface NSData (RLMBSON)<RLMBSON>
+@interface NSData (LEGACYBSON)<LEGACYBSON>
 @end
 
 /// :nodoc:
-@interface NSDateInterval (RLMBSON)<RLMBSON>
+@interface NSDateInterval (LEGACYBSON)<LEGACYBSON>
 @end
 
 /// :nodoc:
-@interface NSDate (RLMBSON)<RLMBSON>
+@interface NSDate (LEGACYBSON)<LEGACYBSON>
 @end
 
 /// :nodoc:
-@interface RLMObjectId (RLMBSON)<RLMBSON>
+@interface LEGACYObjectId (LEGACYBSON)<LEGACYBSON>
 @end
 
 /// :nodoc:
-@interface RLMDecimal128 (RLMBSON)<RLMBSON>
+@interface LEGACYDecimal128 (LEGACYBSON)<LEGACYBSON>
 @end
 
 /// :nodoc:
-@interface NSRegularExpression (RLMBSON)<RLMBSON>
+@interface NSRegularExpression (LEGACYBSON)<LEGACYBSON>
 @end
 
 /// MaxKey will always be the greatest value when comparing to other BSON types
-RLM_SWIFT_SENDABLE RLM_FINAL
-@interface RLMMaxKey : NSObject
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL
+@interface LEGACYMaxKey : NSObject
 @end
 
 /// MinKey will always be the smallest value when comparing to other BSON types
-RLM_SWIFT_SENDABLE RLM_FINAL
-@interface RLMMinKey : NSObject
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL
+@interface LEGACYMinKey : NSObject
 @end
 
 /// :nodoc:
-@interface RLMMaxKey (RLMBSON)<RLMBSON>
+@interface LEGACYMaxKey (LEGACYBSON)<LEGACYBSON>
 @end
 
 /// :nodoc:
-@interface RLMMinKey (RLMBSON)<RLMBSON>
+@interface LEGACYMinKey (LEGACYBSON)<LEGACYBSON>
 @end
 
 /// :nodoc:
-@interface NSDictionary (RLMBSON)<RLMBSON>
+@interface NSDictionary (LEGACYBSON)<LEGACYBSON>
 @end
 
 /// :nodoc:
-@interface NSMutableArray (RLMBSON)<RLMBSON>
+@interface NSMutableArray (LEGACYBSON)<LEGACYBSON>
 @end
 
 /// :nodoc:
-@interface NSArray (RLMBSON)<RLMBSON>
+@interface NSArray (LEGACYBSON)<LEGACYBSON>
 @end
 
 /// :nodoc:
-@interface NSUUID (RLMBSON)<RLMBSON>
+@interface NSUUID (LEGACYBSON)<LEGACYBSON>
 @end

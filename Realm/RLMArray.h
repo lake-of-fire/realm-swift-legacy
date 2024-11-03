@@ -16,46 +16,46 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMCollection.h>
+#import <Realm/LEGACYCollection.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@class RLMObject, RLMResults<RLMObjectType>;
+@class LEGACYObject, LEGACYResults<LEGACYObjectType>;
 
 /**
- `RLMArray` is the container type in Realm used to define to-many relationships.
+ `LEGACYArray` is the container type in Realm used to define to-many relationships.
 
- Unlike an `NSArray`, `RLMArray`s hold a single type, specified by the `objectClassName` property.
+ Unlike an `NSArray`, `LEGACYArray`s hold a single type, specified by the `objectClassName` property.
  This is referred to in these docs as the “type” of the array.
 
- When declaring an `RLMArray` property, the type must be marked as conforming to a
+ When declaring an `LEGACYArray` property, the type must be marked as conforming to a
  protocol by the same name as the objects it should contain (see the
- `RLM_COLLECTION_TYPE` macro). In addition, the property can be declared using Objective-C
+ `LEGACY_COLLECTION_TYPE` macro). In addition, the property can be declared using Objective-C
  generics for better compile-time type safety.
 
-     RLM_COLLECTION_TYPE(ObjectType)
+     LEGACY_COLLECTION_TYPE(ObjectType)
      ...
-     @property RLMArray<ObjectType *><ObjectType> *arrayOfObjectTypes;
+     @property LEGACYArray<ObjectType *><ObjectType> *arrayOfObjectTypes;
 
- `RLMArray`s can be queried with the same predicates as `RLMObject` and `RLMResult`s.
+ `LEGACYArray`s can be queried with the same predicates as `LEGACYObject` and `LEGACYResult`s.
 
- `RLMArray`s cannot be created directly. `RLMArray` properties on `RLMObject`s are
+ `LEGACYArray`s cannot be created directly. `LEGACYArray` properties on `LEGACYObject`s are
  lazily created when accessed, or can be obtained by querying a Realm.
 
  ### Key-Value Observing
 
- `RLMArray` supports array key-value observing on `RLMArray` properties on `RLMObject`
- subclasses, and the `invalidated` property on `RLMArray` instances themselves is
- key-value observing compliant when the `RLMArray` is attached to a managed
- `RLMObject` (`RLMArray`s on unmanaged `RLMObject`s will never become invalidated).
+ `LEGACYArray` supports array key-value observing on `LEGACYArray` properties on `LEGACYObject`
+ subclasses, and the `invalidated` property on `LEGACYArray` instances themselves is
+ key-value observing compliant when the `LEGACYArray` is attached to a managed
+ `LEGACYObject` (`LEGACYArray`s on unmanaged `LEGACYObject`s will never become invalidated).
 
- Because `RLMArray`s are attached to the object which they are a property of, they
+ Because `LEGACYArray`s are attached to the object which they are a property of, they
  do not require using the mutable collection proxy objects from
  `-mutableArrayValueForKey:` or KVC-compatible mutation methods on the containing
- object. Instead, you can call the mutation methods on the `RLMArray` directly.
+ object. Instead, you can call the mutation methods on the `LEGACYArray` directly.
  */
 
-@interface RLMArray<RLMObjectType> : NSObject<RLMCollection>
+@interface LEGACYArray<LEGACYObjectType> : NSObject<LEGACYCollection>
 
 #pragma mark - Properties
 
@@ -67,7 +67,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 /**
  The type of the objects in the array.
  */
-@property (nonatomic, readonly, assign) RLMPropertyType type;
+@property (nonatomic, readonly, assign) LEGACYPropertyType type;
 
 /**
  Indicates whether the objects in the collection can be `nil`.
@@ -77,14 +77,14 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 /**
  The class name  of the objects contained in the array.
 
- Will be `nil` if `type` is not RLMPropertyTypeObject.
+ Will be `nil` if `type` is not LEGACYPropertyTypeObject.
  */
 @property (nonatomic, readonly, copy, nullable) NSString *objectClassName;
 
 /**
  The Realm which manages the array. Returns `nil` for unmanaged arrays.
  */
-@property (nonatomic, readonly, nullable) RLMRealm *realm;
+@property (nonatomic, readonly, nullable) LEGACYRealm *realm;
 
 /**
  Indicates if the array can no longer be accessed.
@@ -109,7 +109,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @return An object of the type contained in the array.
  */
-- (RLMObjectType)objectAtIndex:(NSUInteger)index;
+- (LEGACYObjectType)objectAtIndex:(NSUInteger)index;
 
 /**
  Returns an array containing the objects in the array at the indexes specified by a given index set.
@@ -119,7 +119,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @return The objects at the specified indexes.
  */
-- (nullable NSArray<RLMObjectType> *)objectsAtIndexes:(NSIndexSet *)indexes;
+- (nullable NSArray<LEGACYObjectType> *)objectsAtIndexes:(NSIndexSet *)indexes;
 
 /**
  Returns the first object in the array.
@@ -128,7 +128,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @return An object of the type contained in the array.
  */
-- (nullable RLMObjectType)firstObject;
+- (nullable LEGACYObjectType)firstObject;
 
 /**
  Returns the last object in the array.
@@ -137,7 +137,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @return An object of the type contained in the array.
  */
-- (nullable RLMObjectType)lastObject;
+- (nullable LEGACYObjectType)lastObject;
 
 
 
@@ -150,14 +150,14 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @param object  An object of the type contained in the array.
  */
-- (void)addObject:(RLMObjectType)object;
+- (void)addObject:(LEGACYObjectType)object;
 
 /**
  Adds an array of objects to the end of the array.
 
  @warning This method may only be called during a write transaction.
 
- @param objects     An enumerable object such as `NSArray` or `RLMResults` which contains objects of the
+ @param objects     An enumerable object such as `NSArray` or `LEGACYResults` which contains objects of the
                     same class as the array.
  */
 - (void)addObjects:(id<NSFastEnumeration>)objects;
@@ -172,7 +172,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  @param anObject  An object of the type contained in the array.
  @param index   The index at which to insert the object.
  */
-- (void)insertObject:(RLMObjectType)anObject atIndex:(NSUInteger)index;
+- (void)insertObject:(LEGACYObjectType)anObject atIndex:(NSUInteger)index;
 
 /**
  Removes an object at the given index.
@@ -211,7 +211,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  @param index       The index of the object to be replaced.
  @param anObject    An object (of the same type as returned from the `objectClassName` selector).
  */
-- (void)replaceObjectAtIndex:(NSUInteger)index withObject:(RLMObjectType)anObject;
+- (void)replaceObjectAtIndex:(NSUInteger)index withObject:(LEGACYObjectType)anObject;
 
 /**
  Moves the object at the given source index to the given destination index.
@@ -246,7 +246,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @param object  An object (of the same type as returned from the `objectClassName` selector).
  */
-- (NSUInteger)indexOfObject:(RLMObjectType)object;
+- (NSUInteger)indexOfObject:(LEGACYObjectType)object;
 
 /**
  Returns the index of the first object in the array matching the predicate.
@@ -274,87 +274,87 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @param predicateFormat A predicate format string, optionally followed by a variable number of arguments.
 
- @return                An `RLMResults` of objects that match the given predicate.
+ @return                An `LEGACYResults` of objects that match the given predicate.
  */
-- (RLMResults<RLMObjectType> *)objectsWhere:(NSString *)predicateFormat, ...;
+- (LEGACYResults<LEGACYObjectType> *)objectsWhere:(NSString *)predicateFormat, ...;
 
 /// :nodoc:
-- (RLMResults<RLMObjectType> *)objectsWhere:(NSString *)predicateFormat args:(va_list)args;
+- (LEGACYResults<LEGACYObjectType> *)objectsWhere:(NSString *)predicateFormat args:(va_list)args;
 
 /**
  Returns all the objects matching the given predicate in the array.
 
  @param predicate   The predicate with which to filter the objects.
 
- @return            An `RLMResults` of objects that match the given predicate
+ @return            An `LEGACYResults` of objects that match the given predicate
  */
-- (RLMResults<RLMObjectType> *)objectsWithPredicate:(NSPredicate *)predicate;
+- (LEGACYResults<LEGACYObjectType> *)objectsWithPredicate:(NSPredicate *)predicate;
 
 /**
- Returns a sorted `RLMResults` from the array.
+ Returns a sorted `LEGACYResults` from the array.
 
  @param keyPath     The key path to sort by.
  @param ascending   The direction to sort in.
 
- @return    An `RLMResults` sorted by the specified key path.
+ @return    An `LEGACYResults` sorted by the specified key path.
  */
-- (RLMResults<RLMObjectType> *)sortedResultsUsingKeyPath:(NSString *)keyPath ascending:(BOOL)ascending;
+- (LEGACYResults<LEGACYObjectType> *)sortedResultsUsingKeyPath:(NSString *)keyPath ascending:(BOOL)ascending;
 
 /**
- Returns a sorted `RLMResults` from the array.
+ Returns a sorted `LEGACYResults` from the array.
 
- @param properties  An array of `RLMSortDescriptor`s to sort by.
+ @param properties  An array of `LEGACYSortDescriptor`s to sort by.
 
- @return    An `RLMResults` sorted by the specified properties.
+ @return    An `LEGACYResults` sorted by the specified properties.
  */
-- (RLMResults<RLMObjectType> *)sortedResultsUsingDescriptors:(NSArray<RLMSortDescriptor *> *)properties;
+- (LEGACYResults<LEGACYObjectType> *)sortedResultsUsingDescriptors:(NSArray<LEGACYSortDescriptor *> *)properties;
 
 /**
- Returns a distinct `RLMResults` from the array.
+ Returns a distinct `LEGACYResults` from the array.
 
  @param keyPaths     The key paths to distinct on.
 
- @return    An `RLMResults` with the distinct values of the keypath(s).
+ @return    An `LEGACYResults` with the distinct values of the keypath(s).
  */
-- (RLMResults<RLMObjectType> *)distinctResultsUsingKeyPaths:(NSArray<NSString *> *)keyPaths;
+- (LEGACYResults<LEGACYObjectType> *)distinctResultsUsingKeyPaths:(NSArray<NSString *> *)keyPaths;
 
 /// :nodoc:
-- (RLMObjectType)objectAtIndexedSubscript:(NSUInteger)index;
+- (LEGACYObjectType)objectAtIndexedSubscript:(NSUInteger)index;
 
 /// :nodoc:
-- (void)setObject:(RLMObjectType)newValue atIndexedSubscript:(NSUInteger)index;
+- (void)setObject:(LEGACYObjectType)newValue atIndexedSubscript:(NSUInteger)index;
 
 #pragma mark - Sectioning an Array
 
 /**
  Sorts and sections this collection from a given property key path, returning the result
- as an instance of `RLMSectionedResults`.
+ as an instance of `LEGACYSectionedResults`.
 
  @param keyPath The property key path to sort on.
  @param ascending The direction to sort in.
  @param keyBlock  A callback which is invoked on each element in the Results collection.
                  This callback is to return the section key for the element in the collection.
 
- @return An instance of RLMSectionedResults.
+ @return An instance of LEGACYSectionedResults.
  */
-- (RLMSectionedResults *)sectionedResultsSortedUsingKeyPath:(NSString *)keyPath
+- (LEGACYSectionedResults *)sectionedResultsSortedUsingKeyPath:(NSString *)keyPath
                                                   ascending:(BOOL)ascending
-                                                   keyBlock:(RLMSectionedResultsKeyBlock)keyBlock;
+                                                   keyBlock:(LEGACYSectionedResultsKeyBlock)keyBlock;
 
 /**
  Sorts and sections this collection from a given array of sort descriptors, returning the result
- as an instance of `RLMSectionedResults`.
+ as an instance of `LEGACYSectionedResults`.
 
- @param sortDescriptors  An array of `RLMSortDescriptor`s to sort by.
+ @param sortDescriptors  An array of `LEGACYSortDescriptor`s to sort by.
  @param keyBlock  A callback which is invoked on each element in the Results collection.
                  This callback is to return the section key for the element in the collection.
 
  @note The primary sort descriptor must be responsible for determining the section key.
 
- @return An instance of RLMSectionedResults.
+ @return An instance of LEGACYSectionedResults.
  */
-- (RLMSectionedResults *)sectionedResultsUsingSortDescriptors:(NSArray<RLMSortDescriptor *> *)sortDescriptors
-                                                     keyBlock:(RLMSectionedResultsKeyBlock)keyBlock;
+- (LEGACYSectionedResults *)sectionedResultsUsingSortDescriptors:(NSArray<LEGACYSortDescriptor *> *)sortDescriptors
+                                                     keyBlock:(LEGACYSectionedResultsKeyBlock)keyBlock;
 
 
 #pragma mark - Notifications
@@ -371,7 +371,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  each call after that, it will contain information about which rows in the
  array were added, removed or modified. If a write transaction did not modify
  any objects in the array, the block is not called at all. See the
- `RLMCollectionChange` documentation for information on how the changes are
+ `LEGACYCollectionChange` documentation for information on how the changes are
  reported and an example of updating a `UITableView`.
 
  The error parameter is present only for backwards compatibility and will always
@@ -389,8 +389,8 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
      Person *person = [[Person allObjectsInRealm:realm] firstObject];
      NSLog(@"person.dogs.count: %zu", person.dogs.count); // => 0
-     self.token = [person.dogs addNotificationBlock(RLMArray<Dog *> *dogs,
-                                                    RLMCollectionChange *changes,
+     self.token = [person.dogs addNotificationBlock(LEGACYArray<Dog *> *dogs,
+                                                    LEGACYCollectionChange *changes,
                                                     NSError *error) {
          // Only fired once for the example
          NSLog(@"dogs.count: %zu", dogs.count) // => 1
@@ -412,8 +412,8 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  @param block The block to be called each time the array changes.
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMArray<RLMObjectType> *_Nullable array,
-                                                         RLMCollectionChange *_Nullable changes,
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYArray<LEGACYObjectType> *_Nullable array,
+                                                         LEGACYCollectionChange *_Nullable changes,
                                                          NSError *_Nullable error))block
 __attribute__((warn_unused_result));
 
@@ -429,7 +429,7 @@ __attribute__((warn_unused_result));
  For each call after that, it will contain information about
  which rows in the array were added, removed or modified. If a write transaction
  did not modify any objects in the array, the block is not called at all.
- See the `RLMCollectionChange` documentation for information on how the changes
+ See the `LEGACYCollectionChange` documentation for information on how the changes
  are reported and an example of updating a `UITableView`.
 
  The error parameter is present only for backwards compatibility and will always
@@ -449,8 +449,8 @@ __attribute__((warn_unused_result));
  @param queue The serial queue to deliver notifications to.
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMArray<RLMObjectType> *_Nullable array,
-                                                         RLMCollectionChange *_Nullable changes,
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYArray<LEGACYObjectType> *_Nullable array,
+                                                         LEGACYCollectionChange *_Nullable changes,
                                                          NSError *_Nullable error))block
                                          queue:(nullable dispatch_queue_t)queue
 __attribute__((warn_unused_result));
@@ -467,7 +467,7 @@ __attribute__((warn_unused_result));
  For each call after that, it will contain information about
  which rows in the array were added, removed or modified. If a write transaction
  did not modify any objects in the array, the block is not called at all.
- See the `RLMCollectionChange` documentation for information on how the changes
+ See the `LEGACYCollectionChange` documentation for information on how the changes
  are reported and an example of updating a `UITableView`.
 
  The error parameter is present only for backwards compatibility and will always
@@ -489,8 +489,8 @@ __attribute__((warn_unused_result));
  @param queue The serial queue to deliver notifications to.
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMArray<RLMObjectType> *_Nullable array,
-                                                         RLMCollectionChange *_Nullable changes,
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYArray<LEGACYObjectType> *_Nullable array,
+                                                         LEGACYCollectionChange *_Nullable changes,
                                                          NSError *_Nullable error))block
                                       keyPaths:(nullable NSArray<NSString *> *)keyPaths
                                          queue:(nullable dispatch_queue_t)queue
@@ -508,7 +508,7 @@ __attribute__((warn_unused_result));
  For each call after that, it will contain information about
  which rows in the array were added, removed or modified. If a write transaction
  did not modify any objects in the array, the block is not called at all.
- See the `RLMCollectionChange` documentation for information on how the changes
+ See the `LEGACYCollectionChange` documentation for information on how the changes
  are reported and an example of updating a `UITableView`.
 
  The error parameter is present only for backwards compatibility and will always
@@ -535,8 +535,8 @@ __attribute__((warn_unused_result));
  key paths are given, notifications are delivered for every property key path.
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMArray<RLMObjectType> *_Nullable array,
-                                                         RLMCollectionChange *_Nullable changes,
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYArray<LEGACYObjectType> *_Nullable array,
+                                                         LEGACYCollectionChange *_Nullable changes,
                                                          NSError *_Nullable error))block
                                       keyPaths:(nullable NSArray<NSString *> *)keyPaths
 __attribute__((warn_unused_result));
@@ -548,7 +548,7 @@ __attribute__((warn_unused_result));
 
      NSNumber *min = [object.arrayProperty minOfProperty:@"age"];
 
- @warning You cannot use this method on `RLMObject`, `RLMArray`, and `NSData` properties.
+ @warning You cannot use this method on `LEGACYObject`, `LEGACYArray`, and `NSData` properties.
 
  @param property The property whose minimum value is desired. Only properties of
                  types `int`, `float`, `double`, and `NSDate` are supported.
@@ -562,7 +562,7 @@ __attribute__((warn_unused_result));
 
      NSNumber *max = [object.arrayProperty maxOfProperty:@"age"];
 
- @warning You cannot use this method on `RLMObject`, `RLMArray`, and `NSData` properties.
+ @warning You cannot use this method on `LEGACYObject`, `LEGACYArray`, and `NSData` properties.
 
  @param property The property whose maximum value is desired. Only properties of
                  types `int`, `float`, `double`, and `NSDate` are supported.
@@ -576,7 +576,7 @@ __attribute__((warn_unused_result));
 
      NSNumber *sum = [object.arrayProperty sumOfProperty:@"age"];
 
- @warning You cannot use this method on `RLMObject`, `RLMArray`, and `NSData` properties.
+ @warning You cannot use this method on `LEGACYObject`, `LEGACYArray`, and `NSData` properties.
 
  @param property The property whose values should be summed. Only properties of
                  types `int`, `float`, and `double` are supported.
@@ -590,7 +590,7 @@ __attribute__((warn_unused_result));
 
      NSNumber *average = [object.arrayProperty averageOfProperty:@"age"];
 
- @warning You cannot use this method on `RLMObject`, `RLMArray`, and `NSData` properties.
+ @warning You cannot use this method on `LEGACYObject`, `LEGACYArray`, and `NSData` properties.
 
  @param property The property whose average value should be calculated. Only
                  properties of types `int`, `float`, and `double` are supported.
@@ -614,7 +614,7 @@ __attribute__((warn_unused_result));
  @warning This method may only be called on a managed array.
  @warning Holding onto a frozen array for an extended period while performing
           write transaction on the Realm may result in the Realm file growing
-          to large sizes. See `RLMRealmConfiguration.maximumNumberOfActiveVersions`
+          to large sizes. See `LEGACYRealmConfiguration.maximumNumberOfActiveVersions`
           for more information.
  */
 - (instancetype)freeze;
@@ -630,23 +630,23 @@ __attribute__((warn_unused_result));
 #pragma mark - Unavailable Methods
 
 /**
- `-[RLMArray init]` is not available because `RLMArray`s cannot be created directly.
- `RLMArray` properties on `RLMObject`s are lazily created when accessed.
+ `-[LEGACYArray init]` is not available because `LEGACYArray`s cannot be created directly.
+ `LEGACYArray` properties on `LEGACYObject`s are lazily created when accessed.
  */
-- (instancetype)init __attribute__((unavailable("RLMArrays cannot be created directly")));
+- (instancetype)init __attribute__((unavailable("LEGACYArrays cannot be created directly")));
 
 /**
- `+[RLMArray new]` is not available because `RLMArray`s cannot be created directly.
- `RLMArray` properties on `RLMObject`s are lazily created when accessed.
+ `+[LEGACYArray new]` is not available because `LEGACYArray`s cannot be created directly.
+ `LEGACYArray` properties on `LEGACYObject`s are lazily created when accessed.
  */
-+ (instancetype)new __attribute__((unavailable("RLMArrays cannot be created directly")));
++ (instancetype)new __attribute__((unavailable("LEGACYArrays cannot be created directly")));
 
 @end
 
 /// :nodoc:
-@interface RLMArray (Swift)
+@interface LEGACYArray (Swift)
 // for use only in Swift class definitions
 - (instancetype)initWithObjectClassName:(NSString *)objectClassName;
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

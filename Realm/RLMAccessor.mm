@@ -16,23 +16,23 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMAccessor.hpp"
+#import "LEGACYAccessor.hpp"
 
-#import "RLMArray_Private.hpp"
-#import "RLMDictionary_Private.hpp"
-#import "RLMObjectId_Private.hpp"
-#import "RLMObjectSchema_Private.hpp"
-#import "RLMObjectStore.h"
-#import "RLMObject_Private.hpp"
-#import "RLMObservation.hpp"
-#import "RLMProperty_Private.h"
-#import "RLMRealm_Private.hpp"
-#import "RLMResults_Private.hpp"
-#import "RLMSchema_Private.h"
-#import "RLMSet_Private.hpp"
-#import "RLMSwiftProperty.h"
-#import "RLMUUID_Private.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYArray_Private.hpp"
+#import "LEGACYDictionary_Private.hpp"
+#import "LEGACYObjectId_Private.hpp"
+#import "LEGACYObjectSchema_Private.hpp"
+#import "LEGACYObjectStore.h"
+#import "LEGACYObject_Private.hpp"
+#import "LEGACYObservation.hpp"
+#import "LEGACYProperty_Private.h"
+#import "LEGACYRealm_Private.hpp"
+#import "LEGACYResults_Private.hpp"
+#import "LEGACYSchema_Private.h"
+#import "LEGACYSet_Private.hpp"
+#import "LEGACYSwiftProperty.h"
+#import "LEGACYUUID_Private.hpp"
+#import "LEGACYUtil.hpp"
 
 #import <realm/object-store/results.hpp>
 #import <realm/object-store/property.hpp>
@@ -54,12 +54,12 @@ Obj Obj::get<Obj>(ColKey col) const {
 } // namespace realm
 
 namespace {
-realm::Property const& getProperty(__unsafe_unretained RLMObjectBase *const obj, NSUInteger index) {
+realm::Property const& getProperty(__unsafe_unretained LEGACYObjectBase *const obj, NSUInteger index) {
     return obj->_info->objectSchema->persisted_properties[index];
 }
 
-realm::Property const& getProperty(__unsafe_unretained RLMObjectBase *const obj,
-                                   __unsafe_unretained RLMProperty *const prop) {
+realm::Property const& getProperty(__unsafe_unretained LEGACYObjectBase *const obj,
+                                   __unsafe_unretained LEGACYProperty *const prop) {
     if (prop.linkOriginPropertyName) {
         return obj->_info->objectSchema->computed_properties[prop.index];
     }
@@ -92,22 +92,22 @@ bool isNull(realm::UUID const&) {
 }
 
 template<typename T>
-T get(__unsafe_unretained RLMObjectBase *const obj, NSUInteger index) {
-    RLMVerifyAttached(obj);
+T get(__unsafe_unretained LEGACYObjectBase *const obj, NSUInteger index) {
+    LEGACYVerifyAttached(obj);
     return obj->_row.get<T>(getProperty(obj, index).column_key);
 }
 
 template<typename T>
-id getBoxed(__unsafe_unretained RLMObjectBase *const obj, NSUInteger index) {
-    RLMVerifyAttached(obj);
+id getBoxed(__unsafe_unretained LEGACYObjectBase *const obj, NSUInteger index) {
+    LEGACYVerifyAttached(obj);
     auto& prop = getProperty(obj, index);
-    RLMAccessorContext ctx(obj, &prop);
+    LEGACYAccessorContext ctx(obj, &prop);
     auto value = obj->_row.get<T>(prop.column_key);
     return isNull(value) ? nil : ctx.box(std::move(value));
 }
 
 template<typename T>
-T getOptional(__unsafe_unretained RLMObjectBase *const obj, uint16_t key, bool *gotValue) {
+T getOptional(__unsafe_unretained LEGACYObjectBase *const obj, uint16_t key, bool *gotValue) {
     auto ret = get<std::optional<T>>(obj, key);
     if (ret) {
         *gotValue = true;
@@ -116,22 +116,22 @@ T getOptional(__unsafe_unretained RLMObjectBase *const obj, uint16_t key, bool *
 }
 
 template<typename T>
-void setValue(__unsafe_unretained RLMObjectBase *const obj, ColKey key, T val) {
+void setValue(__unsafe_unretained LEGACYObjectBase *const obj, ColKey key, T val) {
     obj->_row.set(key, val);
 }
 
 template<typename T>
-void setValueOrNull(__unsafe_unretained RLMObjectBase *const obj, ColKey col,
+void setValueOrNull(__unsafe_unretained LEGACYObjectBase *const obj, ColKey col,
                     __unsafe_unretained id const value) {
-    RLMVerifyInWriteTransaction(obj);
+    LEGACYVerifyInWriteTransaction(obj);
 
-    RLMTranslateError([&] {
+    LEGACYTranslateError([&] {
         if (value) {
             if constexpr (std::is_same_v<T, realm::Mixed>) {
-                obj->_row.set(col, RLMObjcToMixed(value, obj->_realm, realm::CreatePolicy::SetLink));
+                obj->_row.set(col, LEGACYObjcToMixed(value, obj->_realm, realm::CreatePolicy::SetLink));
             }
             else {
-                RLMStatelessAccessorContext ctx;
+                LEGACYStatelessAccessorContext ctx;
                 obj->_row.set(col, ctx.unbox<T>(value));
             }
         }
@@ -141,36 +141,36 @@ void setValueOrNull(__unsafe_unretained RLMObjectBase *const obj, ColKey col,
     });
 }
 
-void setValue(__unsafe_unretained RLMObjectBase *const obj,
+void setValue(__unsafe_unretained LEGACYObjectBase *const obj,
               ColKey key, __unsafe_unretained NSDate *const date) {
     setValueOrNull<realm::Timestamp>(obj, key, date);
 }
 
-void setValue(__unsafe_unretained RLMObjectBase *const obj, ColKey key,
+void setValue(__unsafe_unretained LEGACYObjectBase *const obj, ColKey key,
               __unsafe_unretained NSData *const value) {
     setValueOrNull<realm::BinaryData>(obj, key, value);
 }
 
-void setValue(__unsafe_unretained RLMObjectBase *const obj, ColKey key,
+void setValue(__unsafe_unretained LEGACYObjectBase *const obj, ColKey key,
               __unsafe_unretained NSString *const value) {
     setValueOrNull<realm::StringData>(obj, key, value);
 }
 
-void setValue(__unsafe_unretained RLMObjectBase *const obj, ColKey key,
-              __unsafe_unretained RLMObjectBase *const val) {
+void setValue(__unsafe_unretained LEGACYObjectBase *const obj, ColKey key,
+              __unsafe_unretained LEGACYObjectBase *const val) {
     if (!val) {
         obj->_row.set(key, realm::null());
         return;
     }
 
     if (!val->_row) {
-        RLMAccessorContext{obj, key}.createObject(val, {.create = true}, false, {});
+        LEGACYAccessorContext{obj, key}.createObject(val, {.create = true}, false, {});
     }
 
     // make sure it is the correct type
     auto table = val->_row.get_table();
     if (table != obj->_row.get_table()->get_link_target(key)) {
-        @throw RLMException(@"Can't set object of type '%@' to property of type '%@'",
+        @throw LEGACYException(@"Can't set object of type '%@' to property of type '%@'",
                             val->_objectSchema.className,
                             obj->_info->propertyForTableColumn(key).objectClassName);
     }
@@ -178,36 +178,36 @@ void setValue(__unsafe_unretained RLMObjectBase *const obj, ColKey key,
         obj->_row.set(key, val->_row.get_key());
     }
     else if (obj->_row.get_linked_object(key).get_key() != val->_row.get_key()) {
-        @throw RLMException(@"Can't set link to existing managed embedded object");
+        @throw LEGACYException(@"Can't set link to existing managed embedded object");
     }
 }
 
-id RLMCollectionClassForProperty(RLMProperty *prop, bool isManaged) {
+id LEGACYCollectionClassForProperty(LEGACYProperty *prop, bool isManaged) {
     Class cls = nil;
     if (prop.array) {
-        cls = isManaged ? [RLMManagedArray class] : [RLMArray class];
+        cls = isManaged ? [LEGACYManagedArray class] : [LEGACYArray class];
     } else if (prop.set) {
-        cls = isManaged ? [RLMManagedSet class] : [RLMSet class];
+        cls = isManaged ? [LEGACYManagedSet class] : [LEGACYSet class];
     } else if (prop.dictionary) {
-        cls = isManaged ? [RLMManagedDictionary class] : [RLMDictionary class];
+        cls = isManaged ? [LEGACYManagedDictionary class] : [LEGACYDictionary class];
     } else {
-        @throw RLMException(@"Invalid collection '%@' for class '%@'.",
+        @throw LEGACYException(@"Invalid collection '%@' for class '%@'.",
                             prop.name, prop.objectClassName);
     }
     return cls;
 }
 
 // collection getter/setter
-id<RLMCollection> getCollection(__unsafe_unretained RLMObjectBase *const obj, NSUInteger propIndex) {
-    RLMVerifyAttached(obj);
+id<LEGACYCollection> getCollection(__unsafe_unretained LEGACYObjectBase *const obj, NSUInteger propIndex) {
+    LEGACYVerifyAttached(obj);
     auto prop = obj->_info->rlmObjectSchema.properties[propIndex];
-    Class cls = RLMCollectionClassForProperty(prop, true);
+    Class cls = LEGACYCollectionClassForProperty(prop, true);
     return [[cls alloc] initWithParent:obj property:prop];
 }
 
 template <typename Collection>
-void assignValue(__unsafe_unretained RLMObjectBase *const obj,
-                 __unsafe_unretained RLMProperty *const prop,
+void assignValue(__unsafe_unretained LEGACYObjectBase *const obj,
+                 __unsafe_unretained LEGACYProperty *const prop,
                  ColKey key,
                  __unsafe_unretained id<NSFastEnumeration> const value) {
     auto info = obj->_info;
@@ -215,16 +215,16 @@ void assignValue(__unsafe_unretained RLMObjectBase *const obj,
     if (collection.get_type() == realm::PropertyType::Object) {
         info = &obj->_info->linkTargetType(prop.index);
     }
-    RLMAccessorContext ctx(*info);
-    RLMTranslateError([&] {
+    LEGACYAccessorContext ctx(*info);
+    LEGACYTranslateError([&] {
         collection.assign(ctx, value, realm::CreatePolicy::ForceCreate);
     });
 }
 
-void setValue(__unsafe_unretained RLMObjectBase *const obj, ColKey key,
+void setValue(__unsafe_unretained LEGACYObjectBase *const obj, ColKey key,
               __unsafe_unretained id<NSFastEnumeration> const value) {
     auto prop = obj->_info->propertyForTableColumn(key);
-    RLMValidateValueForProperty(value, obj->_info->rlmObjectSchema, prop, true);
+    LEGACYValidateValueForProperty(value, obj->_info->rlmObjectSchema, prop, true);
 
     if (prop.array) {
         assignValue<realm::List>(obj, prop, key, value);
@@ -237,74 +237,74 @@ void setValue(__unsafe_unretained RLMObjectBase *const obj, ColKey key,
     }
 }
 
-void setValue(__unsafe_unretained RLMObjectBase *const obj, ColKey key,
-              __unsafe_unretained NSNumber<RLMInt> *const intObject) {
+void setValue(__unsafe_unretained LEGACYObjectBase *const obj, ColKey key,
+              __unsafe_unretained NSNumber<LEGACYInt> *const intObject) {
     setValueOrNull<int64_t>(obj, key, intObject);
 }
 
-void setValue(__unsafe_unretained RLMObjectBase *const obj, ColKey key,
-              __unsafe_unretained NSNumber<RLMFloat> *const floatObject) {
+void setValue(__unsafe_unretained LEGACYObjectBase *const obj, ColKey key,
+              __unsafe_unretained NSNumber<LEGACYFloat> *const floatObject) {
     setValueOrNull<float>(obj, key, floatObject);
 }
 
-void setValue(__unsafe_unretained RLMObjectBase *const obj, ColKey key,
-              __unsafe_unretained NSNumber<RLMDouble> *const doubleObject) {
+void setValue(__unsafe_unretained LEGACYObjectBase *const obj, ColKey key,
+              __unsafe_unretained NSNumber<LEGACYDouble> *const doubleObject) {
     setValueOrNull<double>(obj, key, doubleObject);
 }
 
-void setValue(__unsafe_unretained RLMObjectBase *const obj, ColKey key,
-              __unsafe_unretained NSNumber<RLMBool> *const boolObject) {
+void setValue(__unsafe_unretained LEGACYObjectBase *const obj, ColKey key,
+              __unsafe_unretained NSNumber<LEGACYBool> *const boolObject) {
     setValueOrNull<bool>(obj, key, boolObject);
 }
 
-void setValue(__unsafe_unretained RLMObjectBase *const obj, ColKey key,
-              __unsafe_unretained RLMDecimal128 *const value) {
+void setValue(__unsafe_unretained LEGACYObjectBase *const obj, ColKey key,
+              __unsafe_unretained LEGACYDecimal128 *const value) {
     setValueOrNull<realm::Decimal128>(obj, key, value);
 }
 
-void setValue(__unsafe_unretained RLMObjectBase *const obj, ColKey key,
-              __unsafe_unretained RLMObjectId *const value) {
+void setValue(__unsafe_unretained LEGACYObjectBase *const obj, ColKey key,
+              __unsafe_unretained LEGACYObjectId *const value) {
     setValueOrNull<realm::ObjectId>(obj, key, value);
 }
 
-void setValue(__unsafe_unretained RLMObjectBase *const obj, ColKey key,
+void setValue(__unsafe_unretained LEGACYObjectBase *const obj, ColKey key,
               __unsafe_unretained NSUUID *const value) {
     setValueOrNull<realm::UUID>(obj, key, value);
 }
 
-void setValue(__unsafe_unretained RLMObjectBase *const obj, ColKey key,
-              __unsafe_unretained id<RLMValue> const value) {
+void setValue(__unsafe_unretained LEGACYObjectBase *const obj, ColKey key,
+              __unsafe_unretained id<LEGACYValue> const value) {
     setValueOrNull<realm::Mixed>(obj, key, value);
 }
 
-RLMLinkingObjects *getLinkingObjects(__unsafe_unretained RLMObjectBase *const obj,
-                                     __unsafe_unretained RLMProperty *const property) {
-    RLMVerifyAttached(obj);
+LEGACYLinkingObjects *getLinkingObjects(__unsafe_unretained LEGACYObjectBase *const obj,
+                                     __unsafe_unretained LEGACYProperty *const property) {
+    LEGACYVerifyAttached(obj);
     auto& objectInfo = obj->_realm->_info[property.objectClassName];
     auto& linkOrigin = obj->_info->objectSchema->computed_properties[property.index].link_origin_property_name;
     auto linkingProperty = objectInfo.objectSchema->property_for_name(linkOrigin);
     auto backlinkView = obj->_row.get_backlink_view(objectInfo.table(), linkingProperty->column_key);
     realm::Results results(obj->_realm->_realm, std::move(backlinkView));
-    return [RLMLinkingObjects resultsWithObjectInfo:objectInfo results:std::move(results)];
+    return [LEGACYLinkingObjects resultsWithObjectInfo:objectInfo results:std::move(results)];
 }
 
 // any getter/setter
 template<typename Type, typename StorageType=Type>
 id makeGetter(NSUInteger index) {
-    return ^(__unsafe_unretained RLMObjectBase *const obj) {
+    return ^(__unsafe_unretained LEGACYObjectBase *const obj) {
         return static_cast<Type>(get<StorageType>(obj, index));
     };
 }
 
 template<typename Type>
 id makeBoxedGetter(NSUInteger index) {
-    return ^(__unsafe_unretained RLMObjectBase *const obj) {
+    return ^(__unsafe_unretained LEGACYObjectBase *const obj) {
         return getBoxed<Type>(obj, index);
     };
 }
 template<typename Type>
 id makeOptionalGetter(NSUInteger index) {
-    return ^(__unsafe_unretained RLMObjectBase *const obj) {
+    return ^(__unsafe_unretained LEGACYObjectBase *const obj) {
         return getBoxed<std::optional<Type>>(obj, index);
     };
 }
@@ -327,17 +327,17 @@ id makeWrapperGetter(NSUInteger index, bool optional) {
 }
 
 // dynamic getter with column closure
-id managedGetter(RLMProperty *prop, const char *type) {
+id managedGetter(LEGACYProperty *prop, const char *type) {
     NSUInteger index = prop.index;
-    if (prop.collection && prop.type != RLMPropertyTypeLinkingObjects) {
-        return ^id(__unsafe_unretained RLMObjectBase *const obj) {
+    if (prop.collection && prop.type != LEGACYPropertyTypeLinkingObjects) {
+        return ^id(__unsafe_unretained LEGACYObjectBase *const obj) {
             return getCollection(obj, index);
         };
     }
 
     bool boxed = *type == '@';
     switch (prop.type) {
-        case RLMPropertyTypeInt:
+        case LEGACYPropertyTypeInt:
             if (prop.optional || boxed) {
                 return makeNumberGetter<long long>(index, boxed, prop.optional);
             }
@@ -348,87 +348,87 @@ id managedGetter(RLMProperty *prop, const char *type) {
                 case 'l': return makeGetter<long, int64_t>(index);
                 case 'q': return makeGetter<long long, int64_t>(index);
                 default:
-                    @throw RLMException(@"Unexpected property type for Objective-C type code");
+                    @throw LEGACYException(@"Unexpected property type for Objective-C type code");
             }
-        case RLMPropertyTypeFloat:
+        case LEGACYPropertyTypeFloat:
             return makeNumberGetter<float>(index, boxed, prop.optional);
-        case RLMPropertyTypeDouble:
+        case LEGACYPropertyTypeDouble:
             return makeNumberGetter<double>(index, boxed, prop.optional);
-        case RLMPropertyTypeBool:
+        case LEGACYPropertyTypeBool:
             return makeNumberGetter<bool>(index, boxed, prop.optional);
-        case RLMPropertyTypeString:
+        case LEGACYPropertyTypeString:
             return makeBoxedGetter<realm::StringData>(index);
-        case RLMPropertyTypeDate:
+        case LEGACYPropertyTypeDate:
             return makeBoxedGetter<realm::Timestamp>(index);
-        case RLMPropertyTypeData:
+        case LEGACYPropertyTypeData:
             return makeBoxedGetter<realm::BinaryData>(index);
-        case RLMPropertyTypeObject:
+        case LEGACYPropertyTypeObject:
             return makeBoxedGetter<realm::Obj>(index);
-        case RLMPropertyTypeDecimal128:
+        case LEGACYPropertyTypeDecimal128:
             return makeBoxedGetter<realm::Decimal128>(index);
-        case RLMPropertyTypeObjectId:
+        case LEGACYPropertyTypeObjectId:
             return makeWrapperGetter<realm::ObjectId>(index, prop.optional);
-        case RLMPropertyTypeAny:
+        case LEGACYPropertyTypeAny:
             // Mixed is represented as optional in Core,
             // but not in Cocoa. We use `makeBoxedGetter` over
             // `makeWrapperGetter` becuase Mixed can box a `null` representation.
             return makeBoxedGetter<realm::Mixed>(index);
-        case RLMPropertyTypeLinkingObjects:
-            return ^(__unsafe_unretained RLMObjectBase *const obj) {
+        case LEGACYPropertyTypeLinkingObjects:
+            return ^(__unsafe_unretained LEGACYObjectBase *const obj) {
                 return getLinkingObjects(obj, prop);
             };
-        case RLMPropertyTypeUUID:
+        case LEGACYPropertyTypeUUID:
             return makeWrapperGetter<realm::UUID>(index, prop.optional);
     }
 }
 
-static realm::ColKey willChange(RLMObservationTracker& tracker,
-                                __unsafe_unretained RLMObjectBase *const obj, NSUInteger index) {
+static realm::ColKey willChange(LEGACYObservationTracker& tracker,
+                                __unsafe_unretained LEGACYObjectBase *const obj, NSUInteger index) {
     auto& prop = getProperty(obj, index);
     if (prop.is_primary) {
-        @throw RLMException(@"Primary key can't be changed after an object is inserted.");
+        @throw LEGACYException(@"Primary key can't be changed after an object is inserted.");
     }
-    tracker.willChange(RLMGetObservationInfo(obj->_observationInfo, obj->_row.get_key(), *obj->_info),
+    tracker.willChange(LEGACYGetObservationInfo(obj->_observationInfo, obj->_row.get_key(), *obj->_info),
                        obj->_objectSchema.properties[index].name);
     return prop.column_key;
 }
 
 template<typename ArgType, typename StorageType=ArgType>
-void kvoSetValue(__unsafe_unretained RLMObjectBase *const obj, NSUInteger index, ArgType value) {
-    RLMVerifyInWriteTransaction(obj);
-    RLMObservationTracker tracker(obj->_realm);
+void kvoSetValue(__unsafe_unretained LEGACYObjectBase *const obj, NSUInteger index, ArgType value) {
+    LEGACYVerifyInWriteTransaction(obj);
+    LEGACYObservationTracker tracker(obj->_realm);
     auto key = willChange(tracker, obj, index);
-    if constexpr (std::is_same_v<ArgType, RLMObjectBase *>) {
+    if constexpr (std::is_same_v<ArgType, LEGACYObjectBase *>) {
         tracker.trackDeletions();
     }
     setValue(obj, key, static_cast<StorageType>(value));
 }
 
 template<typename ArgType, typename StorageType=ArgType>
-id makeSetter(__unsafe_unretained RLMProperty *const prop) {
+id makeSetter(__unsafe_unretained LEGACYProperty *const prop) {
     if (prop.isPrimary) {
-        return ^(__unused RLMObjectBase *obj, __unused ArgType val) {
-            @throw RLMException(@"Primary key can't be changed after an object is inserted.");
+        return ^(__unused LEGACYObjectBase *obj, __unused ArgType val) {
+            @throw LEGACYException(@"Primary key can't be changed after an object is inserted.");
         };
     }
 
     NSUInteger index = prop.index;
-    return ^(__unsafe_unretained RLMObjectBase *const obj, ArgType val) {
+    return ^(__unsafe_unretained LEGACYObjectBase *const obj, ArgType val) {
         kvoSetValue<ArgType, StorageType>(obj, index, val);
     };
 }
 
 // dynamic setter with column closure
-id managedSetter(RLMProperty *prop, const char *type) {
-    if (prop.collection && prop.type != RLMPropertyTypeLinkingObjects) {
+id managedSetter(LEGACYProperty *prop, const char *type) {
+    if (prop.collection && prop.type != LEGACYPropertyTypeLinkingObjects) {
         return makeSetter<id<NSFastEnumeration>>(prop);
     }
 
     bool boxed = prop.optional || *type == '@';
     switch (prop.type) {
-        case RLMPropertyTypeInt:
+        case LEGACYPropertyTypeInt:
             if (boxed) {
-                return makeSetter<NSNumber<RLMInt> *>(prop);
+                return makeSetter<NSNumber<LEGACYInt> *>(prop);
             }
             switch (*type) {
                 case 'c': return makeSetter<char, long long>(prop);
@@ -437,57 +437,57 @@ id managedSetter(RLMProperty *prop, const char *type) {
                 case 'l': return makeSetter<long, long long>(prop);
                 case 'q': return makeSetter<long long>(prop);
                 default:
-                    @throw RLMException(@"Unexpected property type for Objective-C type code");
+                    @throw LEGACYException(@"Unexpected property type for Objective-C type code");
             }
-        case RLMPropertyTypeFloat:
-            return boxed ? makeSetter<NSNumber<RLMFloat> *>(prop) : makeSetter<float>(prop);
-        case RLMPropertyTypeDouble:
-            return boxed ? makeSetter<NSNumber<RLMDouble> *>(prop) : makeSetter<double>(prop);
-        case RLMPropertyTypeBool:
-            return boxed ? makeSetter<NSNumber<RLMBool> *>(prop) : makeSetter<BOOL, bool>(prop);
-        case RLMPropertyTypeString:         return makeSetter<NSString *>(prop);
-        case RLMPropertyTypeDate:           return makeSetter<NSDate *>(prop);
-        case RLMPropertyTypeData:           return makeSetter<NSData *>(prop);
-        case RLMPropertyTypeAny:            return makeSetter<id<RLMValue>>(prop);
-        case RLMPropertyTypeLinkingObjects: return nil;
-        case RLMPropertyTypeObject:         return makeSetter<RLMObjectBase *>(prop);
-        case RLMPropertyTypeObjectId:       return makeSetter<RLMObjectId *>(prop);
-        case RLMPropertyTypeDecimal128:     return makeSetter<RLMDecimal128 *>(prop);
-        case RLMPropertyTypeUUID:           return makeSetter<NSUUID *>(prop);
+        case LEGACYPropertyTypeFloat:
+            return boxed ? makeSetter<NSNumber<LEGACYFloat> *>(prop) : makeSetter<float>(prop);
+        case LEGACYPropertyTypeDouble:
+            return boxed ? makeSetter<NSNumber<LEGACYDouble> *>(prop) : makeSetter<double>(prop);
+        case LEGACYPropertyTypeBool:
+            return boxed ? makeSetter<NSNumber<LEGACYBool> *>(prop) : makeSetter<BOOL, bool>(prop);
+        case LEGACYPropertyTypeString:         return makeSetter<NSString *>(prop);
+        case LEGACYPropertyTypeDate:           return makeSetter<NSDate *>(prop);
+        case LEGACYPropertyTypeData:           return makeSetter<NSData *>(prop);
+        case LEGACYPropertyTypeAny:            return makeSetter<id<LEGACYValue>>(prop);
+        case LEGACYPropertyTypeLinkingObjects: return nil;
+        case LEGACYPropertyTypeObject:         return makeSetter<LEGACYObjectBase *>(prop);
+        case LEGACYPropertyTypeObjectId:       return makeSetter<LEGACYObjectId *>(prop);
+        case LEGACYPropertyTypeDecimal128:     return makeSetter<LEGACYDecimal128 *>(prop);
+        case LEGACYPropertyTypeUUID:           return makeSetter<NSUUID *>(prop);
     }
 }
 
 // call getter for superclass for property at key
-id superGet(RLMObjectBase *obj, NSString *propName) {
-    typedef id (*getter_type)(RLMObjectBase *, SEL);
-    RLMProperty *prop = obj->_objectSchema[propName];
+id superGet(LEGACYObjectBase *obj, NSString *propName) {
+    typedef id (*getter_type)(LEGACYObjectBase *, SEL);
+    LEGACYProperty *prop = obj->_objectSchema[propName];
     Class superClass = class_getSuperclass(obj.class);
     getter_type superGetter = (getter_type)[superClass instanceMethodForSelector:prop.getterSel];
     return superGetter(obj, prop.getterSel);
 }
 
 // call setter for superclass for property at key
-void superSet(RLMObjectBase *obj, NSString *propName, id val) {
-    typedef void (*setter_type)(RLMObjectBase *, SEL, id<RLMCollection> collection);
-    RLMProperty *prop = obj->_objectSchema[propName];
+void superSet(LEGACYObjectBase *obj, NSString *propName, id val) {
+    typedef void (*setter_type)(LEGACYObjectBase *, SEL, id<LEGACYCollection> collection);
+    LEGACYProperty *prop = obj->_objectSchema[propName];
     Class superClass = class_getSuperclass(obj.class);
     setter_type superSetter = (setter_type)[superClass instanceMethodForSelector:prop.setterSel];
     superSetter(obj, prop.setterSel, val);
 }
 
 // getter/setter for unmanaged object
-id unmanagedGetter(RLMProperty *prop, const char *) {
-    // only override getters for RLMCollection and linking objects properties
-    if (prop.type == RLMPropertyTypeLinkingObjects) {
-        return ^(RLMObjectBase *) { return [RLMResults emptyDetachedResults]; };
+id unmanagedGetter(LEGACYProperty *prop, const char *) {
+    // only override getters for LEGACYCollection and linking objects properties
+    if (prop.type == LEGACYPropertyTypeLinkingObjects) {
+        return ^(LEGACYObjectBase *) { return [LEGACYResults emptyDetachedResults]; };
     }
     if (prop.collection) {
         NSString *propName = prop.name;
-        Class cls = RLMCollectionClassForProperty(prop, false);
-        if (prop.type == RLMPropertyTypeObject) {
+        Class cls = LEGACYCollectionClassForProperty(prop, false);
+        if (prop.type == LEGACYPropertyTypeObject) {
             NSString *objectClassName = prop.objectClassName;
-            RLMPropertyType keyType = prop.dictionaryKeyType;
-            return ^(RLMObjectBase *obj) {
+            LEGACYPropertyType keyType = prop.dictionaryKeyType;
+            return ^(LEGACYObjectBase *obj) {
                 id val = superGet(obj, propName);
                 if (!val) {
                     val = [[cls alloc] initWithObjectClassName:objectClassName keyType:keyType];
@@ -499,7 +499,7 @@ id unmanagedGetter(RLMProperty *prop, const char *) {
         auto type = prop.type;
         auto optional = prop.optional;
         auto dictionaryKeyType = prop.dictionaryKeyType;
-        return ^(RLMObjectBase *obj) {
+        return ^(LEGACYObjectBase *obj) {
             id val = superGet(obj, propName);
             if (!val) {
                 val = [[cls alloc] initWithObjectType:type optional:optional keyType:dictionaryKeyType];
@@ -511,21 +511,21 @@ id unmanagedGetter(RLMProperty *prop, const char *) {
     return nil;
 }
 
-id unmanagedSetter(RLMProperty *prop, const char *) {
-    // Only RLMCollection types need special handling for the unmanaged setter
+id unmanagedSetter(LEGACYProperty *prop, const char *) {
+    // Only LEGACYCollection types need special handling for the unmanaged setter
     if (!prop.collection) {
         return nil;
     }
 
     NSString *propName = prop.name;
-    return ^(RLMObjectBase *obj, id<NSFastEnumeration> values) {
+    return ^(LEGACYObjectBase *obj, id<NSFastEnumeration> values) {
         auto prop = obj->_objectSchema[propName];
-        RLMValidateValueForProperty(values, obj->_objectSchema, prop, true);
+        LEGACYValidateValueForProperty(values, obj->_objectSchema, prop, true);
 
-        Class cls = RLMCollectionClassForProperty(prop, false);
+        Class cls = LEGACYCollectionClassForProperty(prop, false);
         id collection;
             // make copy when setting (as is the case for all other variants)
-        if (prop.type == RLMPropertyTypeObject) {
+        if (prop.type == LEGACYPropertyTypeObject) {
             collection = [[cls alloc] initWithObjectClassName:prop.objectClassName keyType:prop.dictionaryKeyType];
         }
         else {
@@ -540,9 +540,9 @@ id unmanagedSetter(RLMProperty *prop, const char *) {
     };
 }
 
-void addMethod(Class cls, __unsafe_unretained RLMProperty *const prop,
-               id (*getter)(RLMProperty *, const char *),
-               id (*setter)(RLMProperty *, const char *)) {
+void addMethod(Class cls, __unsafe_unretained LEGACYProperty *const prop,
+               id (*getter)(LEGACYProperty *, const char *),
+               id (*setter)(LEGACYProperty *, const char *)) {
     SEL sel = prop.getterSel;
     if (!sel) {
         return;
@@ -570,11 +570,11 @@ void addMethod(Class cls, __unsafe_unretained RLMProperty *const prop,
 }
 
 Class createAccessorClass(Class objectClass,
-                          RLMObjectSchema *schema,
+                          LEGACYObjectSchema *schema,
                           const char *accessorClassName,
-                          id (*getterGetter)(RLMProperty *, const char *),
-                          id (*setterGetter)(RLMProperty *, const char *)) {
-    REALM_ASSERT_DEBUG(RLMIsObjectOrSubclass(objectClass));
+                          id (*getterGetter)(LEGACYProperty *, const char *),
+                          id (*setterGetter)(LEGACYProperty *, const char *)) {
+    REALM_ASSERT_DEBUG(LEGACYIsObjectOrSubclass(objectClass));
 
     // create and register proxy class which derives from object class
     Class accClass = objc_allocateClassPair(objectClass, accessorClassName, 0);
@@ -585,10 +585,10 @@ Class createAccessorClass(Class objectClass,
     }
 
     // override getters/setters for each propery
-    for (RLMProperty *prop in schema.properties) {
+    for (LEGACYProperty *prop in schema.properties) {
         addMethod(accClass, prop, getterGetter, setterGetter);
     }
-    for (RLMProperty *prop in schema.computedProperties) {
+    for (LEGACYProperty *prop in schema.computedProperties) {
         addMethod(accClass, prop, getterGetter, setterGetter);
     }
 
@@ -597,13 +597,13 @@ Class createAccessorClass(Class objectClass,
     return accClass;
 }
 
-bool requiresUnmanagedAccessor(RLMObjectSchema *schema) {
-    for (RLMProperty *prop in schema.properties) {
+bool requiresUnmanagedAccessor(LEGACYObjectSchema *schema) {
+    for (LEGACYProperty *prop in schema.properties) {
         if (prop.collection && !prop.swiftIvar) {
             return true;
         }
     }
-    for (RLMProperty *prop in schema.computedProperties) {
+    for (LEGACYProperty *prop in schema.computedProperties) {
         if (prop.collection && !prop.swiftIvar) {
             return true;
         }
@@ -614,11 +614,11 @@ bool requiresUnmanagedAccessor(RLMObjectSchema *schema) {
 
 #pragma mark - Public Interface
 
-Class RLMManagedAccessorClassForObjectClass(Class objectClass, RLMObjectSchema *schema, const char *name) {
+Class LEGACYManagedAccessorClassForObjectClass(Class objectClass, LEGACYObjectSchema *schema, const char *name) {
     return createAccessorClass(objectClass, schema, name, managedGetter, managedSetter);
 }
 
-Class RLMUnmanagedAccessorClassForObjectClass(Class objectClass, RLMObjectSchema *schema) {
+Class LEGACYUnmanagedAccessorClassForObjectClass(Class objectClass, LEGACYObjectSchema *schema) {
     if (!requiresUnmanagedAccessor(schema)) {
         return objectClass;
     }
@@ -629,14 +629,14 @@ Class RLMUnmanagedAccessorClassForObjectClass(Class objectClass, RLMObjectSchema
 
 // implement the class method className on accessors to return the className of the
 // base object
-void RLMReplaceClassNameMethod(Class accessorClass, NSString *className) {
+void LEGACYReplaceClassNameMethod(Class accessorClass, NSString *className) {
     Class metaClass = object_getClass(accessorClass);
     IMP imp = imp_implementationWithBlock(^(Class) { return className; });
     class_addMethod(metaClass, @selector(className), imp, "@@:");
 }
 
 // implement the shared schema method
-void RLMReplaceSharedSchemaMethod(Class accessorClass, RLMObjectSchema *schema) {
+void LEGACYReplaceSharedSchemaMethod(Class accessorClass, LEGACYObjectSchema *schema) {
     REALM_ASSERT(accessorClass != [RealmSwiftObject class]);
     Class metaClass = object_getClass(accessorClass);
     IMP imp = imp_implementationWithBlock(^(Class cls) {
@@ -661,160 +661,160 @@ void RLMReplaceSharedSchemaMethod(Class accessorClass, RLMObjectSchema *schema) 
             return schema;
         }
 
-        return [RLMSchema sharedSchemaForClass:cls];
+        return [LEGACYSchema sharedSchemaForClass:cls];
     });
     class_addMethod(metaClass, @selector(sharedSchema), imp, "@@:");
 }
 
-void RLMDynamicValidatedSet(RLMObjectBase *obj, NSString *propName, id val) {
-    RLMVerifyAttached(obj);
-    RLMObjectSchema *schema = obj->_objectSchema;
-    RLMProperty *prop = schema[propName];
+void LEGACYDynamicValidatedSet(LEGACYObjectBase *obj, NSString *propName, id val) {
+    LEGACYVerifyAttached(obj);
+    LEGACYObjectSchema *schema = obj->_objectSchema;
+    LEGACYProperty *prop = schema[propName];
     if (!prop) {
-        @throw RLMException(@"Invalid property name '%@' for class '%@'.",
+        @throw LEGACYException(@"Invalid property name '%@' for class '%@'.",
                             propName, obj->_objectSchema.className);
     }
     if (prop.isPrimary) {
-        @throw RLMException(@"Primary key can't be changed to '%@' after an object is inserted.", val);
+        @throw LEGACYException(@"Primary key can't be changed to '%@' after an object is inserted.", val);
     }
 
     // Because embedded objects cannot be created directly, we accept anything
     // that can be converted to an embedded object for dynamic link set operations.
-    bool is_embedded = prop.type == RLMPropertyTypeObject && obj->_info->linkTargetType(prop.index).rlmObjectSchema.isEmbedded;
-    RLMValidateValueForProperty(val, schema, prop, !is_embedded);
-    RLMDynamicSet(obj, prop, RLMCoerceToNil(val));
+    bool is_embedded = prop.type == LEGACYPropertyTypeObject && obj->_info->linkTargetType(prop.index).rlmObjectSchema.isEmbedded;
+    LEGACYValidateValueForProperty(val, schema, prop, !is_embedded);
+    LEGACYDynamicSet(obj, prop, LEGACYCoerceToNil(val));
 }
 
 // Precondition: the property is not a primary key
-void RLMDynamicSet(__unsafe_unretained RLMObjectBase *const obj,
-                   __unsafe_unretained RLMProperty *const prop,
+void LEGACYDynamicSet(__unsafe_unretained LEGACYObjectBase *const obj,
+                   __unsafe_unretained LEGACYProperty *const prop,
                    __unsafe_unretained id const val) {
     REALM_ASSERT_DEBUG(!prop.isPrimary);
     realm::Object o(obj->_info->realm->_realm, *obj->_info->objectSchema, obj->_row);
-    RLMAccessorContext c(obj);
-    RLMTranslateError([&] {
+    LEGACYAccessorContext c(obj);
+    LEGACYTranslateError([&] {
         o.set_property_value(c, getProperty(obj, prop).name, val ?: NSNull.null);
     });
 }
 
-id RLMDynamicGet(__unsafe_unretained RLMObjectBase *const obj, __unsafe_unretained RLMProperty *const prop) {
+id LEGACYDynamicGet(__unsafe_unretained LEGACYObjectBase *const obj, __unsafe_unretained LEGACYProperty *const prop) {
     if (auto accessor = prop.swiftAccessor; accessor && [obj isKindOfClass:obj->_objectSchema.objectClass]) {
-        return RLMCoerceToNil([accessor get:prop on:obj]);
+        return LEGACYCoerceToNil([accessor get:prop on:obj]);
     }
     if (!obj->_realm) {
         return [obj valueForKey:prop.name];
     }
 
     realm::Object o(obj->_realm->_realm, *obj->_info->objectSchema, obj->_row);
-    RLMAccessorContext c(obj);
+    LEGACYAccessorContext c(obj);
     c.currentProperty = prop;
-    return RLMTranslateError([&] {
-        return RLMCoerceToNil(o.get_property_value<id>(c, getProperty(obj, prop)));
+    return LEGACYTranslateError([&] {
+        return LEGACYCoerceToNil(o.get_property_value<id>(c, getProperty(obj, prop)));
     });
 }
 
-id RLMDynamicGetByName(__unsafe_unretained RLMObjectBase *const obj,
+id LEGACYDynamicGetByName(__unsafe_unretained LEGACYObjectBase *const obj,
                        __unsafe_unretained NSString *const propName) {
-    RLMProperty *prop = obj->_objectSchema[propName];
+    LEGACYProperty *prop = obj->_objectSchema[propName];
     if (!prop) {
-        @throw RLMException(@"Invalid property name '%@' for class '%@'.",
+        @throw LEGACYException(@"Invalid property name '%@' for class '%@'.",
                             propName, obj->_objectSchema.className);
     }
-    return RLMDynamicGet(obj, prop);
+    return LEGACYDynamicGet(obj, prop);
 }
 
 #pragma mark - Swift property getters and setter
 
 #define REALM_SWIFT_PROPERTY_ACCESSOR(objc, swift, rlmtype) \
-    objc RLMGetSwiftProperty##swift(__unsafe_unretained RLMObjectBase *const obj, uint16_t key) { \
+    objc LEGACYGetSwiftProperty##swift(__unsafe_unretained LEGACYObjectBase *const obj, uint16_t key) { \
         return get<objc>(obj, key); \
     } \
-    objc RLMGetSwiftProperty##swift##Optional(__unsafe_unretained RLMObjectBase *const obj, uint16_t key, bool *gotValue) { \
+    objc LEGACYGetSwiftProperty##swift##Optional(__unsafe_unretained LEGACYObjectBase *const obj, uint16_t key, bool *gotValue) { \
         return getOptional<objc>(obj, key, gotValue); \
     } \
-    void RLMSetSwiftProperty##swift(__unsafe_unretained RLMObjectBase *const obj, uint16_t key, objc value) { \
-        RLMVerifyAttached(obj); \
+    void LEGACYSetSwiftProperty##swift(__unsafe_unretained LEGACYObjectBase *const obj, uint16_t key, objc value) { \
+        LEGACYVerifyAttached(obj); \
         kvoSetValue(obj, key, value); \
     }
 REALM_FOR_EACH_SWIFT_PRIMITIVE_TYPE(REALM_SWIFT_PROPERTY_ACCESSOR)
 #undef REALM_SWIFT_PROPERTY_ACCESSOR
 
 #define REALM_SWIFT_PROPERTY_ACCESSOR(objc, swift, rlmtype) \
-    void RLMSetSwiftProperty##swift(__unsafe_unretained RLMObjectBase *const obj, uint16_t key, objc *value) { \
-        RLMVerifyAttached(obj); \
+    void LEGACYSetSwiftProperty##swift(__unsafe_unretained LEGACYObjectBase *const obj, uint16_t key, objc *value) { \
+        LEGACYVerifyAttached(obj); \
         kvoSetValue(obj, key, value); \
     }
 REALM_FOR_EACH_SWIFT_OBJECT_TYPE(REALM_SWIFT_PROPERTY_ACCESSOR)
 #undef REALM_SWIFT_PROPERTY_ACCESSOR
 
-NSString *RLMGetSwiftPropertyString(__unsafe_unretained RLMObjectBase *const obj, uint16_t key) {
+NSString *LEGACYGetSwiftPropertyString(__unsafe_unretained LEGACYObjectBase *const obj, uint16_t key) {
     return getBoxed<realm::StringData>(obj, key);
 }
 
-NSData *RLMGetSwiftPropertyData(__unsafe_unretained RLMObjectBase *const obj, uint16_t key) {
+NSData *LEGACYGetSwiftPropertyData(__unsafe_unretained LEGACYObjectBase *const obj, uint16_t key) {
     return getBoxed<realm::BinaryData>(obj, key);
 }
 
-NSDate *RLMGetSwiftPropertyDate(__unsafe_unretained RLMObjectBase *const obj, uint16_t key) {
+NSDate *LEGACYGetSwiftPropertyDate(__unsafe_unretained LEGACYObjectBase *const obj, uint16_t key) {
     return getBoxed<realm::Timestamp>(obj, key);
 }
 
-NSUUID *RLMGetSwiftPropertyUUID(__unsafe_unretained RLMObjectBase *const obj, uint16_t key) {
+NSUUID *LEGACYGetSwiftPropertyUUID(__unsafe_unretained LEGACYObjectBase *const obj, uint16_t key) {
     return getBoxed<std::optional<realm::UUID>>(obj, key);
 }
 
-RLMObjectId *RLMGetSwiftPropertyObjectId(__unsafe_unretained RLMObjectBase *const obj, uint16_t key) {
+LEGACYObjectId *LEGACYGetSwiftPropertyObjectId(__unsafe_unretained LEGACYObjectBase *const obj, uint16_t key) {
     return getBoxed<std::optional<realm::ObjectId>>(obj, key);
 }
 
-RLMDecimal128 *RLMGetSwiftPropertyDecimal128(__unsafe_unretained RLMObjectBase *const obj, uint16_t key) {
+LEGACYDecimal128 *LEGACYGetSwiftPropertyDecimal128(__unsafe_unretained LEGACYObjectBase *const obj, uint16_t key) {
     return getBoxed<realm::Decimal128>(obj, key);
 }
 
-RLMArray *RLMGetSwiftPropertyArray(__unsafe_unretained RLMObjectBase *const obj, uint16_t key) {
+LEGACYArray *LEGACYGetSwiftPropertyArray(__unsafe_unretained LEGACYObjectBase *const obj, uint16_t key) {
     return getCollection(obj, key);
 }
-RLMSet *RLMGetSwiftPropertySet(__unsafe_unretained RLMObjectBase *const obj, uint16_t key) {
+LEGACYSet *LEGACYGetSwiftPropertySet(__unsafe_unretained LEGACYObjectBase *const obj, uint16_t key) {
     return getCollection(obj, key);
 }
-RLMDictionary *RLMGetSwiftPropertyMap(__unsafe_unretained RLMObjectBase *const obj, uint16_t key) {
+LEGACYDictionary *LEGACYGetSwiftPropertyMap(__unsafe_unretained LEGACYObjectBase *const obj, uint16_t key) {
     return getCollection(obj, key);
 }
 
-void RLMSetSwiftPropertyNil(__unsafe_unretained RLMObjectBase *const obj, uint16_t key) {
-    RLMVerifyInWriteTransaction(obj);
+void LEGACYSetSwiftPropertyNil(__unsafe_unretained LEGACYObjectBase *const obj, uint16_t key) {
+    LEGACYVerifyInWriteTransaction(obj);
     if (getProperty(obj, key).type == realm::PropertyType::Object) {
-        kvoSetValue(obj, key, (RLMObjectBase *)nil);
+        kvoSetValue(obj, key, (LEGACYObjectBase *)nil);
     }
     else {
         // The type used here is arbitrary; it simply needs to be any non-object type
-        kvoSetValue(obj, key, (NSNumber<RLMInt> *)nil);
+        kvoSetValue(obj, key, (NSNumber<LEGACYInt> *)nil);
     }
 }
 
-void RLMSetSwiftPropertyObject(__unsafe_unretained RLMObjectBase *const obj, uint16_t key,
-                               __unsafe_unretained RLMObjectBase *const target) {
+void LEGACYSetSwiftPropertyObject(__unsafe_unretained LEGACYObjectBase *const obj, uint16_t key,
+                               __unsafe_unretained LEGACYObjectBase *const target) {
     kvoSetValue(obj, key, target);
 }
 
-RLMObjectBase *RLMGetSwiftPropertyObject(__unsafe_unretained RLMObjectBase *const obj, uint16_t key) {
+LEGACYObjectBase *LEGACYGetSwiftPropertyObject(__unsafe_unretained LEGACYObjectBase *const obj, uint16_t key) {
     return getBoxed<realm::Obj>(obj, key);
 }
 
-void RLMSetSwiftPropertyAny(__unsafe_unretained RLMObjectBase *const obj, uint16_t key,
-                            __unsafe_unretained id<RLMValue> const value) {
+void LEGACYSetSwiftPropertyAny(__unsafe_unretained LEGACYObjectBase *const obj, uint16_t key,
+                            __unsafe_unretained id<LEGACYValue> const value) {
     kvoSetValue(obj, key, value);
 }
 
-id<RLMValue> RLMGetSwiftPropertyAny(__unsafe_unretained RLMObjectBase *const obj, uint16_t key) {
+id<LEGACYValue> LEGACYGetSwiftPropertyAny(__unsafe_unretained LEGACYObjectBase *const obj, uint16_t key) {
     return getBoxed<realm::Mixed>(obj, key);
 }
 
-#pragma mark - RLMAccessorContext
+#pragma mark - LEGACYAccessorContext
 
-RLMAccessorContext::~RLMAccessorContext() = default;
+LEGACYAccessorContext::~LEGACYAccessorContext() = default;
 
-RLMAccessorContext::RLMAccessorContext(RLMAccessorContext& parent, realm::Obj const& obj,
+LEGACYAccessorContext::LEGACYAccessorContext(LEGACYAccessorContext& parent, realm::Obj const& obj,
                                        realm::Property const& property)
 : _realm(parent._realm)
 , _info(property.type == realm::PropertyType::Object ? parent._info.linkTargetType(property) : parent._info)
@@ -824,12 +824,12 @@ RLMAccessorContext::RLMAccessorContext(RLMAccessorContext& parent, realm::Obj co
 {
 }
 
-RLMAccessorContext::RLMAccessorContext(RLMClassInfo& info)
+LEGACYAccessorContext::LEGACYAccessorContext(LEGACYClassInfo& info)
 : _realm(info.realm), _info(info)
 {
 }
 
-RLMAccessorContext::RLMAccessorContext(__unsafe_unretained RLMObjectBase *const parent,
+LEGACYAccessorContext::LEGACYAccessorContext(__unsafe_unretained LEGACYObjectBase *const parent,
                                        const realm::Property *prop)
 : _realm(parent->_realm)
 , _info(prop && prop->type == realm::PropertyType::Object ? parent->_info->linkTargetType(*prop)
@@ -840,7 +840,7 @@ RLMAccessorContext::RLMAccessorContext(__unsafe_unretained RLMObjectBase *const 
 {
 }
 
-RLMAccessorContext::RLMAccessorContext(__unsafe_unretained RLMObjectBase *const parent,
+LEGACYAccessorContext::LEGACYAccessorContext(__unsafe_unretained LEGACYObjectBase *const parent,
                                        realm::ColKey col)
 : _realm(parent->_realm)
 , _info(_realm->_info[parent->_info->propertyForTableColumn(col).objectClassName])
@@ -850,16 +850,16 @@ RLMAccessorContext::RLMAccessorContext(__unsafe_unretained RLMObjectBase *const 
 {
 }
 
-id RLMAccessorContext::defaultValue(__unsafe_unretained NSString *const key) {
+id LEGACYAccessorContext::defaultValue(__unsafe_unretained NSString *const key) {
     if (!_defaultValues) {
-        _defaultValues = RLMDefaultValuesForObjectSchema(_info.rlmObjectSchema);
+        _defaultValues = LEGACYDefaultValuesForObjectSchema(_info.rlmObjectSchema);
     }
     return _defaultValues[key];
 }
 
-id RLMAccessorContext::propertyValue(id obj, size_t propIndex,
-                                     __unsafe_unretained RLMProperty *const prop) {
-    obj = RLMBridgeSwiftValue(obj) ?: obj;
+id LEGACYAccessorContext::propertyValue(id obj, size_t propIndex,
+                                     __unsafe_unretained LEGACYProperty *const prop) {
+    obj = LEGACYBridgeSwiftValue(obj) ?: obj;
 
     // Property value from an NSArray
     if ([obj respondsToSelector:@selector(objectAtIndex:)]) {
@@ -877,52 +877,52 @@ id RLMAccessorContext::propertyValue(id obj, size_t propIndex,
     }
 
     // Property value from some object that's KVC-compatible
-    id value = RLMValidatedValueForProperty(obj, [obj respondsToSelector:prop.getterSel] ? prop.getterName : prop.name,
+    id value = LEGACYValidatedValueForProperty(obj, [obj respondsToSelector:prop.getterSel] ? prop.getterName : prop.name,
                                             _info.rlmObjectSchema.className);
     return value ?: NSNull.null;
 }
 
-realm::Obj RLMAccessorContext::create_embedded_object() {
+realm::Obj LEGACYAccessorContext::create_embedded_object() {
     if (!_parentObject) {
-        @throw RLMException(@"Embedded objects cannot be created directly");
+        @throw LEGACYException(@"Embedded objects cannot be created directly");
     }
     return _parentObject.create_and_set_linked_object(_colKey);
 }
 
-id RLMAccessorContext::box(realm::Mixed v) {
-    return RLMMixedToObjc(v, _realm, &_info);
+id LEGACYAccessorContext::box(realm::Mixed v) {
+    return LEGACYMixedToObjc(v, _realm, &_info);
 }
 
-id RLMAccessorContext::box(realm::List&& l) {
+id LEGACYAccessorContext::box(realm::List&& l) {
     REALM_ASSERT(_parentObjectInfo);
     REALM_ASSERT(currentProperty);
-    return [[RLMManagedArray alloc] initWithBackingCollection:std::move(l)
+    return [[LEGACYManagedArray alloc] initWithBackingCollection:std::move(l)
                                                    parentInfo:_parentObjectInfo
                                                      property:currentProperty];
 }
 
-id RLMAccessorContext::box(realm::object_store::Set&& s) {
+id LEGACYAccessorContext::box(realm::object_store::Set&& s) {
     REALM_ASSERT(_parentObjectInfo);
     REALM_ASSERT(currentProperty);
-    return [[RLMManagedSet alloc] initWithBackingCollection:std::move(s)
+    return [[LEGACYManagedSet alloc] initWithBackingCollection:std::move(s)
                                                  parentInfo:_parentObjectInfo
                                                    property:currentProperty];
 }
 
-id RLMAccessorContext::box(realm::object_store::Dictionary&& d) {
+id LEGACYAccessorContext::box(realm::object_store::Dictionary&& d) {
     REALM_ASSERT(_parentObjectInfo);
     REALM_ASSERT(currentProperty);
-    return [[RLMManagedDictionary alloc] initWithBackingCollection:std::move(d)
+    return [[LEGACYManagedDictionary alloc] initWithBackingCollection:std::move(d)
                                                         parentInfo:_parentObjectInfo
                                                           property:currentProperty];
 }
 
-id RLMAccessorContext::box(realm::Object&& o) {
+id LEGACYAccessorContext::box(realm::Object&& o) {
     REALM_ASSERT(currentProperty);
-    return RLMCreateObjectAccessor(_info.linkTargetType(currentProperty.index), o.get_obj());
+    return LEGACYCreateObjectAccessor(_info.linkTargetType(currentProperty.index), o.get_obj());
 }
 
-id RLMAccessorContext::box(realm::Obj&& r) {
+id LEGACYAccessorContext::box(realm::Obj&& r) {
     if (!currentProperty) {
         // If currentProperty is set, then we're reading from a Collection and
         // that reported an audit read for us. If not, we need to report the
@@ -930,12 +930,12 @@ id RLMAccessorContext::box(realm::Obj&& r) {
         // `realm::Object`, but our object accessors don't wrap that type.
         realm::Object(_realm->_realm, *_info.objectSchema, r, _parentObject, _colKey);
     }
-    return RLMCreateObjectAccessor(_info, std::move(r));
+    return LEGACYCreateObjectAccessor(_info, std::move(r));
 }
 
-id RLMAccessorContext::box(realm::Results&& r) {
+id LEGACYAccessorContext::box(realm::Results&& r) {
     REALM_ASSERT(currentProperty);
-    return [RLMResults resultsWithObjectInfo:_realm->_info[currentProperty.objectClassName]
+    return [LEGACYResults resultsWithObjectInfo:_realm->_info[currentProperty.objectClassName]
                                      results:std::move(r)];
 }
 
@@ -944,113 +944,113 @@ using realm::CreatePolicy;
 
 template<typename T>
 static T *bridged(__unsafe_unretained id const value) {
-    return [value isKindOfClass:[T class]] ? value : RLMBridgeSwiftValue(value);
+    return [value isKindOfClass:[T class]] ? value : LEGACYBridgeSwiftValue(value);
 }
 
 template<>
-realm::Timestamp RLMStatelessAccessorContext::unbox(__unsafe_unretained id const value) {
-    id v = RLMCoerceToNil(value);
-    return RLMTimestampForNSDate(bridged<NSDate>(v));
+realm::Timestamp LEGACYStatelessAccessorContext::unbox(__unsafe_unretained id const value) {
+    id v = LEGACYCoerceToNil(value);
+    return LEGACYTimestampForNSDate(bridged<NSDate>(v));
 }
 
 template<>
-bool RLMStatelessAccessorContext::unbox(__unsafe_unretained id const v) {
+bool LEGACYStatelessAccessorContext::unbox(__unsafe_unretained id const v) {
     return [bridged<NSNumber>(v) boolValue];
 }
 template<>
-double RLMStatelessAccessorContext::unbox(__unsafe_unretained id const v) {
+double LEGACYStatelessAccessorContext::unbox(__unsafe_unretained id const v) {
     return [bridged<NSNumber>(v) doubleValue];
 }
 template<>
-float RLMStatelessAccessorContext::unbox(__unsafe_unretained id const v) {
+float LEGACYStatelessAccessorContext::unbox(__unsafe_unretained id const v) {
     return [bridged<NSNumber>(v) floatValue];
 }
 template<>
-long long RLMStatelessAccessorContext::unbox(__unsafe_unretained id const v) {
+long long LEGACYStatelessAccessorContext::unbox(__unsafe_unretained id const v) {
     return [bridged<NSNumber>(v) longLongValue];
 }
 template<>
-realm::BinaryData RLMStatelessAccessorContext::unbox(id v) {
-    v = RLMCoerceToNil(v);
-    return RLMBinaryDataForNSData(bridged<NSData>(v));
+realm::BinaryData LEGACYStatelessAccessorContext::unbox(id v) {
+    v = LEGACYCoerceToNil(v);
+    return LEGACYBinaryDataForNSData(bridged<NSData>(v));
 }
 template<>
-realm::StringData RLMStatelessAccessorContext::unbox(id v) {
-    v = RLMCoerceToNil(v);
-    return RLMStringDataWithNSString(bridged<NSString>(v));
+realm::StringData LEGACYStatelessAccessorContext::unbox(id v) {
+    v = LEGACYCoerceToNil(v);
+    return LEGACYStringDataWithNSString(bridged<NSString>(v));
 }
 template<>
-realm::Decimal128 RLMStatelessAccessorContext::unbox(id v) {
-    return RLMObjcToDecimal128(v);
+realm::Decimal128 LEGACYStatelessAccessorContext::unbox(id v) {
+    return LEGACYObjcToDecimal128(v);
 }
 template<>
-realm::ObjectId RLMStatelessAccessorContext::unbox(id v) {
-    return bridged<RLMObjectId>(v).value;
+realm::ObjectId LEGACYStatelessAccessorContext::unbox(id v) {
+    return bridged<LEGACYObjectId>(v).value;
 }
 template<>
-realm::UUID RLMStatelessAccessorContext::unbox(id v) {
-    return RLMObjcToUUID(bridged<NSUUID>(v));
+realm::UUID LEGACYStatelessAccessorContext::unbox(id v) {
+    return LEGACYObjcToUUID(bridged<NSUUID>(v));
 }
 template<>
-realm::Mixed RLMAccessorContext::unbox(__unsafe_unretained id v, CreatePolicy p, ObjKey) {
-    return RLMObjcToMixed(v, _realm, p);
+realm::Mixed LEGACYAccessorContext::unbox(__unsafe_unretained id v, CreatePolicy p, ObjKey) {
+    return LEGACYObjcToMixed(v, _realm, p);
 }
 
 template<typename T>
 static auto toOptional(__unsafe_unretained id const value) {
-    id v = RLMCoerceToNil(value);
-    return v ? realm::util::make_optional(RLMStatelessAccessorContext::unbox<T>(v))
+    id v = LEGACYCoerceToNil(value);
+    return v ? realm::util::make_optional(LEGACYStatelessAccessorContext::unbox<T>(v))
              : realm::util::none;
 }
 
 template<>
-std::optional<bool> RLMStatelessAccessorContext::unbox(__unsafe_unretained id const v) {
+std::optional<bool> LEGACYStatelessAccessorContext::unbox(__unsafe_unretained id const v) {
     return toOptional<bool>(v);
 }
 template<>
-std::optional<double> RLMStatelessAccessorContext::unbox(__unsafe_unretained id const v) {
+std::optional<double> LEGACYStatelessAccessorContext::unbox(__unsafe_unretained id const v) {
     return toOptional<double>(v);
 }
 template<>
-std::optional<float> RLMStatelessAccessorContext::unbox(__unsafe_unretained id const v) {
+std::optional<float> LEGACYStatelessAccessorContext::unbox(__unsafe_unretained id const v) {
     return toOptional<float>(v);
 }
 template<>
-std::optional<int64_t> RLMStatelessAccessorContext::unbox(__unsafe_unretained id const v) {
+std::optional<int64_t> LEGACYStatelessAccessorContext::unbox(__unsafe_unretained id const v) {
     return toOptional<int64_t>(v);
 }
 template<>
-std::optional<realm::ObjectId> RLMStatelessAccessorContext::unbox(__unsafe_unretained id const v) {
+std::optional<realm::ObjectId> LEGACYStatelessAccessorContext::unbox(__unsafe_unretained id const v) {
     return toOptional<realm::ObjectId>(v);
 }
 template<>
-std::optional<realm::UUID> RLMStatelessAccessorContext::unbox(__unsafe_unretained id const v) {
+std::optional<realm::UUID> LEGACYStatelessAccessorContext::unbox(__unsafe_unretained id const v) {
     return toOptional<realm::UUID>(v);
 }
 
 std::pair<realm::Obj, bool>
-RLMAccessorContext::createObject(id value, realm::CreatePolicy policy,
+LEGACYAccessorContext::createObject(id value, realm::CreatePolicy policy,
                                  bool forceCreate, ObjKey existingKey) {
     if (!value || value == NSNull.null) {
-        @throw RLMException(@"Must provide a non-nil value.");
+        @throw LEGACYException(@"Must provide a non-nil value.");
     }
 
     if ([value isKindOfClass:[NSArray class]] && [value count] > _info.objectSchema->persisted_properties.size()) {
-        @throw RLMException(@"Invalid array input: more values (%llu) than properties (%llu).",
+        @throw LEGACYException(@"Invalid array input: more values (%llu) than properties (%llu).",
                             (unsigned long long)[value count],
                             (unsigned long long)_info.objectSchema->persisted_properties.size());
     }
 
-    RLMObjectBase *objBase = RLMDynamicCast<RLMObjectBase>(value);
+    LEGACYObjectBase *objBase = LEGACYDynamicCast<LEGACYObjectBase>(value);
     realm::Obj obj, *outObj = nullptr;
     bool requiresSwiftUIObservers = false;
     if (objBase) {
         if (objBase.isInvalidated) {
             if (policy.create && !policy.copy) {
-                @throw RLMException(@"Adding a deleted or invalidated object to a Realm is not permitted");
+                @throw LEGACYException(@"Adding a deleted or invalidated object to a Realm is not permitted");
             }
             else {
-                @throw RLMException(@"Object has been deleted or invalidated.");
+                @throw LEGACYException(@"Object has been deleted or invalidated.");
             }
         }
         if (policy.copy) {
@@ -1074,12 +1074,12 @@ RLMAccessorContext::createObject(id value, realm::CreatePolicy policy,
                 return {realm::Obj(), false};
             }
             if (objBase->_realm) {
-                @throw RLMException(@"Object is already managed by another Realm. Use create instead to copy it into this Realm.");
+                @throw LEGACYException(@"Object is already managed by another Realm. Use create instead to copy it into this Realm.");
             }
             if (objBase->_observationInfo && objBase->_observationInfo->hasObservers()) {
-                requiresSwiftUIObservers = [RLMSwiftUIKVO removeObserversFromObject:objBase];
+                requiresSwiftUIObservers = [LEGACYSwiftUIKVO removeObserversFromObject:objBase];
                 if (!requiresSwiftUIObservers) {
-                    @throw RLMException(@"Cannot add an object with observers to a Realm");
+                    @throw LEGACYException(@"Cannot add an object with observers to a Realm");
                 }
             }
 
@@ -1103,42 +1103,42 @@ RLMAccessorContext::createObject(id value, realm::CreatePolicy policy,
                               (id)value, policy, existingKey, outObj);
     }
     catch (std::exception const& e) {
-        @throw RLMException(e);
+        @throw LEGACYException(e);
     }
 
     if (objBase) {
-        for (RLMProperty *prop in _info.rlmObjectSchema.properties) {
+        for (LEGACYProperty *prop in _info.rlmObjectSchema.properties) {
             // set the ivars for object and array properties to nil as otherwise the
             // accessors retain objects that are no longer accessible via the properties
             // this is mainly an issue when the object graph being added has cycles,
             // as it's not obvious that the user has to set the *ivars* to nil to
             // avoid leaking memory
-            if (prop.type == RLMPropertyTypeObject && !prop.swiftIvar) {
+            if (prop.type == LEGACYPropertyTypeObject && !prop.swiftIvar) {
                 ((void(*)(id, SEL, id))objc_msgSend)(objBase, prop.setterSel, nil);
             }
         }
 
         object_setClass(objBase, _info.rlmObjectSchema.accessorClass);
-        RLMInitializeSwiftAccessor(objBase, true);
+        LEGACYInitializeSwiftAccessor(objBase, true);
     }
 
     if (requiresSwiftUIObservers) {
-        [RLMSwiftUIKVO addObserversToObject:objBase];
+        [LEGACYSwiftUIKVO addObserversToObject:objBase];
     }
 
     return {*outObj, false};
 }
 
 template<>
-realm::Obj RLMAccessorContext::unbox(__unsafe_unretained id const v, CreatePolicy policy, ObjKey key) {
+realm::Obj LEGACYAccessorContext::unbox(__unsafe_unretained id const v, CreatePolicy policy, ObjKey key) {
     return createObject(v, policy, false, key).first;
 }
 
-void RLMAccessorContext::will_change(realm::Obj const& row, realm::Property const& prop) {
-    auto obsInfo = RLMGetObservationInfo(nullptr, row.get_key(), _info);
+void LEGACYAccessorContext::will_change(realm::Obj const& row, realm::Property const& prop) {
+    auto obsInfo = LEGACYGetObservationInfo(nullptr, row.get_key(), _info);
     if (!_observationHelper) {
         if (obsInfo || prop.type == realm::PropertyType::Object) {
-            _observationHelper = std::make_unique<RLMObservationTracker>(_info.realm);
+            _observationHelper = std::make_unique<LEGACYObservationTracker>(_info.realm);
         }
     }
     if (_observationHelper) {
@@ -1149,48 +1149,48 @@ void RLMAccessorContext::will_change(realm::Obj const& row, realm::Property cons
     }
 }
 
-void RLMAccessorContext::did_change() {
+void LEGACYAccessorContext::did_change() {
     if (_observationHelper) {
         _observationHelper->didChange();
     }
 }
 
-RLMOptionalId RLMAccessorContext::value_for_property(__unsafe_unretained id const obj,
+LEGACYOptionalId LEGACYAccessorContext::value_for_property(__unsafe_unretained id const obj,
                                                      realm::Property const&, size_t propIndex) {
     auto prop = _info.rlmObjectSchema.properties[propIndex];
     id value = propertyValue(obj, propIndex, prop);
     if (value) {
-        RLMValidateValueForProperty(value, _info.rlmObjectSchema, prop);
+        LEGACYValidateValueForProperty(value, _info.rlmObjectSchema, prop);
     }
-    return RLMOptionalId{value};
+    return LEGACYOptionalId{value};
 }
 
-RLMOptionalId RLMAccessorContext::default_value_for_property(realm::ObjectSchema const&,
+LEGACYOptionalId LEGACYAccessorContext::default_value_for_property(realm::ObjectSchema const&,
                                                              realm::Property const& prop)
 {
-    return RLMOptionalId{defaultValue(@(prop.name.c_str()))};
+    return LEGACYOptionalId{defaultValue(@(prop.name.c_str()))};
 }
 
-bool RLMStatelessAccessorContext::is_same_list(realm::List const& list,
+bool LEGACYStatelessAccessorContext::is_same_list(realm::List const& list,
                                                __unsafe_unretained id const v) noexcept {
     return [v respondsToSelector:@selector(isBackedByList:)] && [v isBackedByList:list];
 }
 
-bool RLMStatelessAccessorContext::is_same_set(realm::object_store::Set const& set,
+bool LEGACYStatelessAccessorContext::is_same_set(realm::object_store::Set const& set,
                                               __unsafe_unretained id const v) noexcept {
     return [v respondsToSelector:@selector(isBackedBySet:)] && [v isBackedBySet:set];
 }
 
-bool RLMStatelessAccessorContext::is_same_dictionary(realm::object_store::Dictionary const& dict,
+bool LEGACYStatelessAccessorContext::is_same_dictionary(realm::object_store::Dictionary const& dict,
                                                      __unsafe_unretained id const v) noexcept {
     return [v respondsToSelector:@selector(isBackedByDictionary:)] && [v isBackedByDictionary:dict];
 }
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wincomplete-implementation"
-@implementation RLMManagedPropertyAccessor
+@implementation LEGACYManagedPropertyAccessor
 // Most types don't need to distinguish between promote and init so provide a default
-+ (void)promote:(RLMProperty *)property on:(RLMObjectBase *)parent {
++ (void)promote:(LEGACYProperty *)property on:(LEGACYObjectBase *)parent {
     [self initialize:property on:parent];
 }
 @end

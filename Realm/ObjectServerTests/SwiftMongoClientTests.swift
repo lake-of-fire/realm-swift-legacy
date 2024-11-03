@@ -880,7 +880,7 @@ class AsyncAwaitMongoClientTests: SwiftSyncTestCase {
         // async/await is currently incompatible with thread sanitizer and will
         // produce many false positives
         // https://bugs.swift.org/browse/SR-15444
-        if RLMThreadSanitizerEnabled() {
+        if LEGACYThreadSanitizerEnabled() {
             return XCTestSuite(name: "\(type(of: self))")
         }
         return super.defaultTestSuite

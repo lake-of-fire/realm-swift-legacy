@@ -39,10 +39,10 @@ extension RealmLegacy {
          */
         public static var defaultConfiguration: Configuration {
             get {
-                return fromRLMRealmConfiguration(RLMRealmConfiguration.default())
+                return fromLEGACYRealmConfiguration(LEGACYRealmConfiguration.default())
             }
             set {
-                RLMRealmConfiguration.setDefault(newValue.rlmConfiguration)
+                LEGACYRealmConfiguration.setDefault(newValue.rlmConfiguration)
             }
         }
 
@@ -76,7 +76,7 @@ extension RealmLegacy {
                                          for the first time.
         */
         @preconcurrency
-        public init(fileURL: URL? = URL(fileURLWithPath: RLMRealmPathForFile("default.realm"), isDirectory: false),
+        public init(fileURL: URL? = URL(fileURLWithPath: LEGACYRealmPathForFile("default.realm"), isDirectory: false),
                     inMemoryIdentifier: String? = nil,
                     syncConfiguration: SyncConfiguration? = nil,
                     encryptionKey: Data? = nil,
@@ -211,7 +211,7 @@ extension RealmLegacy {
                 return self.customSchema.map { $0.objectSchema.compactMap { $0.objectClass as? ObjectBase.Type } }
             }
             set {
-                self.customSchema = newValue.map { RLMSchema(objectClasses: $0) }
+                self.customSchema = newValue.map { LEGACYSchema(objectClasses: $0) }
             }
         }
         /**
@@ -263,7 +263,7 @@ extension RealmLegacy {
         public var eventConfiguration: EventConfiguration?
 
         /// A custom schema to use for the RealmLegacy.
-        private var customSchema: RLMSchema?
+        private var customSchema: LEGACYSchema?
 
         /// If `true`, disables automatic format upgrades when accessing the RealmLegacy.
         internal var disableFormatUpgrade: Bool = false
@@ -278,8 +278,8 @@ extension RealmLegacy {
 
         // MARK: Private Methods
 
-        internal var rlmConfiguration: RLMRealmConfiguration {
-            let configuration = RLMRealmConfiguration()
+        internal var rlmConfiguration: LEGACYRealmConfiguration {
+            let configuration = LEGACYRealmConfiguration()
             if let syncConfiguration = syncConfiguration {
                 configuration.syncConfiguration = syncConfiguration.config
             }
@@ -302,7 +302,7 @@ extension RealmLegacy {
             configuration.disableFormatUpgrade = self.disableFormatUpgrade
             configuration.maximumNumberOfActiveVersions = self.maximumNumberOfActiveVersions ?? 0
             if let eventConfiguration = eventConfiguration {
-                let rlmConfig = RLMEventConfiguration()
+                let rlmConfig = LEGACYEventConfiguration()
                 rlmConfig.partitionPrefix = eventConfiguration.partitionPrefix
                 rlmConfig.syncUser = eventConfiguration.syncUser
                 rlmConfig.metadata = eventConfiguration.metadata
@@ -319,7 +319,7 @@ extension RealmLegacy {
             return configuration
         }
 
-        internal static func fromRLMRealmConfiguration(_ rlmConfiguration: RLMRealmConfiguration) -> Configuration {
+        internal static func fromLEGACYRealmConfiguration(_ rlmConfiguration: LEGACYRealmConfiguration) -> Configuration {
             var configuration = Configuration()
             configuration.fileURL = rlmConfiguration.fileURL
             configuration._inMemoryIdentifier = rlmConfiguration.inMemoryIdentifier
@@ -353,7 +353,7 @@ extension RealmLegacy {
 extension RealmLegacy.Configuration: CustomStringConvertible {
     /// A human-readable description of the configuration value.
     public var description: String {
-        return gsub(pattern: "\\ARLMRealmConfiguration",
+        return gsub(pattern: "\\ALEGACYRealmConfiguration",
                     template: "Realm.Configuration",
                     string: rlmConfiguration.description) ?? ""
     }

@@ -16,9 +16,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
-#import <Realm/RLMSwiftValueStorage.h>
-#import <Realm/RLMValue.h>
+#import <Realm/LEGACYConstants.h>
+#import <Realm/LEGACYSwiftValueStorage.h>
+#import <Realm/LEGACYValue.h>
 
 #import <realm/array.hpp>
 #import <realm/binary_data.hpp>
@@ -36,39 +36,39 @@ class Exception;
 class Mixed;
 }
 
-class RLMClassInfo;
+class LEGACYClassInfo;
 
-@class RLMObjectSchema;
-@class RLMProperty;
+@class LEGACYObjectSchema;
+@class LEGACYProperty;
 
 __attribute__((format(NSString, 1, 2)))
-NSException *RLMException(NSString *fmt, ...);
-NSException *RLMException(std::exception const& exception);
-NSException *RLMException(realm::Exception const& exception);
+NSException *LEGACYException(NSString *fmt, ...);
+NSException *LEGACYException(std::exception const& exception);
+NSException *LEGACYException(realm::Exception const& exception);
 
-void RLMSetErrorOrThrow(NSError *error, NSError **outError);
+void LEGACYSetErrorOrThrow(NSError *error, NSError **outError);
 
-RLM_HIDDEN_BEGIN
+LEGACY_HIDDEN_BEGIN
 
 // returns if the object can be inserted as the given type
-BOOL RLMIsObjectValidForProperty(id obj, RLMProperty *prop);
+BOOL LEGACYIsObjectValidForProperty(id obj, LEGACYProperty *prop);
 // throw an exception if the object is not a valid value for the property
-void RLMValidateValueForProperty(id obj, RLMObjectSchema *objectSchema,
-                                 RLMProperty *prop, bool validateObjects=false);
-id RLMValidateValue(id value, RLMPropertyType type, bool optional, bool collection,
+void LEGACYValidateValueForProperty(id obj, LEGACYObjectSchema *objectSchema,
+                                 LEGACYProperty *prop, bool validateObjects=false);
+id LEGACYValidateValue(id value, LEGACYPropertyType type, bool optional, bool collection,
                     NSString *objectClassName);
 
-void RLMThrowTypeError(id obj, RLMObjectSchema *objectSchema, RLMProperty *prop);
+void LEGACYThrowTypeError(id obj, LEGACYObjectSchema *objectSchema, LEGACYProperty *prop);
 
 // gets default values for the given schema (+defaultPropertyValues)
 // merges with native property defaults if Swift class
-NSDictionary *RLMDefaultValuesForObjectSchema(RLMObjectSchema *objectSchema);
+NSDictionary *LEGACYDefaultValuesForObjectSchema(LEGACYObjectSchema *objectSchema);
 
-BOOL RLMIsDebuggerAttached();
-BOOL RLMIsRunningInPlayground();
+BOOL LEGACYIsDebuggerAttached();
+BOOL LEGACYIsRunningInPlayground();
 
 // C version of isKindOfClass
-static inline BOOL RLMIsKindOfClass(Class class1, Class class2) {
+static inline BOOL LEGACYIsKindOfClass(Class class1, Class class2) {
     while (class1) {
         if (class1 == class2) return YES;
         class1 = class_getSuperclass(class1);
@@ -77,35 +77,35 @@ static inline BOOL RLMIsKindOfClass(Class class1, Class class2) {
 }
 
 template<typename T>
-static inline T *RLMDynamicCast(__unsafe_unretained id obj) {
+static inline T *LEGACYDynamicCast(__unsafe_unretained id obj) {
     if ([obj isKindOfClass:[T class]]) {
         return obj;
     }
     return nil;
 }
 
-static inline id RLMCoerceToNil(__unsafe_unretained id obj) {
+static inline id LEGACYCoerceToNil(__unsafe_unretained id obj) {
     if (static_cast<id>(obj) == NSNull.null) {
         return nil;
     }
-    else if (__unsafe_unretained auto optional = RLMDynamicCast<RLMSwiftValueStorage>(obj)) {
-        return RLMCoerceToNil(RLMGetSwiftValueStorage(optional));
+    else if (__unsafe_unretained auto optional = LEGACYDynamicCast<LEGACYSwiftValueStorage>(obj)) {
+        return LEGACYCoerceToNil(LEGACYGetSwiftValueStorage(optional));
     }
     return obj;
 }
 
 template<typename T>
-static inline T RLMCoerceToNil(__unsafe_unretained T obj) {
-    return RLMCoerceToNil(static_cast<id>(obj));
+static inline T LEGACYCoerceToNil(__unsafe_unretained T obj) {
+    return LEGACYCoerceToNil(static_cast<id>(obj));
 }
 
-id<NSFastEnumeration> RLMAsFastEnumeration(id obj);
-id RLMBridgeSwiftValue(id obj);
+id<NSFastEnumeration> LEGACYAsFastEnumeration(id obj);
+id LEGACYBridgeSwiftValue(id obj);
 
-bool RLMIsSwiftObjectClass(Class cls);
+bool LEGACYIsSwiftObjectClass(Class cls);
 
 // String conversion utilities
-static inline NSString *RLMStringDataToNSString(realm::StringData stringData) {
+static inline NSString *LEGACYStringDataToNSString(realm::StringData stringData) {
     static_assert(sizeof(NSUInteger) >= sizeof(size_t),
                   "Need runtime overflow check for size_t to NSUInteger conversion");
     if (stringData.is_null()) {
@@ -118,7 +118,7 @@ static inline NSString *RLMStringDataToNSString(realm::StringData stringData) {
     }
 }
 
-static inline NSString *RLMStringViewToNSString(std::string_view stringView) {
+static inline NSString *LEGACYStringViewToNSString(std::string_view stringView) {
     if (stringView.size() == 0) {
         return nil;
     }
@@ -127,7 +127,7 @@ static inline NSString *RLMStringViewToNSString(std::string_view stringView) {
                                   encoding:NSUTF8StringEncoding];
 }
 
-static inline realm::StringData RLMStringDataWithNSString(__unsafe_unretained NSString *const string) {
+static inline realm::StringData LEGACYStringDataWithNSString(__unsafe_unretained NSString *const string) {
     static_assert(sizeof(size_t) >= sizeof(NSUInteger),
                   "Need runtime overflow check for NSUInteger to size_t conversion");
     return realm::StringData(string.UTF8String,
@@ -135,11 +135,11 @@ static inline realm::StringData RLMStringDataWithNSString(__unsafe_unretained NS
 }
 
 // Binary conversion utilities
-static inline NSData *RLMBinaryDataToNSData(realm::BinaryData binaryData) {
+static inline NSData *LEGACYBinaryDataToNSData(realm::BinaryData binaryData) {
     return binaryData ? [NSData dataWithBytes:binaryData.data() length:binaryData.size()] : nil;
 }
 
-static inline realm::BinaryData RLMBinaryDataForNSData(__unsafe_unretained NSData *const data) {
+static inline realm::BinaryData LEGACYBinaryDataForNSData(__unsafe_unretained NSData *const data) {
     // this is necessary to ensure that the empty NSData isn't treated by core as the null realm::BinaryData
     // because data.bytes == 0 when data.length == 0
     // the casting bit ensures that we create a data with a non-null pointer
@@ -150,14 +150,14 @@ static inline realm::BinaryData RLMBinaryDataForNSData(__unsafe_unretained NSDat
 // Date conversion utilities
 // These use the reference date and shift the seconds rather than just getting
 // the time interval since the epoch directly to avoid losing sub-second precision
-static inline NSDate *RLMTimestampToNSDate(realm::Timestamp ts) NS_RETURNS_RETAINED {
+static inline NSDate *LEGACYTimestampToNSDate(realm::Timestamp ts) NS_RETURNS_RETAINED {
     if (ts.is_null())
         return nil;
     auto timeInterval = ts.get_seconds() - NSTimeIntervalSince1970 + ts.get_nanoseconds() / 1'000'000'000.0;
     return [[NSDate alloc] initWithTimeIntervalSinceReferenceDate:timeInterval];
 }
 
-static inline realm::Timestamp RLMTimestampForNSDate(__unsafe_unretained NSDate *const date) {
+static inline realm::Timestamp LEGACYTimestampForNSDate(__unsafe_unretained NSDate *const date) {
     if (!date)
         return {};
     auto timeInterval = date.timeIntervalSinceReferenceDate;
@@ -182,11 +182,11 @@ static inline realm::Timestamp RLMTimestampForNSDate(__unsafe_unretained NSDate 
     return {seconds, nanoseconds};
 }
 
-static inline NSUInteger RLMConvertNotFound(size_t index) {
+static inline NSUInteger LEGACYConvertNotFound(size_t index) {
     return index == realm::not_found ? NSNotFound : index;
 }
 
-static inline void RLMNSStringToStdString(std::string &out, NSString *in) {
+static inline void LEGACYNSStringToStdString(std::string &out, NSString *in) {
     if (!in)
         return;
     
@@ -204,31 +204,31 @@ static inline void RLMNSStringToStdString(std::string &out, NSString *in) {
     out.resize(size);
 }
 
-realm::Mixed RLMObjcToMixed(__unsafe_unretained id value,
-                            __unsafe_unretained RLMRealm *realm=nil,
+realm::Mixed LEGACYObjcToMixed(__unsafe_unretained id value,
+                            __unsafe_unretained LEGACYRealm *realm=nil,
                             realm::CreatePolicy createPolicy={});
-id RLMMixedToObjc(realm::Mixed const& value,
-                  __unsafe_unretained RLMRealm *realm=nil,
-                  RLMClassInfo *classInfo=nullptr);
+id LEGACYMixedToObjc(realm::Mixed const& value,
+                  __unsafe_unretained LEGACYRealm *realm=nil,
+                  LEGACYClassInfo *classInfo=nullptr);
 
-realm::Decimal128 RLMObjcToDecimal128(id value);
-realm::UUID RLMObjcToUUID(__unsafe_unretained id const value);
+realm::Decimal128 LEGACYObjcToDecimal128(id value);
+realm::UUID LEGACYObjcToUUID(__unsafe_unretained id const value);
 
 // Given a bundle identifier, return the base directory on the disk within which Realm database and support files should
 // be stored.
-FOUNDATION_EXTERN RLM_VISIBLE
-NSString *RLMDefaultDirectoryForBundleIdentifier(NSString *bundleIdentifier);
+FOUNDATION_EXTERN LEGACY_VISIBLE
+NSString *LEGACYDefaultDirectoryForBundleIdentifier(NSString *bundleIdentifier);
 
 // Get a NSDateFormatter for ISO8601-formatted strings
-NSDateFormatter *RLMISO8601Formatter();
+NSDateFormatter *LEGACYISO8601Formatter();
 
 template<typename Fn>
-static auto RLMTranslateError(Fn&& fn) {
+static auto LEGACYTranslateError(Fn&& fn) {
     try {
         return fn();
     }
     catch (std::exception const& e) {
-        @throw RLMException(e);
+        @throw LEGACYException(e);
     }
 }
 
@@ -290,9 +290,9 @@ static inline bool numberIsDouble(__unsafe_unretained NSNumber *const obj) {
            data_type == *@encode(unsigned long long);
 }
 
-class RLMUnfairMutex {
+class LEGACYUnfairMutex {
 public:
-    RLMUnfairMutex() = default;
+    LEGACYUnfairMutex() = default;
 
     void lock() noexcept {
         os_unfair_lock_lock(&_lock);
@@ -308,8 +308,8 @@ public:
 
 private:
     os_unfair_lock _lock = OS_UNFAIR_LOCK_INIT;
-    RLMUnfairMutex(RLMUnfairMutex const&) = delete;
-    RLMUnfairMutex& operator=(RLMUnfairMutex const&) = delete;
+    LEGACYUnfairMutex(LEGACYUnfairMutex const&) = delete;
+    LEGACYUnfairMutex& operator=(LEGACYUnfairMutex const&) = delete;
 };
 
-RLM_HIDDEN_END
+LEGACY_HIDDEN_END

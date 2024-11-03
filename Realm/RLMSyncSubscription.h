@@ -16,41 +16,41 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-@class RLMObjectId;
+@class LEGACYObjectId;
 
 #pragma mark - Subscription States
 
 /// The current state of the subscription. This can be used for ensuring that
 /// the subscriptions are not errored and that it has been successfully
 /// synced to the server.
-typedef NS_ENUM(NSUInteger, RLMSyncSubscriptionState) {
+typedef NS_ENUM(NSUInteger, LEGACYSyncSubscriptionState) {
     /// The subscription is complete and the server has sent all the data that matched the subscription
     /// queries at the time the subscription set was updated. The server is now in a steady-state
     /// synchronization mode where it will stream update as they come.
-    RLMSyncSubscriptionStateComplete,
+    LEGACYSyncSubscriptionStateComplete,
     /// The subscription encountered an error and synchronization is paused for this Realm. You can
     /// find the error calling error in the subscription set to get a description of the error. You can
     /// still use the current subscription set to write a subscription.
-    RLMSyncSubscriptionStateError,
+    LEGACYSyncSubscriptionStateError,
     /// The subscription is persisted locally but not yet processed by the server, which means
     /// the server hasn't yet returned all the data that matched the updated subscription queries.
-    RLMSyncSubscriptionStatePending,
+    LEGACYSyncSubscriptionStatePending,
     /// The subscription set has been super-ceded by an updated one, this typically means that
     /// someone is trying to write a subscription on a different instance of the subscription set.
     /// You should not use a superseded subscription set and instead obtain a new instance of
     /// the subscription set to write a subscription.
-    RLMSyncSubscriptionStateSuperseded
+    LEGACYSyncSubscriptionStateSuperseded
 };
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 /**
- `RLMSyncSubscription` is  used to define a Flexible Sync subscription obtained from querying a
+ `LEGACYSyncSubscription` is  used to define a Flexible Sync subscription obtained from querying a
  subscription set, which can be used to read or remove/update a committed subscription.
  */
-@interface RLMSyncSubscription : NSObject
+@interface LEGACYSyncSubscription : NSObject
 
 /// Name of the subscription. If not specified it will return nil.
 @property (nonatomic, readonly, nullable) NSString *name;
@@ -88,20 +88,20 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 @end
 
 /**
- `RLMSyncSubscriptionSet` is  a collection of `RLMSyncSubscription`s. This is the entry point
- for adding and removing `RLMSyncSubscription`s.
+ `LEGACYSyncSubscriptionSet` is  a collection of `LEGACYSyncSubscription`s. This is the entry point
+ for adding and removing `LEGACYSyncSubscription`s.
  */
-@interface RLMSyncSubscriptionSet : NSObject <NSFastEnumeration>
+@interface LEGACYSyncSubscriptionSet : NSObject <NSFastEnumeration>
 
 /// The number of subscriptions in the subscription set.
 @property (readonly) NSUInteger count;
 
 /// Gets the error associated to the subscription set. This will be non-nil in case the current
-/// state of the subscription set is `RLMSyncSubscriptionStateError`.
+/// state of the subscription set is `LEGACYSyncSubscriptionStateError`.
 @property (nonatomic, readonly, nullable) NSError *error;
 
 /// Gets the state associated to the subscription set.
-@property (nonatomic, readonly) RLMSyncSubscriptionState state;
+@property (nonatomic, readonly) LEGACYSyncSubscriptionState state;
 
 #pragma mark - Batch Update subscriptions
 
@@ -126,7 +126,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
                    otherwise.
  */
 - (void)update:(__attribute__((noescape)) void(^)(void))block
-    onComplete:(nullable void(^RLM_SWIFT_SENDABLE)(NSError *_Nullable))onComplete
+    onComplete:(nullable void(^LEGACY_SWIFT_SENDABLE)(NSError *_Nullable))onComplete
     __attribute__((swift_async(not_swift_private, 2)))
     __attribute__((swift_attr("@_unsafeInheritExecutor")));
 /// :nodoc:
@@ -158,7 +158,7 @@ __attribute__((swift_attr("@_unsafeInheritExecutor")));
 
  @return A subscription for the given name.
  */
-- (nullable RLMSyncSubscription *)subscriptionWithName:(NSString *)name;
+- (nullable LEGACYSyncSubscription *)subscriptionWithName:(NSString *)name;
 
 /**
  Finds a subscription by the query for the specified object class name.
@@ -168,11 +168,11 @@ __attribute__((swift_attr("@_unsafeInheritExecutor")));
 
  @return A subscription for the given query..
  */
-- (nullable RLMSyncSubscription *)subscriptionWithClassName:(NSString *)objectClassName
+- (nullable LEGACYSyncSubscription *)subscriptionWithClassName:(NSString *)objectClassName
                                                       where:(NSString *)predicateFormat, ...;
 
 /// :nodoc:
-- (nullable RLMSyncSubscription *)subscriptionWithClassName:(NSString *)objectClassName
+- (nullable LEGACYSyncSubscription *)subscriptionWithClassName:(NSString *)objectClassName
                                                       where:(NSString *)predicateFormat
                                                        args:(va_list)args;
 
@@ -184,7 +184,7 @@ __attribute__((swift_attr("@_unsafeInheritExecutor")));
 
  @return A subscription for the given query..
  */
-- (nullable RLMSyncSubscription *)subscriptionWithClassName:(NSString *)objectClassName
+- (nullable LEGACYSyncSubscription *)subscriptionWithClassName:(NSString *)objectClassName
                                                   predicate:(NSPredicate *)predicate;
 
 #pragma mark - Add a Subscription
@@ -297,7 +297,7 @@ __attribute__((swift_attr("@_unsafeInheritExecutor")));
 
  @param subscription An instance of the subscription to be removed.
  */
-- (void)removeSubscription:(RLMSyncSubscription *)subscription;
+- (void)removeSubscription:(LEGACYSyncSubscription *)subscription;
 
 #pragma mark - Remove Subscriptions
 
@@ -337,21 +337,21 @@ __attribute__((swift_attr("@_unsafeInheritExecutor")));
 
  @return A subscription for the given index in the subscription set.
  */
-- (nullable RLMSyncSubscription *)objectAtIndex:(NSUInteger)index;
+- (nullable LEGACYSyncSubscription *)objectAtIndex:(NSUInteger)index;
 
 /**
  Returns the first object in the subscription set list, or `nil` if the subscriptions are empty.
 
  @return A subscription.
  */
-- (nullable RLMSyncSubscription *)firstObject;
+- (nullable LEGACYSyncSubscription *)firstObject;
 
 /**
  Returns the last object in the subscription set, or `nil` if the subscriptions are empty.
 
  @return A subscription.
  */
-- (nullable RLMSyncSubscription *)lastObject;
+- (nullable LEGACYSyncSubscription *)lastObject;
 
 #pragma mark - Subscript
 
@@ -366,4 +366,4 @@ __attribute__((swift_attr("@_unsafeInheritExecutor")));
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

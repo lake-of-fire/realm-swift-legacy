@@ -16,22 +16,22 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
-#import <Realm/RLMThreadSafeReference.h>
+#import <Realm/LEGACYConstants.h>
+#import <Realm/LEGACYThreadSafeReference.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@protocol RLMValue;
-@class RLMRealm, RLMResults, RLMSortDescriptor, RLMNotificationToken, RLMCollectionChange, RLMSectionedResults;
-typedef RLM_CLOSED_ENUM(int32_t, RLMPropertyType);
+@protocol LEGACYValue;
+@class LEGACYRealm, LEGACYResults, LEGACYSortDescriptor, LEGACYNotificationToken, LEGACYCollectionChange, LEGACYSectionedResults;
+typedef LEGACY_CLOSED_ENUM(int32_t, LEGACYPropertyType);
 /// A callback which is invoked on each element in the Results collection which returns the section key.
-typedef id<RLMValue> _Nullable(^RLMSectionedResultsKeyBlock)(id);
+typedef id<LEGACYValue> _Nullable(^LEGACYSectionedResultsKeyBlock)(id);
 
 /**
  A homogenous collection of Realm-managed objects. Examples of conforming types
- include `RLMArray`, `RLMSet`, `RLMResults`, and `RLMLinkingObjects`.
+ include `LEGACYArray`, `LEGACYSet`, `LEGACYResults`, and `LEGACYLinkingObjects`.
  */
-@protocol RLMCollection <NSFastEnumeration, RLMThreadConfined>
+@protocol LEGACYCollection <NSFastEnumeration, LEGACYThreadConfined>
 
 #pragma mark - Properties
 
@@ -43,7 +43,7 @@ typedef id<RLMValue> _Nullable(^RLMSectionedResultsKeyBlock)(id);
 /**
  The type of the objects in the collection.
  */
-@property (nonatomic, readonly) RLMPropertyType type;
+@property (nonatomic, readonly) LEGACYPropertyType type;
 
 /**
  Indicates whether the objects in the collection can be `nil`.
@@ -53,14 +53,14 @@ typedef id<RLMValue> _Nullable(^RLMSectionedResultsKeyBlock)(id);
 /**
  The class name  of the objects contained in the collection.
 
- Will be `nil` if `type` is not RLMPropertyTypeObject.
+ Will be `nil` if `type` is not LEGACYPropertyTypeObject.
  */
 @property (nonatomic, readonly, copy, nullable) NSString *objectClassName;
 
 /**
  The Realm which manages this collection, if any.
  */
-@property (nonatomic, readonly, nullable) RLMRealm *realm;
+@property (nonatomic, readonly, nullable) LEGACYRealm *realm;
 
 /**
  Indicates if the collection is no longer valid.
@@ -97,7 +97,7 @@ typedef id<RLMValue> _Nullable(^RLMSectionedResultsKeyBlock)(id);
 /**
  Returns the first object in the collection.
 
- RLMSet is not ordered, and so for sets this will return an arbitrary object in
+ LEGACYSet is not ordered, and so for sets this will return an arbitrary object in
  the set. It is not guaraneed to be a different object from what `lastObject`
  gives even if the set has multiple objects in it.
 
@@ -110,7 +110,7 @@ typedef id<RLMValue> _Nullable(^RLMSectionedResultsKeyBlock)(id);
 /**
  Returns the last object in the collection.
 
- RLMSet is not ordered, and so for sets this will return an arbitrary object in
+ LEGACYSet is not ordered, and so for sets this will return an arbitrary object in
  the set. It is not guaraneed to be a different object from what `firstObject`
  gives even if the set has multiple objects in it.
 
@@ -163,12 +163,12 @@ typedef id<RLMValue> _Nullable(^RLMSectionedResultsKeyBlock)(id);
  This is only supported for managed collections.
 
  @param predicateFormat A predicate format string, optionally followed by a variable number of arguments.
- @return    An `RLMResults` containing objects that match the given predicate.
+ @return    An `LEGACYResults` containing objects that match the given predicate.
  */
-- (RLMResults *)objectsWhere:(NSString *)predicateFormat, ...;
+- (LEGACYResults *)objectsWhere:(NSString *)predicateFormat, ...;
 
 /// :nodoc:
-- (RLMResults *)objectsWhere:(NSString *)predicateFormat args:(va_list)args;
+- (LEGACYResults *)objectsWhere:(NSString *)predicateFormat args:(va_list)args;
 
 /**
  Returns all objects matching the given predicate in the collection.
@@ -176,40 +176,40 @@ typedef id<RLMValue> _Nullable(^RLMSectionedResultsKeyBlock)(id);
  This is only supported for managed collections.
 
  @param predicate   The predicate with which to filter the objects.
- @return            An `RLMResults` containing objects that match the given predicate.
+ @return            An `LEGACYResults` containing objects that match the given predicate.
  */
-- (RLMResults *)objectsWithPredicate:(NSPredicate *)predicate;
+- (LEGACYResults *)objectsWithPredicate:(NSPredicate *)predicate;
 
 /**
- Returns a sorted `RLMResults` from the collection.
+ Returns a sorted `LEGACYResults` from the collection.
 
  This is only supported for managed collections.
 
  @param keyPath     The keyPath to sort by.
  @param ascending   The direction to sort in.
- @return    An `RLMResults` sorted by the specified key path.
+ @return    An `LEGACYResults` sorted by the specified key path.
  */
-- (RLMResults *)sortedResultsUsingKeyPath:(NSString *)keyPath ascending:(BOOL)ascending;
+- (LEGACYResults *)sortedResultsUsingKeyPath:(NSString *)keyPath ascending:(BOOL)ascending;
 
 /**
- Returns a sorted `RLMResults` from the collection.
+ Returns a sorted `LEGACYResults` from the collection.
 
  This is only supported for managed collections.
 
- @param properties  An array of `RLMSortDescriptor`s to sort by.
- @return    An `RLMResults` sorted by the specified properties.
+ @param properties  An array of `LEGACYSortDescriptor`s to sort by.
+ @return    An `LEGACYResults` sorted by the specified properties.
  */
-- (RLMResults *)sortedResultsUsingDescriptors:(NSArray<RLMSortDescriptor *> *)properties;
+- (LEGACYResults *)sortedResultsUsingDescriptors:(NSArray<LEGACYSortDescriptor *> *)properties;
 
 /**
- Returns a distinct `RLMResults` from the collection.
+ Returns a distinct `LEGACYResults` from the collection.
 
  This is only supported for managed collections.
 
  @param keyPaths  The key paths used produce distinct results
- @return    An `RLMResults` made distinct based on the specified key paths
+ @return    An `LEGACYResults` made distinct based on the specified key paths
  */
-- (RLMResults *)distinctResultsUsingKeyPaths:(NSArray<NSString *> *)keyPaths;
+- (LEGACYResults *)distinctResultsUsingKeyPaths:(NSArray<NSString *> *)keyPaths;
 
 /**
  Returns an `NSArray` containing the results of invoking `valueForKey:` using
@@ -253,7 +253,7 @@ The `change` parameter will be `nil` the first time the block is called.
 For each call after that, it will contain information about
 which rows in the collection were added, removed or modified. If a
 write transaction did not modify any objects in the results collection,
-the block is not called at all. See the `RLMCollectionChange` documentation for
+the block is not called at all. See the `LEGACYCollectionChange` documentation for
 information on how the changes are reported and an example of updating a
 `UITableView`.
 
@@ -262,7 +262,7 @@ information on how the changes are reported and an example of updating a
 
 At the time when the block is called, the collection object will be fully
 evaluated and up-to-date, and as long as you do not perform a write transaction
-on the same thread or explicitly call `-[RLMRealm refresh]`, accessing it will
+on the same thread or explicitly call `-[LEGACYRealm refresh]`, accessing it will
 never perform blocking work.
 
 Notifications are delivered via the standard run loop, and so can't be
@@ -275,10 +275,10 @@ opportunity for the initial notification to be delivered first. As a
 result, the initial notification will reflect the state of the Realm after
 the write transaction.
 
- RLMResults<Dog *> *results = [Dog allObjects];
+ LEGACYResults<Dog *> *results = [Dog allObjects];
  NSLog(@"dogs.count: %zu", dogs.count); // => 0
- self.token = [results addNotificationBlock:^(RLMResults *dogs,
-                                              RLMCollectionChange *changes,
+ self.token = [results addNotificationBlock:^(LEGACYResults *dogs,
+                                              LEGACYCollectionChange *changes,
                                               NSError *error) {
      // Only fired once for the example
      NSLog(@"dogs.count: %zu", dogs.count); // => 1
@@ -299,8 +299,8 @@ to be sent to the block. To stop receiving updates, call `-invalidate` on the to
 @param block The block to be called whenever a change occurs.
 @return A token which must be held for as long as you want updates to be delivered.
 */
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMResults *_Nullable results,
-                                                         RLMCollectionChange *_Nullable change,
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYResults *_Nullable results,
+                                                         LEGACYCollectionChange *_Nullable change,
                                                          NSError *_Nullable error))block
 __attribute__((warn_unused_result));
 
@@ -315,7 +315,7 @@ The `change` parameter will be `nil` the first time the block is called.
 For each call after that, it will contain information about
 which rows in the collection were added, removed or modified. If a
 write transaction did not modify any objects in the results collection,
-the block is not called at all. See the `RLMCollectionChange` documentation for
+the block is not called at all. See the `LEGACYCollectionChange` documentation for
 information on how the changes are reported and an example of updating a
 `UITableView`.
 
@@ -324,7 +324,7 @@ information on how the changes are reported and an example of updating a
 
 At the time when the block is called, the collection object will be fully
 evaluated and up-to-date, and as long as you do not perform a write transaction
-on the same thread or explicitly call `-[RLMRealm refresh]`, accessing it will
+on the same thread or explicitly call `-[LEGACYRealm refresh]`, accessing it will
 never perform blocking work.
 
 Notifications are delivered on the given queue. If the queue is blocked and
@@ -341,8 +341,8 @@ to be sent to the block. To stop receiving updates, call `-invalidate` on the to
 @param queue The serial queue to deliver notifications to.
 @return A token which must be held for as long as you want updates to be delivered.
 */
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMResults *_Nullable results,
-                                                         RLMCollectionChange *_Nullable change,
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYResults *_Nullable results,
+                                                         LEGACYCollectionChange *_Nullable change,
                                                          NSError *_Nullable error))block
                                          queue:(nullable dispatch_queue_t)queue
 __attribute__((warn_unused_result));
@@ -358,7 +358,7 @@ The `change` parameter will be `nil` the first time the block is called.
 For each call after that, it will contain information about
 which rows in the collection were added, removed or modified. If a
 write transaction did not modify any objects in the results collection,
-the block is not called at all. See the `RLMCollectionChange` documentation for
+the block is not called at all. See the `LEGACYCollectionChange` documentation for
 information on how the changes are reported and an example of updating a
 `UITableView`.
 
@@ -367,7 +367,7 @@ information on how the changes are reported and an example of updating a
 
 At the time when the block is called, the collection object will be fully
 evaluated and up-to-date, and as long as you do not perform a write transaction
-on the same thread or explicitly call `-[RLMRealm refresh]`, accessing it will
+on the same thread or explicitly call `-[LEGACYRealm refresh]`, accessing it will
 never perform blocking work.
 
 Notifications are delivered on the given queue. If the queue is blocked and
@@ -386,8 +386,8 @@ to be sent to the block. To stop receiving updates, call `-invalidate` on the to
 key paths are given, notifications are delivered for every property key path.
 @return A token which must be held for as long as you want updates to be delivered.
 */
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMResults *_Nullable results,
-                                                         RLMCollectionChange *_Nullable change,
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYResults *_Nullable results,
+                                                         LEGACYCollectionChange *_Nullable change,
                                                          NSError *_Nullable error))block
                                       keyPaths:(nullable NSArray<NSString *> *)keyPaths
                                          queue:(nullable dispatch_queue_t)queue
@@ -397,33 +397,33 @@ __attribute__((warn_unused_result));
 
 /**
  Sorts and sections this collection from a given property key path, returning the result
- as an instance of `RLMSectionedResults`.
+ as an instance of `LEGACYSectionedResults`.
 
  @param keyPath The property key path to sort on.
  @param ascending The direction to sort in.
  @param keyBlock  A callback which is invoked on each element in the Results collection.
                  This callback is to return the section key for the element in the collection.
 
- @return An instance of RLMSectionedResults.
+ @return An instance of LEGACYSectionedResults.
  */
-- (RLMSectionedResults *)sectionedResultsSortedUsingKeyPath:(NSString *)keyPath
+- (LEGACYSectionedResults *)sectionedResultsSortedUsingKeyPath:(NSString *)keyPath
                                                   ascending:(BOOL)ascending
-                                                   keyBlock:(RLMSectionedResultsKeyBlock)keyBlock;
+                                                   keyBlock:(LEGACYSectionedResultsKeyBlock)keyBlock;
 
 /**
  Sorts and sections this collection from a given array of sort descriptors, returning the result
- as an instance of `RLMSectionedResults`.
+ as an instance of `LEGACYSectionedResults`.
 
- @param sortDescriptors  An array of `RLMSortDescriptor`s to sort by.
+ @param sortDescriptors  An array of `LEGACYSortDescriptor`s to sort by.
  @param keyBlock  A callback which is invoked on each element in the Results collection.
                  This callback is to return the section key for the element in the collection.
 
  @note The primary sort descriptor must be responsible for determining the section key.
 
- @return An instance of RLMSectionedResults.
+ @return An instance of LEGACYSectionedResults.
  */
-- (RLMSectionedResults *)sectionedResultsUsingSortDescriptors:(NSArray<RLMSortDescriptor *> *)sortDescriptors
-                                                     keyBlock:(RLMSectionedResultsKeyBlock)keyBlock;
+- (LEGACYSectionedResults *)sectionedResultsUsingSortDescriptors:(NSArray<LEGACYSortDescriptor *> *)sortDescriptors
+                                                     keyBlock:(LEGACYSectionedResultsKeyBlock)keyBlock;
 
 #pragma mark - Aggregating Property Values
 
@@ -433,7 +433,7 @@ __attribute__((warn_unused_result));
 
      NSNumber *min = [results minOfProperty:@"age"];
 
- @warning You cannot use this method on `RLMObject`, `RLMArray`, and `NSData` properties.
+ @warning You cannot use this method on `LEGACYObject`, `LEGACYArray`, and `NSData` properties.
 
  @param property The property whose minimum value is desired. Only properties of
                  types `int`, `float`, `double`, and `NSDate` are supported.
@@ -448,7 +448,7 @@ __attribute__((warn_unused_result));
 
      NSNumber *max = [results maxOfProperty:@"age"];
 
- @warning You cannot use this method on `RLMObject`, `RLMArray`, and `NSData` properties.
+ @warning You cannot use this method on `LEGACYObject`, `LEGACYArray`, and `NSData` properties.
 
  @param property The property whose maximum value is desired. Only properties of
                  types `int`, `float`, `double`, and `NSDate` are supported.
@@ -462,7 +462,7 @@ __attribute__((warn_unused_result));
 
      NSNumber *sum = [results sumOfProperty:@"age"];
 
- @warning You cannot use this method on `RLMObject`, `RLMArray`, and `NSData` properties.
+ @warning You cannot use this method on `LEGACYObject`, `LEGACYArray`, and `NSData` properties.
 
  @param property The property whose values should be summed. Only properties of
                  types `int`, `float`, and `double` are supported.
@@ -476,7 +476,7 @@ __attribute__((warn_unused_result));
 
      NSNumber *average = [results averageOfProperty:@"age"];
 
- @warning You cannot use this method on `RLMObject`, `RLMArray`, and `NSData` properties.
+ @warning You cannot use this method on `LEGACYObject`, `LEGACYArray`, and `NSData` properties.
 
  @param property The property whose average value should be calculated. Only
                  properties of types `int`, `float`, and `double` are supported.
@@ -507,7 +507,7 @@ __attribute__((warn_unused_result));
  @warning Holding onto a frozen collection for an extended period while
           performing write transaction on the Realm may result in the Realm
           file growing to large sizes. See
-          `RLMRealmConfiguration.maximumNumberOfActiveVersions`
+          `LEGACYRealmConfiguration.maximumNumberOfActiveVersions`
           for more information.
  */
 - (instancetype)freeze;
@@ -523,15 +523,15 @@ __attribute__((warn_unused_result));
 @end
 
 /**
- An `RLMSortDescriptor` stores a property name and a sort order for use with
+ An `LEGACYSortDescriptor` stores a property name and a sort order for use with
  `sortedResultsUsingDescriptors:`. It is similar to `NSSortDescriptor`, but supports
  only the subset of functionality which can be efficiently run by Realm's query
  engine.
 
- `RLMSortDescriptor` instances are immutable.
+ `LEGACYSortDescriptor` instances are immutable.
  */
-RLM_SWIFT_SENDABLE RLM_FINAL
-@interface RLMSortDescriptor : NSObject
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL
+@interface LEGACYSortDescriptor : NSObject
 
 #pragma mark - Properties
 
@@ -560,11 +560,11 @@ RLM_SWIFT_SENDABLE RLM_FINAL
 @end
 
 /**
- A `RLMCollectionChange` object encapsulates information about changes to collections
+ A `LEGACYCollectionChange` object encapsulates information about changes to collections
  that are reported by Realm notifications.
 
- `RLMCollectionChange` is passed to the notification blocks registered with
- `-addNotificationBlock` on `RLMArray` and `RLMResults`, and reports what rows in the
+ `LEGACYCollectionChange` is passed to the notification blocks registered with
+ `-addNotificationBlock` on `LEGACYArray` and `LEGACYResults`, and reports what rows in the
  collection changed since the last time the notification block was called.
 
  The change information is available in two formats: a simple array of row
@@ -578,9 +578,9 @@ RLM_SWIFT_SENDABLE RLM_FINAL
      [tv reloadRowsAtIndexPaths:[changes modificationsInSection:0] withRowAnimation:UITableViewRowAnimationAutomatic];
      [tv endUpdates];
 
- All of the arrays in an `RLMCollectionChange` are always sorted in ascending order.
+ All of the arrays in an `LEGACYCollectionChange` are always sorted in ascending order.
  */
-@interface RLMCollectionChange : NSObject
+@interface LEGACYCollectionChange : NSObject
 /// The indices of objects in the previous version of the collection which have
 /// been removed from this one.
 @property (nonatomic, readonly) NSArray<NSNumber *> *deletions;
@@ -591,11 +591,11 @@ RLM_SWIFT_SENDABLE RLM_FINAL
 /**
  The indices in the new version of the collection which were modified.
 
- For `RLMResults`, this means that one or more of the properties of the object at
+ For `LEGACYResults`, this means that one or more of the properties of the object at
  that index were modified (or an object linked to by that object was
  modified).
 
- For `RLMArray`, the array itself being modified to contain a
+ For `LEGACYArray`, the array itself being modified to contain a
  different object at that index will also be reported as a modification.
  */
 @property (nonatomic, readonly) NSArray<NSNumber *> *modifications;
@@ -610,4 +610,4 @@ RLM_SWIFT_SENDABLE RLM_FINAL
 - (NSArray<NSIndexPath *> *)modificationsInSection:(NSUInteger)section;
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

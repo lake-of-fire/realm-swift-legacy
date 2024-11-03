@@ -16,17 +16,17 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMObjectBase.h>
-#import <Realm/RLMThreadSafeReference.h>
+#import <Realm/LEGACYObjectBase.h>
+#import <Realm/LEGACYThreadSafeReference.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@class RLMObjectSchema, RLMPropertyDescriptor, RLMRealm, RLMNotificationToken, RLMPropertyChange;
-typedef void (^RLMObjectChangeBlock)(BOOL deleted,
-                                     NSArray<RLMPropertyChange *> *_Nullable changes,
+@class LEGACYObjectSchema, LEGACYPropertyDescriptor, LEGACYRealm, LEGACYNotificationToken, LEGACYPropertyChange;
+typedef void (^LEGACYObjectChangeBlock)(BOOL deleted,
+                                     NSArray<LEGACYPropertyChange *> *_Nullable changes,
                                      NSError *_Nullable error);
 /**
- `RLMEmbeddedObject` is a base class used to define Realm model objects.
+ `LEGACYEmbeddedObject` is a base class used to define Realm model objects.
 
  Embedded objects work similarly to normal objects, but are owned by a single
  parent Object (which itself may be embedded). Unlike normal top-level objects,
@@ -35,22 +35,22 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
  unmanaged object to a parent object's property. Embedded objects are
  automatically deleted when the parent object is deleted or when the parent is
  modified to no longer point at the embedded object, either by reassigning an
- RLMObject property or by removing the embedded object from the array containing
+ LEGACYObject property or by removing the embedded object from the array containing
  it.
 
  Embedded objects can only ever have a single parent object which links to them,
  and attempting to link to an existing managed embedded object will throw an
  exception.
 
- The property types supported on `RLMEmbeddedObject` are the same as for
- `RLMObject`, except for that embedded objects cannot link to top-level objects,
- so `RLMObject` and `RLMArray<RLMObject>` properties are not supported
- (`RLMEmbeddedObject` and `RLMArray<RLMEmbeddedObject>` *are*).
+ The property types supported on `LEGACYEmbeddedObject` are the same as for
+ `LEGACYObject`, except for that embedded objects cannot link to top-level objects,
+ so `LEGACYObject` and `LEGACYArray<LEGACYObject>` properties are not supported
+ (`LEGACYEmbeddedObject` and `LEGACYArray<LEGACYEmbeddedObject>` *are*).
 
  Embedded objects cannot have primary keys or indexed properties.
  */
 
-@interface RLMEmbeddedObject : RLMObjectBase <RLMThreadConfined>
+@interface LEGACYEmbeddedObject : LEGACYObjectBase <LEGACYThreadConfined>
 
 #pragma mark - Creating & Initializing Objects
 
@@ -59,7 +59,7 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
 
  Unmanaged embedded objects can be added to a Realm by assigning them to an
  object property of a managed Realm object or by adding them to a managed
- RLMArray.
+ LEGACYArray.
  */
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
@@ -70,7 +70,7 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
 
  Unmanaged embedded objects can be added to a Realm by assigning them to an
  object property of a managed Realm object or by adding them to a managed
- RLMArray.
+ LEGACYArray.
  */
 - (instancetype)initWithValue:(id)value;
 
@@ -89,12 +89,12 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
 /**
  The Realm which manages the object, or `nil` if the object is unmanaged.
  */
-@property (nonatomic, readonly, nullable) RLMRealm *realm;
+@property (nonatomic, readonly, nullable) LEGACYRealm *realm;
 
 /**
  The object schema which lists the managed properties for the object.
  */
-@property (nonatomic, readonly) RLMObjectSchema *objectSchema;
+@property (nonatomic, readonly) LEGACYObjectSchema *objectSchema;
 
 /**
  Indicates if the object can no longer be accessed because it is now invalid.
@@ -107,7 +107,7 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
 /**
  Indicates if this object is frozen.
 
- @see `-[RLMEmbeddedObject freeze]`
+ @see `-[LEGACYEmbeddedObject freeze]`
  */
 @property (nonatomic, readonly, getter = isFrozen) BOOL frozen;
 
@@ -136,7 +136,7 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
  store a non-`nil` value for a property, add the name of the property to the
  array returned from this method.
 
- Properties of `RLMEmbeddedObject` type cannot be non-optional. Array and
+ Properties of `LEGACYEmbeddedObject` type cannot be non-optional. Array and
  `NSNumber` properties can be non-optional, but there is no reason to do so:
  arrays do not support storing nil, and if you want a non-optional number you
  should instead use the primitive type.
@@ -148,15 +148,15 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
 /**
  Override this method to provide information related to properties containing linking objects.
 
- Each property of type `RLMLinkingObjects` must have a key in the dictionary returned by this method consisting
- of the property name. The corresponding value must be an instance of `RLMPropertyDescriptor` that describes the class
+ Each property of type `LEGACYLinkingObjects` must have a key in the dictionary returned by this method consisting
+ of the property name. The corresponding value must be an instance of `LEGACYPropertyDescriptor` that describes the class
  and property that the property is linked to.
 
-     return @{ @"owners": [RLMPropertyDescriptor descriptorWithClass:Owner.class propertyName:@"dogs"] };
+     return @{ @"owners": [LEGACYPropertyDescriptor descriptorWithClass:Owner.class propertyName:@"dogs"] };
 
- @return     A dictionary mapping property names to `RLMPropertyDescriptor` instances.
+ @return     A dictionary mapping property names to `LEGACYPropertyDescriptor` instances.
  */
-+ (NSDictionary<NSString *, RLMPropertyDescriptor *> *)linkingObjectsProperties;
++ (NSDictionary<NSString *, LEGACYPropertyDescriptor *> *)linkingObjectsProperties;
 
 #pragma mark - Notifications
 
@@ -178,7 +178,7 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
  can't be delivered instantly, multiple notifications may be coalesced into a
  single notification.
 
- Unlike with `RLMArray` and `RLMResults`, there is no "initial" callback made
+ Unlike with `LEGACYArray` and `LEGACYResults`, there is no "initial" callback made
  after you add a new notification block.
 
  Only objects which are managed by a Realm can be observed in this way. You
@@ -195,7 +195,7 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
  @param block The block to be called whenever a change occurs.
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(RLMObjectChangeBlock)block;
+- (LEGACYNotificationToken *)addNotificationBlock:(LEGACYObjectChangeBlock)block;
 
 /**
  Registers a block to be called each time the object changes.
@@ -214,7 +214,7 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
  notifications can't be delivered instantly, multiple notifications may be
  coalesced into a single notification.
 
- Unlike with `RLMArray` and `RLMResults`, there is no "initial" callback made
+ Unlike with `LEGACYArray` and `LEGACYResults`, there is no "initial" callback made
  after you add a new notification block.
 
  Only objects which are managed by a Realm can be observed in this way. You
@@ -233,7 +233,7 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
  @param queue The serial queue to deliver notifications to.
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(RLMObjectChangeBlock)block queue:(dispatch_queue_t)queue;
+- (LEGACYNotificationToken *)addNotificationBlock:(LEGACYObjectChangeBlock)block queue:(dispatch_queue_t)queue;
 
 /**
  Registers a block to be called each time the object changes.
@@ -252,7 +252,7 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
  notifications can't be delivered instantly, multiple notifications may be
  coalesced into a single notification.
 
- Unlike with `RLMArray` and `RLMResults`, there is no "initial" callback made
+ Unlike with `LEGACYArray` and `LEGACYResults`, there is no "initial" callback made
  after you add a new notification block.
 
  Only objects which are managed by a Realm can be observed in this way. You
@@ -273,7 +273,7 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
  @param queue The serial queue to deliver notifications to.
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(RLMObjectChangeBlock)block keyPaths:(NSArray<NSString *> *)keyPaths queue:(dispatch_queue_t)queue;
+- (LEGACYNotificationToken *)addNotificationBlock:(LEGACYObjectChangeBlock)block keyPaths:(NSArray<NSString *> *)keyPaths queue:(dispatch_queue_t)queue;
 
 /**
  Registers a block to be called each time the object changes.
@@ -292,7 +292,7 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
  notifications can't be delivered instantly, multiple notifications may be
  coalesced into a single notification.
 
- Unlike with `RLMArray` and `RLMResults`, there is no "initial" callback made
+ Unlike with `LEGACYArray` and `LEGACYResults`, there is no "initial" callback made
  after you add a new notification block.
 
  Only objects which are managed by a Realm can be observed in this way. You
@@ -312,7 +312,7 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
  key paths are given, notifications are delivered for every property key path.
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(RLMObjectChangeBlock)block keyPaths:(NSArray<NSString *> *)keyPaths;
+- (LEGACYNotificationToken *)addNotificationBlock:(LEGACYObjectChangeBlock)block keyPaths:(NSArray<NSString *> *)keyPaths;
 
 #pragma mark - Other Instance Methods
 
@@ -329,7 +329,7 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
 
  @return    Whether the object represents the same object as the receiver.
  */
-- (BOOL)isEqualToObject:(RLMEmbeddedObject *)object;
+- (BOOL)isEqualToObject:(LEGACYEmbeddedObject *)object;
 
 /**
  Returns a frozen (immutable) snapshot of this object.
@@ -364,4 +364,4 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

@@ -16,15 +16,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMProviderClient.h>
+#import <Realm/LEGACYProviderClient.h>
 
 #import <realm/object-store/sync/app.hpp>
 
-@interface RLMProviderClient ()
+@interface LEGACYProviderClient ()
 
 /// A block type used to report an error
-typedef void(^RLMProviderClientOptionalErrorBlock)(NSError * _Nullable);
+typedef void(^LEGACYProviderClientOptionalErrorBlock)(NSError * _Nullable);
 
 realm::util::UniqueFunction<void(std::optional<realm::app::AppError>)>
-RLMWrapCompletion(_Nonnull RLMProviderClientOptionalErrorBlock);
+LEGACYWrapCompletion(_Nonnull LEGACYProviderClientOptionalErrorBlock);
 @end

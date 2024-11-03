@@ -20,14 +20,14 @@
 
 /**
  
- RLMPSimulatorManager is a helper class to monitor iOS Simulator status and corresponding UUID. 
+ LEGACYPSimulatorManager is a helper class to monitor iOS Simulator status and corresponding UUID. 
  
  The only usage is to return UUID of booted Simulator which is found by using command xcrun.
  
-    NSString *bootedUUID = [RLMPSimulatorManager bootedSimulatorUUID];
+    NSString *bootedUUID = [LEGACYPSimulatorManager bootedSimulatorUUID];
 */
 
-@interface RLMPSimulatorManager : NSObject
+@interface LEGACYPSimulatorManager : NSObject
 
 /**
  UUID of booted Simulator

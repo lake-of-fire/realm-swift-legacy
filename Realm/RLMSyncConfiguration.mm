@@ -16,21 +16,21 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSyncConfiguration_Private.hpp"
+#import "LEGACYSyncConfiguration_Private.hpp"
 
-#import "RLMApp_Private.hpp"
-#import "RLMBSON_Private.hpp"
-#import "RLMError_Private.hpp"
-#import "RLMRealm_Private.hpp"
-#import "RLMRealmConfiguration_Private.h"
-#import "RLMRealmConfiguration_Private.hpp"
-#import "RLMRealmUtil.hpp"
-#import "RLMSchema_Private.hpp"
-#import "RLMSyncManager_Private.hpp"
-#import "RLMSyncSession_Private.hpp"
-#import "RLMSyncUtil_Private.hpp"
-#import "RLMUser_Private.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYApp_Private.hpp"
+#import "LEGACYBSON_Private.hpp"
+#import "LEGACYError_Private.hpp"
+#import "LEGACYRealm_Private.hpp"
+#import "LEGACYRealmConfiguration_Private.h"
+#import "LEGACYRealmConfiguration_Private.hpp"
+#import "LEGACYRealmUtil.hpp"
+#import "LEGACYSchema_Private.hpp"
+#import "LEGACYSyncManager_Private.hpp"
+#import "LEGACYSyncSession_Private.hpp"
+#import "LEGACYSyncUtil_Private.hpp"
+#import "LEGACYUser_Private.hpp"
+#import "LEGACYUtil.hpp"
 
 #import <realm/object-store/impl/realm_coordinator.hpp>
 #import <realm/object-store/sync/sync_manager.hpp>
@@ -46,33 +46,33 @@ using ProtocolError = realm::sync::ProtocolError;
 
 struct CallbackSchema {
     bool dynamic;
-    RLMSchema *customSchema;
+    LEGACYSchema *customSchema;
 };
 
 struct BeforeClientResetWrapper : CallbackSchema {
-    RLMClientResetBeforeBlock block;
+    LEGACYClientResetBeforeBlock block;
     void operator()(std::shared_ptr<Realm> local) {
         @autoreleasepool {
-            if (local->schema_version() != RLMNotVersioned) {
-                block([RLMRealm realmWithSharedRealm:local schema:customSchema dynamic:dynamic freeze:true]);
+            if (local->schema_version() != LEGACYNotVersioned) {
+                block([LEGACYRealm realmWithSharedRealm:local schema:customSchema dynamic:dynamic freeze:true]);
             }
         }
     }
 };
 
 struct AfterClientResetWrapper : CallbackSchema {
-    RLMClientResetAfterBlock block;
+    LEGACYClientResetAfterBlock block;
     void operator()(std::shared_ptr<Realm> local, ThreadSafeReference remote, bool) {
         @autoreleasepool {
-            if (local->schema_version() == RLMNotVersioned) {
+            if (local->schema_version() == LEGACYNotVersioned) {
                 return;
             }
 
-            RLMRealm *localRealm = [RLMRealm realmWithSharedRealm:local
+            LEGACYRealm *localRealm = [LEGACYRealm realmWithSharedRealm:local
                                                            schema:customSchema
                                                           dynamic:dynamic
                                                            freeze:true];
-            RLMRealm *remoteRealm = [RLMRealm realmWithSharedRealm:Realm::get_shared_realm(std::move(remote))
+            LEGACYRealm *remoteRealm = [LEGACYRealm realmWithSharedRealm:Realm::get_shared_realm(std::move(remote))
                                                             schema:customSchema
                                                            dynamic:dynamic
                                                             freeze:false];
@@ -82,14 +82,14 @@ struct AfterClientResetWrapper : CallbackSchema {
 };
 } // anonymous namespace
 
-@interface RLMSyncConfiguration () {
+@interface LEGACYSyncConfiguration () {
     std::unique_ptr<realm::SyncConfig> _config;
-    RLMSyncErrorReportingBlock _manualClientResetHandler;
+    LEGACYSyncErrorReportingBlock _manualClientResetHandler;
 }
 
 @end
 
-@implementation RLMSyncConfiguration
+@implementation LEGACYSyncConfiguration
 
 @dynamic stopPolicy;
 
@@ -102,10 +102,10 @@ struct AfterClientResetWrapper : CallbackSchema {
 }
 
 - (BOOL)isEqual:(id)object {
-    if (![object isKindOfClass:[RLMSyncConfiguration class]]) {
+    if (![object isKindOfClass:[LEGACYSyncConfiguration class]]) {
         return NO;
     }
-    RLMSyncConfiguration *that = (RLMSyncConfiguration *)object;
+    LEGACYSyncConfiguration *that = (LEGACYSyncConfiguration *)object;
     return [self.partitionValue isEqual:that.partitionValue]
         && [self.user isEqual:that.user]
         && self.stopPolicy == that.stopPolicy;
@@ -115,28 +115,28 @@ struct AfterClientResetWrapper : CallbackSchema {
     return *_config;
 }
 
-- (RLMUser *)user {
-    RLMApp *app = [RLMApp appWithId:@(_config->user->sync_manager()->app().lock()->config().app_id.data())];
-    return [[RLMUser alloc] initWithUser:_config->user app:app];
+- (LEGACYUser *)user {
+    LEGACYApp *app = [LEGACYApp appWithId:@(_config->user->sync_manager()->app().lock()->config().app_id.data())];
+    return [[LEGACYUser alloc] initWithUser:_config->user app:app];
 }
 
-- (RLMSyncStopPolicy)stopPolicy {
+- (LEGACYSyncStopPolicy)stopPolicy {
     return translateStopPolicy(_config->stop_policy);
 }
 
-- (void)setStopPolicy:(RLMSyncStopPolicy)stopPolicy {
+- (void)setStopPolicy:(LEGACYSyncStopPolicy)stopPolicy {
     _config->stop_policy = translateStopPolicy(stopPolicy);
 }
 
-- (RLMClientResetMode)clientResetMode {
-    return RLMClientResetMode(_config->client_resync_mode);
+- (LEGACYClientResetMode)clientResetMode {
+    return LEGACYClientResetMode(_config->client_resync_mode);
 }
 
-- (void)setClientResetMode:(RLMClientResetMode)clientResetMode {
+- (void)setClientResetMode:(LEGACYClientResetMode)clientResetMode {
     _config->client_resync_mode = realm::ClientResyncMode(clientResetMode);
 }
 
-- (RLMClientResetBeforeBlock)beforeClientReset {
+- (LEGACYClientResetBeforeBlock)beforeClientReset {
     if (_config->notify_before_client_reset) {
         auto wrapper = _config->notify_before_client_reset.target<BeforeClientResetWrapper>();
         return wrapper->block;
@@ -145,18 +145,18 @@ struct AfterClientResetWrapper : CallbackSchema {
     }
 }
 
-- (void)setBeforeClientReset:(RLMClientResetBeforeBlock)beforeClientReset {
+- (void)setBeforeClientReset:(LEGACYClientResetBeforeBlock)beforeClientReset {
     if (!beforeClientReset) {
         _config->notify_before_client_reset = nullptr;
-    } else if (self.clientResetMode == RLMClientResetModeManual) {
-        @throw RLMException(@"RLMClientResetBeforeBlock reset notifications are not supported in Manual mode. Use RLMSyncConfiguration.manualClientResetHandler or RLMSyncManager.ErrorHandler");
+    } else if (self.clientResetMode == LEGACYClientResetModeManual) {
+        @throw LEGACYException(@"LEGACYClientResetBeforeBlock reset notifications are not supported in Manual mode. Use LEGACYSyncConfiguration.manualClientResetHandler or LEGACYSyncManager.ErrorHandler");
     } else {
         _config->freeze_before_reset_realm = false;
         _config->notify_before_client_reset = BeforeClientResetWrapper{.block = beforeClientReset};
     }
 }
 
-- (RLMClientResetAfterBlock)afterClientReset {
+- (LEGACYClientResetAfterBlock)afterClientReset {
     if (_config->notify_after_client_reset) {
         auto wrapper = _config->notify_after_client_reset.target<AfterClientResetWrapper>();
         return wrapper->block;
@@ -165,32 +165,32 @@ struct AfterClientResetWrapper : CallbackSchema {
     }
 }
 
-- (void)setAfterClientReset:(RLMClientResetAfterBlock)afterClientReset {
+- (void)setAfterClientReset:(LEGACYClientResetAfterBlock)afterClientReset {
     if (!afterClientReset) {
         _config->notify_after_client_reset = nullptr;
-    } else if (self.clientResetMode == RLMClientResetModeManual) {
-        @throw RLMException(@"RLMClientResetAfterBlock reset notifications are not supported in Manual mode. Use RLMSyncConfiguration.manualClientResetHandler or RLMSyncManager.ErrorHandler");
+    } else if (self.clientResetMode == LEGACYClientResetModeManual) {
+        @throw LEGACYException(@"LEGACYClientResetAfterBlock reset notifications are not supported in Manual mode. Use LEGACYSyncConfiguration.manualClientResetHandler or LEGACYSyncManager.ErrorHandler");
     } else {
         _config->notify_after_client_reset = AfterClientResetWrapper{.block = afterClientReset};
     }
 }
 
-- (RLMSyncErrorReportingBlock)manualClientResetHandler {
+- (LEGACYSyncErrorReportingBlock)manualClientResetHandler {
     return _manualClientResetHandler;
 }
 
-- (void)setManualClientResetHandler:(RLMSyncErrorReportingBlock)manualClientReset {
+- (void)setManualClientResetHandler:(LEGACYSyncErrorReportingBlock)manualClientReset {
     if (!manualClientReset) {
         _manualClientResetHandler = nil;
-    } else if (self.clientResetMode != RLMClientResetModeManual) {
-        @throw RLMException(@"A manual client reset handler can only be set with RLMClientResetModeManual");
+    } else if (self.clientResetMode != LEGACYClientResetModeManual) {
+        @throw LEGACYException(@"A manual client reset handler can only be set with LEGACYClientResetModeManual");
     } else {
         _manualClientResetHandler = manualClientReset;
     }
     [self assignConfigErrorHandler:self.user];
 }
 
-void RLMSetConfigInfoForClientResetCallbacks(realm::SyncConfig& syncConfig, RLMRealmConfiguration *config) {
+void LEGACYSetConfigInfoForClientResetCallbacks(realm::SyncConfig& syncConfig, LEGACYRealmConfiguration *config) {
     if (syncConfig.notify_before_client_reset) {
         auto before = syncConfig.notify_before_client_reset.target<BeforeClientResetWrapper>();
         before->dynamic = config.dynamic;
@@ -203,9 +203,9 @@ void RLMSetConfigInfoForClientResetCallbacks(realm::SyncConfig& syncConfig, RLMR
     }
 }
 
-- (id<RLMBSON>)partitionValue {
+- (id<LEGACYBSON>)partitionValue {
     if (!_config->partition_value.empty()) {
-        return RLMConvertBsonToRLMBSON(realm::bson::parse(_config->partition_value.c_str()));
+        return LEGACYConvertBsonToRLMBSON(realm::bson::parse(_config->partition_value.c_str()));
     }
     return nil;
 }
@@ -218,12 +218,12 @@ void RLMSetConfigInfoForClientResetCallbacks(realm::SyncConfig& syncConfig, RLMR
     _config->cancel_waits_on_nonfatal_error = cancelAsyncOpenOnNonFatalErrors;
 }
 
-- (void)assignConfigErrorHandler:(RLMUser *)user {
-    RLMSyncManager *manager = [user.app syncManager];
-    __weak RLMSyncManager *weakManager = manager;
-    RLMSyncErrorReportingBlock resetHandler = self.manualClientResetHandler;
+- (void)assignConfigErrorHandler:(LEGACYUser *)user {
+    LEGACYSyncManager *manager = [user.app syncManager];
+    __weak LEGACYSyncManager *weakManager = manager;
+    LEGACYSyncErrorReportingBlock resetHandler = self.manualClientResetHandler;
     _config->error_handler = [weakManager, resetHandler](std::shared_ptr<SyncSession> errored_session, SyncError error) {
-        RLMSyncErrorReportingBlock errorHandler;
+        LEGACYSyncErrorReportingBlock errorHandler;
         if (error.is_client_reset_requested()) {
             errorHandler = resetHandler;
         }
@@ -239,27 +239,27 @@ void RLMSetConfigInfoForClientResetCallbacks(realm::SyncConfig& syncConfig, RLMR
         if (!nsError) {
             return;
         }
-        RLMSyncSession *session = [[RLMSyncSession alloc] initWithSyncSession:errored_session];
+        LEGACYSyncSession *session = [[LEGACYSyncSession alloc] initWithSyncSession:errored_session];
         dispatch_async(dispatch_get_main_queue(), ^{
             // Keep the SyncSession alive until the callback completes as
-            // RLMSyncSession only holds a weak reference
+            // LEGACYSyncSession only holds a weak reference
             static_cast<void>(errored_session);
             errorHandler(nsError, session);
         });
     };
 };
 
-static void setDefaults(SyncConfig& config, RLMUser *user) {
+static void setDefaults(SyncConfig& config, LEGACYUser *user) {
     config.client_resync_mode = ClientResyncMode::Recover;
     config.stop_policy = SyncSessionStopPolicy::AfterChangesUploaded;
     [user.app.syncManager populateConfig:config];
 }
 
-- (instancetype)initWithUser:(RLMUser *)user
-              partitionValue:(nullable id<RLMBSON>)partitionValue {
+- (instancetype)initWithUser:(LEGACYUser *)user
+              partitionValue:(nullable id<LEGACYBSON>)partitionValue {
     if (self = [super init]) {
         std::stringstream s;
-        s << RLMConvertRLMBSONToBson(partitionValue);
+        s << LEGACYConvertRLMBSONToBson(partitionValue);
         _config = std::make_unique<SyncConfig>([user _syncUser], s.str());
         _path = [user pathForPartitionValue:_config->partition_value];
         setDefaults(*_config, user);
@@ -268,7 +268,7 @@ static void setDefaults(SyncConfig& config, RLMUser *user) {
     return self;
 }
 
-- (instancetype)initWithUser:(RLMUser *)user {
+- (instancetype)initWithUser:(LEGACYUser *)user {
     if (self = [super init]) {
         _config = std::make_unique<SyncConfig>([user _syncUser], SyncConfig::FLXSyncEnabled{});
         _path = [user pathForFlexibleSync];

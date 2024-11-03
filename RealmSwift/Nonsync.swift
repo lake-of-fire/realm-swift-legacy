@@ -19,8 +19,8 @@
 import RealmLegacy.Private
 
 public struct SyncConfiguration {
-    func asConfig() -> RLMSyncConfiguration? { return nil }
-    init?(config: RLMSyncConfiguration) { return nil }
+    func asConfig() -> LEGACYSyncConfiguration? { return nil }
+    init?(config: LEGACYSyncConfiguration) { return nil }
 }
 
 public struct SyncSession {

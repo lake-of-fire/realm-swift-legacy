@@ -16,9 +16,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMChildProcessEnvironment.h"
+#import "LEGACYChildProcessEnvironment.h"
 
-@implementation RLMChildProcessEnvironment
+@implementation LEGACYChildProcessEnvironment
 
 - (instancetype)init {
     if (self = [super init]) {
@@ -50,28 +50,28 @@
 - (NSDictionary<NSString *,NSString *> *)dictionaryValue {
     NSMutableDictionary<NSString *, NSString *> *environment = [NSMutableDictionary new];
     if ([self.appIds count] > 0) {
-        environment[@"RLMParentAppId"] = [self.appIds firstObject];
-        environment[@"RLMParentAppIds"] = [self.appIds componentsJoinedByString:@","];
+        environment[@"LEGACYParentAppId"] = [self.appIds firstObject];
+        environment[@"LEGACYParentAppIds"] = [self.appIds componentsJoinedByString:@","];
     }
     if (self.email != nil) {
-        environment[@"RLMChildEmail"] = self.email;
+        environment[@"LEGACYChildEmail"] = self.email;
     }
     if (self.password != nil) {
-        environment[@"RLMChildPassword"] = self.password;
+        environment[@"LEGACYChildPassword"] = self.password;
     }
-    environment[@"RLMChildIdentifier"] = [@(self.identifier) stringValue];
+    environment[@"LEGACYChildIdentifier"] = [@(self.identifier) stringValue];
 
     return environment;
 }
 
-+ (RLMChildProcessEnvironment *)current {
++ (LEGACYChildProcessEnvironment *)current {
     NSDictionary<NSString *, NSString *> *environment = [NSProcessInfo processInfo].environment;
-    NSString *identifier = [environment objectForKey:@"RLMChildIdentifier"] ?: @"0";
-    NSString *appIds = environment[@"RLMParentAppIds"] ?: @"";
+    NSString *identifier = [environment objectForKey:@"LEGACYChildIdentifier"] ?: @"0";
+    NSString *appIds = environment[@"LEGACYParentAppIds"] ?: @"";
 
-    return [[RLMChildProcessEnvironment new] initWithAppIds:[appIds componentsSeparatedByString:@","]
-                                                      email:environment[@"RLMChildEmail"]
-                                                   password:environment[@"RLMChildPassword"]
+    return [[LEGACYChildProcessEnvironment new] initWithAppIds:[appIds componentsSeparatedByString:@","]
+                                                      email:environment[@"LEGACYChildEmail"]
+                                                   password:environment[@"LEGACYChildPassword"]
                                                   identifer:[identifier intValue]];
 }
 

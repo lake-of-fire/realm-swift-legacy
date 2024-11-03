@@ -16,10 +16,10 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMObjectId_Private.hpp"
+#import "LEGACYObjectId_Private.hpp"
 
-#import "RLMError_Private.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYError_Private.hpp"
+#import "LEGACYUtil.hpp"
 
 #import <realm/object_id.hpp>
 
@@ -37,10 +37,10 @@
 // exists. This shouldn't have any impact on obj-c code other than a small
 // performance hit.
 [[clang::objc_runtime_visible]]
-@interface RealmSwiftObjectId : RLMObjectId
+@interface RealmSwiftObjectId : LEGACYObjectId
 @end
 
-@implementation RLMObjectId
+@implementation LEGACYObjectId
 - (instancetype)init {
     if ((self = [super init])) {
         if (auto cls = [RealmSwiftObjectId class]; cls && cls != self.class) {
@@ -56,8 +56,8 @@
         if (!realm::ObjectId::is_valid_str(str)) {
             if (error) {
                 NSString *msg = [NSString stringWithFormat:@"Invalid Object ID string '%@': must be 24 hex digits", string];
-                *error = [NSError errorWithDomain:RLMErrorDomain
-                                             code:RLMErrorInvalidInput
+                *error = [NSError errorWithDomain:LEGACYErrorDomain
+                                             code:LEGACYErrorInvalidInput
                                          userInfo:@{NSLocalizedDescriptionKey: msg}];
             }
             return nil;
@@ -71,7 +71,7 @@
                 machineIdentifier:(int)machineIdentifier
                 processIdentifier:(int)processIdentifier {
     if ((self = [self init])) {
-        _value = realm::ObjectId(RLMTimestampForNSDate(timestamp), machineIdentifier, processIdentifier);
+        _value = realm::ObjectId(LEGACYTimestampForNSDate(timestamp), machineIdentifier, processIdentifier);
     }
     return self;
 }
@@ -84,34 +84,34 @@
 }
 
 - (id)copyWithZone:(NSZone *)zone {
-    // RLMObjectID is immutable so we don't have to actually copy
+    // LEGACYObjectID is immutable so we don't have to actually copy
     return self;
 }
 
 + (instancetype)objectId {
-    return [[RLMObjectId alloc] initWithValue:realm::ObjectId::gen()];
+    return [[LEGACYObjectId alloc] initWithValue:realm::ObjectId::gen()];
 }
 
 - (BOOL)isEqual:(id)object {
-    if (RLMObjectId *objectId = RLMDynamicCast<RLMObjectId>(object)) {
+    if (LEGACYObjectId *objectId = LEGACYDynamicCast<LEGACYObjectId>(object)) {
         return objectId->_value == _value;
     }
     return NO;
 }
 
-- (BOOL)isGreaterThan:(nullable RLMObjectId *)objectId {
+- (BOOL)isGreaterThan:(nullable LEGACYObjectId *)objectId {
     return _value > objectId.value;
 }
 
-- (BOOL)isGreaterThanOrEqualTo:(nullable RLMObjectId *)objectId {
+- (BOOL)isGreaterThanOrEqualTo:(nullable LEGACYObjectId *)objectId {
     return _value >= objectId.value;
 }
 
-- (BOOL)isLessThan:(nullable RLMObjectId *)objectId {
+- (BOOL)isLessThan:(nullable LEGACYObjectId *)objectId {
     return _value < objectId.value;
 }
 
-- (BOOL)isLessThanOrEqualTo:(nullable RLMObjectId *)objectId {
+- (BOOL)isLessThanOrEqualTo:(nullable LEGACYObjectId *)objectId {
     return _value <= objectId.value;
 }
 
@@ -128,7 +128,7 @@
 }
 
 - (NSDate *)timestamp {
-    return RLMTimestampToNSDate(_value.get_timestamp());
+    return LEGACYTimestampToNSDate(_value.get_timestamp());
 }
 
 @end

@@ -16,12 +16,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMGeospatial_Private.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYGeospatial_Private.hpp"
+#import "LEGACYUtil.hpp"
 
 #import <realm/geospatial.hpp>
 
-@implementation RLMGeospatialPoint
+@implementation LEGACYGeospatialPoint
 - (nullable instancetype)initWithLatitude:(double)latitude longitude:(double)longitude {
     return [self initWithLatitude:latitude longitude:longitude altitude:0];
 }
@@ -43,18 +43,18 @@
 }
 
 - (BOOL)isEqual:(id)other {
-    if (auto point = RLMDynamicCast<RLMGeospatialPoint>(other)) {
+    if (auto point = LEGACYDynamicCast<LEGACYGeospatialPoint>(other)) {
         return point.latitude == self.latitude && point.longitude == self.longitude && point.altitude == self.altitude;
     }
     return NO;
 }
 @end
 
-@interface RLMGeospatialBox () <RLMGeospatial_Private>
+@interface LEGACYGeospatialBox () <LEGACYGeospatial_Private>
 @end
 
-@implementation RLMGeospatialBox
-- (instancetype)initWithBottomLeft:(RLMGeospatialPoint *)bottomLeft topRight:(RLMGeospatialPoint *)topRight {
+@implementation LEGACYGeospatialBox
+- (instancetype)initWithBottomLeft:(LEGACYGeospatialPoint *)bottomLeft topRight:(LEGACYGeospatialPoint *)topRight {
     if (self = [super init]) {
         _bottomLeft = bottomLeft;
         _topRight = topRight;
@@ -68,7 +68,7 @@
 }
 
 - (BOOL)isEqual:(id)other {
-    if (auto box = RLMDynamicCast<RLMGeospatialBox>(other)) {
+    if (auto box = LEGACYDynamicCast<LEGACYGeospatialBox>(other)) {
         if ([box.bottomLeft isEqual:self.bottomLeft] && [box.topRight isEqual: self.topRight])
             return YES;
     }
@@ -76,17 +76,17 @@
 }
 @end
 
-@interface RLMGeospatialPolygon () <RLMGeospatial_Private>
+@interface LEGACYGeospatialPolygon () <LEGACYGeospatial_Private>
 @end
 
-@implementation RLMGeospatialPolygon
-- (nullable instancetype)initWithOuterRing:(NSArray<RLMGeospatialPoint *> *)outerRing holes:(nullable NSArray<NSArray<RLMGeospatialPoint *> *> *)holes {
+@implementation LEGACYGeospatialPolygon
+- (nullable instancetype)initWithOuterRing:(NSArray<LEGACYGeospatialPoint *> *)outerRing holes:(nullable NSArray<NSArray<LEGACYGeospatialPoint *> *> *)holes {
     if (self = [super init]) {
         if (([outerRing count] <= 3) || (![[outerRing firstObject] isEqual:[outerRing lastObject]])) {
             return nil;
         }
         if (holes) {
-            for(NSArray<RLMGeospatialPoint *> *hole in holes) {
+            for(NSArray<LEGACYGeospatialPoint *> *hole in holes) {
                 if (([hole count] <= 3) || (![[hole firstObject] isEqual:[hole lastObject]])) {
                     return nil;
                 }
@@ -98,22 +98,22 @@
     return self;
 }
 
-- (nullable instancetype)initWithOuterRing:(NSArray<RLMGeospatialPoint *> *)outerRing {
+- (nullable instancetype)initWithOuterRing:(NSArray<LEGACYGeospatialPoint *> *)outerRing {
     return [self initWithOuterRing:outerRing holes:nil];
 }
 
 - (realm::Geospatial)geoSpatial {
     std::vector<std::vector<realm::GeoPoint>> points;
     std::vector<realm::GeoPoint> outer_ring;
-    for (RLMGeospatialPoint *point : _outerRing) {
+    for (LEGACYGeospatialPoint *point : _outerRing) {
         outer_ring.push_back(point.value);
     }
     points.push_back(outer_ring);
 
     if (_holes) {
-        for (NSArray<RLMGeospatialPoint *> *array_points : _holes) {
+        for (NSArray<LEGACYGeospatialPoint *> *array_points : _holes) {
             std::vector<realm::GeoPoint> hole;
-            for (RLMGeospatialPoint *point : array_points) {
+            for (LEGACYGeospatialPoint *point : array_points) {
                 hole.push_back(point.value);
             }
             points.push_back(hole);
@@ -125,7 +125,7 @@
 }
 
 - (BOOL)isEqual:(id)other {
-    if (auto polygon = RLMDynamicCast<RLMGeospatialPolygon>(other)) {
+    if (auto polygon = LEGACYDynamicCast<LEGACYGeospatialPolygon>(other)) {
         if ([polygon.outerRing isEqualToArray:self.outerRing] && [polygon.holes isEqualToArray:self.holes])
             return YES;
     }
@@ -136,24 +136,24 @@
 /// Earth radius.
 static double const c_earthRadiusMeters = 6378100.0;
 
-@implementation RLMDistance
+@implementation LEGACYDistance
 + (nullable instancetype)distanceFromKilometers:(double)kilometers {
     double radians = (kilometers * 1000) / c_earthRadiusMeters;
-    return [[RLMDistance alloc] initWithRadians:radians];
+    return [[LEGACYDistance alloc] initWithRadians:radians];
 }
 
 + (nullable instancetype)distanceFromMiles:(double)miles {
     double radians = (miles * 1609.344) / c_earthRadiusMeters;
-    return [[RLMDistance alloc] initWithRadians:radians];
+    return [[LEGACYDistance alloc] initWithRadians:radians];
 }
 
 + (nullable instancetype)distanceFromDegrees:(double)degrees {
     double radiansPerDegree = M_PI / 180;
-    return [[RLMDistance alloc] initWithRadians:(degrees * radiansPerDegree)];
+    return [[LEGACYDistance alloc] initWithRadians:(degrees * radiansPerDegree)];
 }
 
 + (nullable instancetype)distanceFromRadians:(double)radians {
-    return [[RLMDistance alloc] initWithRadians:radians];
+    return [[LEGACYDistance alloc] initWithRadians:radians];
 }
 
 - (double)asKilometers {
@@ -180,7 +180,7 @@ static double const c_earthRadiusMeters = 6378100.0;
 }
 
 - (BOOL)isEqual:(id)other {
-    if (auto distance = RLMDynamicCast<RLMDistance>(other)) {
+    if (auto distance = LEGACYDynamicCast<LEGACYDistance>(other)) {
         if (distance.radians == self.radians)
             return YES;
     }
@@ -188,11 +188,11 @@ static double const c_earthRadiusMeters = 6378100.0;
 }
 @end
 
-@interface RLMGeospatialCircle () <RLMGeospatial_Private>
+@interface LEGACYGeospatialCircle () <LEGACYGeospatial_Private>
 @end
 
-@implementation RLMGeospatialCircle
-- (nullable instancetype)initWithCenter:(RLMGeospatialPoint *)center radiusInRadians:(double)radians {
+@implementation LEGACYGeospatialCircle
+- (nullable instancetype)initWithCenter:(LEGACYGeospatialPoint *)center radiusInRadians:(double)radians {
     if (self = [super init]) {
         if (isnan(radians) || radians < 0) {
             return nil;
@@ -204,7 +204,7 @@ static double const c_earthRadiusMeters = 6378100.0;
     return self;
 }
 
-- (instancetype)initWithCenter:(RLMGeospatialPoint *)center radius:(RLMDistance *)radius {
+- (instancetype)initWithCenter:(LEGACYGeospatialPoint *)center radius:(LEGACYDistance *)radius {
     return [self initWithCenter:center radiusInRadians:radius.radians];
 }
 
@@ -214,7 +214,7 @@ static double const c_earthRadiusMeters = 6378100.0;
 }
 
 - (BOOL)isEqual:(id)other {
-    if (auto circle = RLMDynamicCast<RLMGeospatialCircle>(other)) {
+    if (auto circle = LEGACYDynamicCast<LEGACYGeospatialCircle>(other)) {
         if (circle.radians == self.radians && [circle.center isEqual:self.center])
             return YES;
     }

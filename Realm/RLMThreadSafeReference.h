@@ -16,34 +16,34 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-@class RLMRealm;
+@class LEGACYRealm;
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 /**
- Objects of types which conform to `RLMThreadConfined` can be managed by a Realm, which will make
- them bound to a thread-specific `RLMRealm` instance. Managed objects must be explicitly exported
+ Objects of types which conform to `LEGACYThreadConfined` can be managed by a Realm, which will make
+ them bound to a thread-specific `LEGACYRealm` instance. Managed objects must be explicitly exported
  and imported to be passed between threads.
 
  Managed instances of objects conforming to this protocol can be converted to a thread-safe
  reference for transport between threads by passing to the
- `+[RLMThreadSafeReference referenceWithThreadConfined:]` constructor.
+ `+[LEGACYThreadSafeReference referenceWithThreadConfined:]` constructor.
 
  Note that only types defined by Realm can meaningfully conform to this protocol, and defining new
- classes which attempt to conform to it will not make them work with `RLMThreadSafeReference`.
+ classes which attempt to conform to it will not make them work with `LEGACYThreadSafeReference`.
  */
-@protocol RLMThreadConfined <NSObject>
-// Conformance to the `RLMThreadConfined_Private` protocol will be enforced at runtime.
+@protocol LEGACYThreadConfined <NSObject>
+// Conformance to the `LEGACYThreadConfined_Private` protocol will be enforced at runtime.
 
 /**
  The Realm which manages the object, or `nil` if the object is unmanaged.
 
  Unmanaged objects are not confined to a thread and cannot be passed to methods expecting a
- `RLMThreadConfined` object.
+ `LEGACYThreadConfined` object.
  */
-@property (nonatomic, readonly, nullable) RLMRealm *realm;
+@property (nonatomic, readonly, nullable) LEGACYRealm *realm;
 
 /// Indicates if the object can no longer be accessed because it is now invalid.
 @property (nonatomic, readonly, getter = isInvalidated) BOOL invalidated;
@@ -55,20 +55,20 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  thread-confined object.
 
  To resolve a thread-safe reference on a target Realm on a different thread, pass to
- `-[RLMRealm resolveThreadSafeReference:]`.
+ `-[LEGACYRealm resolveThreadSafeReference:]`.
 
- @warning A `RLMThreadSafeReference` object must be resolved at most once.
-          Failing to resolve a `RLMThreadSafeReference` will result in the source version of the
+ @warning A `LEGACYThreadSafeReference` object must be resolved at most once.
+          Failing to resolve a `LEGACYThreadSafeReference` will result in the source version of the
           Realm being pinned until the reference is deallocated.
 
- @note Prefer short-lived `RLMThreadSafeReference`s as the data for the version of the source Realm
+ @note Prefer short-lived `LEGACYThreadSafeReference`s as the data for the version of the source Realm
        will be retained until all references have been resolved or deallocated.
 
- @see `RLMThreadConfined`
- @see `-[RLMRealm resolveThreadSafeReference:]`
+ @see `LEGACYThreadConfined`
+ @see `-[LEGACYRealm resolveThreadSafeReference:]`
  */
-RLM_SWIFT_SENDABLE RLM_FINAL // is internally thread-safe
-@interface RLMThreadSafeReference<__covariant Confined : id<RLMThreadConfined>> : NSObject
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL // is internally thread-safe
+@interface LEGACYThreadSafeReference<__covariant Confined : id<LEGACYThreadConfined>> : NSObject
 
 /**
  Create a thread-safe reference to the thread-confined object.
@@ -89,19 +89,19 @@ RLM_SWIFT_SENDABLE RLM_FINAL // is internally thread-safe
 #pragma mark - Unavailable Methods
 
 /**
- `-[RLMThreadSafeReference init]` is not available because `RLMThreadSafeReference` cannot be
- created directly. `RLMThreadSafeReference` instances must be obtained by calling
- `-[RLMRealm resolveThreadSafeReference:]`.
+ `-[LEGACYThreadSafeReference init]` is not available because `LEGACYThreadSafeReference` cannot be
+ created directly. `LEGACYThreadSafeReference` instances must be obtained by calling
+ `-[LEGACYRealm resolveThreadSafeReference:]`.
  */
-- (instancetype)init __attribute__((unavailable("RLMThreadSafeReference cannot be created directly")));
+- (instancetype)init __attribute__((unavailable("LEGACYThreadSafeReference cannot be created directly")));
 
 /**
- `-[RLMThreadSafeReference new]` is not available because `RLMThreadSafeReference` cannot be
- created directly. `RLMThreadSafeReference` instances must be obtained by calling
- `-[RLMRealm resolveThreadSafeReference:]`.
+ `-[LEGACYThreadSafeReference new]` is not available because `LEGACYThreadSafeReference` cannot be
+ created directly. `LEGACYThreadSafeReference` instances must be obtained by calling
+ `-[LEGACYRealm resolveThreadSafeReference:]`.
  */
-+ (instancetype)new __attribute__((unavailable("RLMThreadSafeReference cannot be created directly")));
++ (instancetype)new __attribute__((unavailable("LEGACYThreadSafeReference cannot be created directly")));
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

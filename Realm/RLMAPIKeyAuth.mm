@@ -16,16 +16,16 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMAPIKeyAuth.h"
-#import "RLMProviderClient_Private.hpp"
+#import "LEGACYAPIKeyAuth.h"
+#import "LEGACYProviderClient_Private.hpp"
 
-#import "RLMApp_Private.hpp"
-#import "RLMUserAPIKey_Private.hpp"
-#import "RLMObjectId_Private.hpp"
+#import "LEGACYApp_Private.hpp"
+#import "LEGACYUserAPIKey_Private.hpp"
+#import "LEGACYObjectId_Private.hpp"
 
 using namespace realm::app;
 
-@implementation RLMAPIKeyAuth
+@implementation LEGACYAPIKeyAuth
 
 - (App::UserAPIKeyProviderClient)client {
     return self.app._realmApp->provider_client<App::UserAPIKeyProviderClient>();
@@ -36,26 +36,26 @@ using namespace realm::app;
 }
 
 static realm::util::UniqueFunction<void(App::UserAPIKey, std::optional<AppError>)>
-wrapCompletion(RLMOptionalUserAPIKeyBlock completion) {
+wrapCompletion(LEGACYOptionalUserAPIKeyBlock completion) {
     return [completion](App::UserAPIKey userAPIKey, std::optional<AppError> error) {
         if (error) {
             return completion(nil, makeError(*error));
         }
-        return completion([[RLMUserAPIKey alloc] initWithUserAPIKey:userAPIKey], nil);
+        return completion([[LEGACYUserAPIKey alloc] initWithUserAPIKey:userAPIKey], nil);
     };
 }
 
 - (void)createAPIKeyWithName:(NSString *)name
-                  completion:(RLMOptionalUserAPIKeyBlock)completion {
+                  completion:(LEGACYOptionalUserAPIKeyBlock)completion {
     self.client.create_api_key(name.UTF8String, self.currentUser, wrapCompletion(completion));
 }
 
-- (void)fetchAPIKey:(RLMObjectId *)objectId
-         completion:(RLMOptionalUserAPIKeyBlock)completion {
+- (void)fetchAPIKey:(LEGACYObjectId *)objectId
+         completion:(LEGACYOptionalUserAPIKeyBlock)completion {
     self.client.fetch_api_key(objectId.value, self.currentUser, wrapCompletion(completion));
 }
 
-- (void)fetchAPIKeysWithCompletion:(RLMUserAPIKeysBlock)completion {
+- (void)fetchAPIKeysWithCompletion:(LEGACYUserAPIKeysBlock)completion {
     self.client.fetch_api_keys(self.currentUser,
                                ^(const std::vector<App::UserAPIKey>& userAPIKeys,
                                  std::optional<AppError> error) {
@@ -65,26 +65,26 @@ wrapCompletion(RLMOptionalUserAPIKeyBlock completion) {
         
         NSMutableArray *apiKeys = [[NSMutableArray alloc] init];
         for (auto &userAPIKey : userAPIKeys) {
-            [apiKeys addObject:[[RLMUserAPIKey alloc] initWithUserAPIKey:userAPIKey]];
+            [apiKeys addObject:[[LEGACYUserAPIKey alloc] initWithUserAPIKey:userAPIKey]];
         }
         
         return completion(apiKeys, nil);
     });
 }
 
-- (void)deleteAPIKey:(RLMObjectId *)objectId
-          completion:(RLMAPIKeyAuthOptionalErrorBlock)completion {
-    self.client.delete_api_key(objectId.value, self.currentUser, RLMWrapCompletion(completion));
+- (void)deleteAPIKey:(LEGACYObjectId *)objectId
+          completion:(LEGACYAPIKeyAuthOptionalErrorBlock)completion {
+    self.client.delete_api_key(objectId.value, self.currentUser, LEGACYWrapCompletion(completion));
 }
 
-- (void)enableAPIKey:(RLMObjectId *)objectId
-          completion:(RLMAPIKeyAuthOptionalErrorBlock)completion {
-    self.client.enable_api_key(objectId.value, self.currentUser, RLMWrapCompletion(completion));
+- (void)enableAPIKey:(LEGACYObjectId *)objectId
+          completion:(LEGACYAPIKeyAuthOptionalErrorBlock)completion {
+    self.client.enable_api_key(objectId.value, self.currentUser, LEGACYWrapCompletion(completion));
 }
 
-- (void)disableAPIKey:(RLMObjectId *)objectId
-           completion:(RLMAPIKeyAuthOptionalErrorBlock)completion {
-    self.client.disable_api_key(objectId.value, self.currentUser, RLMWrapCompletion(completion));
+- (void)disableAPIKey:(LEGACYObjectId *)objectId
+           completion:(LEGACYAPIKeyAuthOptionalErrorBlock)completion {
+    self.client.disable_api_key(objectId.value, self.currentUser, LEGACYWrapCompletion(completion));
 }
 
 @end

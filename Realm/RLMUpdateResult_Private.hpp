@@ -16,12 +16,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMUpdateResult.h>
+#import <Realm/LEGACYUpdateResult.h>
 
 #import <realm/object-store/sync/mongo_collection.hpp>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
-@interface RLMUpdateResult ()
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
+@interface LEGACYUpdateResult ()
 - (instancetype)initWithUpdateResult:(realm::app::MongoCollection::UpdateResult)UpdateResult;
 @end
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

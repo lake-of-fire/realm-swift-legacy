@@ -16,20 +16,20 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMUpdateResult_Private.hpp"
+#import "LEGACYUpdateResult_Private.hpp"
 
-#import "RLMBSON_Private.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYBSON_Private.hpp"
+#import "LEGACYUtil.hpp"
 
-@implementation RLMUpdateResult
+@implementation LEGACYUpdateResult
 
 - (instancetype)initWithUpdateResult:(realm::app::MongoCollection::UpdateResult)updateResult {
     if (self = [super init]) {
         _matchedCount = updateResult.matched_count;
         _modifiedCount = updateResult.modified_count;
         if (updateResult.upserted_id) {
-            _documentId = RLMConvertBsonToRLMBSON(*updateResult.upserted_id);
-            _objectId = RLMDynamicCast<RLMObjectId>(_documentId);
+            _documentId = LEGACYConvertBsonToRLMBSON(*updateResult.upserted_id);
+            _objectId = LEGACYDynamicCast<LEGACYObjectId>(_documentId);
         }
     }
     return self;

@@ -16,8 +16,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMBSON_Private.hpp"
-#import "RLMUUID_Private.hpp"
+#import "LEGACYBSON_Private.hpp"
+#import "LEGACYUUID_Private.hpp"
 
 #import <realm/util/bson/bson.hpp>
 
@@ -25,90 +25,90 @@
 
 using namespace realm::bson;
 
-@interface RLMBSONTestCase : XCTestCase
+@interface LEGACYBSONTestCase : XCTestCase
 
 @end
 
-@implementation RLMBSONTestCase
+@implementation LEGACYBSONTestCase
 
 - (void)testNilRoundTrip {
     auto bson = Bson();
-    id<RLMBSON> rlm = RLMConvertBsonToRLMBSON(bson);
+    id<LEGACYBSON> rlm = LEGACYConvertBsonToRLMBSON(bson);
     XCTAssertEqual(rlm, [NSNull null]);
-    XCTAssertEqual(RLMConvertRLMBSONToBson(rlm), bson);
+    XCTAssertEqual(LEGACYConvertRLMBSONToBson(rlm), bson);
 }
 
 - (void)testIntRoundTrip {
     auto bson = Bson(int64_t(42));
-    NSNumber *rlm = (NSNumber *)RLMConvertBsonToRLMBSON(bson);
+    NSNumber *rlm = (NSNumber *)LEGACYConvertBsonToRLMBSON(bson);
     XCTAssertEqual(rlm.intValue, 42);
-    XCTAssertEqual(RLMConvertRLMBSONToBson(rlm), bson);
+    XCTAssertEqual(LEGACYConvertRLMBSONToBson(rlm), bson);
 }
 
 - (void)testBoolRoundTrip {
     auto bson = Bson(true);
-    NSNumber *rlm = (NSNumber *)RLMConvertBsonToRLMBSON(bson);
+    NSNumber *rlm = (NSNumber *)LEGACYConvertBsonToRLMBSON(bson);
     XCTAssertEqual(rlm.boolValue, true);
-    XCTAssertEqual(RLMConvertRLMBSONToBson(rlm), bson);
+    XCTAssertEqual(LEGACYConvertRLMBSONToBson(rlm), bson);
 }
 
 - (void)testDoubleRoundTrip {
     auto bson = Bson(42.42);
-    NSNumber *rlm = (NSNumber *)RLMConvertBsonToRLMBSON(bson);
+    NSNumber *rlm = (NSNumber *)LEGACYConvertBsonToRLMBSON(bson);
     XCTAssertEqual(rlm.doubleValue, 42.42);
-    XCTAssertEqual(RLMConvertRLMBSONToBson(rlm), bson);
+    XCTAssertEqual(LEGACYConvertRLMBSONToBson(rlm), bson);
 }
 
 - (void)testStringRoundTrip {
     auto bson = Bson("foo");
-    NSString *rlm = (NSString *)RLMConvertBsonToRLMBSON(bson);
+    NSString *rlm = (NSString *)LEGACYConvertBsonToRLMBSON(bson);
     XCTAssertEqualObjects(rlm, @"foo");
-    XCTAssertEqual(RLMConvertRLMBSONToBson(rlm), bson);
+    XCTAssertEqual(LEGACYConvertRLMBSONToBson(rlm), bson);
 }
 
 - (void)testBinaryRoundTrip {
     auto bson = Bson(std::vector<char>{1, 2, 3});
-    NSData *rlm = (NSData *)RLMConvertBsonToRLMBSON(bson);
+    NSData *rlm = (NSData *)LEGACYConvertBsonToRLMBSON(bson);
     NSData *d = [[NSData alloc] initWithBytes:(char[]){1, 2, 3} length:3];
     XCTAssert([rlm isEqualToData: d]);
-    XCTAssertEqual(RLMConvertRLMBSONToBson(rlm), bson);
+    XCTAssertEqual(LEGACYConvertRLMBSONToBson(rlm), bson);
 }
 
 - (void)testDatetimeMongoTimestampRoundTrip {
     auto bson = Bson(realm::Timestamp(42, 0));
-    NSDate *rlm = (NSDate *)RLMConvertBsonToRLMBSON(bson);
+    NSDate *rlm = (NSDate *)LEGACYConvertBsonToRLMBSON(bson);
     NSDate *d = [[NSDate alloc] initWithTimeIntervalSince1970:42];
     XCTAssert([rlm isEqualToDate: d]);
-    XCTAssertEqual(RLMConvertRLMBSONToBson(rlm), bson);
+    XCTAssertEqual(LEGACYConvertRLMBSONToBson(rlm), bson);
 }
 
 - (void)testDatetimeTimestampRoundTrip {
     auto bson = Bson(realm::Timestamp(42, 0));
-    NSDate *rlm = (NSDate *)RLMConvertBsonToRLMBSON(bson);
+    NSDate *rlm = (NSDate *)LEGACYConvertBsonToRLMBSON(bson);
     NSDate *d = [[NSDate alloc] initWithTimeIntervalSince1970:42];
     XCTAssert([rlm isEqualToDate: d]);
     // Not an exact round trip since we ignore Timestamp Cocoa side
-    XCTAssertEqual(RLMConvertRLMBSONToBson(rlm), Bson(realm::Timestamp(42, 0)));
+    XCTAssertEqual(LEGACYConvertRLMBSONToBson(rlm), Bson(realm::Timestamp(42, 0)));
 }
 
 - (void)testObjectIdRoundTrip {
     auto bson = Bson(realm::ObjectId::gen());
-    RLMObjectId *rlm = (RLMObjectId *)RLMConvertBsonToRLMBSON(bson);
-    RLMObjectId *d = [[RLMObjectId alloc] initWithString:rlm.stringValue error:nil];
+    LEGACYObjectId *rlm = (LEGACYObjectId *)LEGACYConvertBsonToRLMBSON(bson);
+    LEGACYObjectId *d = [[LEGACYObjectId alloc] initWithString:rlm.stringValue error:nil];
     XCTAssertEqualObjects(rlm, d);
-    XCTAssertEqual(RLMConvertRLMBSONToBson(rlm), bson);
+    XCTAssertEqual(LEGACYConvertRLMBSONToBson(rlm), bson);
 }
 
 - (void)testUUIDRoundTrip {
     NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:@"b1c11e54-e719-4275-b631-69ec3f2d616d"];
     auto bson = Bson(uuid.rlm_uuidValue);
-    NSUUID *rlm = (NSUUID *)RLMConvertBsonToRLMBSON(bson);
+    NSUUID *rlm = (NSUUID *)LEGACYConvertBsonToRLMBSON(bson);
     XCTAssertEqualObjects(rlm, uuid);
-    XCTAssertEqual(RLMConvertRLMBSONToBson(rlm), bson);
+    XCTAssertEqual(LEGACYConvertRLMBSONToBson(rlm), bson);
 }
 
 - (void)testDocumentRoundTrip {
-    NSDictionary<NSString *, id<RLMBSON>> *document = @{
+    NSDictionary<NSString *, id<LEGACYBSON>> *document = @{
         @"nil": [NSNull null],
         @"string": @"test string",
         @"true": @YES,
@@ -117,43 +117,43 @@ using namespace realm::bson;
         @"int32": @5,
         @"int64": @10,
         @"double": @15.0,
-        @"decimal128": [[RLMDecimal128 alloc] initWithString:@"1.2E+10" error:nil],
-        @"minkey": [RLMMinKey new],
-        @"maxkey": [RLMMaxKey new],
+        @"decimal128": [[LEGACYDecimal128 alloc] initWithString:@"1.2E+10" error:nil],
+        @"minkey": [LEGACYMinKey new],
+        @"maxkey": [LEGACYMaxKey new],
         @"date": [[NSDate alloc] initWithTimeIntervalSince1970: 500],
         @"nestedarray": @[@[@1, @2], @[@3, @4]],
         @"nesteddoc": @{@"a": @1, @"b": @2, @"c": @NO, @"d": @[@3, @4], @"e" : @{@"f": @"g"}},
-        @"oid": [[RLMObjectId alloc] initWithString:@"507f1f77bcf86cd799439011" error:nil],
+        @"oid": [[LEGACYObjectId alloc] initWithString:@"507f1f77bcf86cd799439011" error:nil],
         @"regex": [[NSRegularExpression alloc] initWithPattern:@"^abc" options:0 error:nil],
         @"array1": @[@1, @2],
         @"array2": @[@"string1", @"string2"],
         @"uuid": [[NSUUID alloc] initWithUUIDString:@"00000000-0000-0000-0000-000000000000"],
     };
     
-    auto bson = RLMConvertRLMBSONToBson(document);
+    auto bson = LEGACYConvertRLMBSONToBson(document);
     
     auto bsonDocument = static_cast<BsonDocument>(bson);
 
     XCTAssertEqual(document[@"nil"], [NSNull null]);
-    XCTAssertEqualObjects(RLMConvertBsonToRLMBSON(bsonDocument["nil"]), document[@"nil"]);
-    XCTAssertEqualObjects(RLMConvertBsonToRLMBSON(bsonDocument["string"]), document[@"string"]);
-    XCTAssertEqualObjects(RLMConvertBsonToRLMBSON(bsonDocument["true"]), document[@"true"]);
-    XCTAssertEqualObjects(RLMConvertBsonToRLMBSON(bsonDocument["false"]), document[@"false"]);
-    XCTAssertEqualObjects(RLMConvertBsonToRLMBSON(bsonDocument["int"]), document[@"int"]);
-    XCTAssertEqualObjects(RLMConvertBsonToRLMBSON(bsonDocument["int32"]), document[@"int32"]);
-    XCTAssertEqualObjects(RLMConvertBsonToRLMBSON(bsonDocument["int64"]), document[@"int64"]);
-    XCTAssertEqualObjects(RLMConvertBsonToRLMBSON(bsonDocument["double"]), document[@"double"]);
-    XCTAssertEqualObjects(RLMConvertBsonToRLMBSON(bsonDocument["decimal128"]), document[@"decimal128"]);
-    XCTAssertEqualObjects(RLMConvertBsonToRLMBSON(bsonDocument["minkey"]), document[@"minkey"]);
-    XCTAssertEqualObjects(RLMConvertBsonToRLMBSON(bsonDocument["maxkey"]), document[@"maxkey"]);
-    XCTAssertEqualObjects(RLMConvertBsonToRLMBSON(bsonDocument["date"]), document[@"date"]);
-    XCTAssertEqualObjects(RLMConvertBsonToRLMBSON(bsonDocument["nestedarray"]), document[@"nestedarray"]);
-    XCTAssertEqualObjects(RLMConvertBsonToRLMBSON(bsonDocument["nesteddoc"]), document[@"nesteddoc"]);
-    XCTAssertEqualObjects(RLMConvertBsonToRLMBSON(bsonDocument["oid"]), document[@"oid"]);
-    XCTAssertEqualObjects(RLMConvertBsonToRLMBSON(bsonDocument["regex"]), document[@"regex"]);
-    XCTAssertEqualObjects(RLMConvertBsonToRLMBSON(bsonDocument["array1"]), document[@"array1"]);
-    XCTAssertEqualObjects(RLMConvertBsonToRLMBSON(bsonDocument["array2"]), document[@"array2"]);
-    XCTAssertEqualObjects(RLMConvertBsonToRLMBSON(bsonDocument["uuid"]), document[@"uuid"]);
+    XCTAssertEqualObjects(LEGACYConvertBsonToRLMBSON(bsonDocument["nil"]), document[@"nil"]);
+    XCTAssertEqualObjects(LEGACYConvertBsonToRLMBSON(bsonDocument["string"]), document[@"string"]);
+    XCTAssertEqualObjects(LEGACYConvertBsonToRLMBSON(bsonDocument["true"]), document[@"true"]);
+    XCTAssertEqualObjects(LEGACYConvertBsonToRLMBSON(bsonDocument["false"]), document[@"false"]);
+    XCTAssertEqualObjects(LEGACYConvertBsonToRLMBSON(bsonDocument["int"]), document[@"int"]);
+    XCTAssertEqualObjects(LEGACYConvertBsonToRLMBSON(bsonDocument["int32"]), document[@"int32"]);
+    XCTAssertEqualObjects(LEGACYConvertBsonToRLMBSON(bsonDocument["int64"]), document[@"int64"]);
+    XCTAssertEqualObjects(LEGACYConvertBsonToRLMBSON(bsonDocument["double"]), document[@"double"]);
+    XCTAssertEqualObjects(LEGACYConvertBsonToRLMBSON(bsonDocument["decimal128"]), document[@"decimal128"]);
+    XCTAssertEqualObjects(LEGACYConvertBsonToRLMBSON(bsonDocument["minkey"]), document[@"minkey"]);
+    XCTAssertEqualObjects(LEGACYConvertBsonToRLMBSON(bsonDocument["maxkey"]), document[@"maxkey"]);
+    XCTAssertEqualObjects(LEGACYConvertBsonToRLMBSON(bsonDocument["date"]), document[@"date"]);
+    XCTAssertEqualObjects(LEGACYConvertBsonToRLMBSON(bsonDocument["nestedarray"]), document[@"nestedarray"]);
+    XCTAssertEqualObjects(LEGACYConvertBsonToRLMBSON(bsonDocument["nesteddoc"]), document[@"nesteddoc"]);
+    XCTAssertEqualObjects(LEGACYConvertBsonToRLMBSON(bsonDocument["oid"]), document[@"oid"]);
+    XCTAssertEqualObjects(LEGACYConvertBsonToRLMBSON(bsonDocument["regex"]), document[@"regex"]);
+    XCTAssertEqualObjects(LEGACYConvertBsonToRLMBSON(bsonDocument["array1"]), document[@"array1"]);
+    XCTAssertEqualObjects(LEGACYConvertBsonToRLMBSON(bsonDocument["array2"]), document[@"array2"]);
+    XCTAssertEqualObjects(LEGACYConvertBsonToRLMBSON(bsonDocument["uuid"]), document[@"uuid"]);
 }
 
 @end

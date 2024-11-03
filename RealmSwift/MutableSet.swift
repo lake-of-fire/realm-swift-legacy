@@ -32,13 +32,13 @@ import RealmLegacy.Private
 
  MutableSet's can be filtered and sorted with the same predicates as `Results<Element>`.
 */
-public final class MutableSet<Element: RealmCollectionValue>: RLMSwiftCollectionBase, RealmCollectionImpl {
+public final class MutableSet<Element: RealmCollectionValue>: LEGACYSwiftCollectionBase, RealmCollectionImpl {
     internal var lastAccessedNames: NSMutableArray?
 
-    internal var rlmSet: RLMSet<AnyObject> {
-        unsafeDowncast(_rlmCollection, to: RLMSet.self)
+    internal var rlmSet: LEGACYSet<AnyObject> {
+        unsafeDowncast(_rlmCollection, to: LEGACYSet.self)
     }
-    internal var collection: RLMCollection {
+    internal var collection: LEGACYCollection {
         _rlmCollection
     }
 
@@ -49,7 +49,7 @@ public final class MutableSet<Element: RealmCollectionValue>: RLMSwiftCollection
         super.init()
     }
     /// :nodoc:
-    public override init(collection: RLMCollection) {
+    public override init(collection: LEGACYCollection) {
         super.init(collection: collection)
     }
 
@@ -186,19 +186,19 @@ public final class MutableSet<Element: RealmCollectionValue>: RLMSwiftCollection
         rlmSet.union(other.rlmSet)
     }
 
-    @objc class func _unmanagedCollection() -> RLMSet<AnyObject> {
+    @objc class func _unmanagedCollection() -> LEGACYSet<AnyObject> {
         if let type = Element.self as? ObjectBase.Type {
-            return RLMSet(objectClassName: type.className())
+            return LEGACYSet(objectClassName: type.className())
         }
         if let type = Element.self as? _RealmSchemaDiscoverable.Type {
-            return RLMSet(objectType: type._rlmType, optional: type._rlmOptional)
+            return LEGACYSet(objectType: type._rlmType, optional: type._rlmOptional)
         }
         fatalError("Collections of projections must be used with @Projected.")
     }
 
     /// :nodoc:
     @objc public override class func _backingCollectionType() -> AnyClass {
-        return RLMManagedSet.self
+        return LEGACYManagedSet.self
     }
 
     // Printable requires a description property defined in Swift (and not obj-c),
@@ -206,16 +206,16 @@ public final class MutableSet<Element: RealmCollectionValue>: RLMSwiftCollection
     // generic class.
     /// Returns a human-readable description of the objects contained in the MutableSet.
     @objc public override var description: String {
-        return descriptionWithMaxDepth(RLMDescriptionMaxDepth)
+        return descriptionWithMaxDepth(LEGACYDescriptionMaxDepth)
     }
 
     @objc private func descriptionWithMaxDepth(_ depth: UInt) -> String {
-        return RLMDescriptionWithMaxDepth("MutableSet", rlmSet, depth)
+        return LEGACYDescriptionWithMaxDepth("MutableSet", rlmSet, depth)
     }
 
     /// :nodoc:
-    public func makeIterator() -> RLMIterator<Element> {
-        return RLMIterator(collection: collection)
+    public func makeIterator() -> LEGACYIterator<Element> {
+        return LEGACYIterator(collection: collection)
     }
 
     /// :nodoc:

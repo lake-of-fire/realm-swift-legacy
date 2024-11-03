@@ -16,12 +16,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMBSON_Private.hpp"
+#import "LEGACYBSON_Private.hpp"
 
-#import "RLMDecimal128_Private.hpp"
-#import "RLMObjectId_Private.hpp"
-#import "RLMUUID_Private.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYDecimal128_Private.hpp"
+#import "LEGACYObjectId_Private.hpp"
+#import "LEGACYUUID_Private.hpp"
+#import "LEGACYUtil.hpp"
 
 #import <realm/util/bson/bson.hpp>
 
@@ -30,66 +30,66 @@ using namespace bson;
 
 #pragma mark NSNull
 
-@implementation NSNull (RLMBSON)
+@implementation NSNull (LEGACYBSON)
 
-- (RLMBSONType)bsonType {
-    return RLMBSONTypeNull;
+- (LEGACYBSONType)bsonType {
+    return LEGACYBSONTypeNull;
 }
 
 @end
 
-#pragma mark RLMObjectId
+#pragma mark LEGACYObjectId
 
-@implementation RLMObjectId (RLMBSON)
+@implementation LEGACYObjectId (LEGACYBSON)
 
-- (RLMBSONType)bsonType {
-    return RLMBSONTypeObjectId;
+- (LEGACYBSONType)bsonType {
+    return LEGACYBSONTypeObjectId;
 }
 
 @end
 
-#pragma mark RLMDecimal128
+#pragma mark LEGACYDecimal128
 
-@implementation RLMDecimal128 (RLMBSON)
+@implementation LEGACYDecimal128 (LEGACYBSON)
 
-- (RLMBSONType)bsonType {
-    return RLMBSONTypeDecimal128;
+- (LEGACYBSONType)bsonType {
+    return LEGACYBSONTypeDecimal128;
 }
 
 @end
 
 #pragma mark NSString
 
-@implementation NSString (RLMBSON)
+@implementation NSString (LEGACYBSON)
 
-- (RLMBSONType)bsonType {
-    return RLMBSONTypeString;
+- (LEGACYBSONType)bsonType {
+    return LEGACYBSONTypeString;
 }
 
 @end
 
 #pragma mark NSNumber
 
-@implementation NSNumber (RLMBSON)
+@implementation NSNumber (LEGACYBSON)
 
-- (RLMBSONType)bsonType {
+- (LEGACYBSONType)bsonType {
     char numberType = [self objCType][0];
     
     if (numberType == *@encode(bool) ||
         numberType == *@encode(char)) {
-        return RLMBSONTypeBool;
+        return LEGACYBSONTypeBool;
     } else if (numberType == *@encode(int) ||
                numberType == *@encode(short) ||
                numberType == *@encode(unsigned short) ||
                numberType == *@encode(unsigned int)) {
-        return RLMBSONTypeInt32;
+        return LEGACYBSONTypeInt32;
     } else if (numberType == *@encode(long) ||
                numberType == *@encode(long long) ||
                numberType == *@encode(unsigned long) ||
                numberType == *@encode(unsigned long long)) {
-        return RLMBSONTypeInt64;
+        return LEGACYBSONTypeInt64;
     } else {
-        return RLMBSONTypeDouble;
+        return LEGACYBSONTypeDouble;
     }
 }
 
@@ -97,17 +97,17 @@ using namespace bson;
 
 #pragma mark NSMutableArray
 
-@implementation NSMutableArray (RLMBSON)
+@implementation NSMutableArray (LEGACYBSON)
 
-- (RLMBSONType)bsonType {
-    return RLMBSONTypeArray;
+- (LEGACYBSONType)bsonType {
+    return LEGACYBSONTypeArray;
 }
 
 - (instancetype)initWithBsonArray:(BsonArray)bsonArray {
 
     if ((self = [self init])) {
         for (auto& entry : bsonArray) {
-            [self addObject:RLMConvertBsonToRLMBSON(entry)];
+            [self addObject:LEGACYConvertBsonToRLMBSON(entry)];
         }
 
         return self;
@@ -118,34 +118,34 @@ using namespace bson;
 
 @end
 
-@implementation NSArray (RLMBSON)
+@implementation NSArray (LEGACYBSON)
 
 - (BsonArray)bsonArrayValue {
     BsonArray bsonArray;
     for (id value in self) {
-        bsonArray.push_back(RLMConvertRLMBSONToBson(value));
+        bsonArray.push_back(LEGACYConvertRLMBSONToBson(value));
     }
     return bsonArray;
 }
 
-- (RLMBSONType)bsonType {
-    return RLMBSONTypeArray;
+- (LEGACYBSONType)bsonType {
+    return LEGACYBSONTypeArray;
 }
 
 @end
 
 #pragma mark NSDictionary
 
-@implementation NSMutableDictionary (RLMBSON)
+@implementation NSMutableDictionary (LEGACYBSON)
 
-- (RLMBSONType)bsonType {
-    return RLMBSONTypeDocument;
+- (LEGACYBSONType)bsonType {
+    return LEGACYBSONTypeDocument;
 }
 
 - (BsonDocument)bsonDocumentValue {
     BsonDocument bsonDocument;
     for (NSString *value in self) {
-        bsonDocument[value.UTF8String] = RLMConvertRLMBSONToBson(self[value]);
+        bsonDocument[value.UTF8String] = LEGACYConvertRLMBSONToBson(self[value]);
     }
     return bsonDocument;
 }
@@ -154,7 +154,7 @@ using namespace bson;
     if ((self = [self init])) {
         for (auto it = bsonDocument.begin(); it != bsonDocument.end(); ++it) {
             const auto& entry = (*it);
-            [self setObject:RLMConvertBsonToRLMBSON(entry.second) forKey:@(entry.first.data())];
+            [self setObject:LEGACYConvertBsonToRLMBSON(entry.second) forKey:@(entry.first.data())];
         }
 
         return self;
@@ -165,16 +165,16 @@ using namespace bson;
 
 @end
 
-@implementation NSDictionary (RLMBSON)
+@implementation NSDictionary (LEGACYBSON)
 
-- (RLMBSONType)bsonType {
-    return RLMBSONTypeDocument;
+- (LEGACYBSONType)bsonType {
+    return LEGACYBSONTypeDocument;
 }
 
 - (BsonDocument)bsonDocumentValue {
     BsonDocument bsonDocument;
     for (NSString *value in self) {
-        bsonDocument[value.UTF8String] = RLMConvertRLMBSONToBson(self[value]);
+        bsonDocument[value.UTF8String] = LEGACYConvertRLMBSONToBson(self[value]);
     }
     return bsonDocument;
 }
@@ -183,10 +183,10 @@ using namespace bson;
 
 #pragma mark NSData
 
-@implementation NSData (RLMBSON)
+@implementation NSData (LEGACYBSON)
 
-- (RLMBSONType)bsonType {
-    return RLMBSONTypeBinary;
+- (LEGACYBSONType)bsonType {
+    return LEGACYBSONTypeBinary;
 }
 
 - (instancetype)initWithBsonBinary:(std::vector<char>)bsonBinary {
@@ -201,30 +201,30 @@ using namespace bson;
 
 #pragma mark NSDate
 
-@implementation NSDate (RLMBSON)
+@implementation NSDate (LEGACYBSON)
 
-- (RLMBSONType)bsonType {
-    return RLMBSONTypeDatetime;
+- (LEGACYBSONType)bsonType {
+    return LEGACYBSONTypeDatetime;
 }
 
 @end
 
 #pragma mark NSUUID
 
-@implementation NSUUID (RLMBSON)
+@implementation NSUUID (LEGACYBSON)
 
-- (RLMBSONType)bsonType {
-    return RLMBSONTypeUUID;
+- (LEGACYBSONType)bsonType {
+    return LEGACYBSONTypeUUID;
 }
 
 @end
 
 #pragma mark NSRegularExpression
 
-@implementation NSRegularExpression (RLMBSON)
+@implementation NSRegularExpression (LEGACYBSON)
 
-- (RLMBSONType)bsonType {
-    return RLMBSONTypeRegularExpression;
+- (LEGACYBSONType)bsonType {
+    return LEGACYBSONTypeRegularExpression;
 }
 
 - (RegularExpression)regularExpressionValue {
@@ -267,23 +267,9 @@ using namespace bson;
 
 @end
 
-#pragma mark RLMMaxKey
+#pragma mark LEGACYMaxKey
 
-@implementation RLMMaxKey
-
-- (BOOL)isEqual:(id)other {
-    return other == self || ([other class] == [self class]);
-}
-
-- (NSUInteger)hash {
-    return 0;
-}
-
-@end
-
-#pragma mark RLMMaxKey
-
-@implementation RLMMinKey
+@implementation LEGACYMaxKey
 
 - (BOOL)isEqual:(id)other {
     return other == self || ([other class] == [self class]);
@@ -295,79 +281,93 @@ using namespace bson;
 
 @end
 
-@implementation RLMMaxKey (RLMBSON)
+#pragma mark LEGACYMaxKey
 
-- (RLMBSONType)bsonType {
-    return RLMBSONTypeMaxKey;
+@implementation LEGACYMinKey
+
+- (BOOL)isEqual:(id)other {
+    return other == self || ([other class] == [self class]);
+}
+
+- (NSUInteger)hash {
+    return 0;
 }
 
 @end
 
-@implementation RLMMinKey (RLMBSON)
+@implementation LEGACYMaxKey (LEGACYBSON)
 
-- (RLMBSONType)bsonType {
-    return RLMBSONTypeMinKey;
+- (LEGACYBSONType)bsonType {
+    return LEGACYBSONTypeMaxKey;
 }
 
 @end
 
-#pragma mark RLMBSONToBson
+@implementation LEGACYMinKey (LEGACYBSON)
 
-Bson RLMConvertRLMBSONToBson(id<RLMBSON> b) {
+- (LEGACYBSONType)bsonType {
+    return LEGACYBSONTypeMinKey;
+}
+
+@end
+
+#pragma mark LEGACYBSONToBson
+
+Bson LEGACYConvertRLMBSONToBson(id<LEGACYBSON> b) {
     switch ([b bsonType]) {
-        case RLMBSONTypeString:
+        case LEGACYBSONTypeString:
             return ((NSString *)b).UTF8String;
-        case RLMBSONTypeInt32:
+        case LEGACYBSONTypeInt32:
             return ((NSNumber *)b).intValue;
-        case RLMBSONTypeInt64:
+        case LEGACYBSONTypeInt64:
             return ((NSNumber *)b).longLongValue;
-        case RLMBSONTypeObjectId:
-            return [((RLMObjectId *)b) value];
-        case RLMBSONTypeNull:
+        case LEGACYBSONTypeObjectId:
+            return [((LEGACYObjectId *)b) value];
+        case LEGACYBSONTypeNull:
             return util::none;
-        case RLMBSONTypeBool:
+        case LEGACYBSONTypeBool:
             return (bool)((NSNumber *)b).boolValue;
-        case RLMBSONTypeDouble:
+        case LEGACYBSONTypeDouble:
             return ((NSNumber *)b).doubleValue;
-        case RLMBSONTypeBinary:
+        case LEGACYBSONTypeBinary:
             return std::vector<char>((char*)((NSData *)b).bytes,
                                      ((char*)((NSData *)b).bytes) + (int)((NSData *)b).length);
-        case RLMBSONTypeTimestamp:
+        case LEGACYBSONTypeTimestamp:
             // This represents a value of `Timestamp` in a MongoDB Collection.
             return MongoTimestamp(((NSDate *)b).timeIntervalSince1970, 0);
-        case RLMBSONTypeDatetime:
+        case LEGACYBSONTypeDatetime:
             // This represents a value of `Date` in a MongoDB Collection.
-            return RLMTimestampForNSDate((NSDate *)b);
-        case RLMBSONTypeDecimal128:
-            return [((RLMDecimal128 *)b) decimal128Value];
-        case RLMBSONTypeRegularExpression:
+            return LEGACYTimestampForNSDate((NSDate *)b);
+        case LEGACYBSONTypeDecimal128:
+            return [((LEGACYDecimal128 *)b) decimal128Value];
+        case LEGACYBSONTypeRegularExpression:
             return [((NSRegularExpression *)b) regularExpressionValue];
-        case RLMBSONTypeMaxKey:
+        case LEGACYBSONTypeMaxKey:
             return max_key;
-        case RLMBSONTypeMinKey:
+        case LEGACYBSONTypeMinKey:
             return min_key;
-        case RLMBSONTypeDocument:
+        case LEGACYBSONTypeDocument:
             return [((NSDictionary *)b) bsonDocumentValue];
-        case RLMBSONTypeArray:
+        case LEGACYBSONTypeArray:
             return [((NSArray *)b) bsonArrayValue];
-        case RLMBSONTypeUUID:
+        case LEGACYBSONTypeUUID:
             return [((NSUUID *)b) rlm_uuidValue];
     }
 }
 
-BsonDocument RLMConvertRLMBSONArrayToBsonDocument(NSArray<id<RLMBSON>> *array) {
+BsonDocument LEGACYConvertRLMBSONArrayToBsonDocument(NSArray<id<LEGACYBSON>> *array) {
     BsonDocument bsonDocument = BsonDocument{};
-    for (NSDictionary<NSString *, id<RLMBSON>> *item in array) {
-        [item enumerateKeysAndObjectsUsingBlock:[&](NSString *key, id<RLMBSON> bson, BOOL *) {
-            bsonDocument[key.UTF8String] = RLMConvertRLMBSONToBson(bson);
+    for (NSDictionary<NSString *, id<LEGACYBSON>> *item in array) {
+        [item enumerateKeysAndObjectsUsingBlock:[&](NSString *key, id<LEGACYBSON> bson, BOOL *) {
+            bsonDocument[key.UTF8String] = LEGACYConvertRLMBSONToBson(bson);
         }];
     }
     return bsonDocument;
 }
 
-#pragma mark BsonToRLMBSON
+#pragma mark BsonToLEGACYBSON
 
-id<RLMBSON> RLMConvertBsonToRLMBSON(const Bson& b) {
+id<LEGACYBSON> LEGACYConvertBsonToRLMBSON(const Bson& b) {
     switch (b.type()) {
         case realm::bson::Bson::Type::Null:
             return [NSNull null];
@@ -388,15 +388,15 @@ id<RLMBSON> RLMConvertBsonToRLMBSON(const Bson& b) {
         case realm::bson::Bson::Type::Datetime:
             return [[NSDate alloc] initWithTimeIntervalSince1970:static_cast<Timestamp>(b).get_seconds()];
         case realm::bson::Bson::Type::ObjectId:
-            return [[RLMObjectId alloc] initWithValue:static_cast<ObjectId>(b)];
+            return [[LEGACYObjectId alloc] initWithValue:static_cast<ObjectId>(b)];
         case realm::bson::Bson::Type::Decimal128:
-            return [[RLMDecimal128 alloc] initWithDecimal128:static_cast<Decimal128>(b)];
+            return [[LEGACYDecimal128 alloc] initWithDecimal128:static_cast<Decimal128>(b)];
         case realm::bson::Bson::Type::RegularExpression:
             return [[NSRegularExpression alloc] initWithRegularExpression:static_cast<RegularExpression>(b)];
         case realm::bson::Bson::Type::MaxKey:
-            return [RLMMaxKey new];
+            return [LEGACYMaxKey new];
         case realm::bson::Bson::Type::MinKey:
-            return [RLMMinKey new];
+            return [LEGACYMinKey new];
         case realm::bson::Bson::Type::Document:
             return [[NSMutableDictionary alloc] initWithBsonDocument:static_cast<BsonDocument>(b)];
         case realm::bson::Bson::Type::Array:
@@ -407,17 +407,17 @@ id<RLMBSON> RLMConvertBsonToRLMBSON(const Bson& b) {
     return nil;
 }
 
-id<RLMBSON> RLMConvertBsonDocumentToRLMBSON(std::optional<BsonDocument> b) {
-    return b ? RLMConvertBsonToRLMBSON(*b) : nil;
+id<LEGACYBSON> LEGACYConvertBsonDocumentToRLMBSON(std::optional<BsonDocument> b) {
+    return b ? LEGACYConvertBsonToRLMBSON(*b) : nil;
 }
 
-NSArray<id<RLMBSON>> *RLMConvertBsonDocumentToRLMBSONArray(std::optional<BsonDocument> b) {
+NSArray<id<LEGACYBSON>> *LEGACYConvertBsonDocumentToRLMBSONArray(std::optional<BsonDocument> b) {
     if (!b) {
         return @[];
     }
-    NSMutableArray<id<RLMBSON>> *array = [[NSMutableArray alloc] init];
+    NSMutableArray<id<LEGACYBSON>> *array = [[NSMutableArray alloc] init];
     for (const auto& [key, value] : *b) {
-        [array addObject:@{@(key.c_str()): RLMConvertBsonToRLMBSON(value)}];
+        [array addObject:@{@(key.c_str()): LEGACYConvertBsonToRLMBSON(value)}];
     }
     return array;
 }

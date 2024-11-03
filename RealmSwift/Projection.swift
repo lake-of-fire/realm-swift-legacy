@@ -175,7 +175,7 @@ open class Projection<Root: ObjectBase & RealmCollectionValue & ThreadConfined>:
     }
     /// :nodoc:
     public static func == (lhs: Projection, rhs: Projection) -> Bool {
-        RLMObjectBaseAreEqual(lhs.rootObject, rhs.rootObject)
+        LEGACYObjectBaseAreEqual(lhs.rootObject, rhs.rootObject)
     }
     /// :nodoc:
     public func hash(into hasher: inout Hasher) {
@@ -322,7 +322,7 @@ extension ProjectionObservable {
             projection = self
         }
         let schema = self.schema
-        return RLMObjectBaseAddNotificationBlock(rootObject, kps, queue) { object, names, oldValues, newValues, error in
+        return LEGACYObjectBaseAddNotificationBlock(rootObject, kps, queue) { object, names, oldValues, newValues, error in
             assert(error == nil) // error is no longer used
             guard let names = names, let newValues = newValues else {
                 block(.deleted)

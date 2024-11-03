@@ -16,31 +16,31 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMDictionary.h>
+#import <Realm/LEGACYDictionary.h>
 
-@class RLMObjectBase, RLMProperty;
+@class LEGACYObjectBase, LEGACYProperty;
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@interface RLMDictionary ()
-- (instancetype)initWithObjectClassName:(NSString *)objectClassName keyType:(RLMPropertyType)keyType;
-- (instancetype)initWithObjectType:(RLMPropertyType)type optional:(BOOL)optional keyType:(RLMPropertyType)keyType;
+@interface LEGACYDictionary ()
+- (instancetype)initWithObjectClassName:(NSString *)objectClassName keyType:(LEGACYPropertyType)keyType;
+- (instancetype)initWithObjectType:(LEGACYPropertyType)type optional:(BOOL)optional keyType:(LEGACYPropertyType)keyType;
 - (NSString *)descriptionWithMaxDepth:(NSUInteger)depth;
-- (void)setParent:(RLMObjectBase *)parentObject property:(RLMProperty *)property;
+- (void)setParent:(LEGACYObjectBase *)parentObject property:(LEGACYProperty *)property;
 // YES if the property is declared with old property syntax.
 @property (nonatomic, readonly) BOOL isLegacyProperty;
 // The name of the property which this collection represents
 @property (nonatomic, readonly) NSString *propertyKey;
 @end
 
-@interface RLMManagedDictionary : RLMDictionary
-- (instancetype)initWithParent:(RLMObjectBase *)parentObject property:(RLMProperty *)property;
+@interface LEGACYManagedDictionary : LEGACYDictionary
+- (instancetype)initWithParent:(LEGACYObjectBase *)parentObject property:(LEGACYProperty *)property;
 @end
 
-FOUNDATION_EXTERN NSString *RLMDictionaryDescriptionWithMaxDepth(NSString *name,
-                                                                 RLMDictionary *dictionary,
+FOUNDATION_EXTERN NSString *LEGACYDictionaryDescriptionWithMaxDepth(NSString *name,
+                                                                 LEGACYDictionary *dictionary,
                                                                  NSUInteger depth);
-id RLMDictionaryKey(RLMDictionary *dictionary, id key) RLM_HIDDEN;
-id RLMDictionaryValue(RLMDictionary *dictionary, id value) RLM_HIDDEN;
+id LEGACYDictionaryKey(LEGACYDictionary *dictionary, id key) LEGACY_HIDDEN;
+id LEGACYDictionaryValue(LEGACYDictionary *dictionary, id value) LEGACY_HIDDEN;
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

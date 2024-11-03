@@ -16,35 +16,35 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMApp.h>
+#import <Realm/LEGACYApp.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 /// Observer block for app notifications.
-typedef void(^RLMAppNotificationBlock)(RLMApp *);
+typedef void(^LEGACYAppNotificationBlock)(LEGACYApp *);
 
 /// Token that identifies an observer. Unsubscribes when deconstructed to
 /// avoid dangling observers, therefore this must be retained to hold
 /// onto a subscription.
-@interface RLMAppSubscriptionToken : NSObject
+@interface LEGACYAppSubscriptionToken : NSObject
 - (void)unsubscribe;
 @end
 
-@interface RLMApp ()
+@interface LEGACYApp ()
 /// Returns all currently cached Apps
-+ (NSArray<RLMApp *> *)allApps;
-/// Subscribe to notifications for this RLMApp.
-- (RLMAppSubscriptionToken *)subscribe:(RLMAppNotificationBlock)block;
++ (NSArray<LEGACYApp *> *)allApps;
+/// Subscribe to notifications for this LEGACYApp.
+- (LEGACYAppSubscriptionToken *)subscribe:(LEGACYAppNotificationBlock)block;
 
-+ (instancetype)appWithConfiguration:(RLMAppConfiguration *)configuration;
++ (instancetype)appWithConfiguration:(LEGACYAppConfiguration *)configuration;
 
 + (void)resetAppCache;
 @end
 
-@interface RLMAppConfiguration ()
+@interface LEGACYAppConfiguration ()
 @property (nonatomic) NSString *appId;
 @property (nonatomic) BOOL encryptMetadata;
 @property (nonatomic) NSURL *rootDirectory;
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

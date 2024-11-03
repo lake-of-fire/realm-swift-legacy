@@ -16,25 +16,25 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
-@protocol RLMBSON;
-@class RLMSortDescriptor;
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
+@protocol LEGACYBSON;
+@class LEGACYSortDescriptor;
 
 /// Options to use when executing a `findOneAndUpdate`, `findOneAndReplace`,
-/// or `findOneAndDelete` command on a `RLMMongoCollection`.
-@interface RLMFindOneAndModifyOptions : NSObject
+/// or `findOneAndDelete` command on a `LEGACYMongoCollection`.
+@interface LEGACYFindOneAndModifyOptions : NSObject
 
 /// Limits the fields to return for all matching documents.
-@property (nonatomic, nullable) id<RLMBSON> projection NS_REFINED_FOR_SWIFT;
+@property (nonatomic, nullable) id<LEGACYBSON> projection NS_REFINED_FOR_SWIFT;
 
 /// The order in which to return matching documents.
-@property (nonatomic, nullable) id<RLMBSON> sort NS_REFINED_FOR_SWIFT
+@property (nonatomic, nullable) id<LEGACYBSON> sort NS_REFINED_FOR_SWIFT
 __attribute__((deprecated("Use `sorting` instead, which correctly sort more than one sort attribute", "sorting")));
 
 /// The order in which to return matching documents.
-@property (nonatomic) NSArray<id<RLMBSON>> *sorting NS_REFINED_FOR_SWIFT;
+@property (nonatomic) NSArray<id<LEGACYBSON>> *sorting NS_REFINED_FOR_SWIFT;
 
 
 /// Whether or not to perform an upsert, default is false
@@ -47,7 +47,7 @@ __attribute__((deprecated("Use `sorting` instead, which correctly sort more than
 @property (nonatomic) BOOL shouldReturnNewDocument;
 
 /// Options to use when executing a `findOneAndUpdate`, `findOneAndReplace`,
-/// or `findOneAndDelete` command on a `RLMMongoCollection`.
+/// or `findOneAndDelete` command on a `LEGACYMongoCollection`.
 /// @param projection Limits the fields to return for all matching documents.
 /// @param sort The order in which to return matching documents.
 /// @param upsert Whether or not to perform an upsert, default is false
@@ -55,15 +55,15 @@ __attribute__((deprecated("Use `sorting` instead, which correctly sort more than
 /// @param shouldReturnNewDocument When true then the new document is returned,
 /// Otherwise the old document is returned (default),
 /// (only available for findOneAndReplace and findOneAndUpdate)
-- (instancetype)initWithProjection:(id<RLMBSON> _Nullable)projection
-                              sort:(id<RLMBSON> _Nullable)sort
+- (instancetype)initWithProjection:(id<LEGACYBSON> _Nullable)projection
+                              sort:(id<LEGACYBSON> _Nullable)sort
                             upsert:(BOOL)upsert
            shouldReturnNewDocument:(BOOL)shouldReturnNewDocument
 __attribute__((deprecated("Please use `initWithProjection:sorting:upsert:shouldReturnNewDocument:`")))
      NS_SWIFT_UNAVAILABLE("Please see FindOneAndModifyOptions");
 
 /// Options to use when executing a `findOneAndUpdate`, `findOneAndReplace`,
-/// or `findOneAndDelete` command on a `RLMMongoCollection`.
+/// or `findOneAndDelete` command on a `LEGACYMongoCollection`.
 /// @param projection Limits the fields to return for all matching documents.
 /// @param sorting The order in which to return matching documents.
 /// @param upsert Whether or not to perform an upsert, default is false
@@ -71,10 +71,10 @@ __attribute__((deprecated("Please use `initWithProjection:sorting:upsert:shouldR
 /// @param shouldReturnNewDocument When true then the new document is returned,
 /// Otherwise the old document is returned (default),
 /// (only available for findOneAndReplace and findOneAndUpdate)
-- (instancetype)initWithProjection:(id<RLMBSON> _Nullable)projection
-                           sorting:(NSArray<id<RLMBSON>> *)sorting
+- (instancetype)initWithProjection:(id<LEGACYBSON> _Nullable)projection
+                           sorting:(NSArray<id<LEGACYBSON>> *)sorting
                             upsert:(BOOL)upsert
            shouldReturnNewDocument:(BOOL)shouldReturnNewDocument;
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

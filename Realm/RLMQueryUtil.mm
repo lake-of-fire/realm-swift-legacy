@@ -16,16 +16,16 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMQueryUtil.hpp"
+#import "LEGACYQueryUtil.hpp"
 
-#import "RLMAccessor.hpp"
-#import "RLMGeospatial_Private.hpp"
-#import "RLMObjectSchema_Private.hpp"
-#import "RLMObject_Private.hpp"
-#import "RLMPredicateUtil.hpp"
-#import "RLMProperty_Private.h"
-#import "RLMSchema.h"
-#import "RLMUtil.hpp"
+#import "LEGACYAccessor.hpp"
+#import "LEGACYGeospatial_Private.hpp"
+#import "LEGACYObjectSchema_Private.hpp"
+#import "LEGACYObject_Private.hpp"
+#import "LEGACYPredicateUtil.hpp"
+#import "LEGACYProperty_Private.h"
+#import "LEGACYSchema.h"
+#import "LEGACYUtil.hpp"
 
 #import <realm/geospatial.hpp>
 #import <realm/object-store/object_store.hpp>
@@ -37,11 +37,11 @@
 
 using namespace realm;
 
-NSString * const RLMPropertiesComparisonTypeMismatchException = @"RLMPropertiesComparisonTypeMismatchException";
-NSString * const RLMUnsupportedTypesFoundInPropertyComparisonException = @"RLMUnsupportedTypesFoundInPropertyComparisonException";
+NSString * const LEGACYPropertiesComparisonTypeMismatchException = @"LEGACYPropertiesComparisonTypeMismatchException";
+NSString * const LEGACYUnsupportedTypesFoundInPropertyComparisonException = @"LEGACYUnsupportedTypesFoundInPropertyComparisonException";
 
-NSString * const RLMPropertiesComparisonTypeMismatchReason = @"Property type mismatch between %@ and %@";
-NSString * const RLMUnsupportedTypesFoundInPropertyComparisonReason = @"Comparison between %@ and %@";
+NSString * const LEGACYPropertiesComparisonTypeMismatchReason = @"Property type mismatch between %@ and %@";
+NSString * const LEGACYUnsupportedTypesFoundInPropertyComparisonReason = @"Comparison between %@ and %@";
 
 namespace {
 
@@ -59,7 +59,7 @@ void throwException(NSString *name, NSString *format, ...) {
 // check a precondition and throw an exception if it is not met
 // this should be used iff the condition being false indicates a bug in the caller
 // of the function checking its preconditions
-void RLMPrecondition(bool condition, NSString *name, NSString *format, ...) {
+void LEGACYPrecondition(bool condition, NSString *name, NSString *format, ...) {
     if (__builtin_expect(condition, 1)) {
         return;
     }
@@ -72,39 +72,39 @@ void RLMPrecondition(bool condition, NSString *name, NSString *format, ...) {
     @throw [NSException exceptionWithName:name reason:reason userInfo:nil];
 }
 
-BOOL propertyTypeIsNumeric(RLMPropertyType propertyType) {
+BOOL propertyTypeIsNumeric(LEGACYPropertyType propertyType) {
     switch (propertyType) {
-        case RLMPropertyTypeInt:
-        case RLMPropertyTypeFloat:
-        case RLMPropertyTypeDouble:
-        case RLMPropertyTypeDecimal128:
-        case RLMPropertyTypeDate:
-        case RLMPropertyTypeAny:
+        case LEGACYPropertyTypeInt:
+        case LEGACYPropertyTypeFloat:
+        case LEGACYPropertyTypeDouble:
+        case LEGACYPropertyTypeDecimal128:
+        case LEGACYPropertyTypeDate:
+        case LEGACYPropertyTypeAny:
             return YES;
         default:
             return NO;
     }
 }
 
-bool propertyTypeIsLink(RLMPropertyType type) {
-    return type == RLMPropertyTypeObject || type == RLMPropertyTypeLinkingObjects;
+bool propertyTypeIsLink(LEGACYPropertyType type) {
+    return type == LEGACYPropertyTypeObject || type == LEGACYPropertyTypeLinkingObjects;
 }
 
-bool isObjectValidForProperty(id value, RLMProperty *prop) {
+bool isObjectValidForProperty(id value, LEGACYProperty *prop) {
     if (prop.collection) {
         if (propertyTypeIsLink(prop.type)) {
-            RLMObjectBase *obj = RLMDynamicCast<RLMObjectBase>(value);
+            LEGACYObjectBase *obj = LEGACYDynamicCast<LEGACYObjectBase>(value);
             if (!obj) {
-                obj = RLMDynamicCast<RLMObjectBase>(RLMBridgeSwiftValue(value));
+                obj = LEGACYDynamicCast<LEGACYObjectBase>(LEGACYBridgeSwiftValue(value));
             }
             if (!obj) {
                 return false;
             }
-            return [RLMObjectBaseObjectSchema(obj).className isEqualToString:prop.objectClassName];
+            return [LEGACYObjectBaseObjectSchema(obj).className isEqualToString:prop.objectClassName];
         }
-        return RLMValidateValue(value, prop.type, prop.optional, false, nil);
+        return LEGACYValidateValue(value, prop.type, prop.optional, false, nil);
     }
-    return RLMIsObjectValidForProperty(value, prop);
+    return LEGACYIsObjectValidForProperty(value, prop);
 }
 
 
@@ -236,10 +236,10 @@ NSString *operatorName(NSPredicateOperatorType operatorType)
 }
 
 [[gnu::cold]] [[noreturn]]
-void unsupportedOperator(RLMPropertyType datatype, NSPredicateOperatorType operatorType) {
+void unsupportedOperator(LEGACYPropertyType datatype, NSPredicateOperatorType operatorType) {
     throwException(@"Invalid operator type",
                    @"Operator '%@' not supported for type '%@'",
-                   operatorName(operatorType), RLMTypeToString(datatype));
+                   operatorName(operatorType), LEGACYTypeToString(datatype));
 }
 
 bool isNSNull(id value) {
@@ -251,7 +251,7 @@ bool isNSNull(T) {
     return false;
 }
 
-Table& get_table(Group& group, RLMObjectSchema *objectSchema)
+Table& get_table(Group& group, LEGACYObjectSchema *objectSchema)
 {
     return *ObjectStore::table_for_object_type(group, objectSchema.objectStoreName);
 }
@@ -259,11 +259,11 @@ Table& get_table(Group& group, RLMObjectSchema *objectSchema)
 // A reference to a column within a query. Can be resolved to a Columns<T> for use in query expressions.
 class ColumnReference {
 public:
-    ColumnReference(Query& query, Group& group, RLMSchema *schema, RLMProperty* property, std::vector<RLMProperty*>&& links = {})
+    ColumnReference(Query& query, Group& group, LEGACYSchema *schema, LEGACYProperty* property, std::vector<LEGACYProperty*>&& links = {})
     : m_links(std::move(links)), m_property(property), m_schema(schema), m_group(&group), m_query(&query), m_link_chain(query.get_table())
     {
         for (const auto& link : m_links) {
-            if (link.type != RLMPropertyTypeLinkingObjects) {
+            if (link.type != LEGACYPropertyTypeLinkingObjects) {
                 m_link_chain.link(link.columnName.UTF8String);
             }
             else {
@@ -274,7 +274,7 @@ public:
         m_col = m_link_chain.get_current_table()->get_column_key(m_property.columnName.UTF8String);
     }
 
-    ColumnReference(Query& query, Group& group, RLMSchema *schema)
+    ColumnReference(Query& query, Group& group, LEGACYSchema *schema)
     : m_schema(schema), m_group(&group), m_query(&query)
     {
     }
@@ -286,7 +286,7 @@ public:
 
         // LinkChain::column() mutates it, so we need to make a copy
         auto lc = m_link_chain;
-        if (type() != RLMPropertyTypeLinkingObjects) {
+        if (type() != LEGACYPropertyTypeLinkingObjects) {
             return lc.column<T>(column(), std::forward<SubQuery>(subquery)...);
         }
 
@@ -298,11 +298,11 @@ public:
         REALM_TERMINATE("LinkingObjects property did not have column type Link");
     }
 
-    RLMProperty *property() const { return m_property; }
+    LEGACYProperty *property() const { return m_property; }
     ColKey column() const { return m_col; }
-    RLMPropertyType type() const { return property().type; }
+    LEGACYPropertyType type() const { return property().type; }
 
-    RLMObjectSchema *link_target_object_schema() const
+    LEGACYObjectSchema *link_target_object_schema() const
     {
         REALM_ASSERT(is_link());
         return m_schema[property().objectClassName];
@@ -314,7 +314,7 @@ public:
 
     bool has_any_to_many_links() const {
         return std::any_of(begin(m_links), end(m_links),
-                           [](RLMProperty *property) { return property.collection; });
+                           [](LEGACYProperty *property) { return property.collection; });
     }
 
     ColumnReference last_link_column() const {
@@ -326,7 +326,7 @@ public:
         return {query, *m_group, m_schema, m_property};
     }
 
-    ColumnReference append(RLMProperty *prop) const {
+    ColumnReference append(LEGACYProperty *prop) const {
         auto links = m_links;
         if (m_property) {
             links.push_back(m_property);
@@ -335,28 +335,28 @@ public:
     }
 
     void validate_comparison(id value) const {
-        RLMPrecondition(isObjectValidForProperty(value, m_property),
+        LEGACYPrecondition(isObjectValidForProperty(value, m_property),
                         @"Invalid value", @"Cannot compare value '%@' of type '%@' to property '%@' of type '%@'",
-                        value, [value class], m_property.name, m_property.objectClassName ?: RLMTypeToString(m_property.type));
-        if (RLMObjectBase *obj = RLMDynamicCast<RLMObjectBase>(value)) {
-            RLMPrecondition(!obj->_row.is_valid() || m_group == &obj->_realm.group,
+                        value, [value class], m_property.name, m_property.objectClassName ?: LEGACYTypeToString(m_property.type));
+        if (LEGACYObjectBase *obj = LEGACYDynamicCast<LEGACYObjectBase>(value)) {
+            LEGACYPrecondition(!obj->_row.is_valid() || m_group == &obj->_realm.group,
                             @"Invalid value origin", @"Object must be from the Realm being queried");
         }
     }
 
 private:
-    std::pair<Table&, ColKey> link_origin(RLMProperty *prop) const
+    std::pair<Table&, ColKey> link_origin(LEGACYProperty *prop) const
     {
-        RLMObjectSchema *link_origin_schema = m_schema[prop.objectClassName];
+        LEGACYObjectSchema *link_origin_schema = m_schema[prop.objectClassName];
         Table& link_origin_table = get_table(*m_group, link_origin_schema);
         NSString *column_name = link_origin_schema[prop.linkOriginPropertyName].columnName;
         auto link_origin_column = link_origin_table.get_column_key(column_name.UTF8String);
         return {link_origin_table, link_origin_column};
     }
 
-    std::vector<RLMProperty*> m_links;
-    RLMProperty *m_property;
-    RLMSchema *m_schema;
+    std::vector<LEGACYProperty*> m_links;
+    LEGACYProperty *m_property;
+    LEGACYSchema *m_schema;
     Group *m_group;
     Query *m_query;
     LinkChain m_link_chain;
@@ -392,7 +392,7 @@ public:
         bool valid = true;
         switch (m_type) {
             case Count:
-                RLMPrecondition([value isKindOfClass:[NSNumber class]], @"Invalid operand",
+                LEGACYPrecondition([value isKindOfClass:[NSNumber class]], @"Invalid operand",
                                 @"%@ can only be compared with a numeric value.", name_for_type(m_type));
                 return;
             case Average:
@@ -406,29 +406,29 @@ public:
                 valid = !isNSNull(value) && isObjectValidForProperty(value, m_column.property());
                 break;
             case AllKeys:
-                RLMPrecondition(isNSNull(value) || [value isKindOfClass:[NSString class]], @"Invalid operand",
+                LEGACYPrecondition(isNSNull(value) || [value isKindOfClass:[NSString class]], @"Invalid operand",
                                 @"@allKeys can only be compared with a string value.");
                 return;
             case None: break;
         }
-        RLMPrecondition(valid, @"Invalid operand",
+        LEGACYPrecondition(valid, @"Invalid operand",
                         @"%@ on a property of type %@ cannot be compared with '%@'",
-                        name_for_type(m_type), RLMTypeToString(m_column.type()), value);
+                        name_for_type(m_type), LEGACYTypeToString(m_column.type()), value);
     }
 
     void validate_comparison(const ColumnReference& column) const {
         switch (m_type) {
             case Count:
-                RLMPrecondition(propertyTypeIsNumeric(column.type()), @"Invalid operand",
+                LEGACYPrecondition(propertyTypeIsNumeric(column.type()), @"Invalid operand",
                                 @"%@ can only be compared with a numeric value.", name_for_type(m_type));
                 break;
             case Average: case Minimum: case Maximum: case Sum:
-                RLMPrecondition(propertyTypeIsNumeric(column.type()), @"Invalid operand",
+                LEGACYPrecondition(propertyTypeIsNumeric(column.type()), @"Invalid operand",
                                 @"%@ on a property of type %@ cannot be compared with property of type '%@'",
-                                name_for_type(m_type), RLMTypeToString(m_column.type()), RLMTypeToString(column.type()));
+                                name_for_type(m_type), LEGACYTypeToString(m_column.type()), LEGACYTypeToString(column.type()));
                 break;
             case AllKeys:
-                RLMPrecondition(column.type() == RLMPropertyTypeString, @"Invalid operand",
+                LEGACYPrecondition(column.type() == LEGACYPropertyTypeString, @"Invalid operand",
                                 @"@allKeys can only be compared with a string value.");
                 break;
             case None: break;
@@ -479,28 +479,28 @@ struct KeyPath;
 
 class QueryBuilder {
 public:
-    QueryBuilder(Query& query, Group& group, RLMSchema *schema)
+    QueryBuilder(Query& query, Group& group, LEGACYSchema *schema)
     : m_query(query), m_group(group), m_schema(schema) { }
 
-    void apply_predicate(NSPredicate *predicate, RLMObjectSchema *objectSchema);
+    void apply_predicate(NSPredicate *predicate, LEGACYObjectSchema *objectSchema);
 
 
     void apply_collection_operator_expression(KeyPath&& kp, id value, NSComparisonPredicate *pred);
     void apply_value_expression(KeyPath&& kp, id value, NSComparisonPredicate *pred);
     void apply_column_expression(KeyPath&& left, KeyPath&& right, NSComparisonPredicate *predicate);
-    void apply_function_expression(RLMObjectSchema *objectSchema, NSExpression *functionExpression,
+    void apply_function_expression(LEGACYObjectSchema *objectSchema, NSExpression *functionExpression,
                                    NSPredicateOperatorType operatorType, NSExpression *right);
-    void apply_map_expression(RLMObjectSchema *objectSchema, NSExpression *functionExpression,
+    void apply_map_expression(LEGACYObjectSchema *objectSchema, NSExpression *functionExpression,
                               NSComparisonPredicateOptions options, NSPredicateOperatorType operatorType,
                               NSExpression *right);
 
     template <typename A, typename B>
-    void add_numeric_constraint(RLMPropertyType datatype,
+    void add_numeric_constraint(LEGACYPropertyType datatype,
                                 NSPredicateOperatorType operatorType,
                                 A&& lhs, B&& rhs);
 
     template <typename A, typename B>
-    void add_bool_constraint(RLMPropertyType, NSPredicateOperatorType operatorType, A&& lhs, B&& rhs);
+    void add_bool_constraint(LEGACYPropertyType, NSPredicateOperatorType operatorType, A&& lhs, B&& rhs);
 
     template <typename C, typename T>
     void add_mixed_constraint(NSPredicateOperatorType operatorType,
@@ -541,17 +541,17 @@ public:
                         NSComparisonPredicateOptions predicateOptions,
                         ColumnReference const& column, R const& rhs);
     template <template<typename> typename W, typename T>
-    void do_add_constraint(RLMPropertyType type, NSPredicateOperatorType operatorType,
+    void do_add_constraint(LEGACYPropertyType type, NSPredicateOperatorType operatorType,
                            NSComparisonPredicateOptions predicateOptions, ColumnReference const& column, T&& value);
 
     void add_between_constraint(const ColumnReference& column, id value);
 
-    void add_memberwise_equality_constraint(const ColumnReference& column, RLMObjectBase *obj);
+    void add_memberwise_equality_constraint(const ColumnReference& column, LEGACYObjectBase *obj);
 
-    void add_link_constraint(NSPredicateOperatorType operatorType, const ColumnReference& column, RLMObjectBase *obj);
+    void add_link_constraint(NSPredicateOperatorType operatorType, const ColumnReference& column, LEGACYObjectBase *obj);
     void add_link_constraint(NSPredicateOperatorType operatorType, const ColumnReference& column, realm::null);
     void add_link_constraint(NSPredicateOperatorType, const ColumnReference&, const ColumnReference&);
-    void add_within_constraint(const ColumnReference& column, id<RLMGeospatial_Private> geospatial);
+    void add_within_constraint(const ColumnReference& column, id<LEGACYGeospatial_Private> geospatial);
 
     template <CollectionOperation::Type Operation, bool IsLinkCollection, bool IsDictionary, typename R>
     void add_collection_operation_constraint(NSPredicateOperatorType operatorType,
@@ -574,14 +574,14 @@ public:
 private:
     Query& m_query;
     Group& m_group;
-    RLMSchema *m_schema;
+    LEGACYSchema *m_schema;
 };
 
 #pragma mark Numeric Constraints
 
 // add a clause for numeric constraints based on operator type
 template <typename A, typename B>
-void QueryBuilder::add_numeric_constraint(RLMPropertyType datatype,
+void QueryBuilder::add_numeric_constraint(LEGACYPropertyType datatype,
                                           NSPredicateOperatorType operatorType,
                                           A&& lhs, B&& rhs)
 {
@@ -610,7 +610,7 @@ void QueryBuilder::add_numeric_constraint(RLMPropertyType datatype,
 }
 
 template <typename A, typename B>
-void QueryBuilder::add_bool_constraint(RLMPropertyType datatype,
+void QueryBuilder::add_bool_constraint(LEGACYPropertyType datatype,
                                        NSPredicateOperatorType operatorType,
                                        A&& lhs, B&& rhs) {
     switch (operatorType) {
@@ -710,13 +710,13 @@ void QueryBuilder::do_add_diacritic_sensitive_string_constraint(NSPredicateOpera
             break;
         default: {
             if constexpr (is_any_v<C, Columns<String>, Columns<Lst<String>>, Columns<Set<String>>>) {
-                unsupportedOperator(RLMPropertyTypeString, operatorType);
+                unsupportedOperator(LEGACYPropertyTypeString, operatorType);
             }
             else if constexpr (is_any_v<C, Columns<Binary>, Columns<Lst<Binary>>, Columns<Set<Binary>>>) {
-                unsupportedOperator(RLMPropertyTypeData, operatorType);
+                unsupportedOperator(LEGACYPropertyTypeData, operatorType);
             }
             else if constexpr (is_any_v<C, Columns<Mixed>, Columns<Lst<Mixed>>, Columns<Set<Mixed>>>) {
-                unsupportedOperator(RLMPropertyTypeAny, operatorType);
+                unsupportedOperator(LEGACYPropertyTypeAny, operatorType);
             }
             else if constexpr (is_any_v<C, Columns<Dictionary>>) {
                 // The underlying storage type Dictionary is always Mixed. This creates an issue
@@ -795,13 +795,13 @@ void QueryBuilder::add_string_constraint(NSPredicateOperatorType operatorType,
             throwException(@"Invalid operator type",
                            @"Operator 'LIKE' not supported with diacritic-insensitive modifier.");
         default:
-            unsupportedOperator(RLMPropertyTypeString, operatorType);
+            unsupportedOperator(LEGACYPropertyTypeString, operatorType);
     }
 }
 
 id value_from_constant_expression_or_value(id value) {
-    if (NSExpression *exp = RLMDynamicCast<NSExpression>(value)) {
-        RLMPrecondition(exp.expressionType == NSConstantValueExpressionType,
+    if (NSExpression *exp = LEGACYDynamicCast<NSExpression>(value)) {
+        LEGACYPrecondition(exp.expressionType == NSConstantValueExpressionType,
                         @"Invalid value",
                         @"Expressions within predicate aggregates must be constant values");
         return exp.constantValue;
@@ -809,16 +809,16 @@ id value_from_constant_expression_or_value(id value) {
     return value;
 }
 
-void validate_and_extract_between_range(id value, RLMProperty *prop, id *from, id *to) {
-    NSArray *array = RLMDynamicCast<NSArray>(value);
-    RLMPrecondition(array, @"Invalid value", @"object must be of type NSArray for BETWEEN operations");
-    RLMPrecondition(array.count == 2, @"Invalid value", @"NSArray object must contain exactly two objects for BETWEEN operations");
+void validate_and_extract_between_range(id value, LEGACYProperty *prop, id *from, id *to) {
+    NSArray *array = LEGACYDynamicCast<NSArray>(value);
+    LEGACYPrecondition(array, @"Invalid value", @"object must be of type NSArray for BETWEEN operations");
+    LEGACYPrecondition(array.count == 2, @"Invalid value", @"NSArray object must contain exactly two objects for BETWEEN operations");
 
     *from = value_from_constant_expression_or_value(array.firstObject);
     *to = value_from_constant_expression_or_value(array.lastObject);
-    RLMPrecondition(isObjectValidForProperty(*from, prop) && isObjectValidForProperty(*to, prop),
+    LEGACYPrecondition(isObjectValidForProperty(*from, prop) && isObjectValidForProperty(*to, prop),
                     @"Invalid value",
-                    @"NSArray objects must be of type %@ for BETWEEN operations", RLMTypeToString(prop.type));
+                    @"NSArray objects must be of type %@ for BETWEEN operations", LEGACYTypeToString(prop.type));
 }
 
 #pragma mark Between Constraint
@@ -848,27 +848,27 @@ void QueryBuilder::add_between_constraint(const ColumnReference& column, id valu
 
 #pragma mark Link Constraints
 
-void QueryBuilder::add_memberwise_equality_constraint(const ColumnReference& column, RLMObjectBase *obj) {
-    for (RLMProperty *property in obj->_objectSchema.properties) {
+void QueryBuilder::add_memberwise_equality_constraint(const ColumnReference& column, LEGACYObjectBase *obj) {
+    for (LEGACYProperty *property in obj->_objectSchema.properties) {
         // Both of these probably are implementable, but are significantly more complicated.
-        RLMPrecondition(!property.collection, @"Invalid predicate",
+        LEGACYPrecondition(!property.collection, @"Invalid predicate",
                         @"Unsupported property '%@.%@' for memberwise equality query: equality on collections is not implemented.",
                         obj->_objectSchema.className, property.name);
-        RLMPrecondition(!propertyTypeIsLink(property.type), @"Invalid predicate",
+        LEGACYPrecondition(!propertyTypeIsLink(property.type), @"Invalid predicate",
                         @"Unsupported property '%@.%@' for memberwise equality query: object links are not implemented.",
                         obj->_objectSchema.className, property.name);
-        add_constraint(NSEqualToPredicateOperatorType, 0, column.append(property), RLMDynamicGet(obj, property));
+        add_constraint(NSEqualToPredicateOperatorType, 0, column.append(property), LEGACYDynamicGet(obj, property));
     }
 }
 
 void QueryBuilder::add_link_constraint(NSPredicateOperatorType operatorType,
-                                       const ColumnReference& column, RLMObjectBase *obj) {
-    // If the value isn't actually a RLMObject then it's something which bridges
-    // to RLMObject, i.e. a custom type mapping to an embedded object. For those
+                                       const ColumnReference& column, LEGACYObjectBase *obj) {
+    // If the value isn't actually a LEGACYObject then it's something which bridges
+    // to LEGACYObject, i.e. a custom type mapping to an embedded object. For those
     // we want to perform memberwise equality rather than equality on the link itself.
-    if (![obj isKindOfClass:[RLMObjectBase class]]) {
-        obj = RLMBridgeSwiftValue(obj);
-        REALM_ASSERT([obj isKindOfClass:[RLMObjectBase class]]);
+    if (![obj isKindOfClass:[LEGACYObjectBase class]]) {
+        obj = LEGACYBridgeSwiftValue(obj);
+        REALM_ASSERT([obj isKindOfClass:[LEGACYObjectBase class]]);
 
         // Collections need to use subqueries, but unary links can just use a
         // group. Unary links could also use a subquery but that has worse performance.
@@ -916,10 +916,10 @@ void QueryBuilder::add_link_constraint(NSPredicateOperatorType operatorType,
     }
     else {
         if (column.property().dictionary) {
-            add_bool_constraint(RLMPropertyTypeObject, operatorType, column.resolve<Dictionary>(), obj->_row);
+            add_bool_constraint(LEGACYPropertyTypeObject, operatorType, column.resolve<Dictionary>(), obj->_row);
         }
         else {
-            add_bool_constraint(RLMPropertyTypeObject, operatorType, column.resolve<Link>(), obj->_row);
+            add_bool_constraint(LEGACYPropertyTypeObject, operatorType, column.resolve<Link>(), obj->_row);
         }
     }
 }
@@ -927,26 +927,26 @@ void QueryBuilder::add_link_constraint(NSPredicateOperatorType operatorType,
 void QueryBuilder::add_link_constraint(NSPredicateOperatorType operatorType,
                                        const ColumnReference& column, realm::null) {
     if (column.property().dictionary) {
-        add_bool_constraint(RLMPropertyTypeObject, operatorType, column.resolve<Dictionary>(), null());
+        add_bool_constraint(LEGACYPropertyTypeObject, operatorType, column.resolve<Dictionary>(), null());
     }
     else {
-        add_bool_constraint(RLMPropertyTypeObject, operatorType, column.resolve<Link>(), null());
+        add_bool_constraint(LEGACYPropertyTypeObject, operatorType, column.resolve<Link>(), null());
     }
 }
 
 void QueryBuilder::add_link_constraint(NSPredicateOperatorType operatorType,
                                        const ColumnReference& a, const ColumnReference& b) {
     if (a.property().dictionary) {
-        add_bool_constraint(RLMPropertyTypeObject, operatorType, a.resolve<Dictionary>(), b.resolve<Dictionary>());
+        add_bool_constraint(LEGACYPropertyTypeObject, operatorType, a.resolve<Dictionary>(), b.resolve<Dictionary>());
     }
     else {
-        add_bool_constraint(RLMPropertyTypeObject, operatorType, a.resolve<Link>(), b.resolve<Link>());
+        add_bool_constraint(LEGACYPropertyTypeObject, operatorType, a.resolve<Link>(), b.resolve<Link>());
     }
 }
 
 #pragma mark Geospatial
 
-void QueryBuilder::add_within_constraint(const ColumnReference& column, id<RLMGeospatial_Private> geospatial) {
+void QueryBuilder::add_within_constraint(const ColumnReference& column, id<LEGACYGeospatial_Private> geospatial) {
     auto geoQuery = column.resolve<Link>().geo_within(geospatial.geoSpatial);
     m_query.and_query(std::move(geoQuery));
 }
@@ -955,8 +955,8 @@ void QueryBuilder::add_within_constraint(const ColumnReference& column, id<RLMGe
 // one and ORing them together
 template<typename Func>
 void process_or_group(Query &query, id array, Func&& func) {
-    array = RLMAsFastEnumeration(array);
-    RLMPrecondition(array, @"Invalid value", @"IN clause requires an array of items");
+    array = LEGACYAsFastEnumeration(array);
+    LEGACYPrecondition(array, @"Invalid value", @"IN clause requires an array of items");
 
     query.group();
 
@@ -989,12 +989,12 @@ realm::null value_of_type(realm::null) {
 
 template <typename RequestedType>
 auto value_of_type(__unsafe_unretained const id value) {
-    return RLMStatelessAccessorContext::unbox<RequestedType>(value);
+    return LEGACYStatelessAccessorContext::unbox<RequestedType>(value);
 }
 
 template <>
 auto value_of_type<Mixed>(id value) {
-    return RLMObjcToMixed(value, nil, CreatePolicy::Skip);
+    return LEGACYObjcToMixed(value, nil, CreatePolicy::Skip);
 }
 
 template <typename RequestedType>
@@ -1013,74 +1013,74 @@ void convert_null(T&& value, Fn&& fn) {
 }
 
 template <template<typename> typename W, typename T>
-void QueryBuilder::do_add_constraint(RLMPropertyType type, NSPredicateOperatorType operatorType,
+void QueryBuilder::do_add_constraint(LEGACYPropertyType type, NSPredicateOperatorType operatorType,
                                      NSComparisonPredicateOptions predicateOptions, ColumnReference const& column, T&& value)
 {
     switch (type) {
-        case RLMPropertyTypeBool:
+        case LEGACYPropertyTypeBool:
             convert_null(value, [&](auto&& value) {
                 add_bool_constraint(type, operatorType, column.resolve<W<bool>>(),
                                     value_of_type<bool>(value));
             });
             break;
-        case RLMPropertyTypeObjectId:
+        case LEGACYPropertyTypeObjectId:
             convert_null(value, [&](auto&& value) {
                 add_bool_constraint(type, operatorType, column.resolve<W<ObjectId>>(),
                                     value_of_type<ObjectId>(value));
             });
             break;
-        case RLMPropertyTypeDate:
+        case LEGACYPropertyTypeDate:
             convert_null(value, [&](auto&& value) {
                 add_numeric_constraint(type, operatorType, column.resolve<W<Timestamp>>(),
                                        value_of_type<Timestamp>(value));
             });
             break;
-        case RLMPropertyTypeDouble:
+        case LEGACYPropertyTypeDouble:
             convert_null(value, [&](auto&& value) {
                 add_numeric_constraint(type, operatorType, column.resolve<W<Double>>(),
                                        value_of_type<Double>(value));
             });
             break;
-        case RLMPropertyTypeFloat:
+        case LEGACYPropertyTypeFloat:
             convert_null(value, [&](auto&& value) {
                 add_numeric_constraint(type, operatorType, column.resolve<W<Float>>(),
                                        value_of_type<Float>(value));
             });
             break;
-        case RLMPropertyTypeInt:
+        case LEGACYPropertyTypeInt:
             convert_null(value, [&](auto&& value) {
                 add_numeric_constraint(type, operatorType, column.resolve<W<Int>>(),
                                        value_of_type<Int>(value));
             });
             break;
-        case RLMPropertyTypeDecimal128:
+        case LEGACYPropertyTypeDecimal128:
             convert_null(value, [&](auto&& value) {
                 add_numeric_constraint(type, operatorType, column.resolve<W<Decimal128>>(),
                                        value_of_type<Decimal128>(value));
             });
             break;
-        case RLMPropertyTypeString:
+        case LEGACYPropertyTypeString:
             add_string_constraint(operatorType, predicateOptions, column.resolve<W<String>>(),
                                   value_of_type<String>(value));
             break;
-        case RLMPropertyTypeData:
+        case LEGACYPropertyTypeData:
             add_string_constraint(operatorType, predicateOptions,
                                   column.resolve<W<Binary>>(),
                                   value_of_type<Binary>(value));
             break;
-        case RLMPropertyTypeObject:
-        case RLMPropertyTypeLinkingObjects:
+        case LEGACYPropertyTypeObject:
+        case LEGACYPropertyTypeLinkingObjects:
             convert_null(value, [&](auto&& value) {
                 add_link_constraint(operatorType, column, value);
             });
             break;
-        case RLMPropertyTypeUUID:
+        case LEGACYPropertyTypeUUID:
             convert_null(value, [&](auto&& value) {
                 add_bool_constraint(type, operatorType, column.resolve<W<UUID>>(),
                                     value_of_type<UUID>(value));
             });
             break;
-        case RLMPropertyTypeAny:
+        case LEGACYPropertyTypeAny:
             convert_null(value, [&](auto&& value) {
                 add_mixed_constraint(operatorType,
                                      predicateOptions,
@@ -1101,7 +1101,7 @@ void QueryBuilder::add_mixed_constraint(NSPredicateOperatorType operatorType,
     // Handle cases where a string might be '1' or '0'. Without this the string
     // will be boxed as a bool and thus string query operations will crash in core.
     if constexpr(std::is_same_v<T, id>) {
-        if (auto str = RLMDynamicCast<NSString>(value)) {
+        if (auto str = LEGACYDynamicCast<NSString>(value)) {
             add_string_constraint(operatorType, predicateOptions,
                                   std::move(column), realm::Mixed([str UTF8String]));
             return;
@@ -1157,7 +1157,7 @@ void QueryBuilder::add_mixed_constraint(NSPredicateOperatorType operatorType,
                                         Columns<C>&& column,
                                         const ColumnReference& value)
 {
-    add_bool_constraint(RLMPropertyTypeObject, operatorType, column, value.resolve<Mixed>());
+    add_bool_constraint(LEGACYPropertyTypeObject, operatorType, column, value.resolve<Mixed>());
 }
 
 template<typename T>
@@ -1185,16 +1185,16 @@ void QueryBuilder::add_constraint(NSPredicateOperatorType operatorType,
 }
 
 struct KeyPath {
-    std::vector<RLMProperty *> links;
-    RLMProperty *property;
+    std::vector<LEGACYProperty *> links;
+    LEGACYProperty *property;
     CollectionOperation::Type collectionOperation;
     bool containsToManyRelationship;
 };
 
-KeyPath key_path_from_string(RLMSchema *schema, RLMObjectSchema *objectSchema, NSString *keyPath)
+KeyPath key_path_from_string(LEGACYSchema *schema, LEGACYObjectSchema *objectSchema, NSString *keyPath)
 {
-    RLMProperty *property;
-    std::vector<RLMProperty *> links;
+    LEGACYProperty *property;
+    std::vector<LEGACYProperty *> links;
 
     CollectionOperation::Type collectionOperation = CollectionOperation::None;
     NSString *collectionOperationName;
@@ -1203,49 +1203,49 @@ KeyPath key_path_from_string(RLMSchema *schema, RLMObjectSchema *objectSchema, N
     NSUInteger start = 0, length = keyPath.length, end = length;
     for (; end != NSNotFound; start = end + 1) {
         end = [keyPath rangeOfString:@"." options:0 range:{start, length - start}].location;
-        RLMPrecondition(end == NSNotFound || end + 1 < length, @"Invalid predicate",
+        LEGACYPrecondition(end == NSNotFound || end + 1 < length, @"Invalid predicate",
                         @"Invalid keypath '%@': no key name after last '.'", keyPath);
-        RLMPrecondition(end > start, @"Invalid predicate",
+        LEGACYPrecondition(end > start, @"Invalid predicate",
                         @"Invalid keypath '%@': no key name before '.'", keyPath);
 
         NSString *propertyName = [keyPath substringWithRange:{start, end == NSNotFound ? length - start : end - start}];
 
         if ([propertyName characterAtIndex:0] == '@') {
             if ([propertyName isEqualToString:@"@allValues"]) {
-                RLMPrecondition(property.dictionary, @"Invalid predicate",
+                LEGACYPrecondition(property.dictionary, @"Invalid predicate",
                                 @"Invalid keypath '%@': @allValues must follow a dictionary property.", keyPath);
                 continue;
             }
-            RLMPrecondition(collectionOperation == CollectionOperation::None, @"Invalid predicate",
+            LEGACYPrecondition(collectionOperation == CollectionOperation::None, @"Invalid predicate",
                             @"Invalid keypath '%@': at most one collection operation per keypath is supported.", keyPath);
             collectionOperation = CollectionOperation::type_for_name(propertyName);
-            RLMPrecondition(collectionOperation != CollectionOperation::None, @"Invalid predicate",
+            LEGACYPrecondition(collectionOperation != CollectionOperation::None, @"Invalid predicate",
                             @"Invalid keypath '%@': Unsupported collection operation '%@'", keyPath, propertyName);
 
-            RLMPrecondition(property.collection, @"Invalid predicate",
+            LEGACYPrecondition(property.collection, @"Invalid predicate",
                             @"Invalid keypath '%@': collection operation '%@' must be applied to a collection", keyPath, propertyName);
             switch (collectionOperation) {
                 case CollectionOperation::None:
                     REALM_UNREACHABLE();
                 case CollectionOperation::Count:
-                    RLMPrecondition(end == NSNotFound, @"Invalid predicate",
+                    LEGACYPrecondition(end == NSNotFound, @"Invalid predicate",
                                     @"Invalid keypath '%@': @count must appear at the end of a keypath.", keyPath);
                     break;
                 case CollectionOperation::AllKeys:
-                    RLMPrecondition(end == NSNotFound, @"Invalid predicate",
+                    LEGACYPrecondition(end == NSNotFound, @"Invalid predicate",
                                     @"Invalid keypath '%@': @allKeys must appear at the end of a keypath.", keyPath);
-                    RLMPrecondition(property.dictionary, @"Invalid predicate",
+                    LEGACYPrecondition(property.dictionary, @"Invalid predicate",
                                     @"Invalid keypath '%@': @allKeys must follow a dictionary property.", keyPath);
                     break;
                 default:
                     if (propertyTypeIsLink(property.type)) {
-                        RLMPrecondition(end != NSNotFound, @"Invalid predicate",
+                        LEGACYPrecondition(end != NSNotFound, @"Invalid predicate",
                                         @"Invalid keypath '%@': %@ on a collection of objects cannot appear at the end of a keypath.", keyPath, propertyName);
                     }
                     else {
-                        RLMPrecondition(end == NSNotFound, @"Invalid predicate",
+                        LEGACYPrecondition(end == NSNotFound, @"Invalid predicate",
                                         @"Invalid keypath '%@': %@ on a collection of values must appear at the end of a keypath.", keyPath, propertyName);
-                        RLMPrecondition(propertyTypeIsNumeric(property.type), @"Invalid predicate",
+                        LEGACYPrecondition(propertyTypeIsNumeric(property.type), @"Invalid predicate",
                                         @"Invalid keypath '%@': %@ can only be applied to a collection of numeric values.", keyPath, propertyName);
                     }
             }
@@ -1253,15 +1253,15 @@ KeyPath key_path_from_string(RLMSchema *schema, RLMObjectSchema *objectSchema, N
             continue;
         }
 
-        RLMPrecondition(objectSchema, @"Invalid predicate",
+        LEGACYPrecondition(objectSchema, @"Invalid predicate",
                         @"Invalid keypath '%@': %@ property %@ can only be followed by a collection operation.",
                         keyPath, property.typeName, property.name);
 
         property = objectSchema[propertyName];
-        RLMPrecondition(property, @"Invalid predicate",
+        LEGACYPrecondition(property, @"Invalid predicate",
                         @"Invalid keypath '%@': Property '%@' not found in object of type '%@'",
                         keyPath, propertyName, objectSchema.className);
-        RLMPrecondition(collectionOperation == CollectionOperation::None || (propertyTypeIsNumeric(property.type) && !property.collection),
+        LEGACYPrecondition(collectionOperation == CollectionOperation::None || (propertyTypeIsNumeric(property.type) && !property.collection),
                         @"Invalid predicate",
                         @"Invalid keypath '%@': %@ must be followed by a numeric property.", keyPath, collectionOperationName);
 
@@ -1271,7 +1271,7 @@ KeyPath key_path_from_string(RLMSchema *schema, RLMObjectSchema *objectSchema, N
         links.push_back(property);
 
         if (end != NSNotFound) {
-            RLMPrecondition(property.type == RLMPropertyTypeObject || property.type == RLMPropertyTypeLinkingObjects || property.collection,
+            LEGACYPrecondition(property.type == LEGACYPropertyTypeObject || property.type == LEGACYPropertyTypeLinkingObjects || property.collection,
                             @"Invalid predicate", @"Invalid keypath '%@': Property '%@.%@' is not a link or collection and can only appear at the end of a keypath.",
                             keyPath, objectSchema.className, propertyName);
             objectSchema = property.objectClassName ? schema[property.objectClassName] : nil;
@@ -1346,27 +1346,27 @@ void QueryBuilder::add_collection_operation_constraint(NSPredicateOperatorType o
     auto type = IsLinkCollection ? collectionOperation.column().type() : collectionOperation.link_column().type();
 
     switch (type) {
-        case RLMPropertyTypeInt:
+        case LEGACYPropertyTypeInt:
             add_numeric_constraint(type, operatorType,
                                    collection_operation_expr<Int, Operation, IsLinkCollection, IsDictionary>(collectionOperation),
                                    value_of_type<Int>(rhs));
             break;
-        case RLMPropertyTypeFloat:
+        case LEGACYPropertyTypeFloat:
             add_numeric_constraint(type, operatorType,
                                    collection_operation_expr<Float, Operation, IsLinkCollection, IsDictionary>(collectionOperation),
                                    value_of_type<Float>(rhs));
             break;
-        case RLMPropertyTypeDouble:
+        case LEGACYPropertyTypeDouble:
             add_numeric_constraint(type, operatorType,
                                    collection_operation_expr<Double, Operation, IsLinkCollection, IsDictionary>(collectionOperation),
                                    value_of_type<Double>(rhs));
             break;
-        case RLMPropertyTypeDecimal128:
+        case LEGACYPropertyTypeDecimal128:
             add_numeric_constraint(type, operatorType,
                                    collection_operation_expr<Decimal128, Operation, IsLinkCollection, IsDictionary>(collectionOperation),
                                    value_of_type<Decimal128>(rhs));
             break;
-        case RLMPropertyTypeDate:
+        case LEGACYPropertyTypeDate:
             if constexpr (Operation == CollectionOperation::Sum || Operation == CollectionOperation::Average) {
                 throwException(@"Unsupported predicate value type",
                                @"Cannot sum or average date properties");
@@ -1377,7 +1377,7 @@ void QueryBuilder::add_collection_operation_constraint(NSPredicateOperatorType o
                                        value_of_type<Timestamp>(rhs));
             }
             break;
-        case RLMPropertyTypeAny:
+        case LEGACYPropertyTypeAny:
             add_numeric_constraint(type, operatorType,
                                    collection_operation_expr<Mixed, Operation, IsLinkCollection, IsDictionary>(collectionOperation),
                                    value_of_type<Mixed>(rhs));
@@ -1406,7 +1406,7 @@ void QueryBuilder::add_collection_operation_constraint(NSPredicateOperatorType o
 }
 
 template <typename T, typename Fn>
-void get_collection_type(__unsafe_unretained RLMProperty *prop, Fn&& fn) {
+void get_collection_type(__unsafe_unretained LEGACYProperty *prop, Fn&& fn) {
     if (prop.array) {
         fn((Lst<T>*)0);
     }
@@ -1428,37 +1428,37 @@ void QueryBuilder::add_collection_operation_constraint(NSPredicateOperatorType o
             break;
         case CollectionOperation::Count: {
             auto& column = collectionOperation.link_column();
-            RLMPropertyType type = column.type();
+            LEGACYPropertyType type = column.type();
             auto rhsValue = value_of_type<Int>(rhs);
             auto continuation = [&](auto t) {
                 add_numeric_constraint(type, operatorType, column.resolve<std::decay_t<decltype(*t)>>().size(), rhsValue);
             };
 
             switch (type) {
-                case RLMPropertyTypeBool:
+                case LEGACYPropertyTypeBool:
                     return get_collection_type<Bool>(column.property(), std::move(continuation));
-                case RLMPropertyTypeObjectId:
+                case LEGACYPropertyTypeObjectId:
                     return get_collection_type<ObjectId>(column.property(), std::move(continuation));
-                case RLMPropertyTypeDate:
+                case LEGACYPropertyTypeDate:
                     return get_collection_type<Timestamp>(column.property(), std::move(continuation));
-                case RLMPropertyTypeDouble:
+                case LEGACYPropertyTypeDouble:
                     return get_collection_type<Double>(column.property(), std::move(continuation));
-                case RLMPropertyTypeFloat:
+                case LEGACYPropertyTypeFloat:
                     return get_collection_type<Float>(column.property(), std::move(continuation));
-                case RLMPropertyTypeInt:
+                case LEGACYPropertyTypeInt:
                     return get_collection_type<Int>(column.property(), std::move(continuation));
-                case RLMPropertyTypeDecimal128:
+                case LEGACYPropertyTypeDecimal128:
                     return get_collection_type<Decimal128>(column.property(), std::move(continuation));
-                case RLMPropertyTypeString:
+                case LEGACYPropertyTypeString:
                     return get_collection_type<String>(column.property(), std::move(continuation));
-                case RLMPropertyTypeData:
+                case LEGACYPropertyTypeData:
                     return get_collection_type<Binary>(column.property(), std::move(continuation));
-                case RLMPropertyTypeUUID:
+                case LEGACYPropertyTypeUUID:
                     return get_collection_type<UUID>(column.property(), std::move(continuation));
-                case RLMPropertyTypeAny:
+                case LEGACYPropertyTypeAny:
                     return get_collection_type<Mixed>(column.property(), std::move(continuation));
-                case RLMPropertyTypeObject:
-                case RLMPropertyTypeLinkingObjects:
+                case LEGACYPropertyTypeObject:
+                case LEGACYPropertyTypeLinkingObjects:
                     return add_numeric_constraint(type, operatorType, column.resolve<Link>().count(), rhsValue);
             }
         }
@@ -1556,7 +1556,7 @@ void QueryBuilder::apply_value_expression(KeyPath&& kp, id value, NSComparisonPr
     }
 
     if (pred.predicateOperatorType == NSInPredicateOperatorType) {
-        if ([value conformsToProtocol:@protocol(RLMGeospatial)]) {
+        if ([value conformsToProtocol:@protocol(LEGACYGeospatial)]) {
             // In case of `IN` check if the value is a Geo-shape, create a `geoWithin` query
             add_within_constraint(std::move(column), value);
         } else {
@@ -1607,11 +1607,11 @@ void QueryBuilder::apply_column_expression(KeyPath&& leftKeyPath, KeyPath&& righ
     ColumnReference right = column_reference_from_key_path(std::move(rightKeyPath), isAny);
 
     // NOTE: It's assumed that column type must match and no automatic type conversion is supported.
-    RLMPrecondition(left.type() == right.type(),
-                    RLMPropertiesComparisonTypeMismatchException,
-                    RLMPropertiesComparisonTypeMismatchReason,
-                    RLMTypeToString(left.type()),
-                    RLMTypeToString(right.type()));
+    LEGACYPrecondition(left.type() == right.type(),
+                    LEGACYPropertiesComparisonTypeMismatchException,
+                    LEGACYPropertiesComparisonTypeMismatchReason,
+                    LEGACYTypeToString(left.type()),
+                    LEGACYTypeToString(right.type()));
 
     // TODO: Should we handle special case where left row is the same as right row (tautology)
     add_constraint(predicate.predicateOperatorType, predicate.options,
@@ -1641,7 +1641,7 @@ NSExpression *simplify_self_value_for_key_path_function_expression(NSExpression 
     return expression;
 }
 
-void QueryBuilder::apply_map_expression(RLMObjectSchema *objectSchema, NSExpression *functionExpression,
+void QueryBuilder::apply_map_expression(LEGACYObjectSchema *objectSchema, NSExpression *functionExpression,
                                         NSComparisonPredicateOptions options, NSPredicateOperatorType operatorType,
                                         NSExpression *right) {
     NSString *keyPath;
@@ -1658,40 +1658,40 @@ void QueryBuilder::apply_map_expression(RLMObjectSchema *objectSchema, NSExpress
     }
 
     ColumnReference collectionColumn = column_reference_from_key_path(key_path_from_string(m_schema, objectSchema, keyPath), true);
-    RLMPrecondition(collectionColumn.property().dictionary, @"Invalid predicate",
+    LEGACYPrecondition(collectionColumn.property().dictionary, @"Invalid predicate",
                     @"Invalid keypath '%@': only dictionaries support subscript predicates.", functionExpression);
     add_mixed_constraint(operatorType, options, collectionColumn.resolve<Dictionary>().key(mapKey.UTF8String), right.constantValue);
 }
 
-void QueryBuilder::apply_function_expression(RLMObjectSchema *objectSchema, NSExpression *functionExpression,
+void QueryBuilder::apply_function_expression(LEGACYObjectSchema *objectSchema, NSExpression *functionExpression,
                                              NSPredicateOperatorType operatorType, NSExpression *right) {
-    RLMPrecondition(functionExpression.operand.expressionType == NSSubqueryExpressionType,
+    LEGACYPrecondition(functionExpression.operand.expressionType == NSSubqueryExpressionType,
                     @"Invalid predicate", @"The '%@' function is not supported.", functionExpression.function);
-    RLMPrecondition([functionExpression.function isEqualToString:@"valueForKeyPath:"] && functionExpression.arguments.count == 1,
+    LEGACYPrecondition([functionExpression.function isEqualToString:@"valueForKeyPath:"] && functionExpression.arguments.count == 1,
                     @"Invalid predicate", @"The '%@' function is not supported on the result of a SUBQUERY.", functionExpression.function);
 
     NSExpression *keyPathExpression = functionExpression.arguments.firstObject;
-    RLMPrecondition([keyPathExpression.keyPath isEqualToString:@"@count"],
+    LEGACYPrecondition([keyPathExpression.keyPath isEqualToString:@"@count"],
                     @"Invalid predicate", @"SUBQUERY is only supported when immediately followed by .@count that is compared with a constant number.");
-    RLMPrecondition(right.expressionType == NSConstantValueExpressionType && [right.constantValue isKindOfClass:[NSNumber class]],
+    LEGACYPrecondition(right.expressionType == NSConstantValueExpressionType && [right.constantValue isKindOfClass:[NSNumber class]],
                     @"Invalid predicate expression", @"SUBQUERY(…).@count is only supported when compared with a constant number.");
 
     NSExpression *subqueryExpression = functionExpression.operand;
     int64_t value = [right.constantValue integerValue];
 
     ColumnReference collectionColumn = column_reference_from_key_path(key_path_from_string(m_schema, objectSchema, [subqueryExpression.collection keyPath]), true);
-    RLMObjectSchema *collectionMemberObjectSchema = m_schema[collectionColumn.property().objectClassName];
+    LEGACYObjectSchema *collectionMemberObjectSchema = m_schema[collectionColumn.property().objectClassName];
 
     // Eliminate references to the iteration variable in the subquery.
     NSPredicate *subqueryPredicate = [subqueryExpression.predicate predicateWithSubstitutionVariables:@{subqueryExpression.variable: [NSExpression expressionForEvaluatedObject]}];
     subqueryPredicate = transformPredicate(subqueryPredicate, simplify_self_value_for_key_path_function_expression);
 
-    Query subquery = RLMPredicateToQuery(subqueryPredicate, collectionMemberObjectSchema, m_schema, m_group);
-    add_numeric_constraint(RLMPropertyTypeInt, operatorType,
+    Query subquery = LEGACYPredicateToQuery(subqueryPredicate, collectionMemberObjectSchema, m_schema, m_group);
+    add_numeric_constraint(LEGACYPropertyTypeInt, operatorType,
                            collectionColumn.resolve<Link>(std::move(subquery)).count(), value);
 }
 
-void QueryBuilder::apply_predicate(NSPredicate *predicate, RLMObjectSchema *objectSchema)
+void QueryBuilder::apply_predicate(NSPredicate *predicate, LEGACYObjectSchema *objectSchema)
 {
     // Compound predicates.
     if ([predicate isMemberOfClass:[NSCompoundPredicate class]]) {
@@ -1736,7 +1736,7 @@ void QueryBuilder::apply_predicate(NSPredicate *predicate, RLMObjectSchema *obje
     else if ([predicate isMemberOfClass:[NSComparisonPredicate class]]) {
         NSComparisonPredicate *compp = (NSComparisonPredicate *)predicate;
 
-        RLMPrecondition(compp.comparisonPredicateModifier != NSAllPredicateModifier,
+        LEGACYPrecondition(compp.comparisonPredicateModifier != NSAllPredicateModifier,
                         @"Invalid predicate", @"ALL modifier not supported");
 
         NSExpressionType exp1Type = compp.leftExpression.expressionType;
@@ -1812,8 +1812,8 @@ void QueryBuilder::apply_predicate(NSPredicate *predicate, RLMObjectSchema *obje
 }
 } // namespace
 
-realm::Query RLMPredicateToQuery(NSPredicate *predicate, RLMObjectSchema *objectSchema,
-                                 RLMSchema *schema, Group &group)
+realm::Query LEGACYPredicateToQuery(NSPredicate *predicate, LEGACYObjectSchema *objectSchema,
+                                 LEGACYSchema *schema, Group &group)
 {
     auto query = get_table(group, objectSchema).where();
 
@@ -1828,16 +1828,16 @@ realm::Query RLMPredicateToQuery(NSPredicate *predicate, RLMObjectSchema *object
         }
     }
     catch (std::exception const& e) {
-        @throw RLMException(e);
+        @throw LEGACYException(e);
     }
 
     return query;
 }
 
 // return the property for a validated column name
-RLMProperty *RLMValidatedProperty(RLMObjectSchema *desc, NSString *columnName) {
-    RLMProperty *prop = desc[columnName];
-    RLMPrecondition(prop, @"Invalid property name",
+LEGACYProperty *LEGACYValidatedProperty(LEGACYObjectSchema *desc, NSString *columnName) {
+    LEGACYProperty *prop = desc[columnName];
+    LEGACYPrecondition(prop, @"Invalid property name",
                     @"Property '%@' not found in object of type '%@'", columnName, desc.className);
     return prop;
 }

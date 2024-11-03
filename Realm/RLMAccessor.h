@@ -16,38 +16,38 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-@class RLMObjectSchema, RLMProperty, RLMObjectBase;
+@class LEGACYObjectSchema, LEGACYProperty, LEGACYObjectBase;
 
-RLM_HEADER_AUDIT_BEGIN(nullability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability)
 
 //
 // Accessors Class Creation/Caching
 //
 
 // get accessor classes for an object class - generates classes if not cached
-Class RLMManagedAccessorClassForObjectClass(Class objectClass, RLMObjectSchema *schema, const char *name);
-Class RLMUnmanagedAccessorClassForObjectClass(Class objectClass, RLMObjectSchema *schema);
+Class LEGACYManagedAccessorClassForObjectClass(Class objectClass, LEGACYObjectSchema *schema, const char *name);
+Class LEGACYUnmanagedAccessorClassForObjectClass(Class objectClass, LEGACYObjectSchema *schema);
 
 //
 // Dynamic getters/setters
 //
-FOUNDATION_EXTERN void RLMDynamicValidatedSet(RLMObjectBase *obj, NSString *propName, id __nullable val);
-FOUNDATION_EXTERN id __nullable RLMDynamicGet(RLMObjectBase *obj, RLMProperty *prop);
-FOUNDATION_EXTERN id __nullable RLMDynamicGetByName(RLMObjectBase *obj, NSString *propName);
+FOUNDATION_EXTERN void LEGACYDynamicValidatedSet(LEGACYObjectBase *obj, NSString *propName, id __nullable val);
+FOUNDATION_EXTERN id __nullable LEGACYDynamicGet(LEGACYObjectBase *obj, LEGACYProperty *prop);
+FOUNDATION_EXTERN id __nullable LEGACYDynamicGetByName(LEGACYObjectBase *obj, NSString *propName);
 
 // by property/column
-void RLMDynamicSet(RLMObjectBase *obj, RLMProperty *prop, id val);
+void LEGACYDynamicSet(LEGACYObjectBase *obj, LEGACYProperty *prop, id val);
 
 //
 // Class modification
 //
 
 // Replace className method for the given class
-void RLMReplaceClassNameMethod(Class accessorClass, NSString *className);
+void LEGACYReplaceClassNameMethod(Class accessorClass, NSString *className);
 
 // Replace sharedSchema method for the given class
-void RLMReplaceSharedSchemaMethod(Class accessorClass, RLMObjectSchema * __nullable schema);
+void LEGACYReplaceSharedSchemaMethod(Class accessorClass, LEGACYObjectSchema * __nullable schema);
 
-RLM_HEADER_AUDIT_END(nullability)
+LEGACY_HEADER_AUDIT_END(nullability)

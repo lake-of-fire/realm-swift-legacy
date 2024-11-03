@@ -16,20 +16,20 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMFindOptions_Private.hpp"
-#import "RLMBSON_Private.hpp"
-#import "RLMCollection.h"
+#import "LEGACYFindOptions_Private.hpp"
+#import "LEGACYBSON_Private.hpp"
+#import "LEGACYCollection.h"
 
-@interface RLMFindOptions() {
+@interface LEGACYFindOptions() {
     realm::app::MongoCollection::FindOptions _options;
 };
 @end
 
-@implementation RLMFindOptions
+@implementation LEGACYFindOptions
 
 - (instancetype)initWithLimit:(NSInteger)limit
-                   projection:(id<RLMBSON> _Nullable)projection
-                         sort:(id<RLMBSON> _Nullable)sort {
+                   projection:(id<LEGACYBSON> _Nullable)projection
+                         sort:(id<LEGACYBSON> _Nullable)sort {
     if (self = [super init]) {
         self.projection = projection;
         self.sort = sort;
@@ -38,8 +38,8 @@
     return self;
 }
 
-- (instancetype)initWithProjection:(id<RLMBSON> _Nullable)projection
-                              sort:(id<RLMBSON> _Nullable)sort {
+- (instancetype)initWithProjection:(id<LEGACYBSON> _Nullable)projection
+                              sort:(id<LEGACYBSON> _Nullable)sort {
     if (self = [super init]) {
         self.projection = projection;
         self.sort = sort;
@@ -48,8 +48,8 @@
 }
 
 - (instancetype)initWithLimit:(NSInteger)limit
-                   projection:(id<RLMBSON> _Nullable)projection
-                      sorting:(NSArray<id<RLMBSON>> *)sorting {
+                   projection:(id<LEGACYBSON> _Nullable)projection
+                      sorting:(NSArray<id<LEGACYBSON>> *)sorting {
     if (self = [super init]) {
         self.projection = projection;
         self.sorting = sorting;
@@ -58,8 +58,8 @@
     return self;
 }
 
-- (instancetype)initWithProjection:(id<RLMBSON> _Nullable)projection
-                           sorting:(NSArray<id<RLMBSON>> *)sorting {
+- (instancetype)initWithProjection:(id<LEGACYBSON> _Nullable)projection
+                           sorting:(NSArray<id<LEGACYBSON>> *)sorting {
     if (self = [super init]) {
         self.projection = projection;
         self.sorting = sorting;
@@ -71,38 +71,38 @@
     return _options;
 }
 
-- (id<RLMBSON>)projection {
-    return RLMConvertBsonDocumentToRLMBSON(_options.projection_bson);
+- (id<LEGACYBSON>)projection {
+    return LEGACYConvertBsonDocumentToRLMBSON(_options.projection_bson);
 }
 
-- (id<RLMBSON>)sort {
-    return RLMConvertBsonDocumentToRLMBSON(_options.sort_bson);
+- (id<LEGACYBSON>)sort {
+    return LEGACYConvertBsonDocumentToRLMBSON(_options.sort_bson);
 }
 
-- (NSArray<id<RLMBSON>> *)sorting {
-    return RLMConvertBsonDocumentToRLMBSONArray(_options.sort_bson);
+- (NSArray<id<LEGACYBSON>> *)sorting {
+    return LEGACYConvertBsonDocumentToRLMBSONArray(_options.sort_bson);
 }
 
-- (void)setProjection:(id<RLMBSON>)projection {
+- (void)setProjection:(id<LEGACYBSON>)projection {
     if (projection) {
-        auto bson = realm::bson::BsonDocument(RLMConvertRLMBSONToBson(projection));
+        auto bson = realm::bson::BsonDocument(LEGACYConvertRLMBSONToBson(projection));
         _options.projection_bson = std::optional<realm::bson::BsonDocument>(bson);
     } else {
         _options.projection_bson = realm::util::none;
     }
 }
 
-- (void)setSort:(id<RLMBSON>)sort {
+- (void)setSort:(id<LEGACYBSON>)sort {
     if (sort) {
-        auto bson = realm::bson::BsonDocument(RLMConvertRLMBSONToBson(sort));
+        auto bson = realm::bson::BsonDocument(LEGACYConvertRLMBSONToBson(sort));
         _options.sort_bson = std::optional<realm::bson::BsonDocument>(bson);
     } else {
         _options.sort_bson = realm::util::none;
     }
 }
 
-- (void)setSorting:(NSArray<id<RLMBSON>> *)sorting {
-    _options.sort_bson = RLMConvertRLMBSONArrayToBsonDocument(sorting);
+- (void)setSorting:(NSArray<id<LEGACYBSON>> *)sorting {
+    _options.sort_bson = LEGACYConvertRLMBSONArrayToBsonDocument(sorting);
 }
 
 - (NSInteger)limit {

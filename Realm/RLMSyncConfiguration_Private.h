@@ -16,32 +16,32 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMSyncConfiguration.h>
+#import <Realm/LEGACYSyncConfiguration.h>
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-typedef RLM_CLOSED_ENUM(NSUInteger, RLMSyncStopPolicy) {
-    RLMSyncStopPolicyImmediately,
-    RLMSyncStopPolicyLiveIndefinitely,
-    RLMSyncStopPolicyAfterChangesUploaded,
+typedef LEGACY_CLOSED_ENUM(NSUInteger, LEGACYSyncStopPolicy) {
+    LEGACYSyncStopPolicyImmediately,
+    LEGACYSyncStopPolicyLiveIndefinitely,
+    LEGACYSyncStopPolicyAfterChangesUploaded,
 };
 
 
-@class RLMSchema;
+@class LEGACYSchema;
 
-@interface RLMSyncConfiguration ()
+@interface LEGACYSyncConfiguration ()
 
 // Flexible sync
-- (instancetype)initWithUser:(RLMUser *)user;
+- (instancetype)initWithUser:(LEGACYUser *)user;
 // Partition-based sync
-- (instancetype)initWithUser:(RLMUser *)user
-              partitionValue:(nullable id<RLMBSON>)partitionValue;
+- (instancetype)initWithUser:(LEGACYUser *)user
+              partitionValue:(nullable id<LEGACYBSON>)partitionValue;
 
 // Internal-only APIs
-@property (nonatomic, readwrite) RLMSyncStopPolicy stopPolicy;
+@property (nonatomic, readwrite) LEGACYSyncStopPolicy stopPolicy;
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

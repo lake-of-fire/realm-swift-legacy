@@ -30,7 +30,7 @@ import RealmLegacy
 
     // MARK: Properties
 
-    internal let rlmSchema: RLMSchema
+    internal let rlmSchema: LEGACYSchema
 
     /**
      An array of `ObjectSchema`s for all object types in the RealmLegacy.
@@ -46,7 +46,7 @@ import RealmLegacy
 
     // MARK: Initializers
 
-    internal init(_ rlmSchema: RLMSchema) {
+    internal init(_ rlmSchema: LEGACYSchema) {
         self.rlmSchema = rlmSchema
     }
 

@@ -16,31 +16,31 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMRealm_Private.h"
+#import "LEGACYRealm_Private.h"
 
-#import "RLMClassInfo.hpp"
+#import "LEGACYClassInfo.hpp"
 
 #import <memory>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 namespace realm {
     class Group;
     class Realm;
 }
 
-@interface RLMRealm () {
+@interface LEGACYRealm () {
     @public
     std::shared_ptr<realm::Realm> _realm;
-    RLMSchemaInfo _info;
+    LEGACYSchemaInfo _info;
 }
 
 + (instancetype)realmWithSharedRealm:(std::shared_ptr<realm::Realm>)sharedRealm
-                              schema:(nullable RLMSchema *)schema
+                              schema:(nullable LEGACYSchema *)schema
                              dynamic:(bool)dynamic
     freeze:(bool)freeze NS_RETURNS_RETAINED;
 
 @property (nonatomic, readonly) realm::Group &group;
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

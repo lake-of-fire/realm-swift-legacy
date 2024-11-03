@@ -101,14 +101,14 @@ extension Object: _RealmCollectionValueInsideOptional {
      */
     public convenience init(value: Any) {
         self.init()
-        RLMInitializeWithValue(self, value, .partialPrivateShared())
+        LEGACYInitializeWithValue(self, value, .partialPrivateShared())
     }
 
     // MARK: Properties
 
     /// The Realm which manages the object, or `nil` if the object is unmanaged.
     public var realm: RealmLegacy? {
-        if let rlmReam = RLMObjectBaseRealm(self) {
+        if let rlmReam = LEGACYObjectBaseRealm(self) {
             return RealmLegacy(rlmReam)
         }
         return nil
@@ -116,7 +116,7 @@ extension Object: _RealmCollectionValueInsideOptional {
 
     /// The object schema which lists the managed properties for the object.
     public var objectSchema: ObjectSchema {
-        return ObjectSchema(RLMObjectBaseObjectSchema(self)!)
+        return ObjectSchema(LEGACYObjectBaseObjectSchema(self)!)
     }
 
     /// Indicates if the object can no longer be accessed because it is now invalid.
@@ -133,7 +133,7 @@ extension Object: _RealmCollectionValueInsideOptional {
      It is not considered part of the public API.
      :nodoc:
      */
-    public override final class func _getProperties() -> [RLMProperty] {
+    public override final class func _getProperties() -> [LEGACYProperty] {
         return ObjectUtil.getSwiftProperties(self)
     }
 
@@ -233,7 +233,7 @@ extension Object: _RealmCollectionValueInsideOptional {
     /// Returns or sets the value of the property with the given name.
     @objc open subscript(key: String) -> Any? {
         get {
-            RLMDynamicGetByName(self, key)
+            LEGACYDynamicGetByName(self, key)
         }
         set {
             dynamicSet(object: self, key: key, value: newValue)
@@ -319,7 +319,7 @@ extension Object: _RealmCollectionValueInsideOptional {
      - parameter block: The block to call with information about changes to the object.
      - returns: A token which must be held for as long as you want updates to be delivered.
      */
-    public func observe<T: RLMObjectBase>(keyPaths: [String]? = nil,
+    public func observe<T: LEGACYObjectBase>(keyPaths: [String]? = nil,
                                           on queue: DispatchQueue? = nil,
                                           _ block: @escaping (ObjectChange<T>) -> Void) -> NotificationToken {
         _observe(keyPaths: keyPaths, on: queue, block)
@@ -513,8 +513,8 @@ extension Object: _RealmCollectionValueInsideOptional {
         if let dynamic = self as? DynamicObject {
             return dynamic[propertyName] as! List<DynamicObject>
         }
-        let list = RLMDynamicGetByName(self, propertyName) as! RLMSwiftCollectionBase
-        return List<DynamicObject>(collection: list._rlmCollection as! RLMArray<AnyObject>)
+        let list = LEGACYDynamicGetByName(self, propertyName) as! LEGACYSwiftCollectionBase
+        return List<DynamicObject>(collection: list._rlmCollection as! LEGACYArray<AnyObject>)
     }
 
     // MARK: Dynamic set
@@ -536,8 +536,8 @@ extension Object: _RealmCollectionValueInsideOptional {
         if let dynamic = self as? DynamicObject {
             return dynamic[propertyName] as! MutableSet<DynamicObject>
         }
-        let set = RLMDynamicGetByName(self, propertyName) as! RLMSwiftCollectionBase
-        return MutableSet<DynamicObject>(collection: set._rlmCollection as! RLMSet<AnyObject>)
+        let set = LEGACYDynamicGetByName(self, propertyName) as! LEGACYSwiftCollectionBase
+        return MutableSet<DynamicObject>(collection: set._rlmCollection as! LEGACYSet<AnyObject>)
     }
 
     // MARK: Dynamic map
@@ -559,8 +559,8 @@ extension Object: _RealmCollectionValueInsideOptional {
         if let dynamic = self as? DynamicObject {
             return dynamic[propertyName] as! Map<Key, DynamicObject?>
         }
-        let base = RLMDynamicGetByName(self, propertyName) as! RLMSwiftCollectionBase
-        return Map<Key, DynamicObject?>(objc: base._rlmCollection as! RLMDictionary<AnyObject, AnyObject>)
+        let base = LEGACYDynamicGetByName(self, propertyName) as! LEGACYSwiftCollectionBase
+        return Map<Key, DynamicObject?>(objc: base._rlmCollection as! LEGACYDictionary<AnyObject, AnyObject>)
     }
 
     // MARK: Comparison
@@ -580,7 +580,7 @@ extension Object: _RealmCollectionValueInsideOptional {
      - parameter object: The object to compare the receiver to.
      */
     public func isSameObject(as object: Object?) -> Bool {
-        return RLMObjectBaseAreEqual(self, object)
+        return LEGACYObjectBaseAreEqual(self, object)
     }
 }
 
@@ -687,20 +687,20 @@ extension Object: ThreadConfined {
 public final class DynamicObject: Object {
     public override subscript(key: String) -> Any? {
         get {
-            let value = RLMDynamicGetByName(self, key).flatMap(coerceToNil)
-            if let array = value as? RLMArray<AnyObject> {
+            let value = LEGACYDynamicGetByName(self, key).flatMap(coerceToNil)
+            if let array = value as? LEGACYArray<AnyObject> {
                 return list(from: array)
             }
-            if let set = value as? RLMSet<AnyObject> {
+            if let set = value as? LEGACYSet<AnyObject> {
                 return mutableSet(from: set)
             }
-            if let dictionary = value as? RLMDictionary<AnyObject, AnyObject> {
+            if let dictionary = value as? LEGACYDictionary<AnyObject, AnyObject> {
                 return map(from: dictionary)
             }
             return value
         }
         set(value) {
-            RLMDynamicValidatedSet(self, key, value)
+            LEGACYDynamicValidatedSet(self, key, value)
         }
     }
 
@@ -728,11 +728,11 @@ public final class DynamicObject: Object {
         return false
     }
 
-    override public class func sharedSchema() -> RLMObjectSchema? {
+    override public class func sharedSchema() -> LEGACYObjectSchema? {
         nil
     }
 
-    private func list(from array: RLMArray<AnyObject>) -> Any {
+    private func list(from array: LEGACYArray<AnyObject>) -> Any {
         switch array.type {
         case .int:
             return array.isOptional ? List<Int?>(collection: array) : List<Int>(collection: array)
@@ -763,7 +763,7 @@ public final class DynamicObject: Object {
         }
     }
 
-    private func mutableSet(from set: RLMSet<AnyObject>) -> Any {
+    private func mutableSet(from set: LEGACYSet<AnyObject>) -> Any {
         switch set.type {
         case .int:
             return set.isOptional ? MutableSet<Int?>(collection: set) : MutableSet<Int>(collection: set)
@@ -794,7 +794,7 @@ public final class DynamicObject: Object {
         }
     }
 
-    private func map(from dictionary: RLMDictionary<AnyObject, AnyObject>) -> Any {
+    private func map(from dictionary: LEGACYDictionary<AnyObject, AnyObject>) -> Any {
         switch dictionary.type {
         case .int:
             return dictionary.isOptional ? Map<String, Int?>(objc: dictionary) : Map<String, Int>(objc: dictionary)
@@ -862,7 +862,7 @@ public extension RealmEnum where Self: RawRepresentable, Self.RawValue: _RealmSc
         }
         return nil
     }
-    static func _rlmPopulateProperty(_ prop: RLMProperty) {
+    static func _rlmPopulateProperty(_ prop: LEGACYProperty) {
         RawValue._rlmPopulateProperty(prop)
     }
     static var _rlmType: PropertyType { RawValue._rlmType }
@@ -875,9 +875,9 @@ internal func dynamicSet(object: ObjectBase, key: String, value: Any?) {
     } else {
         bridgedValue = value
     }
-    if RLMObjectBaseRealm(object) == nil {
+    if LEGACYObjectBaseRealm(object) == nil {
         object.setValue(bridgedValue, forKey: key)
     } else {
-        RLMDynamicValidatedSet(object, key, bridgedValue)
+        LEGACYDynamicValidatedSet(object, key, bridgedValue)
     }
 }

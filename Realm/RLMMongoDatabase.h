@@ -16,26 +16,26 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@class RLMMongoCollection;
+@class LEGACYMongoCollection;
 
-/// The `RLMMongoDatabase` represents a MongoDB database, which holds a group
+/// The `LEGACYMongoDatabase` represents a MongoDB database, which holds a group
 /// of collections that contain your data.
 ///
-/// It can be retrieved from the `RLMMongoClient`.
+/// It can be retrieved from the `LEGACYMongoClient`.
 ///
-/// Use it to get `RLMMongoCollection`s for reading and writing data.
+/// Use it to get `LEGACYMongoCollection`s for reading and writing data.
 ///
 /// - Note:
 /// Before you can read or write data, a user must log in`.
 ///
 /// - SeeAlso:
-/// `RLMMongoClient`, `RLMMongoCollection`
-RLM_SWIFT_SENDABLE RLM_FINAL // immutable final class
-@interface RLMMongoDatabase : NSObject
+/// `LEGACYMongoClient`, `LEGACYMongoCollection`
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL // immutable final class
+@interface LEGACYMongoDatabase : NSObject
 
 /// The name of this database
 @property (nonatomic, readonly) NSString *name;
@@ -43,9 +43,9 @@ RLM_SWIFT_SENDABLE RLM_FINAL // immutable final class
 /// Gets a collection.
 /// @param name The name of the collection to return
 /// @returns The collection
-- (RLMMongoCollection *)collectionWithName:(NSString *)name;
+- (LEGACYMongoCollection *)collectionWithName:(NSString *)name;
 // NEXT-MAJOR: NS_SWIFT_NAME(collection(named:))
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

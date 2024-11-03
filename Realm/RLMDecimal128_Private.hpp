@@ -16,14 +16,14 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMDecimal128.h>
+#import <Realm/LEGACYDecimal128.h>
 
 namespace realm {
 class Decimal128;
 }
 
-RLM_DIRECT_MEMBERS
-@interface RLMDecimal128 ()
+LEGACY_DIRECT_MEMBERS
+@interface LEGACYDecimal128 ()
 - (instancetype)initWithDecimal128:(realm::Decimal128)value;
 - (realm::Decimal128)decimal128Value;
 @end

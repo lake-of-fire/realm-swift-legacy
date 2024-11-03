@@ -16,17 +16,17 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMUserAPIKey.h"
-#import "RLMUserAPIKey_Private.hpp"
-#import "RLMUtil.hpp"
-#import "RLMObjectId_Private.hpp"
+#import "LEGACYUserAPIKey.h"
+#import "LEGACYUserAPIKey_Private.hpp"
+#import "LEGACYUtil.hpp"
+#import "LEGACYObjectId_Private.hpp"
 
-@interface RLMUserAPIKey() {
+@interface LEGACYUserAPIKey() {
     realm::app::App::UserAPIKey _userAPIKey;
 }
 @end
 
-@implementation RLMUserAPIKey
+@implementation LEGACYUserAPIKey
 
 - (instancetype)initWithUserAPIKey:(realm::app::App::UserAPIKey)userAPIKey {
     if (self = [super init]) {
@@ -57,8 +57,8 @@
     return nil;
 }
 
-- (RLMObjectId *)objectId {
-    return [[RLMObjectId alloc] initWithValue:_userAPIKey.id];
+- (LEGACYObjectId *)objectId {
+    return [[LEGACYObjectId alloc] initWithValue:_userAPIKey.id];
 }
 
 - (realm::app::App::UserAPIKey)_apiKey {

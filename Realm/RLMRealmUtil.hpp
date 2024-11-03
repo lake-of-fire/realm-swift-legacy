@@ -16,25 +16,25 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
 #import <memory>
 #import <string>
 
-@class RLMRealm, RLMRealmConfiguration, RLMScheduler;
+@class LEGACYRealm, LEGACYRealmConfiguration, LEGACYScheduler;
 
 namespace realm {
     class BindingContext;
 }
 
 // Add a Realm to the weak cache
-void RLMCacheRealm(RLMRealmConfiguration *configuration,
-                   RLMScheduler *options,
-                   RLMRealm *realm);
-RLMRealm *RLMGetAnyCachedRealmForPath(std::string const& path) NS_RETURNS_RETAINED;
+void LEGACYCacheRealm(LEGACYRealmConfiguration *configuration,
+                   LEGACYScheduler *options,
+                   LEGACYRealm *realm);
+LEGACYRealm *LEGACYGetAnyCachedRealmForPath(std::string const& path) NS_RETURNS_RETAINED;
 // Clear the weak cache of Realms
-void RLMClearRealmCache();
+void LEGACYClearRealmCache();
 
-RLMRealm *RLMGetFrozenRealmForSourceRealm(RLMRealm *realm) NS_RETURNS_RETAINED;
+LEGACYRealm *LEGACYGetFrozenRealmForSourceRealm(LEGACYRealm *realm) NS_RETURNS_RETAINED;
 
-std::unique_ptr<realm::BindingContext> RLMCreateBindingContext(RLMRealm *realm);
+std::unique_ptr<realm::BindingContext> LEGACYCreateBindingContext(LEGACYRealm *realm);

@@ -16,38 +16,38 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@class RLMObjectBase, RLMProperty;
+@class LEGACYObjectBase, LEGACYProperty;
 
 /// This class implements the backing storage for `RealmProperty<>` and `RealmOptional<>`.
 /// This class should not be subclassed or used directly.
-@interface RLMSwiftValueStorage : NSProxy
+@interface LEGACYSwiftValueStorage : NSProxy
 - (instancetype)init;
 @end
 /// Retrieves the value that is stored, or nil if it is empty.
-FOUNDATION_EXTERN id _Nullable RLMGetSwiftValueStorage(RLMSwiftValueStorage *);
+FOUNDATION_EXTERN id _Nullable LEGACYGetSwiftValueStorage(LEGACYSwiftValueStorage *);
 /// Sets a value on the property this instance represents for an object.
-FOUNDATION_EXTERN void RLMSetSwiftValueStorage(RLMSwiftValueStorage *, id _Nullable);
+FOUNDATION_EXTERN void LEGACYSetSwiftValueStorage(LEGACYSwiftValueStorage *, id _Nullable);
 
-/// Initialises managed accessors on an instance of `RLMSwiftValueStorage`
+/// Initialises managed accessors on an instance of `LEGACYSwiftValueStorage`
 /// @param parent The enclosing parent object.
 /// @param prop The property which this class represents.
-FOUNDATION_EXTERN void RLMInitializeManagedSwiftValueStorage(RLMSwiftValueStorage *,
-                                                             RLMObjectBase *parent,
-                                                             RLMProperty *prop);
+FOUNDATION_EXTERN void LEGACYInitializeManagedSwiftValueStorage(LEGACYSwiftValueStorage *,
+                                                             LEGACYObjectBase *parent,
+                                                             LEGACYProperty *prop);
 
-/// Initialises unmanaged accessors on an instance of `RLMSwiftValueStorage`
+/// Initialises unmanaged accessors on an instance of `LEGACYSwiftValueStorage`
 /// @param parent The enclosing parent object.
 /// @param prop The property which this class represents.
-FOUNDATION_EXTERN void RLMInitializeUnmanagedSwiftValueStorage(RLMSwiftValueStorage *,
-                                                               RLMObjectBase *parent,
-                                                               RLMProperty *prop);
+FOUNDATION_EXTERN void LEGACYInitializeUnmanagedSwiftValueStorage(LEGACYSwiftValueStorage *,
+                                                               LEGACYObjectBase *parent,
+                                                               LEGACYProperty *prop);
 
 /// Gets the property name for the RealmProperty instance. This is required for tracing the key path on
 /// objects that use the legacy property declaration syntax.
-FOUNDATION_EXTERN NSString *RLMSwiftValueStorageGetPropertyName(RLMSwiftValueStorage *);
+FOUNDATION_EXTERN NSString *LEGACYSwiftValueStorageGetPropertyName(LEGACYSwiftValueStorage *);
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

@@ -16,25 +16,25 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSyncTestCase.h"
-#import "RLMUser+ObjectServerTests.h"
+#import "LEGACYSyncTestCase.h"
+#import "LEGACYUser+ObjectServerTests.h"
 
 #if TARGET_OS_OSX
 
-#import "RLMApp_Private.hpp"
-#import "RLMBSON_Private.hpp"
-#import "RLMCredentials.h"
-#import "RLMObjectSchema_Private.hpp"
-#import "RLMRealm+Sync.h"
-#import "RLMRealmConfiguration_Private.hpp"
-#import "RLMRealmUtil.hpp"
-#import "RLMRealm_Dynamic.h"
-#import "RLMRealm_Private.hpp"
-#import "RLMSchema_Private.h"
-#import "RLMSyncConfiguration_Private.hpp"
-#import "RLMSyncManager_Private.hpp"
-#import "RLMUser_Private.hpp"
-#import "RLMWatchTestUtility.h"
+#import "LEGACYApp_Private.hpp"
+#import "LEGACYBSON_Private.hpp"
+#import "LEGACYCredentials.h"
+#import "LEGACYObjectSchema_Private.hpp"
+#import "LEGACYRealm+Sync.h"
+#import "LEGACYRealmConfiguration_Private.hpp"
+#import "LEGACYRealmUtil.hpp"
+#import "LEGACYRealm_Dynamic.h"
+#import "LEGACYRealm_Private.hpp"
+#import "LEGACYSchema_Private.h"
+#import "LEGACYSyncConfiguration_Private.hpp"
+#import "LEGACYSyncManager_Private.hpp"
+#import "LEGACYUser_Private.hpp"
+#import "LEGACYWatchTestUtility.h"
 
 #import <realm/object-store/shared_realm.hpp>
 #import <realm/object-store/sync/sync_manager.hpp>
@@ -52,9 +52,9 @@
 @property (nonatomic) double delay;
 @end
 
-@interface RLMObjectServerTests : RLMSyncTestCase
+@interface LEGACYObjectServerTests : LEGACYSyncTestCase
 @end
-@implementation RLMObjectServerTests
+@implementation LEGACYObjectServerTests
 
 - (NSArray *)defaultObjectTypes {
     return @[
@@ -62,7 +62,7 @@
         HugeSyncObject.class,
         IntPrimaryKeyObject.class,
         Person.class,
-        RLMSetSyncObject.class,
+        LEGACYSetSyncObject.class,
         StringPrimaryKeyObject.class,
         UUIDPrimaryKeyObject.class,
     ];
@@ -81,15 +81,15 @@ static NSString *generateRandomString(int num) {
 #pragma mark - Authentication and Tokens
 
 - (void)testAnonymousAuthentication {
-    RLMUser *syncUser = self.anonymousUser;
-    RLMUser *currentUser = [self.app currentUser];
+    LEGACYUser *syncUser = self.anonymousUser;
+    LEGACYUser *currentUser = [self.app currentUser];
     XCTAssert([currentUser.identifier isEqualToString:syncUser.identifier]);
     XCTAssert([currentUser.refreshToken isEqualToString:syncUser.refreshToken]);
     XCTAssert([currentUser.accessToken isEqualToString:syncUser.accessToken]);
 }
 
 - (void)testCustomTokenAuthentication {
-    RLMUser *user = [self logInUserForCredentials:[self jwtCredentialWithAppId:self.appId]];
+    LEGACYUser *user = [self logInUserForCredentials:[self jwtCredentialWithAppId:self.appId]];
     XCTAssertTrue([user.profile.metadata[@"anotherName"] isEqualToString:@"Bar Foo"]);
     XCTAssertTrue([user.profile.metadata[@"name"] isEqualToString:@"Foo Bar"]);
     XCTAssertTrue([user.profile.metadata[@"occupation"] isEqualToString:@"firefighter"]);
@@ -99,7 +99,7 @@ static NSString *generateRandomString(int num) {
     XCTestExpectation *expectation = [self expectationWithDescription:@"should get sum of arguments from remote function"];
     [self.anonymousUser callFunctionNamed:@"sum"
                                 arguments:@[@1, @2, @3, @4, @5]
-                          completionBlock:^(id<RLMBSON> bson, NSError *error) {
+                          completionBlock:^(id<LEGACYBSON> bson, NSError *error) {
         XCTAssert(!error);
         XCTAssertEqual([((NSNumber *)bson) intValue], 15);
         [expectation fulfill];
@@ -108,11 +108,11 @@ static NSString *generateRandomString(int num) {
 }
 
 - (void)testLogoutCurrentUser {
-    RLMUser *user = self.anonymousUser;
+    LEGACYUser *user = self.anonymousUser;
     XCTestExpectation *expectation = [self expectationWithDescription:@"should log out current user"];
     [self.app.currentUser logOutWithCompletion:^(NSError *error) {
         XCTAssertNil(error);
-        XCTAssertEqual(user.state, RLMUserStateRemoved);
+        XCTAssertEqual(user.state, LEGACYUserStateRemoved);
         [expectation fulfill];
     }];
 
@@ -120,8 +120,8 @@ static NSString *generateRandomString(int num) {
 }
 
 - (void)testLogoutSpecificUser {
-    RLMUser *firstUser = [self createUser];
-    RLMUser *secondUser = [self createUser];
+    LEGACYUser *firstUser = [self createUser];
+    LEGACYUser *secondUser = [self createUser];
 
     XCTAssertEqualObjects(self.app.currentUser.identifier, secondUser.identifier);
     // `[app currentUser]` will now be `secondUser`, so let's logout firstUser and ensure
@@ -129,8 +129,8 @@ static NSString *generateRandomString(int num) {
     XCTestExpectation *expectation = [self expectationWithDescription:@"should log out current user"];
     [firstUser logOutWithCompletion:^(NSError *error) {
         XCTAssertNil(error);
-        XCTAssertEqual(firstUser.state, RLMUserStateLoggedOut);
-        XCTAssertEqual(secondUser.state, RLMUserStateLoggedIn);
+        XCTAssertEqual(firstUser.state, LEGACYUserStateLoggedOut);
+        XCTAssertEqual(secondUser.state, LEGACYUserStateLoggedIn);
         [expectation fulfill];
     }];
 
@@ -138,8 +138,8 @@ static NSString *generateRandomString(int num) {
 }
 
 - (void)testSwitchUser {
-    RLMUser *syncUserA = [self createUser];
-    RLMUser *syncUserB = [self createUser];
+    LEGACYUser *syncUserA = [self createUser];
+    LEGACYUser *syncUserB = [self createUser];
 
     XCTAssertNotEqualObjects(syncUserA.identifier, syncUserB.identifier);
     XCTAssertEqualObjects(self.app.currentUser.identifier, syncUserB.identifier);
@@ -148,8 +148,8 @@ static NSString *generateRandomString(int num) {
 }
 
 - (void)testRemoveUser {
-    RLMUser *firstUser = [self createUser];
-    RLMUser *secondUser = [self createUser];
+    LEGACYUser *firstUser = [self createUser];
+    LEGACYUser *secondUser = [self createUser];
 
     XCTAssert([self.app.currentUser.identifier isEqualToString:secondUser.identifier]);
 
@@ -167,7 +167,7 @@ static NSString *generateRandomString(int num) {
 
 - (void)testDeleteUser {
     [self createUser];
-    RLMUser *secondUser = [self createUser];
+    LEGACYUser *secondUser = [self createUser];
 
     XCTAssert([self.app.currentUser.identifier isEqualToString:secondUser.identifier]);
 
@@ -177,7 +177,7 @@ static NSString *generateRandomString(int num) {
         XCTAssert(!error);
         XCTAssert(self.app.allUsers.count == 1);
         XCTAssertNil(self.app.currentUser);
-        XCTAssertEqual(secondUser.state, RLMUserStateRemoved);
+        XCTAssertEqual(secondUser.state, LEGACYUserStateRemoved);
         [deleteUserExpectation fulfill];
     }];
 
@@ -185,7 +185,7 @@ static NSString *generateRandomString(int num) {
 }
 
 - (void)testDeviceRegistration {
-    RLMPushClient *client = [self.app pushClientWithServiceName:@"gcm"];
+    LEGACYPushClient *client = [self.app pushClientWithServiceName:@"gcm"];
     auto expectation = [self expectationWithDescription:@"should register device"];
     [client registerDeviceWithToken:@"token" user:self.anonymousUser completion:^(NSError *error) {
         XCTAssertNil(error);
@@ -203,12 +203,12 @@ static NSString *generateRandomString(int num) {
 
 // FIXME: Reenable once possible underlying race condition is understood
 - (void)fixme_testMultipleRegisterDevice {
-    RLMApp *app = self.app;
+    LEGACYApp *app = self.app;
     XCTestExpectation *registerExpectation = [self expectationWithDescription:@"should register device"];
     XCTestExpectation *secondRegisterExpectation = [self expectationWithDescription:@"should not throw error when attempting to register again"];
 
-    RLMUser *user = self.anonymousUser;
-    RLMPushClient *client = [app pushClientWithServiceName:@"gcm"];
+    LEGACYUser *user = self.anonymousUser;
+    LEGACYPushClient *client = [app pushClientWithServiceName:@"gcm"];
     [client registerDeviceWithToken:@"token" user:user completion:^(NSError *_Nullable error) {
         XCTAssertNil(error);
         [registerExpectation fulfill];
@@ -222,7 +222,7 @@ static NSString *generateRandomString(int num) {
     [self waitForExpectations:@[secondRegisterExpectation] timeout:10.0];
 }
 
-#pragma mark - RLMEmailPasswordAuth
+#pragma mark - LEGACYEmailPasswordAuth
 
 static NSString *randomEmail() {
     return [NSString stringWithFormat:@"%@@%@.com", generateRandomString(10), generateRandomString(10)];
@@ -244,7 +244,7 @@ static NSString *randomEmail() {
     XCTestExpectation *expectation = [self expectationWithDescription:@"should try confirm user and fail"];
 
     [self.app.emailPasswordAuth confirmUser:randomEmail() tokenId:@"a_token" completion:^(NSError *error) {
-        XCTAssertEqual(error.code, RLMAppErrorBadRequest);
+        XCTAssertEqual(error.code, LEGACYAppErrorBadRequest);
         [expectation fulfill];
     }];
 
@@ -265,7 +265,7 @@ static NSString *randomEmail() {
     XCTestExpectation *expectation = [self expectationWithDescription:@"should try resend confirmation email and fail"];
 
     [self.app.emailPasswordAuth resendConfirmationEmail:randomEmail() completion:^(NSError *error) {
-        XCTAssertEqual(error.code, RLMAppErrorUserNotFound);
+        XCTAssertEqual(error.code, LEGACYAppErrorUserNotFound);
         [expectation fulfill];
     }];
 
@@ -275,7 +275,7 @@ static NSString *randomEmail() {
 - (void)testResetPassword {
     XCTestExpectation *expectation = [self expectationWithDescription:@"should try reset password and fail"];
     [self.app.emailPasswordAuth resetPasswordTo:@"APassword123" token:@"a_token" tokenId:@"a_token_id" completion:^(NSError *error) {
-        XCTAssertEqual(error.code, RLMAppErrorBadRequest);
+        XCTAssertEqual(error.code, LEGACYAppErrorBadRequest);
         [expectation fulfill];
     }];
 
@@ -288,7 +288,7 @@ static NSString *randomEmail() {
                                                  password:@"aPassword123"
                                                      args:@[@{}]
                                                completion:^(NSError *error) {
-        XCTAssertEqual(error.code, RLMAppErrorUserNotFound);
+        XCTAssertEqual(error.code, LEGACYAppErrorUserNotFound);
         [expectation fulfill];
     }];
 
@@ -307,9 +307,9 @@ static NSString *randomEmail() {
     XCTestExpectation *enableAPIKeyExpectation = [self expectationWithDescription:@"should try enable api key"];
     XCTestExpectation *deleteAPIKeyExpectation = [self expectationWithDescription:@"should try delete api key"];
 
-    __block RLMUser *syncUser;
-    __block RLMUserAPIKey *userAPIKeyA;
-    __block RLMUserAPIKey *userAPIKeyB;
+    __block LEGACYUser *syncUser;
+    __block LEGACYUserAPIKey *userAPIKeyA;
+    __block LEGACYUserAPIKey *userAPIKeyB;
 
     NSString *randomPassword = generateRandomString(10);
     NSString *email = randomEmail();
@@ -320,8 +320,8 @@ static NSString *randomEmail() {
 
     [self waitForExpectations:@[registerExpectation] timeout:60.0];
 
-    [self.app loginWithCredential:[RLMCredentials credentialsWithEmail:email password:randomPassword]
-                  completion:^(RLMUser *user, NSError *error) {
+    [self.app loginWithCredential:[LEGACYCredentials credentialsWithEmail:email password:randomPassword]
+                  completion:^(LEGACYUser *user, NSError *error) {
         XCTAssert(!error);
         XCTAssert(user);
         syncUser = user;
@@ -330,7 +330,7 @@ static NSString *randomEmail() {
 
     [self waitForExpectations:@[loginExpectation] timeout:60.0];
 
-    [[syncUser apiKeysAuth] createAPIKeyWithName:@"apiKeyName1" completion:^(RLMUserAPIKey *userAPIKey, NSError *error) {
+    [[syncUser apiKeysAuth] createAPIKeyWithName:@"apiKeyName1" completion:^(LEGACYUserAPIKey *userAPIKey, NSError *error) {
         XCTAssert(!error);
         XCTAssert([userAPIKey.name isEqualToString:@"apiKeyName1"]);
         XCTAssert(![userAPIKey.key isEqualToString:@"apiKeyName1"] && userAPIKey.key.length > 0);
@@ -338,7 +338,7 @@ static NSString *randomEmail() {
         [createAPIKeyExpectationA fulfill];
     }];
 
-    [[syncUser apiKeysAuth] createAPIKeyWithName:@"apiKeyName2" completion:^(RLMUserAPIKey *userAPIKey, NSError *error) {
+    [[syncUser apiKeysAuth] createAPIKeyWithName:@"apiKeyName2" completion:^(LEGACYUserAPIKey *userAPIKey, NSError *error) {
         XCTAssert(!error);
         XCTAssert([userAPIKey.name isEqualToString:@"apiKeyName2"]);
         userAPIKeyB = userAPIKey;
@@ -350,7 +350,7 @@ static NSString *randomEmail() {
     // sleep for 2 seconds as there seems to be an issue fetching the keys straight after they are created.
     [NSThread sleepForTimeInterval:2];
 
-    [[syncUser apiKeysAuth] fetchAPIKeysWithCompletion:^(NSArray<RLMUserAPIKey *> *_Nonnull apiKeys, NSError *error) {
+    [[syncUser apiKeysAuth] fetchAPIKeysWithCompletion:^(NSArray<LEGACYUserAPIKey *> *_Nonnull apiKeys, NSError *error) {
         XCTAssert(!error);
         XCTAssert(apiKeys.count == 2);
         [fetchAPIKeysExpectation fulfill];
@@ -387,7 +387,7 @@ static NSString *randomEmail() {
     XCTestExpectation *loginExpectation = [self expectationWithDescription:@"should try login"];
     XCTestExpectation *linkExpectation = [self expectationWithDescription:@"should try link and fail"];
 
-    __block RLMUser *syncUser;
+    __block LEGACYUser *syncUser;
 
     NSString *email = randomEmail();
     NSString *randomPassword = generateRandomString(10);
@@ -399,8 +399,8 @@ static NSString *randomEmail() {
 
     [self waitForExpectations:@[registerExpectation] timeout:60.0];
 
-    [self.app loginWithCredential:[RLMCredentials credentialsWithEmail:email password:randomPassword]
-                       completion:^(RLMUser *user, NSError *error) {
+    [self.app loginWithCredential:[LEGACYCredentials credentialsWithEmail:email password:randomPassword]
+                       completion:^(LEGACYUser *user, NSError *error) {
         XCTAssert(!error);
         XCTAssert(user);
         syncUser = user;
@@ -409,10 +409,10 @@ static NSString *randomEmail() {
 
     [self waitForExpectations:@[loginExpectation] timeout:60.0];
 
-    [syncUser linkUserWithCredentials:[RLMCredentials credentialsWithFacebookToken:@"a_token"]
-                           completion:^(RLMUser *user, NSError *error) {
+    [syncUser linkUserWithCredentials:[LEGACYCredentials credentialsWithFacebookToken:@"a_token"]
+                           completion:^(LEGACYUser *user, NSError *error) {
         XCTAssert(!user);
-        XCTAssertEqual(error.code, RLMAppErrorInvalidSession);
+        XCTAssertEqual(error.code, LEGACYAppErrorInvalidSession);
         [linkExpectation fulfill];
     }];
 
@@ -422,53 +422,53 @@ static NSString *randomEmail() {
 #pragma mark - Auth Credentials -
 
 - (void)testEmailPasswordCredential {
-    RLMCredentials *emailPasswordCredential = [RLMCredentials credentialsWithEmail:@"test@mongodb.com" password:@"apassword"];
+    LEGACYCredentials *emailPasswordCredential = [LEGACYCredentials credentialsWithEmail:@"test@mongodb.com" password:@"apassword"];
     XCTAssertEqualObjects(emailPasswordCredential.provider, @"local-userpass");
 }
 
 - (void)testJWTCredential {
-    RLMCredentials *jwtCredential = [RLMCredentials credentialsWithJWT:@"sometoken"];
+    LEGACYCredentials *jwtCredential = [LEGACYCredentials credentialsWithJWT:@"sometoken"];
     XCTAssertEqualObjects(jwtCredential.provider, @"custom-token");
 }
 
 - (void)testAnonymousCredential {
-    RLMCredentials *anonymousCredential = [RLMCredentials anonymousCredentials];
+    LEGACYCredentials *anonymousCredential = [LEGACYCredentials anonymousCredentials];
     XCTAssertEqualObjects(anonymousCredential.provider, @"anon-user");
 }
 
 - (void)testUserAPIKeyCredential {
-    RLMCredentials *userAPICredential = [RLMCredentials credentialsWithUserAPIKey:@"apikey"];
+    LEGACYCredentials *userAPICredential = [LEGACYCredentials credentialsWithUserAPIKey:@"apikey"];
     XCTAssertEqualObjects(userAPICredential.provider, @"api-key");
 }
 
 - (void)testServerAPIKeyCredential {
-    RLMCredentials *serverAPICredential = [RLMCredentials credentialsWithServerAPIKey:@"apikey"];
+    LEGACYCredentials *serverAPICredential = [LEGACYCredentials credentialsWithServerAPIKey:@"apikey"];
     XCTAssertEqualObjects(serverAPICredential.provider, @"api-key");
 }
 
 - (void)testFacebookCredential {
-    RLMCredentials *facebookCredential = [RLMCredentials credentialsWithFacebookToken:@"facebook token"];
+    LEGACYCredentials *facebookCredential = [LEGACYCredentials credentialsWithFacebookToken:@"facebook token"];
     XCTAssertEqualObjects(facebookCredential.provider, @"oauth2-facebook");
 }
 
 - (void)testGoogleCredential {
-    RLMCredentials *googleCredential = [RLMCredentials credentialsWithGoogleAuthCode:@"google token"];
+    LEGACYCredentials *googleCredential = [LEGACYCredentials credentialsWithGoogleAuthCode:@"google token"];
     XCTAssertEqualObjects(googleCredential.provider, @"oauth2-google");
 }
 
 - (void)testGoogleIdCredential {
-    RLMCredentials *googleCredential = [RLMCredentials credentialsWithGoogleIdToken:@"id token"];
+    LEGACYCredentials *googleCredential = [LEGACYCredentials credentialsWithGoogleIdToken:@"id token"];
     XCTAssertEqualObjects(googleCredential.provider, @"oauth2-google");
 }
 
 - (void)testAppleCredential {
-    RLMCredentials *appleCredential = [RLMCredentials credentialsWithAppleToken:@"apple token"];
+    LEGACYCredentials *appleCredential = [LEGACYCredentials credentialsWithAppleToken:@"apple token"];
     XCTAssertEqualObjects(appleCredential.provider, @"oauth2-apple");
 }
 
 - (void)testFunctionCredential {
     NSError *error;
-    RLMCredentials *functionCredential = [RLMCredentials credentialsWithFunctionPayload:@{@"dog": @{@"name": @"fido"}}];
+    LEGACYCredentials *functionCredential = [LEGACYCredentials credentialsWithFunctionPayload:@{@"dog": @{@"name": @"fido"}}];
     XCTAssertEqualObjects(functionCredential.provider, @"custom-function");
     XCTAssertEqualObjects(error, nil);
 }
@@ -478,9 +478,9 @@ static NSString *randomEmail() {
 /// Valid email/password credentials should be able to log in a user. Using the same credentials should return the
 /// same user object.
 - (void)testEmailPasswordAuthentication {
-    RLMCredentials *credentials = [self basicCredentialsWithName:self.name register:YES];
-    RLMUser *firstUser = [self logInUserForCredentials:credentials];
-    RLMUser *secondUser = [self logInUserForCredentials:credentials];
+    LEGACYCredentials *credentials = [self basicCredentialsWithName:self.name register:YES];
+    LEGACYUser *firstUser = [self logInUserForCredentials:credentials];
+    LEGACYUser *secondUser = [self logInUserForCredentials:credentials];
     // Two users created with the same credential should resolve to the same actual user.
     XCTAssertTrue([firstUser.identifier isEqualToString:secondUser.identifier]);
 }
@@ -488,14 +488,14 @@ static NSString *randomEmail() {
 /// An invalid email/password credential should not be able to log in a user and a corresponding error should be generated.
 - (void)testInvalidPasswordAuthentication {
     (void)[self basicCredentialsWithName:self.name register:YES];
-    RLMCredentials *credentials = [RLMCredentials credentialsWithEmail:self.name
+    LEGACYCredentials *credentials = [LEGACYCredentials credentialsWithEmail:self.name
                                                               password:@"INVALID_PASSWORD"];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"login should fail"];
 
-    [self.app loginWithCredential:credentials completion:^(RLMUser *user, NSError *error) {
+    [self.app loginWithCredential:credentials completion:^(LEGACYUser *user, NSError *error) {
         XCTAssertNil(user);
-        RLMValidateError(error, RLMAppErrorDomain, RLMAppErrorInvalidPassword,
+        LEGACYValidateError(error, LEGACYAppErrorDomain, LEGACYAppErrorInvalidPassword,
                          @"invalid username/password");
         [expectation fulfill];
     }];
@@ -505,14 +505,14 @@ static NSString *randomEmail() {
 
 /// A non-existsing user should not be able to log in and a corresponding error should be generated.
 - (void)testNonExistingEmailAuthentication {
-    RLMCredentials *credentials = [RLMCredentials credentialsWithEmail:@"INVALID_USERNAME"
+    LEGACYCredentials *credentials = [LEGACYCredentials credentialsWithEmail:@"INVALID_USERNAME"
                                                               password:@"INVALID_PASSWORD"];
 
     XCTestExpectation *expectation = [self expectationWithDescription:@"login should fail"];
 
-    [self.app loginWithCredential:credentials completion:^(RLMUser *user, NSError *error) {
+    [self.app loginWithCredential:credentials completion:^(LEGACYUser *user, NSError *error) {
         XCTAssertNil(user);
-        RLMValidateError(error, RLMAppErrorDomain, RLMAppErrorInvalidPassword,
+        LEGACYValidateError(error, LEGACYAppErrorDomain, LEGACYAppErrorInvalidPassword,
                          @"invalid username/password");
         [expectation fulfill];
     }];
@@ -535,8 +535,8 @@ static NSString *randomEmail() {
     [self.app.emailPasswordAuth registerUserWithEmail:self.name
                                              password:@"password"
                                            completion:^(NSError *error) {
-        RLMValidateError(error, RLMAppErrorDomain, RLMAppErrorAccountNameInUse, @"name already in use");
-        XCTAssertNotNil(error.userInfo[RLMServerLogURLKey]);
+        LEGACYValidateError(error, LEGACYAppErrorDomain, LEGACYAppErrorAccountNameInUse, @"name already in use");
+        XCTAssertNotNil(error.userInfo[LEGACYServerLogURLKey]);
         [expectationB fulfill];
     }];
 
@@ -544,23 +544,23 @@ static NSString *randomEmail() {
 }
 
 - (void)testSyncErrorHandlerErrorDomain {
-    RLMRealmConfiguration *config = self.configuration;
+    LEGACYRealmConfiguration *config = self.configuration;
     XCTestExpectation *expectation = [self expectationWithDescription:@"should fail after setting bad token"];
-    self.app.syncManager.errorHandler = ^(NSError *error, RLMSyncSession *) {
-        RLMValidateError(error, RLMSyncErrorDomain, RLMSyncErrorClientUserError,
+    self.app.syncManager.errorHandler = ^(NSError *error, LEGACYSyncSession *) {
+        LEGACYValidateError(error, LEGACYSyncErrorDomain, LEGACYSyncErrorClientUserError,
                          @"Unable to refresh the user access token: signature is invalid");
         [expectation fulfill];
     };
 
     [self setInvalidTokensForUser:config.syncConfiguration.user];
-    [RLMRealm realmWithConfiguration:config error:nil];
+    [LEGACYRealm realmWithConfiguration:config error:nil];
     [self waitForExpectations:@[expectation] timeout:3.0];
 }
 
 #pragma mark - User Profile
 
 - (void)testUserProfileInitialization {
-    RLMUserProfile *profile = [[RLMUserProfile alloc] initWithUserProfile:realm::SyncUserProfile()];
+    LEGACYUserProfile *profile = [[LEGACYUserProfile alloc] initWithUserProfile:realm::SyncUserProfile()];
     XCTAssertNil(profile.name);
     XCTAssertNil(profile.maxAge);
     XCTAssertNil(profile.minAge);
@@ -572,7 +572,7 @@ static NSString *randomEmail() {
 
     auto metadata = realm::bson::BsonDocument({{"some_key", "some_value"}});
 
-    profile = [[RLMUserProfile alloc] initWithUserProfile:realm::SyncUserProfile(realm::bson::BsonDocument({
+    profile = [[LEGACYUserProfile alloc] initWithUserProfile:realm::SyncUserProfile(realm::bson::BsonDocument({
         {"name", "Jane"},
         {"max_age", "40"},
         {"min_age", "30"},
@@ -599,18 +599,18 @@ static NSString *randomEmail() {
 
 /// It should be possible to successfully open a Realm configured for sync with a normal user.
 - (void)testOpenRealmWithNormalCredentials {
-    RLMRealm *realm = [self openRealm];
+    LEGACYRealm *realm = [self openRealm];
     XCTAssertTrue(realm.isEmpty);
 }
 
 /// If client B adds objects to a synced Realm, client A should see those objects.
 - (void)testAddObjects {
-    RLMRealm *realm = [self openRealm];
+    LEGACYRealm *realm = [self openRealm];
     NSDictionary *values = [AllTypesSyncObject values:1];
     CHECK_COUNT(0, Person, realm);
     CHECK_COUNT(0, AllTypesSyncObject, realm);
 
-    [self writeToPartition:self.name block:^(RLMRealm *realm) {
+    [self writeToPartition:self.name block:^(LEGACYRealm *realm) {
         [realm addObjects:@[[Person john], [Person paul], [Person george]]];
         AllTypesSyncObject *obj = [[AllTypesSyncObject alloc] initWithValue:values];
         obj.objectCol = [Person ringo];
@@ -636,10 +636,10 @@ static NSString *randomEmail() {
 }
 
 - (void)testAddObjectsWithNilPartitionValue {
-    RLMRealm *realm = [self openRealmForPartitionValue:nil user:self.anonymousUser];
+    LEGACYRealm *realm = [self openRealmForPartitionValue:nil user:self.anonymousUser];
 
     CHECK_COUNT(0, Person, realm);
-    [self writeToPartition:nil block:^(RLMRealm *realm) {
+    [self writeToPartition:nil block:^(LEGACYRealm *realm) {
         [realm addObjects:@[[Person john], [Person paul], [Person george], [Person ringo]]];
     }];
     [self waitForDownloadsForRealm:realm];
@@ -647,15 +647,15 @@ static NSString *randomEmail() {
 }
 
 - (void)testRountripForDistinctPrimaryKey {
-    RLMRealm *realm = [self openRealm];
+    LEGACYRealm *realm = [self openRealm];
 
     CHECK_COUNT(0, Person, realm);
     CHECK_COUNT(0, UUIDPrimaryKeyObject, realm);
     CHECK_COUNT(0, StringPrimaryKeyObject, realm);
     CHECK_COUNT(0, IntPrimaryKeyObject, realm);
 
-    [self writeToPartition:self.name block:^(RLMRealm *realm) {
-        Person *person = [[Person alloc] initWithPrimaryKey:[[RLMObjectId alloc] initWithString:@"1234567890ab1234567890ab" error:nil]
+    [self writeToPartition:self.name block:^(LEGACYRealm *realm) {
+        Person *person = [[Person alloc] initWithPrimaryKey:[[LEGACYObjectId alloc] initWithString:@"1234567890ab1234567890ab" error:nil]
                                                         age:5
                                                   firstName:@"Ringo"
                                                    lastName:@"Starr"];
@@ -680,7 +680,7 @@ static NSString *randomEmail() {
     CHECK_COUNT(1, StringPrimaryKeyObject, realm);
     CHECK_COUNT(1, IntPrimaryKeyObject, realm);
 
-    Person *person = [Person objectInRealm:realm forPrimaryKey:[[RLMObjectId alloc] initWithString:@"1234567890ab1234567890ab" error:nil]];
+    Person *person = [Person objectInRealm:realm forPrimaryKey:[[LEGACYObjectId alloc] initWithString:@"1234567890ab1234567890ab" error:nil]];
     XCTAssertEqualObjects(person.firstName, @"Ringo");
     XCTAssertEqualObjects(person.lastName, @"Starr");
 
@@ -700,24 +700,24 @@ static NSString *randomEmail() {
 - (void)testAddObjectsMultipleApps {
     NSString *appId1 = [RealmServer.shared createAppWithPartitionKeyType:@"string" types:@[Person.self] persistent:false error:nil];
     NSString *appId2 = [RealmServer.shared createAppWithPartitionKeyType:@"string" types:@[Person.self] persistent:false error:nil];
-    RLMApp *app1 = [self appWithId:appId1];
-    RLMApp *app2 = [self appWithId:appId2];
+    LEGACYApp *app1 = [self appWithId:appId1];
+    LEGACYApp *app2 = [self appWithId:appId2];
 
-    auto openRealm = [=](RLMApp *app) {
-        RLMUser *user = [self createUserForApp:app];
-        RLMRealmConfiguration *config = [user configurationWithPartitionValue:self.name];
+    auto openRealm = [=](LEGACYApp *app) {
+        LEGACYUser *user = [self createUserForApp:app];
+        LEGACYRealmConfiguration *config = [user configurationWithPartitionValue:self.name];
         config.objectClasses = @[Person.self];
         return [self openRealmWithConfiguration:config];
     };
 
-    RLMRealm *realm1 = openRealm(app1);
-    RLMRealm *realm2 = openRealm(app2);
+    LEGACYRealm *realm1 = openRealm(app1);
+    LEGACYRealm *realm2 = openRealm(app2);
 
     CHECK_COUNT(0, Person, realm1);
     CHECK_COUNT(0, Person, realm2);
 
     @autoreleasepool {
-        RLMRealm *realm = openRealm(app1);
+        LEGACYRealm *realm = openRealm(app1);
         [self addPersonsToRealm:realm
                         persons:@[[Person john], [Person paul]]];
         [self waitForUploadsForRealm:realm];
@@ -731,7 +731,7 @@ static NSString *randomEmail() {
     CHECK_COUNT(0, Person, realm2);
 
     @autoreleasepool {
-        RLMRealm *realm = openRealm(app2);
+        LEGACYRealm *realm = openRealm(app2);
         [self addPersonsToRealm:realm
                         persons:@[[Person ringo], [Person george]]];
         [self waitForUploadsForRealm:realm];
@@ -754,14 +754,14 @@ static NSString *randomEmail() {
 }
 
 - (void)testSessionRefresh {
-    RLMUser *user = [self createUser];
+    LEGACYUser *user = [self createUser];
 
     // Should result in an access token error followed by a refresh when we
     // open the Realm which is entirely transparent to the user
     user._syncUser->update_access_token(self.badAccessToken.UTF8String);
-    RLMRealm *realm = [self openRealmForPartitionValue:self.name user:user];
+    LEGACYRealm *realm = [self openRealmForPartitionValue:self.name user:user];
 
-    RLMRealm *realm2 = [self openRealm];
+    LEGACYRealm *realm2 = [self openRealm];
     [self addPersonsToRealm:realm2
                     persons:@[[Person john],
                               [Person paul],
@@ -773,12 +773,12 @@ static NSString *randomEmail() {
 }
 
 - (void)testDeleteObjects {
-    RLMRealm *realm1 = [self openRealm];
+    LEGACYRealm *realm1 = [self openRealm];
     [self addPersonsToRealm:realm1 persons:@[[Person john]]];
     [self waitForUploadsForRealm:realm1];
     CHECK_COUNT(1, Person, realm1);
 
-    RLMRealm *realm2 = [self openRealm];
+    LEGACYRealm *realm2 = [self openRealm];
     CHECK_COUNT(1, Person, realm2);
     [realm2 beginWriteTransaction];
     [realm2 deleteAllObjects];
@@ -790,16 +790,16 @@ static NSString *randomEmail() {
 }
 
 - (void)testIncomingSyncWritesTriggerNotifications {
-    RLMRealm *syncRealm = [self openRealm];
-    RLMRealm *asyncRealm = [self asyncOpenRealmWithConfiguration:self.configuration];
-    RLMRealm *writeRealm = [self openRealm];
+    LEGACYRealm *syncRealm = [self openRealm];
+    LEGACYRealm *asyncRealm = [self asyncOpenRealmWithConfiguration:self.configuration];
+    LEGACYRealm *writeRealm = [self openRealm];
 
     __block XCTestExpectation *ex = [self expectationWithDescription:@"got initial notification"];
     ex.expectedFulfillmentCount = 2;
-    RLMNotificationToken *token1 = [[Person allObjectsInRealm:syncRealm] addNotificationBlock:^(RLMResults *, RLMCollectionChange *, NSError *) {
+    LEGACYNotificationToken *token1 = [[Person allObjectsInRealm:syncRealm] addNotificationBlock:^(LEGACYResults *, LEGACYCollectionChange *, NSError *) {
         [ex fulfill];
     }];
-    RLMNotificationToken *token2 = [[Person allObjectsInRealm:asyncRealm] addNotificationBlock:^(RLMResults *, RLMCollectionChange *, NSError *) {
+    LEGACYNotificationToken *token2 = [[Person allObjectsInRealm:asyncRealm] addNotificationBlock:^(LEGACYResults *, LEGACYCollectionChange *, NSError *) {
         [ex fulfill];
     }];
     [self waitForExpectations:@[ex] timeout:5.0];
@@ -813,13 +813,13 @@ static NSString *randomEmail() {
     [token2 invalidate];
 }
 
-#pragma mark - RLMValue Sync with missing schema
+#pragma mark - LEGACYValue Sync with missing schema
 
 - (void)testMissingSchema {
     @autoreleasepool {
-        RLMRealm *realm = [self openRealm];
+        LEGACYRealm *realm = [self openRealm];
         AllTypesSyncObject *obj = [[AllTypesSyncObject alloc] initWithValue:[AllTypesSyncObject values:0]];
-        RLMSetSyncObject *o = [RLMSetSyncObject new];
+        LEGACYSetSyncObject *o = [LEGACYSetSyncObject new];
         Person *p = [Person john];
         [o.anySet addObjects:@[p]];
         obj.anyCol = o;
@@ -831,15 +831,15 @@ static NSString *randomEmail() {
         CHECK_COUNT(1, AllTypesSyncObject, realm);
     }
 
-    RLMUser *user = [self createUser];
+    LEGACYUser *user = [self createUser];
     auto c = [user configurationWithPartitionValue:self.name];
     c.objectClasses = @[Person.self, AllTypesSyncObject.self];
-    RLMRealm *realm = [RLMRealm realmWithConfiguration:c error:nil];
+    LEGACYRealm *realm = [LEGACYRealm realmWithConfiguration:c error:nil];
     [self waitForDownloadsForRealm:realm];
-    RLMResults<AllTypesSyncObject *> *res = [AllTypesSyncObject allObjectsInRealm:realm];
+    LEGACYResults<AllTypesSyncObject *> *res = [AllTypesSyncObject allObjectsInRealm:realm];
     AllTypesSyncObject *o = res.firstObject;
     Person *p = o.objectCol;
-    RLMSet<RLMValue> *anySet = ((RLMObject *)o.anyCol)[@"anySet"];
+    LEGACYSet<LEGACYValue> *anySet = ((LEGACYObject *)o.anyCol)[@"anySet"];
     XCTAssertTrue([anySet.allObjects[0][@"firstName"] isEqualToString:p.firstName]);
     [realm beginWriteTransaction];
     anySet.allObjects[0][@"firstName"] = @"Bob";
@@ -852,17 +852,17 @@ static NSString *randomEmail() {
 
 /// If client B encrypts its synced Realm, client A should be able to access that Realm with a different encryption key.
 - (void)testEncryptedSyncedRealm {
-    RLMUser *user = [self userForTest:_cmd];
+    LEGACYUser *user = [self userForTest:_cmd];
 
-    NSData *key = RLMGenerateKey();
-    RLMRealm *realm = [self openRealmForPartitionValue:self.name
+    NSData *key = LEGACYGenerateKey();
+    LEGACYRealm *realm = [self openRealmForPartitionValue:self.name
                                                   user:user
                                          encryptionKey:key
-                                            stopPolicy:RLMSyncStopPolicyAfterChangesUploaded];
+                                            stopPolicy:LEGACYSyncStopPolicyAfterChangesUploaded];
 
     if (self.isParent) {
         CHECK_COUNT(0, Person, realm);
-        RLMRunChildAndWait();
+        LEGACYRunChildAndWait();
         [self waitForDownloadsForRealm:realm];
         CHECK_COUNT(1, Person, realm);
     } else {
@@ -874,27 +874,27 @@ static NSString *randomEmail() {
 
 /// If an encrypted synced Realm is re-opened with the wrong key, throw an exception.
 - (void)testEncryptedSyncedRealmWrongKey {
-    RLMUser *user = [self createUser];
+    LEGACYUser *user = [self createUser];
 
     NSString *path;
     @autoreleasepool {
-        RLMRealm *realm = [self openRealmForPartitionValue:self.name
+        LEGACYRealm *realm = [self openRealmForPartitionValue:self.name
                                                       user:user
-                                             encryptionKey:RLMGenerateKey()
-                                                stopPolicy:RLMSyncStopPolicyImmediately];
+                                             encryptionKey:LEGACYGenerateKey()
+                                                stopPolicy:LEGACYSyncStopPolicyImmediately];
         path = realm.configuration.pathOnDisk;
     }
     [user.app.syncManager waitForSessionTermination];
 
-    RLMRealmConfiguration *c = [RLMRealmConfiguration defaultConfiguration];
+    LEGACYRealmConfiguration *c = [LEGACYRealmConfiguration defaultConfiguration];
     c.fileURL = [NSURL fileURLWithPath:path];
-    RLMAssertRealmExceptionContains([RLMRealm realmWithConfiguration:c error:nil],
-                                    RLMErrorInvalidDatabase,
+    LEGACYAssertRealmExceptionContains([LEGACYRealm realmWithConfiguration:c error:nil],
+                                    LEGACYErrorInvalidDatabase,
                                     @"Failed to open Realm file at path '%@': header has invalid mnemonic. The file is either not a Realm file, is an encrypted Realm file but no encryption key was supplied, or is corrupted.",
                                     c.fileURL.path);
-    c.encryptionKey = RLMGenerateKey();
-    RLMAssertRealmExceptionContains([RLMRealm realmWithConfiguration:c error:nil],
-                                    RLMErrorInvalidDatabase,
+    c.encryptionKey = LEGACYGenerateKey();
+    LEGACYAssertRealmExceptionContains([LEGACYRealm realmWithConfiguration:c error:nil],
+                                    LEGACYErrorInvalidDatabase,
                                     @"Failed to open Realm file at path '%@': Realm file decryption failed (Decryption failed: 'unable to decrypt after 0 seconds",
                                     c.fileURL.path);
 }
@@ -906,14 +906,14 @@ static NSString *randomEmail() {
     NSString *partitionValueA = self.name;
     NSString *partitionValueB = [partitionValueA stringByAppendingString:@"bar"];
     NSString *partitionValueC = [partitionValueA stringByAppendingString:@"baz"];
-    RLMUser *user = [self createUser];
+    LEGACYUser *user = [self createUser];
 
     __attribute__((objc_precise_lifetime))
-    RLMRealm *realmA = [self openRealmForPartitionValue:partitionValueA user:user];
+    LEGACYRealm *realmA = [self openRealmForPartitionValue:partitionValueA user:user];
     __attribute__((objc_precise_lifetime))
-    RLMRealm *realmB = [self openRealmForPartitionValue:partitionValueB user:user];
+    LEGACYRealm *realmB = [self openRealmForPartitionValue:partitionValueB user:user];
     __attribute__((objc_precise_lifetime))
-    RLMRealm *realmC = [self openRealmForPartitionValue:partitionValueC user:user];
+    LEGACYRealm *realmC = [self openRealmForPartitionValue:partitionValueC user:user];
     // Make sure there are three active sessions for the user.
     XCTAssertEqual(user.allSessions.count, 3U);
     XCTAssertNotNil([user sessionForPartitionValue:partitionValueA],
@@ -922,9 +922,9 @@ static NSString *randomEmail() {
                     @"Expected to get a session for partition value B");
     XCTAssertNotNil([user sessionForPartitionValue:partitionValueC],
                     @"Expected to get a session for partition value C");
-    XCTAssertEqual(realmA.syncSession.state, RLMSyncSessionStateActive);
-    XCTAssertEqual(realmB.syncSession.state, RLMSyncSessionStateActive);
-    XCTAssertEqual(realmC.syncSession.state, RLMSyncSessionStateActive);
+    XCTAssertEqual(realmA.syncSession.state, LEGACYSyncSessionStateActive);
+    XCTAssertEqual(realmB.syncSession.state, LEGACYSyncSessionStateActive);
+    XCTAssertEqual(realmC.syncSession.state, LEGACYSyncSessionStateActive);
 }
 
 /// A client should be able to open multiple Realms and add objects to each of them.
@@ -932,17 +932,17 @@ static NSString *randomEmail() {
     NSString *partitionValueA = self.name;
     NSString *partitionValueB = [partitionValueA stringByAppendingString:@"bar"];
     NSString *partitionValueC = [partitionValueA stringByAppendingString:@"baz"];
-    RLMUser *user = [self userForTest:_cmd];
+    LEGACYUser *user = [self userForTest:_cmd];
 
-    RLMRealm *realmA = [self openRealmForPartitionValue:partitionValueA user:user];
-    RLMRealm *realmB = [self openRealmForPartitionValue:partitionValueB user:user];
-    RLMRealm *realmC = [self openRealmForPartitionValue:partitionValueC user:user];
+    LEGACYRealm *realmA = [self openRealmForPartitionValue:partitionValueA user:user];
+    LEGACYRealm *realmB = [self openRealmForPartitionValue:partitionValueB user:user];
+    LEGACYRealm *realmC = [self openRealmForPartitionValue:partitionValueC user:user];
 
     if (self.isParent) {
         CHECK_COUNT(0, Person, realmA);
         CHECK_COUNT(0, Person, realmB);
         CHECK_COUNT(0, Person, realmC);
-        RLMRunChildAndWait();
+        LEGACYRunChildAndWait();
         [self waitForDownloadsForRealm:realmA];
         [self waitForDownloadsForRealm:realmB];
         [self waitForDownloadsForRealm:realmC];
@@ -950,8 +950,8 @@ static NSString *randomEmail() {
         CHECK_COUNT(2, Person, realmB);
         CHECK_COUNT(5, Person, realmC);
 
-        RLMResults *resultsA = [Person objectsInRealm:realmA where:@"firstName == %@", @"Ringo"];
-        RLMResults *resultsB = [Person objectsInRealm:realmB where:@"firstName == %@", @"Ringo"];
+        LEGACYResults *resultsA = [Person objectsInRealm:realmA where:@"firstName == %@", @"Ringo"];
+        LEGACYResults *resultsB = [Person objectsInRealm:realmB where:@"firstName == %@", @"Ringo"];
 
         XCTAssertEqual([resultsA count], 1UL);
         XCTAssertEqual([resultsB count], 0UL);
@@ -984,10 +984,10 @@ static NSString *randomEmail() {
     NSString *partitionValueA = self.name;
     NSString *partitionValueB = [partitionValueA stringByAppendingString:@"bar"];
     NSString *partitionValueC = [partitionValueA stringByAppendingString:@"baz"];
-    RLMUser *user = [self userForTest:_cmd];
-    RLMRealm *realmA = [self openRealmForPartitionValue:partitionValueA user:user];
-    RLMRealm *realmB = [self openRealmForPartitionValue:partitionValueB user:user];
-    RLMRealm *realmC = [self openRealmForPartitionValue:partitionValueC user:user];
+    LEGACYUser *user = [self userForTest:_cmd];
+    LEGACYRealm *realmA = [self openRealmForPartitionValue:partitionValueA user:user];
+    LEGACYRealm *realmB = [self openRealmForPartitionValue:partitionValueB user:user];
+    LEGACYRealm *realmC = [self openRealmForPartitionValue:partitionValueC user:user];
 
     if (self.isParent) {
         [self addPersonsToRealm:realmA
@@ -1011,7 +1011,7 @@ static NSString *randomEmail() {
         CHECK_COUNT(4, Person, realmA);
         CHECK_COUNT(5, Person, realmB);
         CHECK_COUNT(2, Person, realmC);
-        RLMRunChildAndWait();
+        LEGACYRunChildAndWait();
         [self waitForDownloadsForRealm:realmA];
         [self waitForDownloadsForRealm:realmB];
         [self waitForDownloadsForRealm:realmC];
@@ -1048,7 +1048,7 @@ static NSString *randomEmail() {
 
     // Open the Realm in an autorelease pool so that it is destroyed as soon as possible.
     @autoreleasepool {
-        RLMRealm *realm = [self openRealm];
+        LEGACYRealm *realm = [self openRealm];
         [self addPersonsToRealm:realm
                         persons:@[[Person john], [Person paul], [Person ringo]]];
         CHECK_COUNT(OBJECT_COUNT, Person, realm);
@@ -1056,7 +1056,7 @@ static NSString *randomEmail() {
 
     [self.app.syncManager waitForSessionTermination];
 
-    RLMRealm *realm = [self openRealm];
+    LEGACYRealm *realm = [self openRealm];
     CHECK_COUNT(OBJECT_COUNT, Person, realm);
 }
 
@@ -1064,13 +1064,13 @@ static NSString *randomEmail() {
 
 /// A Realm that was opened before a user logged out should be able to resume uploading if the user logs back in.
 - (void)testLogBackInSameRealmUpload {
-    RLMCredentials *credentials = [self basicCredentialsWithName:self.name
+    LEGACYCredentials *credentials = [self basicCredentialsWithName:self.name
                                                         register:self.isParent];
-    RLMUser *user = [self logInUserForCredentials:credentials];
+    LEGACYUser *user = [self logInUserForCredentials:credentials];
 
-    RLMRealmConfiguration *config;
+    LEGACYRealmConfiguration *config;
     @autoreleasepool {
-        RLMRealm *realm = [self openRealmForPartitionValue:self.name user:user];
+        LEGACYRealm *realm = [self openRealmForPartitionValue:self.name user:user];
         config = realm.configuration;
         [self addPersonsToRealm:realm persons:@[[Person john]]];
         CHECK_COUNT(1, Person, realm);
@@ -1087,17 +1087,17 @@ static NSString *randomEmail() {
     }
 
     // Verify that the post-login objects were actually synced
-    XCTAssertTrue([RLMRealm deleteFilesForConfiguration:config error:nil]);
-    RLMRealm *realm = [self openRealm];
+    XCTAssertTrue([LEGACYRealm deleteFilesForConfiguration:config error:nil]);
+    LEGACYRealm *realm = [self openRealm];
     CHECK_COUNT(4, Person, realm);
 }
 
 /// A Realm that was opened before a user logged out should be able to resume downloading if the user logs back in.
 - (void)testLogBackInSameRealmDownload {
-    RLMCredentials *credentials = [self basicCredentialsWithName:self.name
+    LEGACYCredentials *credentials = [self basicCredentialsWithName:self.name
                                                         register:self.isParent];
-    RLMUser *user = [self logInUserForCredentials:credentials];
-    RLMRealm *realm = [self openRealmForPartitionValue:self.name user:user];
+    LEGACYUser *user = [self logInUserForCredentials:credentials];
+    LEGACYRealm *realm = [self openRealmForPartitionValue:self.name user:user];
 
     if (self.isParent) {
         [self addPersonsToRealm:realm persons:@[[Person john]]];
@@ -1108,7 +1108,7 @@ static NSString *randomEmail() {
         // Log the user back in.
         user = [self logInUserForCredentials:credentials];
 
-        RLMRunChildAndWait();
+        LEGACYRunChildAndWait();
 
         [self waitForDownloadsForRealm:realm];
         CHECK_COUNT(3, Person, realm);
@@ -1121,12 +1121,12 @@ static NSString *randomEmail() {
 
 /// A Realm that was opened while a user was logged out should be able to start uploading if the user logs back in.
 - (void)testLogBackInDeferredRealmUpload {
-    RLMCredentials *credentials = [self basicCredentialsWithName:self.name register:YES];
-    RLMUser *user = [self logInUserForCredentials:credentials];
+    LEGACYCredentials *credentials = [self basicCredentialsWithName:self.name register:YES];
+    LEGACYUser *user = [self logInUserForCredentials:credentials];
     [self logOutUser:user];
 
     // Open a Realm after the user's been logged out.
-    RLMRealm *realm = [self immediatelyOpenRealmForPartitionValue:self.name user:user];
+    LEGACYRealm *realm = [self immediatelyOpenRealmForPartitionValue:self.name user:user];
 
     [self addPersonsToRealm:realm persons:@[[Person john]]];
     CHECK_COUNT(1, Person, realm);
@@ -1137,22 +1137,22 @@ static NSString *randomEmail() {
     [self waitForUploadsForRealm:realm];
     CHECK_COUNT(4, Person, realm);
 
-    RLMRealm *realm2 = [self openRealm];
+    LEGACYRealm *realm2 = [self openRealm];
     CHECK_COUNT(4, Person, realm2);
 }
 
 /// A Realm that was opened while a user was logged out should be able to start downloading if the user logs back in.
 - (void)testLogBackInDeferredRealmDownload {
-    RLMCredentials *credentials = [self basicCredentialsWithName:self.name
+    LEGACYCredentials *credentials = [self basicCredentialsWithName:self.name
                                                         register:self.isParent];
-    RLMUser *user = [self logInUserForCredentials:credentials];
+    LEGACYUser *user = [self logInUserForCredentials:credentials];
 
     if (self.isParent) {
         [self logOutUser:user];
-        RLMRunChildAndWait();
+        LEGACYRunChildAndWait();
 
         // Open a Realm after the user's been logged out.
-        RLMRealm *realm = [self immediatelyOpenRealmForPartitionValue:self.name user:user];
+        LEGACYRealm *realm = [self immediatelyOpenRealmForPartitionValue:self.name user:user];
         [self addPersonsToRealm:realm persons:@[[Person john]]];
         CHECK_COUNT(1, Person, realm);
 
@@ -1161,7 +1161,7 @@ static NSString *randomEmail() {
         CHECK_COUNT(4, Person, realm);
 
     } else {
-        RLMRealm *realm = [self openRealmForPartitionValue:self.name user:user];
+        LEGACYRealm *realm = [self openRealmForPartitionValue:self.name user:user];
         [self addPersonsToRealm:realm
                         persons:@[[Person john], [Person paul], [Person ringo]]];
         [self waitForUploadsForRealm:realm];
@@ -1172,14 +1172,14 @@ static NSString *randomEmail() {
 
 /// After logging back in, a Realm whose path has been opened for the first time should properly upload changes.
 - (void)testLogBackInOpenFirstTimePathUpload {
-    RLMCredentials *credentials = [self basicCredentialsWithName:self.name register:YES];
-    RLMUser *user = [self logInUserForCredentials:credentials];
+    LEGACYCredentials *credentials = [self basicCredentialsWithName:self.name register:YES];
+    LEGACYUser *user = [self logInUserForCredentials:credentials];
     [self logOutUser:user];
 
     @autoreleasepool {
         auto c = [user configurationWithPartitionValue:self.name];
         c.objectClasses = @[Person.self];
-        RLMRealm *realm = [RLMRealm realmWithConfiguration:c error:nil];
+        LEGACYRealm *realm = [LEGACYRealm realmWithConfiguration:c error:nil];
         [self addPersonsToRealm:realm
                         persons:@[[Person john], [Person paul]]];
 
@@ -1187,22 +1187,22 @@ static NSString *randomEmail() {
         [self waitForUploadsForRealm:realm];
     }
 
-    RLMRealm *realm = [self openRealm];
+    LEGACYRealm *realm = [self openRealm];
     CHECK_COUNT(2, Person, realm);
 }
 
 /// After logging back in, a Realm whose path has been opened for the first time should properly download changes.
 - (void)testLogBackInOpenFirstTimePathDownload {
-    RLMCredentials *credentials = [self basicCredentialsWithName:self.name register:YES];
-    RLMUser *user = [self logInUserForCredentials:credentials];
+    LEGACYCredentials *credentials = [self basicCredentialsWithName:self.name register:YES];
+    LEGACYUser *user = [self logInUserForCredentials:credentials];
     [self logOutUser:user];
 
     auto c = [user configurationWithPartitionValue:self.name];
     c.objectClasses = @[Person.self];
-    RLMRealm *realm = [RLMRealm realmWithConfiguration:c error:nil];
+    LEGACYRealm *realm = [LEGACYRealm realmWithConfiguration:c error:nil];
 
     @autoreleasepool {
-        RLMRealm *realm = [self openRealm];
+        LEGACYRealm *realm = [self openRealm];
         [self addPersonsToRealm:realm
                         persons:@[[Person john], [Person paul]]];
         [self waitForUploadsForRealm:realm];
@@ -1216,14 +1216,14 @@ static NSString *randomEmail() {
 }
 
 /// If a client logs in, connects, logs out, and logs back in, sync should properly upload changes for a new
-/// `RLMRealm` that is opened for the same path as a previously-opened Realm.
+/// `LEGACYRealm` that is opened for the same path as a previously-opened Realm.
 - (void)testLogBackInReopenRealmUpload {
-    RLMCredentials *credentials = [self basicCredentialsWithName:self.name
+    LEGACYCredentials *credentials = [self basicCredentialsWithName:self.name
                                                         register:self.isParent];
-    RLMUser *user = [self logInUserForCredentials:credentials];
+    LEGACYUser *user = [self logInUserForCredentials:credentials];
 
     @autoreleasepool {
-        RLMRealm *realm = [self openRealmForPartitionValue:self.name user:user];
+        LEGACYRealm *realm = [self openRealmForPartitionValue:self.name user:user];
         [self addPersonsToRealm:realm persons:@[[Person john]]];
         [self waitForUploadsForRealm:realm];
         CHECK_COUNT(1, Person, realm);
@@ -1231,30 +1231,30 @@ static NSString *randomEmail() {
         user = [self logInUserForCredentials:credentials];
     }
 
-    RLMRealm *realm = [self openRealmForPartitionValue:self.name user:user];
+    LEGACYRealm *realm = [self openRealmForPartitionValue:self.name user:user];
     [self addPersonsToRealm:realm
                     persons:@[[Person john], [Person paul], [Person george], [Person ringo]]];
     CHECK_COUNT(5, Person, realm);
     [self waitForUploadsForRealm:realm];
 
-    RLMRealm *realm2 = [self openRealmForPartitionValue:self.name user:self.createUser];
+    LEGACYRealm *realm2 = [self openRealmForPartitionValue:self.name user:self.createUser];
     CHECK_COUNT(5, Person, realm2);
 }
 
 /// If a client logs in, connects, logs out, and logs back in, sync should properly download changes for a new
-/// `RLMRealm` that is opened for the same path as a previously-opened Realm.
+/// `LEGACYRealm` that is opened for the same path as a previously-opened Realm.
 - (void)testLogBackInReopenRealmDownload {
-    RLMCredentials *credentials = [self basicCredentialsWithName:self.name
+    LEGACYCredentials *credentials = [self basicCredentialsWithName:self.name
                                                         register:self.isParent];
-    RLMUser *user = [self logInUserForCredentials:credentials];
+    LEGACYUser *user = [self logInUserForCredentials:credentials];
 
-    RLMRealm *realm = [self openRealmForPartitionValue:self.name user:user];
+    LEGACYRealm *realm = [self openRealmForPartitionValue:self.name user:user];
     [self addPersonsToRealm:realm persons:@[[Person john]]];
     [self waitForUploadsForRealm:realm];
     XCTAssert([Person allObjectsInRealm:realm].count == 1, @"Expected 1 item");
     [self logOutUser:user];
     user = [self logInUserForCredentials:credentials];
-    RLMRealm *realm2 = [self openRealmForPartitionValue:self.name user:self.createUser];
+    LEGACYRealm *realm2 = [self openRealmForPartitionValue:self.name user:self.createUser];
     CHECK_COUNT(1, Person, realm2);
     [self addPersonsToRealm:realm2
                     persons:@[[Person john], [Person paul], [Person george], [Person ringo]]];
@@ -1269,27 +1269,27 @@ static NSString *randomEmail() {
 #pragma mark - Session suspend and resume
 
 - (void)testSuspendAndResume {
-    RLMUser *user = [self userForTest:_cmd];
+    LEGACYUser *user = [self userForTest:_cmd];
 
     __attribute__((objc_precise_lifetime))
-    RLMRealm *realmA = [self openRealmForPartitionValue:@"suspend and resume 1" user:user];
+    LEGACYRealm *realmA = [self openRealmForPartitionValue:@"suspend and resume 1" user:user];
     __attribute__((objc_precise_lifetime))
-    RLMRealm *realmB = [self openRealmForPartitionValue:@"suspend and resume 2" user:user];
+    LEGACYRealm *realmB = [self openRealmForPartitionValue:@"suspend and resume 2" user:user];
     if (self.isParent) {
         CHECK_COUNT(0, Person, realmA);
         CHECK_COUNT(0, Person, realmB);
 
         // Suspend the session for realm A and then add an object to each Realm
-        RLMSyncSession *sessionA = [RLMSyncSession sessionForRealm:realmA];
-        RLMSyncSession *sessionB = [RLMSyncSession sessionForRealm:realmB];
-        XCTAssertEqual(sessionB.state, RLMSyncSessionStateActive);
+        LEGACYSyncSession *sessionA = [LEGACYSyncSession sessionForRealm:realmA];
+        LEGACYSyncSession *sessionB = [LEGACYSyncSession sessionForRealm:realmB];
+        XCTAssertEqual(sessionB.state, LEGACYSyncSessionStateActive);
         [sessionA suspend];
-        XCTAssertEqual(realmB.syncSession.state, RLMSyncSessionStateActive);
+        XCTAssertEqual(realmB.syncSession.state, LEGACYSyncSessionStateActive);
 
         [self addPersonsToRealm:realmA persons:@[[Person john]]];
         [self addPersonsToRealm:realmB persons:@[[Person ringo]]];
         [self waitForUploadsForRealm:realmB];
-        RLMRunChildAndWait();
+        LEGACYRunChildAndWait();
 
         // A should still be 1 since it's suspended. If it wasn't suspended, it
         // should have downloaded before B due to the ordering in the child.
@@ -1320,23 +1320,23 @@ static NSString *randomEmail() {
 
 /// Ensure that a client reset error is propagated up to the binding successfully.
 - (void)testClientReset {
-    RLMUser *user = [self userForTest:_cmd];
+    LEGACYUser *user = [self userForTest:_cmd];
     // Open the Realm
     __attribute__((objc_precise_lifetime))
-    RLMRealm *realm = [self openRealmForPartitionValue:@"realm_id"
+    LEGACYRealm *realm = [self openRealmForPartitionValue:@"realm_id"
                                                   user:user
-                                       clientResetMode:RLMClientResetModeManual];
+                                       clientResetMode:LEGACYClientResetModeManual];
 
     __block NSError *theError = nil;
     XCTestExpectation *ex = [self expectationWithDescription:@"Waiting for error handler to be called..."];
-    [self.app syncManager].errorHandler = ^void(NSError *error, RLMSyncSession *) {
+    [self.app syncManager].errorHandler = ^void(NSError *error, LEGACYSyncSession *) {
         theError = error;
         [ex fulfill];
     };
     [user simulateClientResetErrorForSession:@"realm_id"];
     [self waitForExpectationsWithTimeout:30 handler:nil];
     XCTAssertNotNil(theError);
-    XCTAssertTrue(theError.code == RLMSyncErrorClientResetError);
+    XCTAssertTrue(theError.code == LEGACYSyncErrorClientResetError);
     NSString *pathValue = [theError rlmSync_clientResetBackedUpRealmPath];
     XCTAssertNotNil(pathValue);
     // Sanity check the recovery path.
@@ -1347,15 +1347,15 @@ static NSString *randomEmail() {
 
 /// Test manually initiating client reset.
 - (void)testClientResetManualInitiation {
-    RLMUser *user = [self createUser];
+    LEGACYUser *user = [self createUser];
 
     __block NSError *theError = nil;
     @autoreleasepool {
         __attribute__((objc_precise_lifetime))
-        RLMRealm *realm = [self openRealmForPartitionValue:self.name user:user
-                                           clientResetMode:RLMClientResetModeManual];
+        LEGACYRealm *realm = [self openRealmForPartitionValue:self.name user:user
+                                           clientResetMode:LEGACYClientResetModeManual];
         XCTestExpectation *ex = [self expectationWithDescription:@"Waiting for error handler to be called..."];
-        self.app.syncManager.errorHandler = ^(NSError *error, RLMSyncSession *) {
+        self.app.syncManager.errorHandler = ^(NSError *error, LEGACYSyncSession *) {
             theError = error;
             [ex fulfill];
         };
@@ -1367,52 +1367,52 @@ static NSString *randomEmail() {
     // At this point the Realm should be invalidated and client reset should be possible.
     NSString *pathValue = [theError rlmSync_clientResetBackedUpRealmPath];
     XCTAssertFalse([NSFileManager.defaultManager fileExistsAtPath:pathValue]);
-    [RLMSyncSession immediatelyHandleError:theError.rlmSync_errorActionToken
+    [LEGACYSyncSession immediatelyHandleError:theError.rlmSync_errorActionToken
                                syncManager:self.app.syncManager];
     XCTAssertTrue([NSFileManager.defaultManager fileExistsAtPath:pathValue]);
 }
 
 - (void)testSetClientResetMode {
-    RLMUser *user = [self createUser];
+    LEGACYUser *user = [self createUser];
     #pragma clang diagnostic push
     #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    RLMRealmConfiguration *config = [user configurationWithPartitionValue:self.name
-                                                          clientResetMode:RLMClientResetModeDiscardLocal];
-    XCTAssertEqual(config.syncConfiguration.clientResetMode, RLMClientResetModeDiscardLocal);
+    LEGACYRealmConfiguration *config = [user configurationWithPartitionValue:self.name
+                                                          clientResetMode:LEGACYClientResetModeDiscardLocal];
+    XCTAssertEqual(config.syncConfiguration.clientResetMode, LEGACYClientResetModeDiscardLocal);
     #pragma clang diagnostic pop
 
     // Default is recover
     config = [user configurationWithPartitionValue:self.name];
-    XCTAssertEqual(config.syncConfiguration.clientResetMode, RLMClientResetModeRecoverUnsyncedChanges);
+    XCTAssertEqual(config.syncConfiguration.clientResetMode, LEGACYClientResetModeRecoverUnsyncedChanges);
 
-    RLMSyncErrorReportingBlock block = ^(NSError *, RLMSyncSession *) {
+    LEGACYSyncErrorReportingBlock block = ^(NSError *, LEGACYSyncSession *) {
         XCTFail("Should never hit");
     };
-    RLMAssertThrowsWithReason([user configurationWithPartitionValue:self.name
-                                                    clientResetMode:RLMClientResetModeDiscardUnsyncedChanges
+    LEGACYAssertThrowsWithReason([user configurationWithPartitionValue:self.name
+                                                    clientResetMode:LEGACYClientResetModeDiscardUnsyncedChanges
                                            manualClientResetHandler:block],
-                              @"A manual client reset handler can only be set with RLMClientResetModeManual");
+                              @"A manual client reset handler can only be set with LEGACYClientResetModeManual");
 }
 
 - (void)testSetClientResetCallbacks {
-    RLMUser *user = [self createUser];
+    LEGACYUser *user = [self createUser];
 
     #pragma clang diagnostic push
     #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    RLMRealmConfiguration *config = [user configurationWithPartitionValue:self.name
-                                                          clientResetMode:RLMClientResetModeDiscardLocal];
+    LEGACYRealmConfiguration *config = [user configurationWithPartitionValue:self.name
+                                                          clientResetMode:LEGACYClientResetModeDiscardLocal];
 
     XCTAssertNil(config.syncConfiguration.beforeClientReset);
     XCTAssertNil(config.syncConfiguration.afterClientReset);
 
-    RLMClientResetBeforeBlock beforeBlock = ^(RLMRealm *local __unused) {
+    LEGACYClientResetBeforeBlock beforeBlock = ^(LEGACYRealm *local __unused) {
         XCTAssert(false, @"Should not execute callback");
     };
-    RLMClientResetAfterBlock afterBlock = ^(RLMRealm *before __unused, RLMRealm *after __unused) {
+    LEGACYClientResetAfterBlock afterBlock = ^(LEGACYRealm *before __unused, LEGACYRealm *after __unused) {
         XCTAssert(false, @"Should not execute callback");
     };
-    RLMRealmConfiguration *config2 = [user configurationWithPartitionValue:self.name
-                                                           clientResetMode:RLMClientResetModeDiscardLocal
+    LEGACYRealmConfiguration *config2 = [user configurationWithPartitionValue:self.name
+                                                           clientResetMode:LEGACYClientResetModeDiscardLocal
                                                          notifyBeforeReset:beforeBlock
                                                           notifyAfterReset:afterBlock];
     XCTAssertNotNil(config2.syncConfiguration.beforeClientReset);
@@ -1424,31 +1424,31 @@ static NSString *randomEmail() {
 // TODO: Consider testing with sync_config->on_sync_client_event_hook or a client reset
 - (void)testBeforeClientResetCallbackNotVersioned {
     // Setup sync config
-    RLMSyncConfiguration *syncConfig = [[RLMSyncConfiguration alloc] initWithRawConfig:{} path:""];
+    LEGACYSyncConfiguration *syncConfig = [[LEGACYSyncConfiguration alloc] initWithRawConfig:{} path:""];
     XCTestExpectation *beforeExpectation = [self expectationWithDescription:@"block called once"];
-    syncConfig.clientResetMode = RLMClientResetModeRecoverUnsyncedChanges;
-    syncConfig.beforeClientReset = ^(RLMRealm *beforeFrozen) {
-        XCTAssertNotEqual(RLMNotVersioned, beforeFrozen->_realm->schema_version());
+    syncConfig.clientResetMode = LEGACYClientResetModeRecoverUnsyncedChanges;
+    syncConfig.beforeClientReset = ^(LEGACYRealm *beforeFrozen) {
+        XCTAssertNotEqual(LEGACYNotVersioned, beforeFrozen->_realm->schema_version());
         [beforeExpectation fulfill];
     };
     auto& beforeWrapper = syncConfig.rawConfiguration.notify_before_client_reset;
 
     // Setup a realm with a versioned schema
-    RLMRealmConfiguration *configVersioned = [RLMRealmConfiguration defaultConfiguration];
-    configVersioned.fileURL = RLMTestRealmURL();
+    LEGACYRealmConfiguration *configVersioned = [LEGACYRealmConfiguration defaultConfiguration];
+    configVersioned.fileURL = LEGACYTestRealmURL();
     @autoreleasepool {
-        RLMRealm *versioned = [RLMRealm realmWithConfiguration:configVersioned error:nil];
+        LEGACYRealm *versioned = [LEGACYRealm realmWithConfiguration:configVersioned error:nil];
         XCTAssertEqual(0U, versioned->_realm->schema_version());
     }
     std::shared_ptr<realm::Realm> versioned = realm::Realm::get_shared_realm(configVersioned.config);
 
     // Create a config that's not versioned.
-    RLMRealmConfiguration *configUnversioned = [RLMRealmConfiguration defaultConfiguration];
-    configUnversioned.configRef.schema_version = RLMNotVersioned;
+    LEGACYRealmConfiguration *configUnversioned = [LEGACYRealmConfiguration defaultConfiguration];
+    configUnversioned.configRef.schema_version = LEGACYNotVersioned;
     std::shared_ptr<realm::Realm> unversioned = realm::Realm::get_shared_realm(configUnversioned.config);
 
-    XCTAssertNotEqual(versioned->schema_version(), RLMNotVersioned);
-    XCTAssertEqual(unversioned->schema_version(), RLMNotVersioned);
+    XCTAssertNotEqual(versioned->schema_version(), LEGACYNotVersioned);
+    XCTAssertEqual(unversioned->schema_version(), LEGACYNotVersioned);
     beforeWrapper(versioned); // one realm should invoke the block
     beforeWrapper(unversioned); // while the other should not invoke the block
 
@@ -1458,23 +1458,23 @@ static NSString *randomEmail() {
 // TODO: Consider testing with sync_config->on_sync_client_event_hook or a client reset
 - (void)testAfterClientResetCallbackNotVersioned {
     // Setup sync config
-    RLMSyncConfiguration *syncConfig = [[RLMSyncConfiguration alloc] initWithRawConfig:{} path:""];
+    LEGACYSyncConfiguration *syncConfig = [[LEGACYSyncConfiguration alloc] initWithRawConfig:{} path:""];
     XCTestExpectation *afterExpectation = [self expectationWithDescription:@"block should not be called"];
     afterExpectation.inverted = true;
 
-    syncConfig.clientResetMode = RLMClientResetModeRecoverUnsyncedChanges;
-    syncConfig.afterClientReset = ^(RLMRealm * _Nonnull, RLMRealm * _Nonnull) {
+    syncConfig.clientResetMode = LEGACYClientResetModeRecoverUnsyncedChanges;
+    syncConfig.afterClientReset = ^(LEGACYRealm * _Nonnull, LEGACYRealm * _Nonnull) {
         [afterExpectation fulfill];
     };
     auto& afterWrapper = syncConfig.rawConfiguration.notify_after_client_reset;
 
     // Create a config that's not versioned.
-    RLMRealmConfiguration *configUnversioned = [RLMRealmConfiguration defaultConfiguration];
-    configUnversioned.configRef.schema_version = RLMNotVersioned;
+    LEGACYRealmConfiguration *configUnversioned = [LEGACYRealmConfiguration defaultConfiguration];
+    configUnversioned.configRef.schema_version = LEGACYNotVersioned;
     std::shared_ptr<realm::Realm> unversioned = realm::Realm::get_shared_realm(configUnversioned.config);
 
     auto unversionedTsr = realm::ThreadSafeReference(unversioned);
-    XCTAssertEqual(unversioned->schema_version(), RLMNotVersioned);
+    XCTAssertEqual(unversioned->schema_version(), LEGACYNotVersioned);
     afterWrapper(unversioned, std::move(unversionedTsr), false);
 
     [self waitForExpectationsWithTimeout:1 handler:nil];
@@ -1486,9 +1486,9 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
 
 - (void)populateData {
     NSURL *realmURL;
-    RLMUser *user = [self createUser];
+    LEGACYUser *user = [self createUser];
     @autoreleasepool {
-        RLMRealm *realm = [self openRealmWithUser:user];
+        LEGACYRealm *realm = [self openRealmWithUser:user];
         realmURL = realm.configuration.fileURL;
         CHECK_COUNT(0, HugeSyncObject, realm);
         [realm beginWriteTransaction];
@@ -1504,8 +1504,8 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
 }
 
 - (void)testStreamingDownloadNotifier {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSession *session = realm.syncSession;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSession *session = realm.syncSession;
     XCTAssertNotNil(session);
 
     XCTestExpectation *ex = [self expectationWithDescription:@"streaming-download-notifier"];
@@ -1513,9 +1513,9 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
     std::atomic<NSUInteger> transferred{0};
     std::atomic<NSUInteger> transferrable{0};
     BOOL hasBeenFulfilled = NO;
-    RLMNotificationToken *token = [session
-                                   addProgressNotificationForDirection:RLMSyncProgressDirectionDownload
-                                   mode:RLMSyncProgressModeReportIndefinitely
+    LEGACYNotificationToken *token = [session
+                                   addProgressNotificationForDirection:LEGACYSyncProgressDirectionDownload
+                                   mode:LEGACYSyncProgressModeReportIndefinitely
                                    block:[&](NSUInteger xfr, NSUInteger xfb) {
         // Make sure the values are increasing, and update our stored copies.
         XCTAssertGreaterThanOrEqual(xfr, transferred.load());
@@ -1540,16 +1540,16 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
 }
 
 - (void)testStreamingUploadNotifier {
-    RLMRealm *realm = [self openRealm];
-    RLMSyncSession *session = realm.syncSession;
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYSyncSession *session = realm.syncSession;
     XCTAssertNotNil(session);
 
     XCTestExpectation *ex = [self expectationWithDescription:@"streaming-upload-expectation"];
     std::atomic<NSInteger> callCount{0};
     std::atomic<NSUInteger> transferred{0};
     std::atomic<NSUInteger> transferrable{0};
-    auto token = [session addProgressNotificationForDirection:RLMSyncProgressDirectionUpload
-                                                         mode:RLMSyncProgressModeReportIndefinitely
+    auto token = [session addProgressNotificationForDirection:LEGACYSyncProgressDirectionUpload
+                                                         mode:LEGACYSyncProgressModeReportIndefinitely
                                                         block:[&](NSUInteger xfr, NSUInteger xfb) {
         // Make sure the values are increasing, and update our stored copies.
         XCTAssertGreaterThanOrEqual(xfr, transferred.load());
@@ -1585,12 +1585,12 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
     [self populateData];
 
     XCTestExpectation *ex = [self expectationWithDescription:@"download-realm"];
-    RLMRealmConfiguration *c = [self configuration];
+    LEGACYRealmConfiguration *c = [self configuration];
     XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:c.pathOnDisk isDirectory:nil]);
 
-    [RLMRealm asyncOpenWithConfiguration:c
+    [LEGACYRealm asyncOpenWithConfiguration:c
                            callbackQueue:dispatch_get_main_queue()
-                                callback:^(RLMRealm *realm, NSError *error) {
+                                callback:^(LEGACYRealm *realm, NSError *error) {
         XCTAssertNil(error);
         CHECK_COUNT(NUMBER_OF_BIG_OBJECTS, HugeSyncObject, realm);
         [ex fulfill];
@@ -1602,17 +1602,17 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
 
         return 0;
     };
-    XCTAssertNil(RLMGetAnyCachedRealmForPath(c.pathOnDisk.UTF8String));
+    XCTAssertNil(LEGACYGetAnyCachedRealmForPath(c.pathOnDisk.UTF8String));
     [self waitForExpectationsWithTimeout:30.0 handler:nil];
     XCTAssertGreaterThan(fileSize(c.pathOnDisk), 0U);
-    XCTAssertNil(RLMGetAnyCachedRealmForPath(c.pathOnDisk.UTF8String));
+    XCTAssertNil(LEGACYGetAnyCachedRealmForPath(c.pathOnDisk.UTF8String));
 }
 
 - (void)testDownloadAlreadyOpenRealm {
     XCTestExpectation *ex = [self expectationWithDescription:@"download-realm"];
-    RLMRealmConfiguration *c = [self configuration];
+    LEGACYRealmConfiguration *c = [self configuration];
     XCTAssertFalse([[NSFileManager defaultManager] fileExistsAtPath:c.pathOnDisk isDirectory:nil]);
-    RLMRealm *realm = [RLMRealm realmWithConfiguration:c error:nil];
+    LEGACYRealm *realm = [LEGACYRealm realmWithConfiguration:c error:nil];
     CHECK_COUNT(0, HugeSyncObject, realm);
     [self waitForUploadsForRealm:realm];
     [realm.syncSession suspend];
@@ -1625,11 +1625,11 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
     };
     NSUInteger sizeBefore = fileSize(c.pathOnDisk);
     XCTAssertGreaterThan(sizeBefore, 0U);
-    XCTAssertNotNil(RLMGetAnyCachedRealmForPath(c.pathOnDisk.UTF8String));
+    XCTAssertNotNil(LEGACYGetAnyCachedRealmForPath(c.pathOnDisk.UTF8String));
 
-    [RLMRealm asyncOpenWithConfiguration:c
+    [LEGACYRealm asyncOpenWithConfiguration:c
                            callbackQueue:dispatch_get_main_queue()
-                                callback:^(RLMRealm *realm, NSError *error) {
+                                callback:^(LEGACYRealm *realm, NSError *error) {
         XCTAssertNil(error);
         CHECK_COUNT(NUMBER_OF_BIG_OBJECTS, HugeSyncObject, realm);
         [ex fulfill];
@@ -1638,7 +1638,7 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
     [self waitForExpectationsWithTimeout:2.0 handler:nil];
 
     XCTAssertGreaterThan(fileSize(c.pathOnDisk), sizeBefore);
-    XCTAssertNotNil(RLMGetAnyCachedRealmForPath(c.pathOnDisk.UTF8String));
+    XCTAssertNotNil(LEGACYGetAnyCachedRealmForPath(c.pathOnDisk.UTF8String));
     CHECK_COUNT(NUMBER_OF_BIG_OBJECTS, HugeSyncObject, realm);
 }
 
@@ -1646,10 +1646,10 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
     auto c = [self configuration];
     [self setInvalidTokensForUser:c.syncConfiguration.user];
     auto ex = [self expectationWithDescription:@"async open"];
-    [RLMRealm asyncOpenWithConfiguration:c callbackQueue:dispatch_get_main_queue()
-                                callback:^(RLMRealm *realm, NSError *error) {
+    [LEGACYRealm asyncOpenWithConfiguration:c callbackQueue:dispatch_get_main_queue()
+                                callback:^(LEGACYRealm *realm, NSError *error) {
         XCTAssertNil(realm);
-        RLMValidateError(error, RLMAppErrorDomain, RLMAppErrorUnknown,
+        LEGACYValidateError(error, LEGACYAppErrorDomain, LEGACYAppErrorUnknown,
                          @"Unable to refresh the user access token: signature is invalid");
         [ex fulfill];
     }];
@@ -1662,23 +1662,23 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
     // Use a serial queue for asyncOpen to ensure that the first one adds
     // the completion block before the second one cancels it
     auto queue = dispatch_queue_create("io.realm.asyncOpen", 0);
-    RLMSetAsyncOpenQueue(queue);
+    LEGACYSetAsyncOpenQueue(queue);
 
     XCTestExpectation *ex = [self expectationWithDescription:@"download-realm"];
     ex.expectedFulfillmentCount = 2;
-    RLMRealmConfiguration *c = [self configuration];
-    [RLMRealm asyncOpenWithConfiguration:c
+    LEGACYRealmConfiguration *c = [self configuration];
+    [LEGACYRealm asyncOpenWithConfiguration:c
                            callbackQueue:dispatch_get_main_queue()
-                                callback:^(RLMRealm *realm, NSError *error) {
+                                callback:^(LEGACYRealm *realm, NSError *error) {
         XCTAssertNil(realm);
-        RLMValidateError(error, NSPOSIXErrorDomain, ECANCELED, @"Operation canceled");
+        LEGACYValidateError(error, NSPOSIXErrorDomain, ECANCELED, @"Operation canceled");
         [ex fulfill];
     }];
-    auto task = [RLMRealm asyncOpenWithConfiguration:c
+    auto task = [LEGACYRealm asyncOpenWithConfiguration:c
                             callbackQueue:dispatch_get_main_queue()
-                                 callback:^(RLMRealm *realm, NSError *error) {
+                                 callback:^(LEGACYRealm *realm, NSError *error) {
         XCTAssertNil(realm);
-        RLMValidateError(error, NSPOSIXErrorDomain, ECANCELED, @"Operation canceled");
+        LEGACYValidateError(error, NSPOSIXErrorDomain, ECANCELED, @"Operation canceled");
         [ex fulfill];
     }];
 
@@ -1694,9 +1694,9 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
     XCTestExpectation *ex1 = [self expectationWithDescription:@"async open"];
     XCTestExpectation *ex2 = [self expectationWithDescription:@"download progress complete"];
 
-    auto task = [RLMRealm asyncOpenWithConfiguration:self.configuration
+    auto task = [LEGACYRealm asyncOpenWithConfiguration:self.configuration
                                        callbackQueue:dispatch_get_main_queue()
-                                            callback:^(RLMRealm *realm, NSError *error) {
+                                            callback:^(LEGACYRealm *realm, NSError *error) {
         XCTAssertNil(error);
         XCTAssertNotNil(realm);
         [ex1 fulfill];
@@ -1715,21 +1715,21 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
     [proxy startAndReturnError:&error];
     XCTAssertNil(error);
 
-    RLMAppConfiguration *config = [[RLMAppConfiguration alloc]
+    LEGACYAppConfiguration *config = [[LEGACYAppConfiguration alloc]
                                    initWithBaseURL:@"http://localhost:9090"
                                    transport:[AsyncOpenConnectionTimeoutTransport new]
                                    defaultRequestTimeoutMS:60];
-    RLMSyncTimeoutOptions *timeoutOptions = [RLMSyncTimeoutOptions new];
+    LEGACYSyncTimeoutOptions *timeoutOptions = [LEGACYSyncTimeoutOptions new];
     timeoutOptions.connectTimeout = 1000.0;
     config.syncTimeouts = timeoutOptions;
     NSString *appId = [RealmServer.shared
                        createAppWithPartitionKeyType:@"string"
                        types:@[Person.self] persistent:false error:nil];
-    RLMUser *user = [self createUserForApp:[RLMApp appWithId:appId configuration:config]];
+    LEGACYUser *user = [self createUserForApp:[LEGACYApp appWithId:appId configuration:config]];
 
-    RLMRealmConfiguration *c = [user configurationWithPartitionValue:appId];
+    LEGACYRealmConfiguration *c = [user configurationWithPartitionValue:appId];
     c.objectClasses = @[Person.class];
-    RLMSyncConfiguration *syncConfig = c.syncConfiguration;
+    LEGACYSyncConfiguration *syncConfig = c.syncConfiguration;
     syncConfig.cancelAsyncOpenOnNonFatalErrors = true;
     c.syncConfiguration = syncConfig;
 
@@ -1737,10 +1737,10 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
     proxy.delay = 2.0;
 
     XCTestExpectation *ex = [self expectationWithDescription:@"async open"];
-    [RLMRealm asyncOpenWithConfiguration:c
+    [LEGACYRealm asyncOpenWithConfiguration:c
                            callbackQueue:dispatch_get_main_queue()
-                                callback:^(RLMRealm *realm, NSError *error) {
-        RLMValidateError(error, NSPOSIXErrorDomain, ETIMEDOUT,
+                                callback:^(LEGACYRealm *realm, NSError *error) {
+        LEGACYValidateError(error, NSPOSIXErrorDomain, ETIMEDOUT,
                          @"Sync connection was not fully established in time");
         XCTAssertNil(realm);
         [ex fulfill];
@@ -1751,9 +1751,9 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
     proxy.delay = 0.5;
 
     ex = [self expectationWithDescription:@"async open"];
-    [RLMRealm asyncOpenWithConfiguration:c
+    [LEGACYRealm asyncOpenWithConfiguration:c
                            callbackQueue:dispatch_get_main_queue()
-                                callback:^(RLMRealm *realm, NSError *error) {
+                                callback:^(LEGACYRealm *realm, NSError *error) {
         XCTAssertNotNil(realm);
         XCTAssertNil(error);
         [ex fulfill];
@@ -1766,12 +1766,12 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
 #pragma mark - Compact on Launch
 
 - (void)testCompactOnLaunch {
-    RLMRealmConfiguration *config = self.configuration;
+    LEGACYRealmConfiguration *config = self.configuration;
     NSString *path = config.fileURL.path;
     // Create a large object and then delete it in the next transaction so that
     // the file is bloated
     @autoreleasepool {
-        RLMRealm *realm = [RLMRealm realmWithConfiguration:config error:nil];
+        LEGACYRealm *realm = [LEGACYRealm realmWithConfiguration:config error:nil];
         [realm beginWriteTransaction];
         [realm addObject:[HugeSyncObject hugeSyncObject]];
         [realm commitWriteTransaction];
@@ -1782,7 +1782,7 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
         [realm commitWriteTransaction];
     }
 
-    RLMWaitForRealmToClose(config.fileURL.path);
+    LEGACYWaitForRealmToClose(config.fileURL.path);
 
     auto fileManager = NSFileManager.defaultManager;
     auto initialSize = [[fileManager attributesOfItemAtPath:path error:nil][NSFileSize] unsignedLongLongValue];
@@ -1798,7 +1798,7 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
     };
 
     @autoreleasepool {
-        [RLMRealm realmWithConfiguration:config error:nil];
+        [LEGACYRealm realmWithConfiguration:config error:nil];
     }
     XCTAssertTrue(blockCalled);
 
@@ -1808,40 +1808,40 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
 }
 
 - (void)testWriteCopy {
-    RLMRealm *syncRealm = [self openRealm];
+    LEGACYRealm *syncRealm = [self openRealm];
     [self addPersonsToRealm:syncRealm persons:@[[Person john]]];
 
     NSError *writeError;
-    XCTAssertTrue([syncRealm writeCopyToURL:RLMTestRealmURL()
+    XCTAssertTrue([syncRealm writeCopyToURL:LEGACYTestRealmURL()
                               encryptionKey:syncRealm.configuration.encryptionKey
                                       error:&writeError]);
     XCTAssertNil(writeError);
 
-    RLMRealmConfiguration *localConfig = [RLMRealmConfiguration new];
-    localConfig.fileURL = RLMTestRealmURL();
+    LEGACYRealmConfiguration *localConfig = [LEGACYRealmConfiguration new];
+    localConfig.fileURL = LEGACYTestRealmURL();
     localConfig.objectClasses = @[Person.self];
     localConfig.schemaVersion = 1;
 
-    RLMRealm *localCopy = [RLMRealm realmWithConfiguration:localConfig error:nil];
+    LEGACYRealm *localCopy = [LEGACYRealm realmWithConfiguration:localConfig error:nil];
     XCTAssertEqual(1U, [Person allObjectsInRealm:localCopy].count);
 }
 
 #pragma mark - Read Only
 
 - (void)testOpenSynchronouslyInReadOnlyBeforeRemoteSchemaIsInitialized {
-    RLMUser *user = [self userForTest:_cmd];
+    LEGACYUser *user = [self userForTest:_cmd];
 
     if (self.isParent) {
-        RLMRealmConfiguration *config = [user configurationWithPartitionValue:self.name];
+        LEGACYRealmConfiguration *config = [user configurationWithPartitionValue:self.name];
         config.objectClasses = self.defaultObjectTypes;
         config.readOnly = true;
-        RLMRealm *realm = [RLMRealm realmWithConfiguration:config error:nil];
+        LEGACYRealm *realm = [LEGACYRealm realmWithConfiguration:config error:nil];
         CHECK_COUNT(0, Person, realm);
-        RLMRunChildAndWait();
+        LEGACYRunChildAndWait();
         [self waitForDownloadsForRealm:realm];
         CHECK_COUNT(1, Person, realm);
     } else {
-        RLMRealm *realm = [self openRealmForPartitionValue:self.name user:user];
+        LEGACYRealm *realm = [self openRealmForPartitionValue:self.name user:user];
         [self addPersonsToRealm:realm persons:@[[Person john]]];
         [self waitForUploadsForRealm:realm];
         CHECK_COUNT(1, Person, realm);
@@ -1850,25 +1850,25 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
 
 - (void)testAddPropertyToReadOnlyRealmWithExistingLocalCopy {
     @autoreleasepool {
-        RLMRealm *realm = [self openRealm];
+        LEGACYRealm *realm = [self openRealm];
         [self addPersonsToRealm:realm persons:@[[Person john]]];
         [self waitForUploadsForRealm:realm];
     }
 
-    RLMRealmConfiguration *config = [self.createUser configurationWithPartitionValue:self.name];
+    LEGACYRealmConfiguration *config = [self.createUser configurationWithPartitionValue:self.name];
     config.objectClasses = self.defaultObjectTypes;
     config.readOnly = true;
     @autoreleasepool {
-        RLMRealm *realm = [self asyncOpenRealmWithConfiguration:config];
+        LEGACYRealm *realm = [self asyncOpenRealmWithConfiguration:config];
         CHECK_COUNT(1, Person, realm);
     }
 
-    RLMObjectSchema *objectSchema = [RLMObjectSchema schemaForObjectClass:Person.class];
-    objectSchema.properties = [RLMObjectSchema schemaForObjectClass:HugeSyncObject.class].properties;
-    config.customSchema = [[RLMSchema alloc] init];
+    LEGACYObjectSchema *objectSchema = [LEGACYObjectSchema schemaForObjectClass:Person.class];
+    objectSchema.properties = [LEGACYObjectSchema schemaForObjectClass:HugeSyncObject.class].properties;
+    config.customSchema = [[LEGACYSchema alloc] init];
     config.customSchema.objectSchema = @[objectSchema];
 
-    RLMAssertThrowsWithReason([RLMRealm realmWithConfiguration:config error:nil],
+    LEGACYAssertThrowsWithReason([LEGACYRealm realmWithConfiguration:config error:nil],
                               @"Property 'Person.dataProp' has been added.");
 
     @autoreleasepool {
@@ -1880,18 +1880,18 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
 
 - (void)testAddPropertyToReadOnlyRealmWithAsyncOpen {
     @autoreleasepool {
-        RLMRealm *realm = [self openRealm];
+        LEGACYRealm *realm = [self openRealm];
         [self addPersonsToRealm:realm persons:@[[Person john]]];
         [self waitForUploadsForRealm:realm];
     }
     [self.app.syncManager waitForSessionTermination];
 
-    RLMRealmConfiguration *config = [self configuration];
+    LEGACYRealmConfiguration *config = [self configuration];
     config.readOnly = true;
 
-    RLMObjectSchema *objectSchema = [RLMObjectSchema schemaForObjectClass:Person.class];
-    objectSchema.properties = [RLMObjectSchema schemaForObjectClass:HugeSyncObject.class].properties;
-    config.customSchema = [[RLMSchema alloc] init];
+    LEGACYObjectSchema *objectSchema = [LEGACYObjectSchema schemaForObjectClass:Person.class];
+    objectSchema.properties = [LEGACYObjectSchema schemaForObjectClass:HugeSyncObject.class].properties;
+    config.customSchema = [[LEGACYSchema alloc] init];
     config.customSchema.objectSchema = @[objectSchema];
 
     @autoreleasepool {
@@ -1901,32 +1901,32 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
 }
 
 - (void)testSyncConfigShouldNotMigrate {
-    RLMRealm *realm = [self openRealm];
-    RLMAssertThrowsWithReason(realm.configuration.deleteRealmIfMigrationNeeded = YES,
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYAssertThrowsWithReason(realm.configuration.deleteRealmIfMigrationNeeded = YES,
                               @"Cannot set 'deleteRealmIfMigrationNeeded' when sync is enabled");
 
-    RLMRealmConfiguration *localRealmConfiguration = [RLMRealmConfiguration defaultConfiguration];
+    LEGACYRealmConfiguration *localRealmConfiguration = [LEGACYRealmConfiguration defaultConfiguration];
     XCTAssertNoThrow(localRealmConfiguration.deleteRealmIfMigrationNeeded = YES);
 }
 
 #pragma mark - Write Copy For Configuration
 
 - (void)testWriteCopyForConfigurationLocalToSync {
-    RLMRealmConfiguration *localConfig = [RLMRealmConfiguration new];
+    LEGACYRealmConfiguration *localConfig = [LEGACYRealmConfiguration new];
     localConfig.objectClasses = @[Person.class];
-    localConfig.fileURL = RLMTestRealmURL();
+    localConfig.fileURL = LEGACYTestRealmURL();
 
-    RLMRealmConfiguration *syncConfig = self.configuration;
+    LEGACYRealmConfiguration *syncConfig = self.configuration;
     syncConfig.objectClasses = @[Person.class];
 
-    RLMRealm *localRealm = [RLMRealm realmWithConfiguration:localConfig error:nil];
+    LEGACYRealm *localRealm = [LEGACYRealm realmWithConfiguration:localConfig error:nil];
     [localRealm transactionWithBlock:^{
         [localRealm addObject:[Person ringo]];
     }];
 
     [localRealm writeCopyForConfiguration:syncConfig error:nil];
 
-    RLMRealm *syncedRealm = [RLMRealm realmWithConfiguration:syncConfig error:nil];
+    LEGACYRealm *syncedRealm = [LEGACYRealm realmWithConfiguration:syncConfig error:nil];
     XCTAssertEqual([[Person allObjectsInRealm:syncedRealm] objectsWhere:@"firstName = 'Ringo'"].count, 1U);
 
     [self waitForDownloadsForRealm:syncedRealm];
@@ -1935,16 +1935,16 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
     }];
     [self waitForUploadsForRealm:syncedRealm];
 
-    RLMResults<Person *> *syncedResults = [Person allObjectsInRealm:syncedRealm];
+    LEGACYResults<Person *> *syncedResults = [Person allObjectsInRealm:syncedRealm];
     XCTAssertEqual([syncedResults objectsWhere:@"firstName = 'Ringo'"].count, 1U);
     XCTAssertEqual([syncedResults objectsWhere:@"firstName = 'John'"].count, 1U);
 }
 
 - (void)testWriteCopyForConfigurationSyncToSyncRealmError {
-    RLMRealmConfiguration *syncConfig = self.configuration;
-    RLMRealmConfiguration *syncConfig2 = self.configuration;
+    LEGACYRealmConfiguration *syncConfig = self.configuration;
+    LEGACYRealmConfiguration *syncConfig2 = self.configuration;
 
-    RLMRealm *syncedRealm = [RLMRealm realmWithConfiguration:syncConfig error:nil];
+    LEGACYRealm *syncedRealm = [LEGACYRealm realmWithConfiguration:syncConfig error:nil];
     [syncedRealm.syncSession suspend];
     [syncedRealm transactionWithBlock:^{
         [syncedRealm addObject:[Person ringo]];
@@ -1952,35 +1952,35 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
     // Cannot export a synced realm as not all changes have been synced.
     NSError *error;
     [syncedRealm writeCopyForConfiguration:syncConfig2 error:&error];
-    XCTAssertEqual(error.code, RLMErrorFail);
+    XCTAssertEqual(error.code, LEGACYErrorFail);
     XCTAssertEqualObjects(error.localizedDescription,
                           @"All client changes must be integrated in server before writing copy");
 }
 
 - (void)testWriteCopyForConfigurationLocalRealmForSyncWithExistingData {
-    RLMRealmConfiguration *initialSyncConfig = self.configuration;
+    LEGACYRealmConfiguration *initialSyncConfig = self.configuration;
     initialSyncConfig.objectClasses = @[Person.class];
 
     // Make sure objects with confliciting primary keys sync ok.
-    RLMObjectId *conflictingObjectId = [RLMObjectId objectId];
+    LEGACYObjectId *conflictingObjectId = [LEGACYObjectId objectId];
     Person *person = [Person ringo];
     person._id = conflictingObjectId;
 
-    RLMRealm *initialRealm = [RLMRealm realmWithConfiguration:initialSyncConfig error:nil];
+    LEGACYRealm *initialRealm = [LEGACYRealm realmWithConfiguration:initialSyncConfig error:nil];
     [initialRealm transactionWithBlock:^{
         [initialRealm addObject:person];
         [initialRealm addObject:[Person john]];
     }];
     [self waitForUploadsForRealm:initialRealm];
 
-    RLMRealmConfiguration *localConfig = [RLMRealmConfiguration new];
+    LEGACYRealmConfiguration *localConfig = [LEGACYRealmConfiguration new];
     localConfig.objectClasses = @[Person.class];
-    localConfig.fileURL = RLMTestRealmURL();
+    localConfig.fileURL = LEGACYTestRealmURL();
 
-    RLMRealmConfiguration *syncConfig = self.configuration;
+    LEGACYRealmConfiguration *syncConfig = self.configuration;
     syncConfig.objectClasses = @[Person.class];
 
-    RLMRealm *localRealm = [RLMRealm realmWithConfiguration:localConfig error:nil];
+    LEGACYRealm *localRealm = [LEGACYRealm realmWithConfiguration:localConfig error:nil];
     // `person2` will override what was previously stored on the server.
     Person *person2 = [Person new];
     person2._id = conflictingObjectId;
@@ -1994,7 +1994,7 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
 
     [localRealm writeCopyForConfiguration:syncConfig error:nil];
 
-    RLMRealm *syncedRealm = [RLMRealm realmWithConfiguration:syncConfig error:nil];
+    LEGACYRealm *syncedRealm = [LEGACYRealm realmWithConfiguration:syncConfig error:nil];
     [self waitForDownloadsForRealm:syncedRealm];
     XCTAssertEqual([syncedRealm allObjects:@"Person"].count, 3U);
     [syncedRealm transactionWithBlock:^{
@@ -2002,7 +2002,7 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
     }];
 
     [self waitForUploadsForRealm:syncedRealm];
-    RLMResults<Person *> *syncedResults = [Person allObjectsInRealm:syncedRealm];
+    LEGACYResults<Person *> *syncedResults = [Person allObjectsInRealm:syncedRealm];
 
     NSPredicate *p = [NSPredicate predicateWithFormat:@"firstName = 'John' AND lastName = 'Doe' AND _id = %@", conflictingObjectId];
     XCTAssertEqual([syncedResults objectsWithPredicate:p].count, 1U);
@@ -2011,9 +2011,9 @@ static const NSInteger NUMBER_OF_BIG_OBJECTS = 2;
 
 #pragma mark - File paths
 
-static NSString *newPathForPartitionValue(RLMUser *user, id<RLMBSON> partitionValue) {
+static NSString *newPathForPartitionValue(LEGACYUser *user, id<LEGACYBSON> partitionValue) {
     std::stringstream s;
-    s << RLMConvertRLMBSONToBson(partitionValue);
+    s << LEGACYConvertRLMBSONToBson(partitionValue);
     // Intentionally not passing the correct partition value here as we (accidentally?)
     // don't use the filename generated from the partition value
     realm::SyncConfig config(user._syncUser, "null");
@@ -2021,7 +2021,7 @@ static NSString *newPathForPartitionValue(RLMUser *user, id<RLMBSON> partitionVa
 }
 
 - (void)testSyncFilePaths {
-    RLMUser *user = self.anonymousUser;
+    LEGACYUser *user = self.anonymousUser;
     auto configuration = [user configurationWithPartitionValue:@"abc"];
     XCTAssertTrue([configuration.fileURL.path
                    hasSuffix:([NSString stringWithFormat:@"mongodb-realm/%@/%@/%%22abc%%22.realm",
@@ -2043,7 +2043,7 @@ static NSString *newPathForPartitionValue(RLMUser *user, id<RLMBSON> partitionVa
                           newPathForPartitionValue(user, nil));
 }
 
-static NSString *oldPathForPartitionValue(RLMUser *user, NSString *oldName) {
+static NSString *oldPathForPartitionValue(LEGACYUser *user, NSString *oldName) {
     realm::SyncConfig config(user._syncUser, "null");
     return [NSString stringWithFormat:@"%@/%s%@.realm",
             [@(user._syncUser->sync_manager()->path_for_realm(config).c_str()) stringByDeletingLastPathComponent],
@@ -2051,15 +2051,15 @@ static NSString *oldPathForPartitionValue(RLMUser *user, NSString *oldName) {
 }
 
 - (void)testLegacyFilePathsAreUsedIfFilesArePresent {
-    RLMUser *user = self.anonymousUser;
+    LEGACYUser *user = self.anonymousUser;
 
-    auto testPartitionValue = [&](id<RLMBSON> partitionValue, NSString *oldName) {
+    auto testPartitionValue = [&](id<LEGACYBSON> partitionValue, NSString *oldName) {
         NSURL *url = [NSURL fileURLWithPath:oldPathForPartitionValue(user, oldName)];
         @autoreleasepool {
             auto configuration = [user configurationWithPartitionValue:partitionValue];
             configuration.fileURL = url;
             configuration.objectClasses = @[Person.class];
-            RLMRealm *realm = [RLMRealm realmWithConfiguration:configuration error:nil];
+            LEGACYRealm *realm = [LEGACYRealm realmWithConfiguration:configuration error:nil];
             [realm beginWriteTransaction];
             [Person createInRealm:realm withValue:[Person george]];
             [realm commitWriteTransaction];
@@ -2068,7 +2068,7 @@ static NSString *oldPathForPartitionValue(RLMUser *user, NSString *oldName) {
         auto configuration = [user configurationWithPartitionValue:partitionValue];
         configuration.objectClasses = @[Person.class];
         XCTAssertEqualObjects(configuration.fileURL, url);
-        RLMRealm *realm = [RLMRealm realmWithConfiguration:configuration error:nil];
+        LEGACYRealm *realm = [LEGACYRealm realmWithConfiguration:configuration error:nil];
         XCTAssertEqual([Person allObjectsInRealm:realm].count, 1U);
     };
 

@@ -17,47 +17,47 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #import <XCTest/XCTest.h>
-#import "RLMAssertions.h"
-#import "RLMTestObjects.h"
+#import "LEGACYAssertions.h"
+#import "LEGACYTestObjects.h"
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-NSURL *RLMTestRealmURL(void);
-NSURL *RLMDefaultRealmURL(void);
-NSString *RLMRealmPathForFile(NSString *);
-NSData *RLMGenerateKey(void);
+NSURL *LEGACYTestRealmURL(void);
+NSURL *LEGACYDefaultRealmURL(void);
+NSString *LEGACYRealmPathForFile(NSString *);
+NSData *LEGACYGenerateKey(void);
 #ifdef __cplusplus
 }
 #endif
 
-@interface RLMTestCaseBase : XCTestCase
+@interface LEGACYTestCaseBase : XCTestCase
 - (void)resetRealmState;
 @end
 
-@interface RLMTestCase : RLMTestCaseBase
+@interface LEGACYTestCase : LEGACYTestCaseBase
 
-- (RLMRealm *)realmWithTestPath;
-- (RLMRealm *)realmWithTestPathAndSchema:(nullable RLMSchema *)schema;
+- (LEGACYRealm *)realmWithTestPath;
+- (LEGACYRealm *)realmWithTestPathAndSchema:(nullable LEGACYSchema *)schema;
 
-- (RLMRealm *)inMemoryRealmWithIdentifier:(NSString *)identifier;
-- (RLMRealm *)readOnlyRealmWithURL:(NSURL *)fileURL error:(NSError **)error;
+- (LEGACYRealm *)inMemoryRealmWithIdentifier:(NSString *)identifier;
+- (LEGACYRealm *)readOnlyRealmWithURL:(NSURL *)fileURL error:(NSError **)error;
 
 - (void)deleteFiles;
 - (void)deleteRealmFileAtURL:(NSURL *)fileURL;
 
-- (void)waitForNotification:(RLMNotification)expectedNote realm:(RLMRealm *)realm block:(dispatch_block_t)block;
+- (void)waitForNotification:(LEGACYNotification)expectedNote realm:(LEGACYRealm *)realm block:(dispatch_block_t)block;
 
 - (nullable id)nonLiteralNil;
 - (BOOL)encryptTests;
 
-- (void)dispatchAsync:(RLM_SWIFT_SENDABLE dispatch_block_t)block;
-- (void)dispatchAsyncAndWait:(RLM_SWIFT_SENDABLE dispatch_block_t)block;
+- (void)dispatchAsync:(LEGACY_SWIFT_SENDABLE dispatch_block_t)block;
+- (void)dispatchAsyncAndWait:(LEGACY_SWIFT_SENDABLE dispatch_block_t)block;
 
 @property (nonatomic, readonly) dispatch_queue_t bgQueue;
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

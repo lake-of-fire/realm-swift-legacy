@@ -16,53 +16,53 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-@class RLMRealm, RLMSchema, RLMObjectBase, RLMResults, RLMProperty;
+@class LEGACYRealm, LEGACYSchema, LEGACYObjectBase, LEGACYResults, LEGACYProperty;
 
-typedef NS_ENUM(NSUInteger, RLMUpdatePolicy) {
-    RLMUpdatePolicyError = 1,
-    RLMUpdatePolicyUpdateChanged = 3,
-    RLMUpdatePolicyUpdateAll = 2,
+typedef NS_ENUM(NSUInteger, LEGACYUpdatePolicy) {
+    LEGACYUpdatePolicyError = 1,
+    LEGACYUpdatePolicyUpdateChanged = 3,
+    LEGACYUpdatePolicyUpdateAll = 2,
 };
 
-RLM_HEADER_AUDIT_BEGIN(nullability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability)
 
-void RLMVerifyHasPrimaryKey(Class cls);
+void LEGACYVerifyHasPrimaryKey(Class cls);
 
-void RLMVerifyInWriteTransaction(RLMRealm *const realm);
+void LEGACYVerifyInWriteTransaction(LEGACYRealm *const realm);
 
 //
 // Adding, Removing, Getting Objects
 //
 
 // add an object to the given realm
-void RLMAddObjectToRealm(RLMObjectBase *object, RLMRealm *realm, RLMUpdatePolicy);
+void LEGACYAddObjectToRealm(LEGACYObjectBase *object, LEGACYRealm *realm, LEGACYUpdatePolicy);
 
 // delete an object from its realm
-void RLMDeleteObjectFromRealm(RLMObjectBase *object, RLMRealm *realm);
+void LEGACYDeleteObjectFromRealm(LEGACYObjectBase *object, LEGACYRealm *realm);
 
 // deletes all objects from a realm
-void RLMDeleteAllObjectsFromRealm(RLMRealm *realm);
+void LEGACYDeleteAllObjectsFromRealm(LEGACYRealm *realm);
 
 // get objects of a given class
-RLMResults *RLMGetObjects(RLMRealm *realm, NSString *objectClassName, NSPredicate * _Nullable predicate)
+LEGACYResults *LEGACYGetObjects(LEGACYRealm *realm, NSString *objectClassName, NSPredicate * _Nullable predicate)
 NS_RETURNS_RETAINED;
 
 // get an object with the given primary key
-id _Nullable RLMGetObject(RLMRealm *realm, NSString *objectClassName, id _Nullable key) NS_RETURNS_RETAINED;
+id _Nullable LEGACYGetObject(LEGACYRealm *realm, NSString *objectClassName, id _Nullable key) NS_RETURNS_RETAINED;
 
 // create object from array or dictionary
-RLMObjectBase *RLMCreateObjectInRealmWithValue(RLMRealm *realm, NSString *className,
-                                               id _Nullable value, RLMUpdatePolicy updatePolicy)
+LEGACYObjectBase *LEGACYCreateObjectInRealmWithValue(LEGACYRealm *realm, NSString *className,
+                                               id _Nullable value, LEGACYUpdatePolicy updatePolicy)
 NS_RETURNS_RETAINED;
 
 // creates an asymmetric object and doesn't return
-void RLMCreateAsymmetricObjectInRealm(RLMRealm *realm, NSString *className, id value);
+void LEGACYCreateAsymmetricObjectInRealm(LEGACYRealm *realm, NSString *className, id value);
 
 //
 // Accessor Creation
@@ -72,7 +72,7 @@ void RLMCreateAsymmetricObjectInRealm(RLMRealm *realm, NSString *className, id v
 // Perform the per-property accessor initialization for a managed RealmSwiftObject
 // promotingExisting should be true if the object was previously used as an
 // unmanaged object, and false if it is a newly created object.
-void RLMInitializeSwiftAccessor(RLMObjectBase *object, bool promotingExisting);
+void LEGACYInitializeSwiftAccessor(LEGACYObjectBase *object, bool promotingExisting);
 
 #ifdef __cplusplus
 }
@@ -83,16 +83,16 @@ namespace realm {
     struct ColKey;
     struct ObjLink;
 }
-class RLMClassInfo;
+class LEGACYClassInfo;
 
 // get an object with a given table & object key
-RLMObjectBase *RLMObjectFromObjLink(RLMRealm *realm,
+LEGACYObjectBase *LEGACYObjectFromObjLink(LEGACYRealm *realm,
                                     realm::ObjLink&& objLink,
                                     bool parentIsSwiftObject) NS_RETURNS_RETAINED;
 
 // Create accessors
-RLMObjectBase *RLMCreateObjectAccessor(RLMClassInfo& info, int64_t key) NS_RETURNS_RETAINED;
-RLMObjectBase *RLMCreateObjectAccessor(RLMClassInfo& info, const realm::Obj& obj) NS_RETURNS_RETAINED;
+LEGACYObjectBase *LEGACYCreateObjectAccessor(LEGACYClassInfo& info, int64_t key) NS_RETURNS_RETAINED;
+LEGACYObjectBase *LEGACYCreateObjectAccessor(LEGACYClassInfo& info, const realm::Obj& obj) NS_RETURNS_RETAINED;
 #endif
 
-RLM_HEADER_AUDIT_END(nullability)
+LEGACY_HEADER_AUDIT_END(nullability)

@@ -16,18 +16,18 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMNetworkTransport.h>
+#import <Realm/LEGACYNetworkTransport.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
-@protocol RLMBSON;
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
+@protocol LEGACYBSON;
 
-@class RLMFindOptions, RLMFindOneAndModifyOptions, RLMUpdateResult, RLMChangeStream, RLMObjectId;
+@class LEGACYFindOptions, LEGACYFindOneAndModifyOptions, LEGACYUpdateResult, LEGACYChangeStream, LEGACYObjectId;
 
-/// Delegate which is used for subscribing to changes on a `[RLMMongoCollection watch]` stream.
-@protocol RLMChangeEventDelegate
+/// Delegate which is used for subscribing to changes on a `[LEGACYMongoCollection watch]` stream.
+@protocol LEGACYChangeEventDelegate
 /// The stream was opened.
-/// @param changeStream The RLMChangeStream subscribing to the stream changes.
-- (void)changeStreamDidOpen:(RLMChangeStream *)changeStream;
+/// @param changeStream The LEGACYChangeStream subscribing to the stream changes.
+- (void)changeStreamDidOpen:(LEGACYChangeStream *)changeStream;
 /// The stream has been closed.
 /// @param error If an error occured when closing the stream, an error will be passed.
 - (void)changeStreamDidCloseWithError:(nullable NSError *)error;
@@ -36,21 +36,21 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 - (void)changeStreamDidReceiveError:(NSError *)error;
 /// Invoked when a change event has been received.
 /// @param changeEvent The change event in BSON format.
-- (void)changeStreamDidReceiveChangeEvent:(id<RLMBSON>)changeEvent;
+- (void)changeStreamDidReceiveChangeEvent:(id<LEGACYBSON>)changeEvent;
 @end
 
 /// Acts as a middleman and processes events with WatchStream
-RLM_SWIFT_SENDABLE RLM_FINAL // is internally thread-safe
-@interface RLMChangeStream : NSObject<RLMEventDelegate>
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL // is internally thread-safe
+@interface LEGACYChangeStream : NSObject<LEGACYEventDelegate>
 /// Stops a watch streaming session.
 - (void)close;
 /// :nodoc:
 - (instancetype)init NS_UNAVAILABLE;
 @end
 
-/// The `RLMMongoCollection` represents a MongoDB collection.
+/// The `LEGACYMongoCollection` represents a MongoDB collection.
 ///
-/// You can get an instance from a `RLMMongoDatabase`.
+/// You can get an instance from a `LEGACYMongoDatabase`.
 ///
 /// Create, read, update, and delete methods are available.
 ///
@@ -59,38 +59,38 @@ RLM_SWIFT_SENDABLE RLM_FINAL // is internally thread-safe
 /// - Note:
 /// Before you can read or write data, a user must log in.
 /// - Usage:
-/// RLMMongoClient *client = [self.app mongoClient:@"mongodb1"];
-/// RLMMongoDatabase *database = [client databaseWithName:@"test_data"];
-/// RLMMongoCollection *collection = [database collectionWithName:@"Dog"];
+/// LEGACYMongoClient *client = [self.app mongoClient:@"mongodb1"];
+/// LEGACYMongoDatabase *database = [client databaseWithName:@"test_data"];
+/// LEGACYMongoCollection *collection = [database collectionWithName:@"Dog"];
 /// [collection insertOneDocument:@{@"name": @"fido", @"breed": @"cane corso"} completion:...];
 ///
 /// - SeeAlso:
-/// `RLMMongoClient`, `RLMMongoDatabase`
-RLM_SWIFT_SENDABLE RLM_FINAL // is internally thread-safe
-@interface RLMMongoCollection : NSObject
+/// `LEGACYMongoClient`, `LEGACYMongoDatabase`
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL // is internally thread-safe
+@interface LEGACYMongoCollection : NSObject
 /// Block which returns an object id on a successful insert, or an error should one occur.
-RLM_SWIFT_SENDABLE // invoked on a background thread
-typedef void(^RLMMongoInsertBlock)(id<RLMBSON> _Nullable, NSError * _Nullable);
+LEGACY_SWIFT_SENDABLE // invoked on a background thread
+typedef void(^LEGACYMongoInsertBlock)(id<LEGACYBSON> _Nullable, NSError * _Nullable);
 /// Block which returns an array of object ids on a successful insertMany, or an error should one occur.
-RLM_SWIFT_SENDABLE // invoked on a background thread
-typedef void(^RLMMongoInsertManyBlock)(NSArray<id<RLMBSON>> * _Nullable, NSError * _Nullable);
+LEGACY_SWIFT_SENDABLE // invoked on a background thread
+typedef void(^LEGACYMongoInsertManyBlock)(NSArray<id<LEGACYBSON>> * _Nullable, NSError * _Nullable);
 /// Block which returns an array of Documents on a successful find operation, or an error should one occur.
-RLM_SWIFT_SENDABLE // invoked on a background thread
-typedef void(^RLMMongoFindBlock)(NSArray<NSDictionary<NSString *, id<RLMBSON>> *> * _Nullable,
+LEGACY_SWIFT_SENDABLE // invoked on a background thread
+typedef void(^LEGACYMongoFindBlock)(NSArray<NSDictionary<NSString *, id<LEGACYBSON>> *> * _Nullable,
                                  NSError * _Nullable);
 /// Block which returns a Document on a successful findOne operation, or an error should one occur.
-RLM_SWIFT_SENDABLE // invoked on a background thread
-typedef void(^RLMMongoFindOneBlock)(NSDictionary<NSString *, id<RLMBSON>> * _Nullable_result,
+LEGACY_SWIFT_SENDABLE // invoked on a background thread
+typedef void(^LEGACYMongoFindOneBlock)(NSDictionary<NSString *, id<LEGACYBSON>> * _Nullable_result,
                                     NSError * _Nullable);
 /// Block which returns the number of Documents in a collection on a successful count operation, or an error should one occur.
-RLM_SWIFT_SENDABLE // invoked on a background thread
-typedef void(^RLMMongoCountBlock)(NSInteger, NSError * _Nullable);
-/// Block which returns an RLMUpdateResult on a successful update operation, or an error should one occur.
-RLM_SWIFT_SENDABLE // invoked on a background thread
-typedef void(^RLMMongoUpdateBlock)(RLMUpdateResult * _Nullable, NSError * _Nullable);
+LEGACY_SWIFT_SENDABLE // invoked on a background thread
+typedef void(^LEGACYMongoCountBlock)(NSInteger, NSError * _Nullable);
+/// Block which returns an LEGACYUpdateResult on a successful update operation, or an error should one occur.
+LEGACY_SWIFT_SENDABLE // invoked on a background thread
+typedef void(^LEGACYMongoUpdateBlock)(LEGACYUpdateResult * _Nullable, NSError * _Nullable);
 /// Block which returns the deleted Document on a successful delete operation, or an error should one occur.
-RLM_SWIFT_SENDABLE // invoked on a background thread
-typedef void(^RLMMongoDeleteBlock)(NSDictionary<NSString *, id<RLMBSON>> * _Nullable_result,
+LEGACY_SWIFT_SENDABLE // invoked on a background thread
+typedef void(^LEGACYMongoDeleteBlock)(NSDictionary<NSString *, id<LEGACYBSON>> * _Nullable_result,
                                    NSError * _Nullable);
 
 /// The name of this mongodb collection.
@@ -100,40 +100,40 @@ typedef void(^RLMMongoDeleteBlock)(NSDictionary<NSString *, id<RLMBSON>> * _Null
 /// generated for it.
 /// @param document  A `Document` value to insert.
 /// @param completion The result of attempting to perform the insert. An Id will be returned for the inserted object on sucess
-- (void)insertOneDocument:(NSDictionary<NSString *, id<RLMBSON>> *)document
-               completion:(RLMMongoInsertBlock)completion NS_REFINED_FOR_SWIFT;
+- (void)insertOneDocument:(NSDictionary<NSString *, id<LEGACYBSON>> *)document
+               completion:(LEGACYMongoInsertBlock)completion NS_REFINED_FOR_SWIFT;
 
 /// Encodes the provided values to BSON and inserts them. If any values are missing identifiers,
 /// they will be generated.
 /// @param documents  The `Document` values in a bson array to insert.
 /// @param completion The result of the insert, returns an array inserted document ids in order
-- (void)insertManyDocuments:(NSArray<NSDictionary<NSString *, id<RLMBSON>> *> *)documents
-                 completion:(RLMMongoInsertManyBlock)completion NS_REFINED_FOR_SWIFT;
+- (void)insertManyDocuments:(NSArray<NSDictionary<NSString *, id<LEGACYBSON>> *> *)documents
+                 completion:(LEGACYMongoInsertManyBlock)completion NS_REFINED_FOR_SWIFT;
 
 /// Finds the documents in this collection which match the provided filter.
 /// @param filterDocument A `Document` as bson that should match the query.
-/// @param options `RLMFindOptions` to use when executing the command.
+/// @param options `LEGACYFindOptions` to use when executing the command.
 /// @param completion The resulting bson array of documents or error if one occurs
-- (void)findWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-          options:(RLMFindOptions *)options
-       completion:(RLMMongoFindBlock)completion NS_REFINED_FOR_SWIFT;
+- (void)findWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+          options:(LEGACYFindOptions *)options
+       completion:(LEGACYMongoFindBlock)completion NS_REFINED_FOR_SWIFT;
 
 /// Finds the documents in this collection which match the provided filter.
 /// @param filterDocument A `Document` as bson that should match the query.
 /// @param completion The resulting bson array as a string or error if one occurs
-- (void)findWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-       completion:(RLMMongoFindBlock)completion NS_REFINED_FOR_SWIFT;
+- (void)findWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+       completion:(LEGACYMongoFindBlock)completion NS_REFINED_FOR_SWIFT;
 
 /// Returns one document from a collection or view which matches the
 /// provided filter. If multiple documents satisfy the query, this method
 /// returns the first document according to the query's sort order or natural
 /// order.
 /// @param filterDocument A `Document` as bson that should match the query.
-/// @param options `RLMFindOptions` to use when executing the command.
+/// @param options `LEGACYFindOptions` to use when executing the command.
 /// @param completion The resulting bson or error if one occurs
-- (void)findOneDocumentWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-                     options:(RLMFindOptions *)options
-                  completion:(RLMMongoFindOneBlock)completion NS_REFINED_FOR_SWIFT;
+- (void)findOneDocumentWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+                     options:(LEGACYFindOptions *)options
+                  completion:(LEGACYMongoFindOneBlock)completion NS_REFINED_FOR_SWIFT;
 
 /// Returns one document from a collection or view which matches the
 /// provided filter. If multiple documents satisfy the query, this method
@@ -141,76 +141,76 @@ typedef void(^RLMMongoDeleteBlock)(NSDictionary<NSString *, id<RLMBSON>> * _Null
 /// order.
 /// @param filterDocument A `Document` as bson that should match the query.
 /// @param completion The resulting bson or error if one occurs
-- (void)findOneDocumentWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-                  completion:(RLMMongoFindOneBlock)completion NS_REFINED_FOR_SWIFT;
+- (void)findOneDocumentWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+                  completion:(LEGACYMongoFindOneBlock)completion NS_REFINED_FOR_SWIFT;
 
 /// Runs an aggregation framework pipeline against this collection.
 /// @param pipeline A bson array made up of `Documents` containing the pipeline of aggregation operations to perform.
 /// @param completion The resulting bson array of documents or error if one occurs
-- (void)aggregateWithPipeline:(NSArray<NSDictionary<NSString *, id<RLMBSON>> *> *)pipeline
-                   completion:(RLMMongoFindBlock)completion NS_REFINED_FOR_SWIFT;
+- (void)aggregateWithPipeline:(NSArray<NSDictionary<NSString *, id<LEGACYBSON>> *> *)pipeline
+                   completion:(LEGACYMongoFindBlock)completion NS_REFINED_FOR_SWIFT;
 
 /// Counts the number of documents in this collection matching the provided filter.
 /// @param filterDocument A `Document` as bson that should match the query.
 /// @param limit The max amount of documents to count
 /// @param completion Returns the count of the documents that matched the filter.
-- (void)countWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
+- (void)countWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
              limit:(NSInteger)limit
-        completion:(RLMMongoCountBlock)completion NS_REFINED_FOR_SWIFT;
+        completion:(LEGACYMongoCountBlock)completion NS_REFINED_FOR_SWIFT;
 
 /// Counts the number of documents in this collection matching the provided filter.
 /// @param filterDocument A `Document` as bson that should match the query.
 /// @param completion Returns the count of the documents that matched the filter.
-- (void)countWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-        completion:(RLMMongoCountBlock)completion NS_REFINED_FOR_SWIFT;
+- (void)countWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+        completion:(LEGACYMongoCountBlock)completion NS_REFINED_FOR_SWIFT;
 
 /// Deletes a single matching document from the collection.
 /// @param filterDocument A `Document` as bson that should match the query.
 /// @param completion The result of performing the deletion. Returns the count of deleted objects
-- (void)deleteOneDocumentWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-                    completion:(RLMMongoCountBlock)completion NS_REFINED_FOR_SWIFT;
+- (void)deleteOneDocumentWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+                    completion:(LEGACYMongoCountBlock)completion NS_REFINED_FOR_SWIFT;
 
 /// Deletes multiple documents
 /// @param filterDocument Document representing the match criteria
 /// @param completion The result of performing the deletion. Returns the count of the deletion
-- (void)deleteManyDocumentsWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-                      completion:(RLMMongoCountBlock)completion NS_REFINED_FOR_SWIFT;
+- (void)deleteManyDocumentsWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+                      completion:(LEGACYMongoCountBlock)completion NS_REFINED_FOR_SWIFT;
 
 /// Updates a single document matching the provided filter in this collection.
 /// @param filterDocument  A bson `Document` representing the match criteria.
 /// @param updateDocument  A bson `Document` representing the update to be applied to a matching document.
 /// @param upsert When true, creates a new document if no document matches the query.
 /// @param completion The result of the attempt to update a document.
-- (void)updateOneDocumentWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-                updateDocument:(NSDictionary<NSString *, id<RLMBSON>> *)updateDocument
+- (void)updateOneDocumentWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+                updateDocument:(NSDictionary<NSString *, id<LEGACYBSON>> *)updateDocument
                         upsert:(BOOL)upsert
-                    completion:(RLMMongoUpdateBlock)completion NS_REFINED_FOR_SWIFT;
+                    completion:(LEGACYMongoUpdateBlock)completion NS_REFINED_FOR_SWIFT;
 
 /// Updates a single document matching the provided filter in this collection.
 /// @param filterDocument  A bson `Document` representing the match criteria.
 /// @param updateDocument  A bson `Document` representing the update to be applied to a matching document.
 /// @param completion The result of the attempt to update a document.
-- (void)updateOneDocumentWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-                updateDocument:(NSDictionary<NSString *, id<RLMBSON>> *)updateDocument
-                    completion:(RLMMongoUpdateBlock)completion NS_REFINED_FOR_SWIFT;
+- (void)updateOneDocumentWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+                updateDocument:(NSDictionary<NSString *, id<LEGACYBSON>> *)updateDocument
+                    completion:(LEGACYMongoUpdateBlock)completion NS_REFINED_FOR_SWIFT;
 
 /// Updates multiple documents matching the provided filter in this collection.
 /// @param filterDocument  A bson `Document` representing the match criteria.
 /// @param updateDocument  A bson `Document` representing the update to be applied to a matching document.
 /// @param upsert When true, creates a new document if no document matches the query.
 /// @param completion The result of the attempt to update a document.
-- (void)updateManyDocumentsWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-                  updateDocument:(NSDictionary<NSString *, id<RLMBSON>> *)updateDocument
+- (void)updateManyDocumentsWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+                  updateDocument:(NSDictionary<NSString *, id<LEGACYBSON>> *)updateDocument
                           upsert:(BOOL)upsert
-                      completion:(RLMMongoUpdateBlock)completion NS_REFINED_FOR_SWIFT;
+                      completion:(LEGACYMongoUpdateBlock)completion NS_REFINED_FOR_SWIFT;
 
 /// Updates multiple documents matching the provided filter in this collection.
 /// @param filterDocument  A bson `Document` representing the match criteria.
 /// @param updateDocument  A bson `Document` representing the update to be applied to a matching document.
 /// @param completion The result of the attempt to update a document.
-- (void)updateManyDocumentsWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-                  updateDocument:(NSDictionary<NSString *, id<RLMBSON>> *)updateDocument
-                      completion:(RLMMongoUpdateBlock)completion NS_REFINED_FOR_SWIFT;
+- (void)updateManyDocumentsWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+                  updateDocument:(NSDictionary<NSString *, id<LEGACYBSON>> *)updateDocument
+                      completion:(LEGACYMongoUpdateBlock)completion NS_REFINED_FOR_SWIFT;
 
 /// Updates a single document in a collection based on a query filter and
 /// returns the document in either its pre-update or post-update form. Unlike
@@ -222,10 +222,10 @@ typedef void(^RLMMongoDeleteBlock)(NSDictionary<NSString *, id<RLMBSON>> * _Null
 /// @param updateDocument  A bson `Document` representing the update to be applied to a matching document.
 /// @param options  `RemoteFindOneAndModifyOptions` to use when executing the command.
 /// @param completion The result of the attempt to update a document.
-- (void)findOneAndUpdateWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-               updateDocument:(NSDictionary<NSString *, id<RLMBSON>> *)updateDocument
-                      options:(RLMFindOneAndModifyOptions *)options
-                   completion:(RLMMongoFindOneBlock)completion NS_REFINED_FOR_SWIFT;
+- (void)findOneAndUpdateWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+               updateDocument:(NSDictionary<NSString *, id<LEGACYBSON>> *)updateDocument
+                      options:(LEGACYFindOneAndModifyOptions *)options
+                   completion:(LEGACYMongoFindOneBlock)completion NS_REFINED_FOR_SWIFT;
 
 /// Updates a single document in a collection based on a query filter and
 /// returns the document in either its pre-update or post-update form. Unlike
@@ -236,9 +236,9 @@ typedef void(^RLMMongoDeleteBlock)(NSDictionary<NSString *, id<RLMBSON>> * _Null
 /// @param filterDocument  A bson `Document` representing the match criteria.
 /// @param updateDocument  A bson `Document` representing the update to be applied to a matching document.
 /// @param completion The result of the attempt to update a document.
-- (void)findOneAndUpdateWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-               updateDocument:(NSDictionary<NSString *, id<RLMBSON>> *)updateDocument
-                   completion:(RLMMongoFindOneBlock)completion NS_REFINED_FOR_SWIFT;
+- (void)findOneAndUpdateWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+               updateDocument:(NSDictionary<NSString *, id<LEGACYBSON>> *)updateDocument
+                   completion:(LEGACYMongoFindOneBlock)completion NS_REFINED_FOR_SWIFT;
 
 /// Overwrites a single document in a collection based on a query filter and
 /// returns the document in either its pre-replacement or post-replacement
@@ -248,12 +248,12 @@ typedef void(^RLMMongoDeleteBlock)(NSDictionary<NSString *, id<RLMBSON>> * _Null
 /// find and update operations.
 /// @param filterDocument  A `Document` that should match the query.
 /// @param replacementDocument  A `Document` describing the replacement.
-/// @param options  `RLMFindOneAndModifyOptions` to use when executing the command.
+/// @param options  `LEGACYFindOneAndModifyOptions` to use when executing the command.
 /// @param completion The result of the attempt to replace a document.
-- (void)findOneAndReplaceWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-           replacementDocument:(NSDictionary<NSString *, id<RLMBSON>> *)replacementDocument
-                       options:(RLMFindOneAndModifyOptions *)options
-                    completion:(RLMMongoFindOneBlock)completion NS_REFINED_FOR_SWIFT;
+- (void)findOneAndReplaceWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+           replacementDocument:(NSDictionary<NSString *, id<LEGACYBSON>> *)replacementDocument
+                       options:(LEGACYFindOneAndModifyOptions *)options
+                    completion:(LEGACYMongoFindOneBlock)completion NS_REFINED_FOR_SWIFT;
 
 /// Overwrites a single document in a collection based on a query filter and
 /// returns the document in either its pre-replacement or post-replacement
@@ -264,9 +264,9 @@ typedef void(^RLMMongoDeleteBlock)(NSDictionary<NSString *, id<RLMBSON>> * _Null
 /// @param filterDocument  A `Document` that should match the query.
 /// @param replacementDocument  A `Document` describing the update.
 /// @param completion The result of the attempt to replace a document.
-- (void)findOneAndReplaceWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-           replacementDocument:(NSDictionary<NSString *, id<RLMBSON>> *)replacementDocument
-                    completion:(RLMMongoFindOneBlock)completion NS_REFINED_FOR_SWIFT;
+- (void)findOneAndReplaceWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+           replacementDocument:(NSDictionary<NSString *, id<LEGACYBSON>> *)replacementDocument
+                    completion:(LEGACYMongoFindOneBlock)completion NS_REFINED_FOR_SWIFT;
 
 /// Removes a single document from a collection based on a query filter and
 /// returns a document with the same form as the document immediately before
@@ -275,11 +275,11 @@ typedef void(^RLMMongoDeleteBlock)(NSDictionary<NSString *, id<RLMBSON>> * _Null
 /// other update operations changing the document between separate find and
 /// delete operations.
 /// @param filterDocument  A `Document` that should match the query.
-/// @param options `RLMFindOneAndModifyOptions` to use when executing the command.
+/// @param options `LEGACYFindOneAndModifyOptions` to use when executing the command.
 /// @param completion The result of the attempt to delete a document.
-- (void)findOneAndDeleteWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-                      options:(RLMFindOneAndModifyOptions *)options
-                   completion:(RLMMongoDeleteBlock)completion NS_REFINED_FOR_SWIFT;
+- (void)findOneAndDeleteWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+                      options:(LEGACYFindOneAndModifyOptions *)options
+                   completion:(LEGACYMongoDeleteBlock)completion NS_REFINED_FOR_SWIFT;
 
 /// Removes a single document from a collection based on a query filter and
 /// returns a document with the same form as the document immediately before
@@ -289,15 +289,15 @@ typedef void(^RLMMongoDeleteBlock)(NSDictionary<NSString *, id<RLMBSON>> * _Null
 /// delete operations.
 /// @param filterDocument  A `Document` that should match the query.
 /// @param completion The result of the attempt to delete a document.
-- (void)findOneAndDeleteWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-                   completion:(RLMMongoDeleteBlock)completion NS_REFINED_FOR_SWIFT;
+- (void)findOneAndDeleteWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+                   completion:(LEGACYMongoDeleteBlock)completion NS_REFINED_FOR_SWIFT;
 
 /// Opens a MongoDB change stream against the collection to watch for changes. The resulting stream will be notified
 /// of all events on this collection that the active user is authorized to see based on the configured MongoDB
 /// rules.
 /// @param delegate The delegate that will react to events and errors from the resulting change stream.
 /// @param queue Dispatches streaming events to an optional queue, if no queue is provided the main queue is used
-- (RLMChangeStream *)watchWithDelegate:(id<RLMChangeEventDelegate>)delegate
+- (LEGACYChangeStream *)watchWithDelegate:(id<LEGACYChangeEventDelegate>)delegate
                          delegateQueue:(nullable dispatch_queue_t)queue NS_REFINED_FOR_SWIFT;
 
 /// Opens a MongoDB change stream against the collection to watch for changes
@@ -306,8 +306,8 @@ typedef void(^RLMMongoDeleteBlock)(NSDictionary<NSString *, id<RLMBSON>> * _Null
 /// @param filterIds The list of _ids in the collection to watch.
 /// @param delegate The delegate that will react to events and errors from the resulting change stream.
 /// @param queue Dispatches streaming events to an optional queue, if no queue is provided the main queue is used
-- (RLMChangeStream *)watchWithFilterIds:(NSArray<RLMObjectId *> *)filterIds
-                               delegate:(id<RLMChangeEventDelegate>)delegate
+- (LEGACYChangeStream *)watchWithFilterIds:(NSArray<LEGACYObjectId *> *)filterIds
+                               delegate:(id<LEGACYChangeEventDelegate>)delegate
                           delegateQueue:(nullable dispatch_queue_t)queue NS_REFINED_FOR_SWIFT;
 
 /// Opens a MongoDB change stream against the collection to watch for changes. The provided BSON document will be
@@ -321,10 +321,10 @@ typedef void(^RLMMongoDeleteBlock)(NSDictionary<NSString *, id<RLMBSON>> * _Null
 /// @param matchFilter The $match filter to apply to incoming change events
 /// @param delegate The delegate that will react to events and errors from the resulting change stream.
 /// @param queue Dispatches streaming events to an optional queue, if no queue is provided the main queue is used
-- (RLMChangeStream *)watchWithMatchFilter:(NSDictionary<NSString *, id<RLMBSON>> *)matchFilter
-                                 delegate:(id<RLMChangeEventDelegate>)delegate
+- (LEGACYChangeStream *)watchWithMatchFilter:(NSDictionary<NSString *, id<LEGACYBSON>> *)matchFilter
+                                 delegate:(id<LEGACYChangeEventDelegate>)delegate
                             delegateQueue:(nullable dispatch_queue_t)queue NS_REFINED_FOR_SWIFT;
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

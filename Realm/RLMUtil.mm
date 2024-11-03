@@ -16,25 +16,25 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMUtil.hpp"
+#import "LEGACYUtil.hpp"
 
-#import "RLMArray_Private.hpp"
-#import "RLMAccessor.hpp"
-#import "RLMDecimal128_Private.hpp"
-#import "RLMDictionary_Private.h"
-#import "RLMError_Private.hpp"
-#import "RLMObjectId_Private.hpp"
-#import "RLMObjectSchema_Private.hpp"
-#import "RLMObjectStore.h"
-#import "RLMObject_Private.hpp"
-#import "RLMProperty_Private.h"
-#import "RLMSwiftValueStorage.h"
-#import "RLMSchema_Private.h"
-#import "RLMSet_Private.hpp"
-#import "RLMSwiftCollectionBase.h"
-#import "RLMSwiftSupport.h"
-#import "RLMUUID_Private.hpp"
-#import "RLMValue.h"
+#import "LEGACYArray_Private.hpp"
+#import "LEGACYAccessor.hpp"
+#import "LEGACYDecimal128_Private.hpp"
+#import "LEGACYDictionary_Private.h"
+#import "LEGACYError_Private.hpp"
+#import "LEGACYObjectId_Private.hpp"
+#import "LEGACYObjectSchema_Private.hpp"
+#import "LEGACYObjectStore.h"
+#import "LEGACYObject_Private.hpp"
+#import "LEGACYProperty_Private.h"
+#import "LEGACYSwiftValueStorage.h"
+#import "LEGACYSchema_Private.h"
+#import "LEGACYSet_Private.hpp"
+#import "LEGACYSwiftCollectionBase.h"
+#import "LEGACYSwiftSupport.h"
+#import "LEGACYUUID_Private.hpp"
+#import "LEGACYValue.h"
 
 #import <realm/mixed.hpp>
 #import <realm/util/overload.hpp>
@@ -43,31 +43,31 @@
 #include <sys/types.h>
 
 #if !defined(REALM_COCOA_VERSION)
-#import "RLMVersion.h"
+#import "LEGACYVersion.h"
 #endif
 
-static inline RLMArray *asRLMArray(__unsafe_unretained id const value) {
-    return RLMDynamicCast<RLMArray>(value) ?: RLMDynamicCast<RLMSwiftCollectionBase>(value)._rlmCollection;
+static inline LEGACYArray *asLEGACYArray(__unsafe_unretained id const value) {
+    return LEGACYDynamicCast<LEGACYArray>(value) ?: LEGACYDynamicCast<LEGACYSwiftCollectionBase>(value)._rlmCollection;
 }
 
-static inline RLMSet *asRLMSet(__unsafe_unretained id const value) {
-    return RLMDynamicCast<RLMSet>(value) ?: RLMDynamicCast<RLMSwiftCollectionBase>(value)._rlmCollection;
+static inline LEGACYSet *asLEGACYSet(__unsafe_unretained id const value) {
+    return LEGACYDynamicCast<LEGACYSet>(value) ?: LEGACYDynamicCast<LEGACYSwiftCollectionBase>(value)._rlmCollection;
 }
 
-static inline RLMDictionary *asRLMDictionary(__unsafe_unretained id const value) {
-    return RLMDynamicCast<RLMDictionary>(value) ?: RLMDynamicCast<RLMSwiftCollectionBase>(value)._rlmCollection;
+static inline LEGACYDictionary *asLEGACYDictionary(__unsafe_unretained id const value) {
+    return LEGACYDynamicCast<LEGACYDictionary>(value) ?: LEGACYDynamicCast<LEGACYSwiftCollectionBase>(value)._rlmCollection;
 }
 
-static inline bool checkCollectionType(__unsafe_unretained id<RLMCollection> const collection,
-                                  RLMPropertyType type,
+static inline bool checkCollectionType(__unsafe_unretained id<LEGACYCollection> const collection,
+                                  LEGACYPropertyType type,
                                   bool optional,
                                   __unsafe_unretained NSString *const objectClassName) {
     return collection.type == type && collection.optional == optional
-        && (type != RLMPropertyTypeObject || [collection.objectClassName isEqualToString:objectClassName]);
+        && (type != LEGACYPropertyTypeObject || [collection.objectClassName isEqualToString:objectClassName]);
 }
 
 static id (*s_bridgeValue)(id);
-id<NSFastEnumeration> RLMAsFastEnumeration(__unsafe_unretained id obj) {
+id<NSFastEnumeration> LEGACYAsFastEnumeration(__unsafe_unretained id obj) {
     if (!obj) {
         return nil;
     }
@@ -83,45 +83,45 @@ id<NSFastEnumeration> RLMAsFastEnumeration(__unsafe_unretained id obj) {
     return nil;
 }
 
-void RLMSetSwiftBridgeCallback(id (*callback)(id)) {
+void LEGACYSetSwiftBridgeCallback(id (*callback)(id)) {
     s_bridgeValue = callback;
 }
 
-id RLMBridgeSwiftValue(__unsafe_unretained id value) {
+id LEGACYBridgeSwiftValue(__unsafe_unretained id value) {
     if (!value || !s_bridgeValue) {
         return nil;
     }
     return s_bridgeValue(value);
 }
 
-bool RLMIsSwiftObjectClass(Class cls) {
+bool LEGACYIsSwiftObjectClass(Class cls) {
     return [cls isSubclassOfClass:RealmSwiftObject.class]
         || [cls isSubclassOfClass:RealmSwiftEmbeddedObject.class];
 }
 
 static BOOL validateValue(__unsafe_unretained id const value,
-                          RLMPropertyType type,
+                          LEGACYPropertyType type,
                           bool optional,
                           bool collection,
                           __unsafe_unretained NSString *const objectClassName) {
-    if (optional && !RLMCoerceToNil(value)) {
+    if (optional && !LEGACYCoerceToNil(value)) {
         return YES;
     }
 
     if (collection) {
-        if (auto rlmArray = asRLMArray(value)) {
+        if (auto rlmArray = asLEGACYArray(value)) {
             return checkCollectionType(rlmArray, type, optional, objectClassName);
         }
-        else if (auto rlmSet = asRLMSet(value)) {
+        else if (auto rlmSet = asLEGACYSet(value)) {
             return checkCollectionType(rlmSet, type, optional, objectClassName);
         }
-        else if (auto rlmDictionary = asRLMDictionary(value)) {
+        else if (auto rlmDictionary = asLEGACYDictionary(value)) {
             return checkCollectionType(rlmDictionary, type, optional, objectClassName);
         }
-        if (id enumeration = RLMAsFastEnumeration(value)) {
+        if (id enumeration = LEGACYAsFastEnumeration(value)) {
             // check each element for compliance
             for (id el in enumeration) {
-                if (!RLMValidateValue(el, type, optional, false, objectClassName)) {
+                if (!LEGACYValidateValue(el, type, optional, false, objectClassName)) {
                     return NO;
                 }
             }
@@ -134,64 +134,64 @@ static BOOL validateValue(__unsafe_unretained id const value,
     }
 
     switch (type) {
-        case RLMPropertyTypeString:
+        case LEGACYPropertyTypeString:
             return [value isKindOfClass:[NSString class]];
-        case RLMPropertyTypeBool:
+        case LEGACYPropertyTypeBool:
             if ([value isKindOfClass:[NSNumber class]]) {
                 return numberIsBool(value);
             }
             return NO;
-        case RLMPropertyTypeDate:
+        case LEGACYPropertyTypeDate:
             return [value isKindOfClass:[NSDate class]];
-        case RLMPropertyTypeInt:
-            if (NSNumber *number = RLMDynamicCast<NSNumber>(value)) {
+        case LEGACYPropertyTypeInt:
+            if (NSNumber *number = LEGACYDynamicCast<NSNumber>(value)) {
                 return numberIsInteger(number);
             }
             return NO;
-        case RLMPropertyTypeFloat:
-            if (NSNumber *number = RLMDynamicCast<NSNumber>(value)) {
+        case LEGACYPropertyTypeFloat:
+            if (NSNumber *number = LEGACYDynamicCast<NSNumber>(value)) {
                 return numberIsFloat(number);
             }
             return NO;
-        case RLMPropertyTypeDouble:
-            if (NSNumber *number = RLMDynamicCast<NSNumber>(value)) {
+        case LEGACYPropertyTypeDouble:
+            if (NSNumber *number = LEGACYDynamicCast<NSNumber>(value)) {
                 return numberIsDouble(number);
             }
             return NO;
-        case RLMPropertyTypeData:
+        case LEGACYPropertyTypeData:
             return [value isKindOfClass:[NSData class]];
-        case RLMPropertyTypeAny: {
+        case LEGACYPropertyTypeAny: {
             return !value
-                || [value conformsToProtocol:@protocol(RLMValue)];
+                || [value conformsToProtocol:@protocol(LEGACYValue)];
         }
-        case RLMPropertyTypeLinkingObjects:
+        case LEGACYPropertyTypeLinkingObjects:
             return YES;
-        case RLMPropertyTypeObject: {
-            // only NSNull, nil, or objects which derive from RLMObject and match the given
+        case LEGACYPropertyTypeObject: {
+            // only NSNull, nil, or objects which derive from LEGACYObject and match the given
             // object class are valid
-            RLMObjectBase *objBase = RLMDynamicCast<RLMObjectBase>(value);
+            LEGACYObjectBase *objBase = LEGACYDynamicCast<LEGACYObjectBase>(value);
             return objBase && [objBase->_objectSchema.className isEqualToString:objectClassName];
         }
-        case RLMPropertyTypeObjectId:
-            return [value isKindOfClass:[RLMObjectId class]];
-        case RLMPropertyTypeDecimal128:
+        case LEGACYPropertyTypeObjectId:
+            return [value isKindOfClass:[LEGACYObjectId class]];
+        case LEGACYPropertyTypeDecimal128:
             return [value isKindOfClass:[NSNumber class]]
-                || [value isKindOfClass:[RLMDecimal128 class]]
+                || [value isKindOfClass:[LEGACYDecimal128 class]]
                 || ([value isKindOfClass:[NSString class]] && realm::Decimal128::is_valid_str([value UTF8String]));
-        case RLMPropertyTypeUUID:
+        case LEGACYPropertyTypeUUID:
             return [value isKindOfClass:[NSUUID class]]
                 || ([value isKindOfClass:[NSString class]] && realm::UUID::is_valid_string([value UTF8String]));
     }
-    @throw RLMException(@"Invalid RLMPropertyType specified");
+    @throw LEGACYException(@"Invalid LEGACYPropertyType specified");
 }
 
-id RLMValidateValue(__unsafe_unretained id const value,
-                    RLMPropertyType type, bool optional, bool collection,
+id LEGACYValidateValue(__unsafe_unretained id const value,
+                    LEGACYPropertyType type, bool optional, bool collection,
                     __unsafe_unretained NSString *const objectClassName) {
     if (validateValue(value, type, optional, collection, objectClassName)) {
         return value ?: NSNull.null;
     }
-    if (id bridged = RLMBridgeSwiftValue(value)) {
+    if (id bridged = LEGACYBridgeSwiftValue(value)) {
         if (validateValue(bridged, type, optional, collection, objectClassName)) {
             return bridged ?: NSNull.null;
         }
@@ -200,20 +200,20 @@ id RLMValidateValue(__unsafe_unretained id const value,
  }
 
 
-void RLMThrowTypeError(__unsafe_unretained id const obj,
-                       __unsafe_unretained RLMObjectSchema *const objectSchema,
-                       __unsafe_unretained RLMProperty *const prop) {
-    @throw RLMException(@"Invalid value '%@' of type '%@' for '%@%s'%s property '%@.%@'.",
+void LEGACYThrowTypeError(__unsafe_unretained id const obj,
+                       __unsafe_unretained LEGACYObjectSchema *const objectSchema,
+                       __unsafe_unretained LEGACYProperty *const prop) {
+    @throw LEGACYException(@"Invalid value '%@' of type '%@' for '%@%s'%s property '%@.%@'.",
                         obj, [obj class],
-                        prop.objectClassName ?: RLMTypeToString(prop.type), prop.optional ? "?" : "",
+                        prop.objectClassName ?: LEGACYTypeToString(prop.type), prop.optional ? "?" : "",
                         prop.array ? " array" : prop.set ? " set" : prop.dictionary ? " dictionary" : "", objectSchema.className, prop.name);
 }
 
-void RLMValidateValueForProperty(__unsafe_unretained id const obj,
-                                 __unsafe_unretained RLMObjectSchema *const objectSchema,
-                                 __unsafe_unretained RLMProperty *const prop,
+void LEGACYValidateValueForProperty(__unsafe_unretained id const obj,
+                                 __unsafe_unretained LEGACYObjectSchema *const objectSchema,
+                                 __unsafe_unretained LEGACYProperty *const prop,
                                  bool validateObjects) {
-    // This duplicates a lot of the checks in RLMIsObjectValidForProperty()
+    // This duplicates a lot of the checks in LEGACYIsObjectValidForProperty()
     // for the sake of more specific error messages
     if (prop.collection) {
         // nil is considered equivalent to an empty array for historical reasons
@@ -222,43 +222,43 @@ void RLMValidateValueForProperty(__unsafe_unretained id const obj,
         if (!obj || obj == NSNull.null) {
             return;
         }
-        id enumeration = RLMAsFastEnumeration(obj);
+        id enumeration = LEGACYAsFastEnumeration(obj);
         if (!enumeration) {
-            @throw RLMException(@"Invalid value (%@) for '%@%s' %@ property '%@.%@': value is not enumerable.",
+            @throw LEGACYException(@"Invalid value (%@) for '%@%s' %@ property '%@.%@': value is not enumerable.",
                                 obj,
-                                prop.objectClassName ?: RLMTypeToString(prop.type),
+                                prop.objectClassName ?: LEGACYTypeToString(prop.type),
                                 prop.optional ? "?" : "",
                                 prop.array ? @"array" : @"set",
                                 objectSchema.className, prop.name);
         }
-        if (!validateObjects && prop.type == RLMPropertyTypeObject) {
+        if (!validateObjects && prop.type == LEGACYPropertyTypeObject) {
             return;
         }
 
-        if (RLMArray *array = asRLMArray(obj)) {
+        if (LEGACYArray *array = asLEGACYArray(obj)) {
             if (!checkCollectionType(array, prop.type, prop.optional, prop.objectClassName)) {
-                @throw RLMException(@"RLMArray<%@%s> does not match expected type '%@%s' for property '%@.%@'.",
-                                    array.objectClassName ?: RLMTypeToString(array.type), array.optional ? "?" : "",
-                                    prop.objectClassName ?: RLMTypeToString(prop.type), prop.optional ? "?" : "",
+                @throw LEGACYException(@"LEGACYArray<%@%s> does not match expected type '%@%s' for property '%@.%@'.",
+                                    array.objectClassName ?: LEGACYTypeToString(array.type), array.optional ? "?" : "",
+                                    prop.objectClassName ?: LEGACYTypeToString(prop.type), prop.optional ? "?" : "",
                                     objectSchema.className, prop.name);
             }
             return;
         }
-        else if (RLMSet *set = asRLMSet(obj)) {
+        else if (LEGACYSet *set = asLEGACYSet(obj)) {
             if (!checkCollectionType(set, prop.type, prop.optional, prop.objectClassName)) {
-                @throw RLMException(@"RLMSet<%@%s> does not match expected type '%@%s' for property '%@.%@'.",
-                                    set.objectClassName ?: RLMTypeToString(set.type), set.optional ? "?" : "",
-                                    prop.objectClassName ?: RLMTypeToString(prop.type), prop.optional ? "?" : "",
+                @throw LEGACYException(@"LEGACYSet<%@%s> does not match expected type '%@%s' for property '%@.%@'.",
+                                    set.objectClassName ?: LEGACYTypeToString(set.type), set.optional ? "?" : "",
+                                    prop.objectClassName ?: LEGACYTypeToString(prop.type), prop.optional ? "?" : "",
                                     objectSchema.className, prop.name);
             }
             return;
         }
-        else if (RLMDictionary *dictionary = asRLMDictionary(obj)) {
+        else if (LEGACYDictionary *dictionary = asLEGACYDictionary(obj)) {
             if (!checkCollectionType(dictionary, prop.type, prop.optional, prop.objectClassName)) {
-                @throw RLMException(@"RLMDictionary<%@, %@%s> does not match expected type '%@%s' for property '%@.%@'.",
-                                    RLMTypeToString(dictionary.keyType),
-                                    dictionary.objectClassName ?: RLMTypeToString(dictionary.type), dictionary.optional ? "?" : "",
-                                    prop.objectClassName ?: RLMTypeToString(prop.type), prop.optional ? "?" : "",
+                @throw LEGACYException(@"LEGACYDictionary<%@, %@%s> does not match expected type '%@%s' for property '%@.%@'.",
+                                    LEGACYTypeToString(dictionary.keyType),
+                                    dictionary.objectClassName ?: LEGACYTypeToString(dictionary.type), dictionary.optional ? "?" : "",
+                                    prop.objectClassName ?: LEGACYTypeToString(prop.type), prop.optional ? "?" : "",
                                     objectSchema.className, prop.name);
             }
             return;
@@ -267,15 +267,15 @@ void RLMValidateValueForProperty(__unsafe_unretained id const obj,
         if (prop.dictionary) {
             for (id key in enumeration) {
                 id value = enumeration[key];
-                if (!RLMValidateValue(value, prop.type, prop.optional, false, prop.objectClassName)) {
-                    RLMThrowTypeError(value, objectSchema, prop);
+                if (!LEGACYValidateValue(value, prop.type, prop.optional, false, prop.objectClassName)) {
+                    LEGACYThrowTypeError(value, objectSchema, prop);
                 }
             }
         }
         else {
             for (id value in enumeration) {
-                if (!RLMValidateValue(value, prop.type, prop.optional, false, prop.objectClassName)) {
-                    RLMThrowTypeError(value, objectSchema, prop);
+                if (!LEGACYValidateValue(value, prop.type, prop.optional, false, prop.objectClassName)) {
+                    LEGACYThrowTypeError(value, objectSchema, prop);
                 }
             }
         }
@@ -286,35 +286,35 @@ void RLMValidateValueForProperty(__unsafe_unretained id const obj,
     // we allow much fuzzier matching (any KVC-compatible object with at least
     // all the non-defaulted fields), and all the logic for that lives in the
     // object store rather than here
-    if (prop.type == RLMPropertyTypeObject && !validateObjects) {
+    if (prop.type == LEGACYPropertyTypeObject && !validateObjects) {
         return;
     }
-    if (RLMIsObjectValidForProperty(obj, prop)) {
+    if (LEGACYIsObjectValidForProperty(obj, prop)) {
         return;
     }
 
-    RLMThrowTypeError(obj, objectSchema, prop);
+    LEGACYThrowTypeError(obj, objectSchema, prop);
 }
 
-BOOL RLMIsObjectValidForProperty(__unsafe_unretained id const obj,
-                                 __unsafe_unretained RLMProperty *const property) {
-    return RLMValidateValue(obj, property.type, property.optional, property.collection, property.objectClassName) != nil;
+BOOL LEGACYIsObjectValidForProperty(__unsafe_unretained id const obj,
+                                 __unsafe_unretained LEGACYProperty *const property) {
+    return LEGACYValidateValue(obj, property.type, property.optional, property.collection, property.objectClassName) != nil;
 }
 
-NSDictionary *RLMDefaultValuesForObjectSchema(__unsafe_unretained RLMObjectSchema *const objectSchema) {
+NSDictionary *LEGACYDefaultValuesForObjectSchema(__unsafe_unretained LEGACYObjectSchema *const objectSchema) {
     if (!objectSchema.isSwiftClass) {
         return [objectSchema.objectClass defaultPropertyValues];
     }
 
     NSMutableDictionary *defaults = nil;
-    if ([objectSchema.objectClass isSubclassOfClass:RLMObject.class]) {
+    if ([objectSchema.objectClass isSubclassOfClass:LEGACYObject.class]) {
         defaults = [NSMutableDictionary dictionaryWithDictionary:[objectSchema.objectClass defaultPropertyValues]];
     }
     else {
         defaults = [NSMutableDictionary dictionary];
     }
-    RLMObject *defaultObject = [[objectSchema.objectClass alloc] init];
-    for (RLMProperty *prop in objectSchema.properties) {
+    LEGACYObject *defaultObject = [[objectSchema.objectClass alloc] init];
+    for (LEGACYProperty *prop in objectSchema.properties) {
         if (!defaults[prop.name] && defaultObject[prop.name]) {
             defaults[prop.name] = defaultObject[prop.name];
         }
@@ -322,46 +322,46 @@ NSDictionary *RLMDefaultValuesForObjectSchema(__unsafe_unretained RLMObjectSchem
     return defaults;
 }
 
-static NSException *RLMException(NSString *reason, NSDictionary *additionalUserInfo) {
-    NSMutableDictionary *userInfo = @{RLMRealmVersionKey: REALM_COCOA_VERSION,
-                                      RLMRealmCoreVersionKey: @REALM_VERSION}.mutableCopy;
+static NSException *LEGACYException(NSString *reason, NSDictionary *additionalUserInfo) {
+    NSMutableDictionary *userInfo = @{LEGACYRealmVersionKey: REALM_COCOA_VERSION,
+                                      LEGACYRealmCoreVersionKey: @REALM_VERSION}.mutableCopy;
     if (additionalUserInfo != nil) {
         [userInfo addEntriesFromDictionary:additionalUserInfo];
     }
-    NSException *e = [NSException exceptionWithName:RLMExceptionName
+    NSException *e = [NSException exceptionWithName:LEGACYExceptionName
                                              reason:reason
                                            userInfo:userInfo];
     return e;
 }
 
-NSException *RLMException(NSString *fmt, ...) {
+NSException *LEGACYException(NSString *fmt, ...) {
     va_list args;
     va_start(args, fmt);
-    NSException *e = RLMException([[NSString alloc] initWithFormat:fmt arguments:args], @{});
+    NSException *e = LEGACYException([[NSString alloc] initWithFormat:fmt arguments:args], @{});
     va_end(args);
     return e;
 }
 
-NSException *RLMException(std::exception const& exception) {
-    return RLMException(@"%s", exception.what());
+NSException *LEGACYException(std::exception const& exception) {
+    return LEGACYException(@"%s", exception.what());
 }
 
-NSException *RLMException(realm::Exception const& exception) {
-    return RLMException(@(exception.what()),
+NSException *LEGACYException(realm::Exception const& exception) {
+    return LEGACYException(@(exception.what()),
                         @{@"Error Code": @(exception.code()),
                           @"Underlying": makeError(exception.to_status())});
 }
 
-void RLMSetErrorOrThrow(NSError *error, NSError **outError) {
+void LEGACYSetErrorOrThrow(NSError *error, NSError **outError) {
     if (outError) {
         *outError = error;
     }
     else {
-        @throw RLMException(error.localizedDescription, @{NSUnderlyingErrorKey: error});
+        @throw LEGACYException(error.localizedDescription, @{NSUnderlyingErrorKey: error});
     }
 }
 
-BOOL RLMIsDebuggerAttached()
+BOOL LEGACYIsDebuggerAttached()
 {
     int name[] = {
         CTL_KERN,
@@ -380,55 +380,55 @@ BOOL RLMIsDebuggerAttached()
     return (info.kp_proc.p_flag & P_TRACED) != 0;
 }
 
-BOOL RLMIsRunningInPlayground() {
+BOOL LEGACYIsRunningInPlayground() {
     return [[NSBundle mainBundle].bundleIdentifier hasPrefix:@"com.apple.dt.playground."];
 }
 
-realm::Mixed RLMObjcToMixed(__unsafe_unretained id const value,
-                            __unsafe_unretained RLMRealm *const realm,
+realm::Mixed LEGACYObjcToMixed(__unsafe_unretained id const value,
+                            __unsafe_unretained LEGACYRealm *const realm,
                             realm::CreatePolicy createPolicy) {
     if (!value || value == NSNull.null) {
         return realm::Mixed();
     }
     id v;
-    if ([value conformsToProtocol:@protocol(RLMValue)]) {
+    if ([value conformsToProtocol:@protocol(LEGACYValue)]) {
         v = value;
     }
     else {
-        v = RLMBridgeSwiftValue(value);
+        v = LEGACYBridgeSwiftValue(value);
         if (v == NSNull.null) {
             return realm::Mixed();
         }
-        REALM_ASSERT([v conformsToProtocol:@protocol(RLMValue)]);
+        REALM_ASSERT([v conformsToProtocol:@protocol(LEGACYValue)]);
     }
 
-    RLMPropertyType type = [v rlm_valueType];
+    LEGACYPropertyType type = [v rlm_valueType];
     return switch_on_type(static_cast<realm::PropertyType>(type), realm::util::overload{[&](realm::Obj*) {
-        // The RLMObjectBase may be unmanaged and therefor has no RLMClassInfo attached.
+        // The LEGACYObjectBase may be unmanaged and therefor has no LEGACYClassInfo attached.
         // So we fetch from the Realm instead.
-        // If the Object is managed use it's RLMClassInfo instead so we do not have to do a
+        // If the Object is managed use it's LEGACYClassInfo instead so we do not have to do a
         // lookup in the table of schemas.
-        RLMObjectBase *objBase = v;
-        RLMAccessorContext c{objBase->_info ? *objBase->_info : realm->_info[objBase->_objectSchema.className]};
+        LEGACYObjectBase *objBase = v;
+        LEGACYAccessorContext c{objBase->_info ? *objBase->_info : realm->_info[objBase->_objectSchema.className]};
         auto obj = c.unbox<realm::Obj>(v, createPolicy);
         return obj.is_valid() ? realm::Mixed(obj) : realm::Mixed();
     }, [&](auto t) {
-        RLMStatelessAccessorContext c;
+        LEGACYStatelessAccessorContext c;
         return realm::Mixed(c.unbox<std::decay_t<decltype(*t)>>(v));
     }, [&](realm::Mixed*) -> realm::Mixed {
         REALM_UNREACHABLE();
     }});
 }
 
-id RLMMixedToObjc(realm::Mixed const& mixed,
-                  __unsafe_unretained RLMRealm *realm,
-                  RLMClassInfo *classInfo) {
+id LEGACYMixedToObjc(realm::Mixed const& mixed,
+                  __unsafe_unretained LEGACYRealm *realm,
+                  LEGACYClassInfo *classInfo) {
     if (mixed.is_null()) {
         return NSNull.null;
     }
     switch (mixed.get_type()) {
         case realm::type_String:
-            return RLMStringDataToNSString(mixed.get_string());
+            return LEGACYStringDataToNSString(mixed.get_string());
         case realm::type_Int:
             return @(mixed.get_int());
         case realm::type_Float:
@@ -438,59 +438,59 @@ id RLMMixedToObjc(realm::Mixed const& mixed,
         case realm::type_Bool:
             return @(mixed.get_bool());
         case realm::type_Timestamp:
-            return RLMTimestampToNSDate(mixed.get_timestamp());
+            return LEGACYTimestampToNSDate(mixed.get_timestamp());
         case realm::type_Binary:
-            return RLMBinaryDataToNSData(mixed.get<realm::BinaryData>());
+            return LEGACYBinaryDataToNSData(mixed.get<realm::BinaryData>());
         case realm::type_Decimal:
-            return [[RLMDecimal128 alloc] initWithDecimal128:mixed.get<realm::Decimal128>()];
+            return [[LEGACYDecimal128 alloc] initWithDecimal128:mixed.get<realm::Decimal128>()];
         case realm::type_ObjectId:
-            return [[RLMObjectId alloc] initWithValue:mixed.get<realm::ObjectId>()];
+            return [[LEGACYObjectId alloc] initWithValue:mixed.get<realm::ObjectId>()];
         case realm::type_TypedLink:
-            return RLMObjectFromObjLink(realm, mixed.get<realm::ObjLink>(), classInfo->isSwiftClass());
+            return LEGACYObjectFromObjLink(realm, mixed.get<realm::ObjLink>(), classInfo->isSwiftClass());
         case realm::type_Link: {
             auto obj = classInfo->table()->get_object((mixed).get<realm::ObjKey>());
-            return RLMCreateObjectAccessor(*classInfo, std::move(obj));
+            return LEGACYCreateObjectAccessor(*classInfo, std::move(obj));
         }
         case realm::type_UUID:
             return [[NSUUID alloc] initWithRealmUUID:mixed.get<realm::UUID>()];
         case realm::type_LinkList:
             REALM_UNREACHABLE();
         default:
-            @throw RLMException(@"Invalid data type for RLMPropertyTypeAny property.");
+            @throw LEGACYException(@"Invalid data type for LEGACYPropertyTypeAny property.");
     }
 }
 
-realm::UUID RLMObjcToUUID(__unsafe_unretained id const value) {
+realm::UUID LEGACYObjcToUUID(__unsafe_unretained id const value) {
     try {
-        if (auto uuid = RLMDynamicCast<NSUUID>(value)) {
+        if (auto uuid = LEGACYDynamicCast<NSUUID>(value)) {
             return uuid.rlm_uuidValue;
         }
-        if (auto string = RLMDynamicCast<NSString>(value)) {
+        if (auto string = LEGACYDynamicCast<NSString>(value)) {
             return realm::UUID(string.UTF8String);
         }
     }
     catch (std::exception const& e) {
-        @throw RLMException(@"Cannot convert value '%@' of type '%@' to uuid: %s",
+        @throw LEGACYException(@"Cannot convert value '%@' of type '%@' to uuid: %s",
                             value, [value class], e.what());
     }
-    @throw RLMException(@"Cannot convert value '%@' of type '%@' to uuid", value, [value class]);
+    @throw LEGACYException(@"Cannot convert value '%@' of type '%@' to uuid", value, [value class]);
 }
 
-realm::Decimal128 RLMObjcToDecimal128(__unsafe_unretained id const value) {
+realm::Decimal128 LEGACYObjcToDecimal128(__unsafe_unretained id const value) {
     try {
         if (!value || value == NSNull.null) {
             return realm::Decimal128(realm::null());
         }
-        if (auto decimal = RLMDynamicCast<RLMDecimal128>(value)) {
+        if (auto decimal = LEGACYDynamicCast<LEGACYDecimal128>(value)) {
             return decimal.decimal128Value;
         }
-        if (auto string = RLMDynamicCast<NSString>(value)) {
+        if (auto string = LEGACYDynamicCast<NSString>(value)) {
             return realm::Decimal128(string.UTF8String);
         }
-        if (auto decimal = RLMDynamicCast<NSDecimalNumber>(value)) {
+        if (auto decimal = LEGACYDynamicCast<NSDecimalNumber>(value)) {
             return realm::Decimal128(decimal.stringValue.UTF8String);
         }
-        if (auto number = RLMDynamicCast<NSNumber>(value)) {
+        if (auto number = LEGACYDynamicCast<NSNumber>(value)) {
             auto type = number.objCType[0];
             if (type == *@encode(double) || type == *@encode(float)) {
                 return realm::Decimal128(number.doubleValue);
@@ -502,18 +502,18 @@ realm::Decimal128 RLMObjcToDecimal128(__unsafe_unretained id const value) {
                 return realm::Decimal128(number.longLongValue);
             }
         }
-        if (id bridged = RLMBridgeSwiftValue(value); bridged != value) {
-            return RLMObjcToDecimal128(bridged);
+        if (id bridged = LEGACYBridgeSwiftValue(value); bridged != value) {
+            return LEGACYObjcToDecimal128(bridged);
         }
     }
     catch (std::exception const& e) {
-        @throw RLMException(@"Cannot convert value '%@' of type '%@' to decimal128: %s",
+        @throw LEGACYException(@"Cannot convert value '%@' of type '%@' to decimal128: %s",
                             value, [value class], e.what());
     }
-    @throw RLMException(@"Cannot convert value '%@' of type '%@' to decimal128", value, [value class]);
+    @throw LEGACYException(@"Cannot convert value '%@' of type '%@' to decimal128", value, [value class]);
 }
 
-NSString *RLMDefaultDirectoryForBundleIdentifier(NSString *bundleIdentifier) {
+NSString *LEGACYDefaultDirectoryForBundleIdentifier(NSString *bundleIdentifier) {
 #if TARGET_OS_TV
     (void)bundleIdentifier;
     // tvOS prohibits writing to the Documents directory, so we use the Library/Caches directory instead.
@@ -547,7 +547,7 @@ NSString *RLMDefaultDirectoryForBundleIdentifier(NSString *bundleIdentifier) {
 #endif
 }
 
-NSDateFormatter *RLMISO8601Formatter() {
+NSDateFormatter *LEGACYISO8601Formatter() {
     // note: NSISO8601DateFormatter can't be used as it doesn't support milliseconds
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     dateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];

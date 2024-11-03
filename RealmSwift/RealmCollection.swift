@@ -22,10 +22,10 @@ import RealmLegacy
 /**
  An iterator for a `RealmCollection` instance.
  */
-@frozen public struct RLMIterator<Element: RealmCollectionValue>: IteratorProtocol {
+@frozen public struct LEGACYIterator<Element: RealmCollectionValue>: IteratorProtocol {
     private var generatorBase: NSFastEnumerationIterator
 
-    init(collection: RLMCollection) {
+    init(collection: LEGACYCollection) {
         generatorBase = NSFastEnumerationIterator(collection)
     }
 
@@ -47,11 +47,11 @@ public protocol _RealmMapValue {
 /**
  An iterator for a `RealmKeyedCollection` instance.
  */
-@frozen public struct RLMMapIterator<Element: _RealmMapValue>: IteratorProtocol {
+@frozen public struct LEGACYMapIterator<Element: _RealmMapValue>: IteratorProtocol {
     private var generatorBase: NSFastEnumerationIterator
-    private var collection: RLMDictionary<AnyObject, AnyObject>
+    private var collection: LEGACYDictionary<AnyObject, AnyObject>
 
-    init(collection: RLMDictionary<AnyObject, AnyObject>) {
+    init(collection: LEGACYDictionary<AnyObject, AnyObject>) {
         self.collection = collection
         generatorBase = NSFastEnumerationIterator(collection)
     }
@@ -71,12 +71,12 @@ public protocol _RealmMapValue {
 /**
  An iterator for `Map<Key, Value>` which produces `(key: Key, value: Value)` pairs for each entry in the map.
  */
-@frozen public struct RLMKeyValueIterator<Key: _MapKey, Value: RealmCollectionValue>: IteratorProtocol {
+@frozen public struct LEGACYKeyValueIterator<Key: _MapKey, Value: RealmCollectionValue>: IteratorProtocol {
     private var generatorBase: NSFastEnumerationIterator
-    private var collection: RLMDictionary<AnyObject, AnyObject>
+    private var collection: LEGACYDictionary<AnyObject, AnyObject>
     public typealias Element = (key: Key, value: Value)
 
-    init(collection: RLMDictionary<AnyObject, AnyObject>) {
+    init(collection: LEGACYDictionary<AnyObject, AnyObject>) {
         self.collection = collection
         generatorBase = NSFastEnumerationIterator(collection)
     }
@@ -158,7 +158,7 @@ public protocol _RealmMapValue {
      */
     case error(Error)
 
-    init(value: CollectionType?, change: RLMCollectionChange?, error: Error?) {
+    init(value: CollectionType?, change: LEGACYCollectionChange?, error: Error?) {
         if let error = error {
             self = .error(error)
         } else if let change = change {
@@ -228,7 +228,7 @@ public protocol RealmCollectionBase: RandomAccessCollection, LazyCollectionProto
 /**
  A homogenous collection of `Object`s which can be retrieved, filtered, sorted, and operated upon.
 */
-public protocol RealmCollection: RealmCollectionBase, Equatable where Iterator == RLMIterator<Element> {
+public protocol RealmCollection: RealmCollectionBase, Equatable where Iterator == LEGACYIterator<Element> {
     // MARK: Properties
 
     /// The Realm which manages the collection, or `nil` for unmanaged collections.
@@ -1525,15 +1525,15 @@ extension RealmCollection {
  collection directly.
  */
 @frozen public struct AnyRealmCollection<Element: RealmCollectionValue>: RealmCollectionImpl {
-    internal let collection: RLMCollection
+    internal let collection: LEGACYCollection
     internal var lastAccessedNames: NSMutableArray?
-    internal init(collection: RLMCollection) {
+    internal init(collection: LEGACYCollection) {
         self.collection = collection
     }
 
     /// Creates an `AnyRealmCollection` wrapping `base`.
     public init<C: RealmCollection & _ObjcBridgeable>(_ base: C) where C.Element == Element {
-        self.collection = base._rlmObjcValue as! RLMCollection
+        self.collection = base._rlmObjcValue as! LEGACYCollection
     }
 
     /**
@@ -1547,7 +1547,7 @@ extension RealmCollection {
 
     /// A human-readable description of the objects represented by the linking objects.
     public var description: String {
-        return RLMDescriptionWithMaxDepth("AnyRealmCollection", collection, RLMDescriptionMaxDepth)
+        return LEGACYDescriptionWithMaxDepth("AnyRealmCollection", collection, LEGACYDescriptionMaxDepth)
     }
 
     public static func == (lhs: AnyRealmCollection<Element>, rhs: AnyRealmCollection<Element>) -> Bool {
@@ -1555,8 +1555,8 @@ extension RealmCollection {
     }
 
     /// :nodoc:
-    public func makeIterator() -> RLMIterator<Element> {
-        return RLMIterator(collection: collection)
+    public func makeIterator() -> LEGACYIterator<Element> {
+        return LEGACYIterator(collection: collection)
     }
 
 }
@@ -1876,7 +1876,7 @@ public struct ProjectedCollection<Element>: RandomAccessCollection, CustomString
     private let keyPath: AnyKeyPath
     private let propertyName: String
 
-    init(_ collection: RLMCollection, keyPath: AnyKeyPath, propertyName: String) {
+    init(_ collection: LEGACYCollection, keyPath: AnyKeyPath, propertyName: String) {
         self.backingCollection = AnyRealmCollection(collection: collection)
         self.keyPath = keyPath
         self.propertyName = propertyName
@@ -1899,7 +1899,7 @@ public struct ProjectedCollection<Element>: RandomAccessCollection, CustomString
  */
 @dynamicMemberLookup
 public struct CollectionElementMapper<Element> where Element: ObjectBase & RealmCollectionValue {
-    let collection: RLMCollection
+    let collection: LEGACYCollection
     /// :nodoc:
     public subscript<V>(dynamicMember member: KeyPath<Element, V>) -> ProjectedCollection<V> {
         ProjectedCollection(collection, keyPath: member, propertyName: _name(for: member))

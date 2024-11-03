@@ -16,46 +16,46 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMAccessor.h"
+#import "LEGACYAccessor.h"
 
-#import "RLMClassInfo.hpp"
-#import "RLMDecimal128_Private.hpp"
-#import "RLMObjectId_Private.hpp"
-#import "RLMUUID_Private.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYClassInfo.hpp"
+#import "LEGACYDecimal128_Private.hpp"
+#import "LEGACYObjectId_Private.hpp"
+#import "LEGACYUUID_Private.hpp"
+#import "LEGACYUtil.hpp"
 
 #import <realm/object-store/object_accessor.hpp>
 
-@class RLMRealm;
-class RLMClassInfo;
-class RLMObservationTracker;
-typedef NS_ENUM(NSUInteger, RLMUpdatePolicy);
+@class LEGACYRealm;
+class LEGACYClassInfo;
+class LEGACYObservationTracker;
+typedef NS_ENUM(NSUInteger, LEGACYUpdatePolicy);
 
-RLM_HIDDEN_BEGIN
+LEGACY_HIDDEN_BEGIN
 
 // std::optional<id> doesn't work because Objective-C types can't
 // be members of unions with ARC, so this covers the subset of Optional that we
 // actually need.
-struct RLMOptionalId {
+struct LEGACYOptionalId {
     id value;
-    RLMOptionalId(id value) : value(value) { }
+    LEGACYOptionalId(id value) : value(value) { }
     explicit operator bool() const noexcept { return value; }
     id operator*() const noexcept { return value; }
 };
 
-// The subset of RLMAccessorContext which does not require any member variables.
+// The subset of LEGACYAccessorContext which does not require any member variables.
 // Use this if you require to box/unbox types and you do not have access to the
 // parent object or realm.
-struct RLMStatelessAccessorContext {
+struct LEGACYStatelessAccessorContext {
     static id box(bool v) { return @(v); }
     static id box(double v) { return @(v); }
     static id box(float v) { return @(v); }
     static id box(long long v) { return @(v); }
-    static id box(realm::StringData v) { return RLMStringDataToNSString(v) ?: NSNull.null; }
-    static id box(realm::BinaryData v) { return RLMBinaryDataToNSData(v) ?: NSNull.null; }
-    static id box(realm::Timestamp v) { return RLMTimestampToNSDate(v) ?: NSNull.null; }
-    static id box(realm::Decimal128 v) { return v.is_null() ? NSNull.null : [[RLMDecimal128 alloc] initWithDecimal128:v]; }
-    static id box(realm::ObjectId v) { return [[RLMObjectId alloc] initWithValue:v]; }
+    static id box(realm::StringData v) { return LEGACYStringDataToNSString(v) ?: NSNull.null; }
+    static id box(realm::BinaryData v) { return LEGACYBinaryDataToNSData(v) ?: NSNull.null; }
+    static id box(realm::Timestamp v) { return LEGACYTimestampToNSDate(v) ?: NSNull.null; }
+    static id box(realm::Decimal128 v) { return v.is_null() ? NSNull.null : [[LEGACYDecimal128 alloc] initWithDecimal128:v]; }
+    static id box(realm::ObjectId v) { return [[LEGACYObjectId alloc] initWithValue:v]; }
     static id box(realm::UUID v) { return [[NSUUID alloc] initWithRealmUUID:v]; }
 
     static id box(std::optional<bool> v) { return v ? @(*v) : NSNull.null; }
@@ -70,7 +70,7 @@ struct RLMStatelessAccessorContext {
 
     template<typename Func>
     static void enumerate_collection(__unsafe_unretained const id v, Func&& func) {
-        id enumerable = RLMAsFastEnumeration(v) ?: v;
+        id enumerable = LEGACYAsFastEnumeration(v) ?: v;
         for (id value in enumerable) {
             func(value);
         }
@@ -78,7 +78,7 @@ struct RLMStatelessAccessorContext {
 
     template<typename Func>
     static void enumerate_dictionary(__unsafe_unretained const id v, Func&& func) {
-        id enumerable = RLMAsFastEnumeration(v) ?: v;
+        id enumerable = LEGACYAsFastEnumeration(v) ?: v;
         for (id key in enumerable) {
             func(unbox<realm::StringData>(key), v[key]);
         }
@@ -96,14 +96,14 @@ struct RLMStatelessAccessorContext {
     static std::string print(id obj) { return [obj description].UTF8String; }
 };
 
-class RLMAccessorContext : public RLMStatelessAccessorContext {
+class LEGACYAccessorContext : public LEGACYStatelessAccessorContext {
 public:
-    ~RLMAccessorContext();
+    ~LEGACYAccessorContext();
 
     // Accessor context interface
-    RLMAccessorContext(RLMAccessorContext& parent, realm::Obj const& parent_obj, realm::Property const& property);
+    LEGACYAccessorContext(LEGACYAccessorContext& parent, realm::Obj const& parent_obj, realm::Property const& property);
 
-    using RLMStatelessAccessorContext::box;
+    using LEGACYStatelessAccessorContext::box;
     id box(realm::List&&);
     id box(realm::Results&&);
     id box(realm::Object&&);
@@ -116,13 +116,13 @@ public:
     void will_change(realm::Object& obj, realm::Property const& prop) { will_change(obj.get_obj(), prop); }
     void did_change();
 
-    RLMOptionalId value_for_property(id dict, realm::Property const&, size_t prop_index);
-    RLMOptionalId default_value_for_property(realm::ObjectSchema const&,
+    LEGACYOptionalId value_for_property(id dict, realm::Property const&, size_t prop_index);
+    LEGACYOptionalId default_value_for_property(realm::ObjectSchema const&,
                                              realm::Property const& prop);
 
     template<typename T>
     T unbox(__unsafe_unretained id const v, realm::CreatePolicy = realm::CreatePolicy::Skip, realm::ObjKey = {}) {
-        return RLMStatelessAccessorContext::unbox<T>(v);
+        return LEGACYStatelessAccessorContext::unbox<T>(v);
     }
     template<>
     realm::Obj unbox(id v, realm::CreatePolicy, realm::ObjKey);
@@ -132,33 +132,33 @@ public:
     realm::Obj create_embedded_object();
 
     // Internal API
-    RLMAccessorContext(RLMObjectBase *parentObject, const realm::Property *property = nullptr);
-    RLMAccessorContext(RLMObjectBase *parentObject, realm::ColKey);
-    RLMAccessorContext(RLMClassInfo& info);
+    LEGACYAccessorContext(LEGACYObjectBase *parentObject, const realm::Property *property = nullptr);
+    LEGACYAccessorContext(LEGACYObjectBase *parentObject, realm::ColKey);
+    LEGACYAccessorContext(LEGACYClassInfo& info);
 
     // The property currently being accessed; needed for KVO things for boxing
     // List and Results
-    RLMProperty *currentProperty;
+    LEGACYProperty *currentProperty;
 
     std::pair<realm::Obj, bool>
     createObject(id value, realm::CreatePolicy policy, bool forceCreate=false, realm::ObjKey existingKey={});
 
 private:
-    __unsafe_unretained RLMRealm *const _realm;
-    RLMClassInfo& _info;
+    __unsafe_unretained LEGACYRealm *const _realm;
+    LEGACYClassInfo& _info;
 
     realm::Obj _parentObject;
-    RLMClassInfo* _parentObjectInfo = nullptr;
+    LEGACYClassInfo* _parentObjectInfo = nullptr;
     realm::ColKey _colKey;
 
     // Cached default values dictionary to avoid having to call the class method
     // for every property
     NSDictionary *_defaultValues;
 
-    std::unique_ptr<RLMObservationTracker> _observationHelper;
+    std::unique_ptr<LEGACYObservationTracker> _observationHelper;
 
     id defaultValue(NSString *key);
-    id propertyValue(id obj, size_t propIndex, __unsafe_unretained RLMProperty *const prop);
+    id propertyValue(id obj, size_t propIndex, __unsafe_unretained LEGACYProperty *const prop);
 };
 
-RLM_HIDDEN_END
+LEGACY_HIDDEN_END

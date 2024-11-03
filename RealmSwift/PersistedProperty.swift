@@ -130,7 +130,7 @@ public struct Persisted<Value: _Persistable> {
         }
     }
 
-    // Called via RLMInitializeSwiftAccessor() to initialize the wrapper on a
+    // Called via LEGACYInitializeSwiftAccessor() to initialize the wrapper on a
     // newly created managed accessor object.
     internal mutating func initialize(_ object: ObjectBase, key: PropertyKey) {
         storage = .managed(key: key)
@@ -166,9 +166,9 @@ public struct Persisted<Value: _Persistable> {
             if let lastAccessedNames = object.lastAccessedNames {
                 let name: String
                 if Value._rlmType == .linkingObjects {
-                    name = RLMObjectBaseObjectSchema(object)!.computedProperties[Int(key)].name
+                    name = LEGACYObjectBaseObjectSchema(object)!.computedProperties[Int(key)].name
                 } else {
-                    name = RLMObjectBaseObjectSchema(object)!.properties[Int(key)].name
+                    name = LEGACYObjectBaseObjectSchema(object)!.properties[Int(key)].name
                 }
                 lastAccessedNames.add(name)
                 if let type = Value.self as? KeypathRecorder.Type {
@@ -199,7 +199,7 @@ public struct Persisted<Value: _Persistable> {
         }
         switch storage {
         case let .unmanagedObserved(_, key):
-            let name = RLMObjectBaseObjectSchema(object)!.properties[Int(key)].name
+            let name = LEGACYObjectBaseObjectSchema(object)!.properties[Int(key)].name
             object.willChangeValue(forKey: name)
             storage = .unmanagedObserved(value: value, key: key)
             object.didChangeValue(forKey: name)
@@ -211,7 +211,7 @@ public struct Persisted<Value: _Persistable> {
     }
 
     // Initialize an unmanaged property for observation
-    internal mutating func observe(_ object: ObjectBase, property: RLMProperty) {
+    internal mutating func observe(_ object: ObjectBase, property: LEGACYProperty) {
         let value: Value
         switch storage {
         case let .unmanaged(v, _, _):
@@ -372,14 +372,14 @@ extension Persisted: DiscoverablePersistedProperty where Value: _Persistable {
     public static var _rlmType: PropertyType { Value._rlmType }
     public static var _rlmOptional: Bool { Value._rlmOptional }
     public static var _rlmRequireObjc: Bool { false }
-    public static func _rlmPopulateProperty(_ prop: RLMProperty) {
+    public static func _rlmPopulateProperty(_ prop: LEGACYProperty) {
         // The label reported by Mirror has an underscore prefix added to it
         // as it's the actual storage rather than the compiler-magic getter/setter
         prop.name = String(prop.name.dropFirst())
         Value._rlmPopulateProperty(prop)
         Value._rlmSetAccessor(prop)
     }
-    public func _rlmPopulateProperty(_ prop: RLMProperty) {
+    public func _rlmPopulateProperty(_ prop: LEGACYProperty) {
         switch storage {
         case let .unmanaged(value, indexed, primary):
             value._rlmPopulateProperty(prop)

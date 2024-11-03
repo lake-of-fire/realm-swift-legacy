@@ -16,7 +16,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSyncSession.h"
+#import "LEGACYSyncSession.h"
 
 #import <memory>
 
@@ -25,9 +25,9 @@ class AsyncOpenTask;
 class SyncSession;
 }
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@interface RLMSyncSession () {
+@interface LEGACYSyncSession () {
 @public     // So it's visible to tests
     std::weak_ptr<realm::SyncSession> _session;
 }
@@ -39,8 +39,8 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 @end
 
-@interface RLMSyncErrorActionToken ()
+@interface LEGACYSyncErrorActionToken ()
 - (instancetype)initWithOriginalPath:(std::string)originalPath;
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

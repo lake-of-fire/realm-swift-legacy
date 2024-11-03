@@ -28,7 +28,7 @@ import Combine
 */
 public struct Events {
     let context: OpaquePointer
-    let realm: RLMRealm
+    let realm: LEGACYRealm
 
     /**
     Begin recording events with the given activity name.
@@ -42,7 +42,7 @@ public struct Events {
      - returns: A scope object used to commit or cancel the scope.
     */
     public func beginScope(activity: String) -> Scope {
-        Scope(realm: realm, context: context, id: RLMEventBeginScope(context, activity))
+        Scope(realm: realm, context: context, id: LEGACYEventBeginScope(context, activity))
     }
 
     /// :nodoc:
@@ -77,7 +77,7 @@ public struct Events {
      */
     public func recordEvent(activity: String, eventType: String? = nil, data: String? = nil,
                             completion: ((Swift.Error?) -> Void)? = nil) {
-        RLMEventRecordEvent(context, activity, eventType, data, completion)
+        LEGACYEventRecordEvent(context, activity, eventType, data, completion)
     }
 
     /**
@@ -89,11 +89,11 @@ public struct Events {
     See ``EventConfiguration.metadata`` for more details on event metdata.
     */
     public func updateMetadata(_ newMetadata: [String: String]) {
-        RLMEventUpdateMetadata(context, newMetadata)
+        LEGACYEventUpdateMetadata(context, newMetadata)
     }
 
     init?(_ realm: RealmLegacy) {
-        if let context = RLMEventGetContext(realm.rlmRealm) {
+        if let context = LEGACYEventGetContext(realm.rlmRealm) {
             self.context = context
             self.realm = realm.rlmRealm
         } else {
@@ -118,7 +118,7 @@ public struct Events {
         cancelled (i.e. if ``isActive`` is `false`).
         */
         public func commit(completion: ((Swift.Error?) -> Void)? = nil) {
-            RLMEventCommitScope(context, id, completion)
+            LEGACYEventCommitScope(context, id, completion)
         }
 
         /**
@@ -128,20 +128,20 @@ public struct Events {
         cancelled (i.e. if ``isActive`` is `false`).
         */
         public func cancel() {
-            RLMEventCancelScope(context, id)
+            LEGACYEventCancelScope(context, id)
         }
 
         /**
         True if this scope has not been committed or cancelled, and false otherwise.
         */
         public var isActive: Bool {
-            RLMEventIsActive(context, id)
+            LEGACYEventIsActive(context, id)
         }
 
-        let realm: RLMRealm
+        let realm: LEGACYRealm
         let context: OpaquePointer
         let id: UInt64
-        fileprivate init(realm: RLMRealm, context: OpaquePointer, id: UInt64) {
+        fileprivate init(realm: LEGACYRealm, context: OpaquePointer, id: UInt64) {
             self.realm = realm
             self.context = context
             self.id = id
@@ -170,7 +170,7 @@ extension Events.Scope {
     @_disfavoredOverload
     public func commit() -> Future<Void, Error> {
         promisify {
-            RLMEventCommitScope(self.context, self.id, $0)
+            LEGACYEventCommitScope(self.context, self.id, $0)
         }
     }
 }
@@ -293,7 +293,7 @@ extension RealmLegacy {
 /// include every property. If you wish to customize how a class is serialized
 /// in events, you can declare it as conforming to this protocol and
 /// define `customEventRepresentation()`.
-@objc(RLMCustomEventRepresentable)
+@objc(LEGACYCustomEventRepresentable)
 public protocol CustomEventRepresentable {
     /// Get the custom event serialization for this object.
     ///

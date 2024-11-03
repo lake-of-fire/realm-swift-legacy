@@ -16,11 +16,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSet_Private.h"
+#import "LEGACYSet_Private.h"
 
-#import "RLMCollection_Private.hpp"
+#import "LEGACYCollection_Private.hpp"
 
-#import "RLMResults_Private.hpp"
+#import "LEGACYResults_Private.hpp"
 
 namespace realm {
 class SetBase;
@@ -30,37 +30,37 @@ class CollectionBase;
     }
 }
 
-@class RLMObjectBase, RLMObjectSchema, RLMProperty;
-class RLMClassInfo;
-class RLMObservationInfo;
+@class LEGACYObjectBase, LEGACYObjectSchema, LEGACYProperty;
+class LEGACYClassInfo;
+class LEGACYObservationInfo;
 
-@interface RLMSet () {
+@interface LEGACYSet () {
 @protected
     NSString *_objectClassName;
-    RLMPropertyType _type;
+    LEGACYPropertyType _type;
     BOOL _optional;
 @public
-    // The name of the property which this RLMSet represents
+    // The name of the property which this LEGACYSet represents
     NSString *_key;
-    __weak RLMObjectBase *_parentObject;
+    __weak LEGACYObjectBase *_parentObject;
 }
 @end
 
-@interface RLMManagedSet () <RLMCollectionPrivate>
+@interface LEGACYManagedSet () <LEGACYCollectionPrivate>
 
-- (RLMManagedSet *)initWithBackingCollection:(realm::object_store::Set)set
-                                  parentInfo:(RLMClassInfo *)parentInfo
-                                    property:(__unsafe_unretained RLMProperty *const)property;
+- (LEGACYManagedSet *)initWithBackingCollection:(realm::object_store::Set)set
+                                  parentInfo:(LEGACYClassInfo *)parentInfo
+                                    property:(__unsafe_unretained LEGACYProperty *const)property;
 
 - (bool)isBackedBySet:(realm::object_store::Set const&)set;
 
-// deletes all objects in the RLMSet from their containing realms
+// deletes all objects in the LEGACYSet from their containing realms
 - (void)deleteObjectsFromRealm;
 
 @end
 
-void RLMValidateSetObservationKey(NSString *keyPath, RLMSet *set);
+void LEGACYValidateSetObservationKey(NSString *keyPath, LEGACYSet *set);
 
 // Initialize the observation info for a set if needed
-void RLMEnsureSetObservationInfo(std::unique_ptr<RLMObservationInfo>& info,
-                                 NSString *keyPath, RLMSet *set, id observed);
+void LEGACYEnsureSetObservationInfo(std::unique_ptr<LEGACYObservationInfo>& info,
+                                 NSString *keyPath, LEGACYSet *set, id observed);

@@ -23,16 +23,16 @@
 
 @property (nonatomic, strong) UIButton *button;
 @property (nonatomic, strong) Tick *tick;
-@property (nonatomic, strong) RLMNotificationToken *notificationToken;
+@property (nonatomic, strong) LEGACYNotificationToken *notificationToken;
 
 @end
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    RLMRealmConfiguration *configuration = [RLMRealmConfiguration defaultConfiguration];
+    LEGACYRealmConfiguration *configuration = [LEGACYRealmConfiguration defaultConfiguration];
     configuration.fileURL = [[[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:@"group.io.realm.examples.extension"] URLByAppendingPathComponent:@"extension.realm"];
-    [RLMRealmConfiguration setDefaultConfiguration:configuration];
+    [LEGACYRealmConfiguration setDefaultConfiguration:configuration];
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = [[TickViewController alloc] init];
     [self.window makeKeyAndVisible];
@@ -47,11 +47,11 @@
     [super viewDidLoad];
     self.tick = [Tick allObjects].firstObject;
     if (!self.tick) {
-        [[RLMRealm defaultRealm] transactionWithBlock:^{
+        [[LEGACYRealm defaultRealm] transactionWithBlock:^{
             self.tick = [Tick createInDefaultRealmWithValue:@[@"", @0]];
         }];
     }
-    self.notificationToken = [self.tick.realm addNotificationBlock:^(NSString *notification, RLMRealm *realm) {
+    self.notificationToken = [self.tick.realm addNotificationBlock:^(NSString *notification, LEGACYRealm *realm) {
         // Occasionally, respond immediately to the notification by triggering a new notification.
         if (self.tick.count % 13 == 0) {
             [self tock];
@@ -85,7 +85,7 @@
 }
 
 - (void)tock {
-    [[RLMRealm defaultRealm] transactionWithBlock:^{
+    [[LEGACYRealm defaultRealm] transactionWithBlock:^{
         self.tick.count++;
     }];
 }

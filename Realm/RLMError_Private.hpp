@@ -16,12 +16,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMError.h>
+#import <Realm/LEGACYError.h>
 
 #import <realm/exceptions.hpp>
 #import <realm/status_with.hpp>
 
-RLM_HIDDEN_BEGIN
+LEGACY_HIDDEN_BEGIN
 
 namespace realm {
 struct SyncError;
@@ -45,4 +45,4 @@ NSError *makeError(realm::app::AppError const& error);
 NSError *makeError(realm::SyncError&& error);
 NSError *makeError(realm::SyncError const& error) = delete;
 
-RLM_HIDDEN_END
+LEGACY_HIDDEN_END

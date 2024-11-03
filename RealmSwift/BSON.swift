@@ -77,13 +77,13 @@ extension NSRegularExpression: BSON {
 }
 
 /// MaxKey will always be the greatest value when comparing to other BSON types
-public typealias MaxKey = RLMMaxKey
+public typealias MaxKey = LEGACYMaxKey
 
 extension MaxKey: BSON {
 }
 
 /// MinKey will always be the smallest value when comparing to other BSON types
-public typealias MinKey = RLMMinKey
+public typealias MinKey = LEGACYMinKey
 
 extension MinKey: BSON {
 }

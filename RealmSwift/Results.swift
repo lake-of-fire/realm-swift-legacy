@@ -110,19 +110,19 @@ extension Projection: KeypathSortable {}
  Results instances cannot be directly instantiated.
  */
 @frozen public struct Results<Element: RealmCollectionValue>: Equatable, RealmCollectionImpl {
-    internal let collection: RLMCollection
+    internal let collection: LEGACYCollection
 
     /// A human-readable description of the objects represented by the results.
     public var description: String {
-        return RLMDescriptionWithMaxDepth("Results", collection, RLMDescriptionMaxDepth)
+        return LEGACYDescriptionWithMaxDepth("Results", collection, LEGACYDescriptionMaxDepth)
     }
 
     // MARK: Initializers
 
-    internal init(collection: RLMCollection) {
+    internal init(collection: LEGACYCollection) {
         self.collection = collection
     }
-    internal init(_ collection: RLMCollection) {
+    internal init(_ collection: LEGACYCollection) {
         self.collection = collection
     }
 
@@ -143,8 +143,8 @@ extension Projection: KeypathSortable {}
     }
 
     /// :nodoc:
-    public func makeIterator() -> RLMIterator<Element> {
-        return RLMIterator(collection: collection)
+    public func makeIterator() -> LEGACYIterator<Element> {
+        return LEGACYIterator(collection: collection)
     }
 
     // MARK: Flexible Sync
@@ -191,7 +191,7 @@ extension Projection: KeypathSortable {}
         }
 
         var rlmResults = ObjectiveCSupport.convert(object: self)
-        let scheduler = await RLMScheduler.actor(actor, invoke: actor.invoke, verify: actor.verifier())
+        let scheduler = await LEGACYScheduler.actor(actor, invoke: actor.invoke, verify: actor.verifier())
         rlmResults = try await rlmResults.subscribe(withName: name, waitForSync: waitForSync, confinedTo: scheduler, timeout: timeout ?? 0)
         return self
     }

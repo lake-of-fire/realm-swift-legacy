@@ -20,7 +20,7 @@
 #import <Realm/Realm.h>
 
 // Realm model object
-@interface DemoObject : RLMObject
+@interface DemoObject : LEGACYObject
 @property NSString *title;
 @property NSDate   *date;
 @end
@@ -34,8 +34,8 @@ static NSString * const kTableName = @"table";
 
 @interface TableViewController ()
 
-@property (nonatomic, strong) RLMResults *array;
-@property (nonatomic, strong) RLMNotificationToken *notification;
+@property (nonatomic, strong) LEGACYResults *array;
+@property (nonatomic, strong) LEGACYNotificationToken *notification;
 
 @end
 
@@ -51,7 +51,7 @@ static NSString * const kTableName = @"table";
 
     // Set realm notification block
     __weak typeof(self) weakSelf = self;
-    self.notification = [self.array addNotificationBlock:^(RLMResults *data, RLMCollectionChange *changes, NSError *error) {
+    self.notification = [self.array addNotificationBlock:^(LEGACYResults *data, LEGACYCollectionChange *changes, NSError *error) {
         if (error) {
             NSLog(@"Failed to open Realm on background worker: %@", error);
             return;
@@ -116,7 +116,7 @@ static NSString * const kTableName = @"table";
                                             forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        RLMRealm *realm = RLMRealm.defaultRealm;
+        LEGACYRealm *realm = LEGACYRealm.defaultRealm;
         [realm beginWriteTransaction];
         [realm deleteObject:self.array[indexPath.row]];
         [realm commitWriteTransaction];
@@ -132,7 +132,7 @@ static NSString * const kTableName = @"table";
     dispatch_async(queue, ^{
         // Get new realm and table since we are in a new thread
         @autoreleasepool {
-            RLMRealm *realm = [RLMRealm defaultRealm];
+            LEGACYRealm *realm = [LEGACYRealm defaultRealm];
             [realm beginWriteTransaction];
             for (NSInteger index = 0; index < 5; index++) {
                 // Add row via dictionary. Order is ignored.
@@ -146,7 +146,7 @@ static NSString * const kTableName = @"table";
 
 - (void)add
 {
-    RLMRealm *realm = RLMRealm.defaultRealm;
+    LEGACYRealm *realm = LEGACYRealm.defaultRealm;
     [realm beginWriteTransaction];
     [DemoObject createInRealm:realm withValue:@[[self randomString], [self randomDate]]];
     [realm commitWriteTransaction];

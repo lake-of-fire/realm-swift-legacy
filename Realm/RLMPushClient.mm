@@ -16,14 +16,14 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMPushClient_Private.hpp"
+#import "LEGACYPushClient_Private.hpp"
 
-#import "RLMApp_Private.hpp"
-#import "RLMUser_Private.hpp"
+#import "LEGACYApp_Private.hpp"
+#import "LEGACYUser_Private.hpp"
 
 #import <realm/object-store/sync/push_client.hpp>
 
-@implementation RLMPushClient {
+@implementation LEGACYPushClient {
     std::optional<realm::app::PushClient> _pushClient;
 }
 
@@ -35,7 +35,7 @@
     return nil;
 }
 
-- (void)registerDeviceWithToken:(NSString *)token user:(RLMUser *)user completion:(RLMOptionalErrorBlock)completion {
+- (void)registerDeviceWithToken:(NSString *)token user:(LEGACYUser *)user completion:(LEGACYOptionalErrorBlock)completion {
     _pushClient->register_device(token.UTF8String, user._syncUser, ^(std::optional<realm::app::AppError> error) {
         if (error) {
             return completion(makeError(*error));
@@ -45,7 +45,7 @@
 }
 
 
-- (void)deregisterDeviceForUser:(RLMUser *)user completion:(RLMOptionalErrorBlock)completion {
+- (void)deregisterDeviceForUser:(LEGACYUser *)user completion:(LEGACYOptionalErrorBlock)completion {
     _pushClient->deregister_device(user._syncUser, ^(std::optional<realm::app::AppError> error) {
         if (error) {
             return completion(makeError(*error));

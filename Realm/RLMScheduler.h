@@ -16,7 +16,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
 #ifdef __cplusplus
 #include <memory>
@@ -25,7 +25,7 @@ class Scheduler;
 }
 #endif
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 // A serial work queue of some sort which represents a thread-confinement context
 // of some sort which blocks can be invoked inside. Realms are confined to a
@@ -33,13 +33,13 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 // an actor. The scheduler ensures that the Realm is only used on one thread at
 // a time, and allows us to dispatch work to the thread where we can access the
 // Realm safely.
-RLM_SWIFT_SENDABLE // is immutable
-@interface RLMScheduler : NSObject
-+ (RLMScheduler *)mainRunLoop __attribute__((objc_direct));
-+ (RLMScheduler *)currentRunLoop __attribute__((objc_direct));
+LEGACY_SWIFT_SENDABLE // is immutable
+@interface LEGACYScheduler : NSObject
++ (LEGACYScheduler *)mainRunLoop __attribute__((objc_direct));
++ (LEGACYScheduler *)currentRunLoop __attribute__((objc_direct));
 // A scheduler for the given queue if it's non-nil, and currentRunLoop otherwise
-+ (RLMScheduler *)dispatchQueue:(nullable dispatch_queue_t)queue;
-+ (RLMScheduler *)actor:(id)actor invoke:(void (^)(dispatch_block_t))invoke
++ (LEGACYScheduler *)dispatchQueue:(nullable dispatch_queue_t)queue;
++ (LEGACYScheduler *)actor:(id)actor invoke:(void (^)(dispatch_block_t))invoke
                  verify:(void (^)(void))verify;
 
 // Invoke the block on this scheduler. Currently not actually implement for run
@@ -58,6 +58,6 @@ RLM_SWIFT_SENDABLE // is immutable
 #endif
 @end
 
-FOUNDATION_EXTERN void RLMSetMainActor(id actor);
+FOUNDATION_EXTERN void LEGACYSetMainActor(id actor);
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

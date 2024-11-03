@@ -16,14 +16,14 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMObjectId.h>
+#import <Realm/LEGACYObjectId.h>
 
 namespace realm {
 class ObjectId;
 }
 
-RLM_DIRECT_MEMBERS
-@interface RLMObjectId ()
+LEGACY_DIRECT_MEMBERS
+@interface LEGACYObjectId ()
 @property (nonatomic, readonly) realm::ObjectId value;
 - (instancetype)initWithValue:(realm::ObjectId)value;
 @end

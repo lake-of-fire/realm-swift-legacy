@@ -18,7 +18,7 @@
 
 #import <Realm/Realm.h>
 
-@interface Place : RLMObject
+@interface Place : LEGACYObject
 
 @property NSString *postalCode;
 @property NSString *placeName;

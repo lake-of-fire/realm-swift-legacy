@@ -16,8 +16,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMTestObjects.h"
-#import <Realm/RLMObject_Private.h>
+#import "LEGACYTestObjects.h"
+#import <Realm/LEGACYObject_Private.h>
 
 #pragma mark - Abstract Objects
 #pragma mark -
@@ -102,7 +102,7 @@
 
 @implementation AllTypesObject
 + (NSDictionary *)linkingObjectsProperties {
-    return @{@"linkingObjectsCol": [RLMPropertyDescriptor descriptorWithClass:LinkToAllTypesObject.class propertyName:@"allTypesCol"]};
+    return @{@"linkingObjectsCol": [LEGACYPropertyDescriptor descriptorWithClass:LinkToAllTypesObject.class propertyName:@"allTypesCol"]};
 }
 
 + (NSArray *)requiredProperties {
@@ -122,8 +122,8 @@
         @"binaryCol": [@(str) dataUsingEncoding:NSUTF8StringEncoding],
         @"dateCol": [NSDate dateWithTimeIntervalSince1970:i],
         @"longCol": @((long long)i * INT_MAX + 1),
-        @"decimalCol": [[RLMDecimal128 alloc] initWithNumber:@(i)],
-        @"objectIdCol": [RLMObjectId objectId],
+        @"decimalCol": [[LEGACYDecimal128 alloc] initWithNumber:@(i)],
+        @"objectIdCol": [LEGACYObjectId objectId],
         @"objectCol": so ?: NSNull.null,
         @"uuidCol": i < 4 ? @[[[NSUUID alloc] initWithUUIDString:@"85d4fbee-6ec6-47df-bfa1-615931903d7e"],
                               [[NSUUID alloc] initWithUUIDString:@"00000000-0000-0000-0000-000000000000"],
@@ -141,7 +141,7 @@
 }
 @end
 
-@implementation AllPrimitiveRLMValues
+@implementation AllPrimitiveLEGACYValues
 @end
 
 @implementation ArrayOfAllTypesObject
@@ -250,7 +250,7 @@
 @implementation DogObject
 + (NSDictionary *)linkingObjectsProperties
 {
-    return @{ @"owners": [RLMPropertyDescriptor descriptorWithClass:OwnerObject.class propertyName:@"dog"] };
+    return @{ @"owners": [LEGACYPropertyDescriptor descriptorWithClass:OwnerObject.class propertyName:@"dog"] };
 }
 @end
 
@@ -435,7 +435,7 @@
 
 + (NSDictionary *)linkingObjectsProperties
 {
-    return @{ @"parents": [RLMPropertyDescriptor descriptorWithClass:PersonObject.class propertyName:@"children"] };
+    return @{ @"parents": [LEGACYPropertyDescriptor descriptorWithClass:PersonObject.class propertyName:@"children"] };
 }
 
 - (BOOL)isEqual:(id)other
@@ -466,8 +466,8 @@
              @"propB": @"prop 2"};
 }
 + (NSDictionary *)linkingObjectsProperties {
-    return @{@"linking1": [RLMPropertyDescriptor descriptorWithClass:LinkToRenamedProperties1.class propertyName:@"linkA"],
-             @"linking2": [RLMPropertyDescriptor descriptorWithClass:LinkToRenamedProperties2.class propertyName:@"linkD"]};
+    return @{@"linking1": [LEGACYPropertyDescriptor descriptorWithClass:LinkToRenamedProperties1.class propertyName:@"linkA"],
+             @"linking2": [LEGACYPropertyDescriptor descriptorWithClass:LinkToRenamedProperties2.class propertyName:@"linkD"]};
 }
 @end
 
@@ -480,8 +480,8 @@
              @"propD": @"prop 2"};
 }
 + (NSDictionary *)linkingObjectsProperties {
-    return @{@"linking1": [RLMPropertyDescriptor descriptorWithClass:LinkToRenamedProperties1.class propertyName:@"linkA"],
-             @"linking2": [RLMPropertyDescriptor descriptorWithClass:LinkToRenamedProperties2.class propertyName:@"linkD"]};
+    return @{@"linking1": [LEGACYPropertyDescriptor descriptorWithClass:LinkToRenamedProperties1.class propertyName:@"linkA"],
+             @"linking2": [LEGACYPropertyDescriptor descriptorWithClass:LinkToRenamedProperties2.class propertyName:@"linkD"]};
 }
 @end
 

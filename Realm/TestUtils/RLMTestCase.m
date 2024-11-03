@@ -16,45 +16,45 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMTestCase.h"
+#import "LEGACYTestCase.h"
 
-#import "RLMRealmConfiguration_Private.h"
-#import <Realm/RLMRealm_Private.h>
-#import <Realm/RLMSchema_Private.h>
-#import <Realm/RLMRealmConfiguration_Private.h>
+#import "LEGACYRealmConfiguration_Private.h"
+#import <Realm/LEGACYRealm_Private.h>
+#import <Realm/LEGACYSchema_Private.h>
+#import <Realm/LEGACYRealmConfiguration_Private.h>
 
 static NSString *parentProcessBundleIdentifier(void)
 {
     static BOOL hasInitializedIdentifier;
     static NSString *identifier;
     if (!hasInitializedIdentifier) {
-        identifier = [NSProcessInfo processInfo].environment[@"RLMParentProcessBundleID"];
+        identifier = [NSProcessInfo processInfo].environment[@"LEGACYParentProcessBundleID"];
         hasInitializedIdentifier = YES;
     }
 
     return identifier;
 }
 
-NSURL *RLMDefaultRealmURL(void) {
-    return [NSURL fileURLWithPath:RLMRealmPathForFileAndBundleIdentifier(@"default.realm", parentProcessBundleIdentifier())];
+NSURL *LEGACYDefaultRealmURL(void) {
+    return [NSURL fileURLWithPath:LEGACYRealmPathForFileAndBundleIdentifier(@"default.realm", parentProcessBundleIdentifier())];
 }
 
-NSURL *RLMTestRealmURL(void) {
-    return [NSURL fileURLWithPath:RLMRealmPathForFileAndBundleIdentifier(@"test.realm", parentProcessBundleIdentifier())];
+NSURL *LEGACYTestRealmURL(void) {
+    return [NSURL fileURLWithPath:LEGACYRealmPathForFileAndBundleIdentifier(@"test.realm", parentProcessBundleIdentifier())];
 }
 
 static void deleteOrThrow(NSURL *fileURL) {
     NSError *error;
     if (![[NSFileManager defaultManager] removeItemAtURL:fileURL error:&error]) {
         if (error.code != NSFileNoSuchFileError) {
-            @throw [NSException exceptionWithName:@"RLMTestException"
+            @throw [NSException exceptionWithName:@"LEGACYTestException"
                                            reason:[@"Unable to delete realm: " stringByAppendingString:error.description]
                                          userInfo:nil];
         }
     }
 }
 
-NSData *RLMGenerateKey(void) {
+NSData *LEGACYGenerateKey(void) {
     uint8_t buffer[64];
     (void)SecRandomCopyBytes(kSecRandomDefault, 64, buffer);
     return [[NSData alloc] initWithBytes:buffer length:sizeof(buffer)];
@@ -72,47 +72,47 @@ static BOOL encryptTests(void) {
     return encryptAll;
 }
 
-@implementation RLMTestCaseBase
+@implementation LEGACYTestCaseBase
 + (void)setUp {
     [super setUp];
 #if DEBUG || !TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
     // Disable actually syncing anything to the disk to greatly speed up the
     // tests, but only when not running on device because it can't be
     // re-enabled and we need it enabled for performance tests
-    RLMDisableSyncToDisk();
+    LEGACYDisableSyncToDisk();
 #endif
     // Don't bother disabling backups on our non-Realm files because it takes
     // a while and we're going to delete them anyway.
-    RLMSetSkipBackupAttribute(false);
+    LEGACYSetSkipBackupAttribute(false);
 
-    if (!getenv("RLMProcessIsChild")) {
+    if (!getenv("LEGACYProcessIsChild")) {
         [self preinitializeSchema];
 
         // Clean up any potentially lingering Realm files from previous runs
-        [NSFileManager.defaultManager removeItemAtPath:RLMRealmPathForFile(@"") error:nil];
+        [NSFileManager.defaultManager removeItemAtPath:LEGACYRealmPathForFile(@"") error:nil];
     }
 
     // Ensure the documents directory exists as it sometimes doesn't after
     // resetting the simulator
-    [NSFileManager.defaultManager createDirectoryAtURL:RLMDefaultRealmURL().URLByDeletingLastPathComponent
+    [NSFileManager.defaultManager createDirectoryAtURL:LEGACYDefaultRealmURL().URLByDeletingLastPathComponent
                            withIntermediateDirectories:YES attributes:nil error:nil];
 }
 
 // This ensures the shared schema is initialized outside of of a test case,
 // so if an exception is thrown, it will kill the test process rather than
 // allowing hundreds of test cases to fail in strange ways
-// This is overridden by RLMMultiProcessTestCase to support testing the schema init
+// This is overridden by LEGACYMultiProcessTestCase to support testing the schema init
 + (void)preinitializeSchema {
-    [RLMSchema sharedSchema];
+    [LEGACYSchema sharedSchema];
 }
 
 // A hook point for subclasses to override the cleanup
 - (void)resetRealmState {
-    [RLMRealm resetRealmState];
+    [LEGACYRealm resetRealmState];
 }
 @end
 
-@implementation RLMTestCase {
+@implementation LEGACYTestCase {
     dispatch_queue_t _bgQueue;
 }
 
@@ -121,7 +121,7 @@ static BOOL encryptTests(void) {
     [self resetRealmState];
 
     // Delete Realm files
-    NSURL *directory = RLMDefaultRealmURL().URLByDeletingLastPathComponent;
+    NSURL *directory = LEGACYDefaultRealmURL().URLByDeletingLastPathComponent;
     NSError *error = nil;
     for (NSString *file in [NSFileManager.defaultManager
                             contentsOfDirectoryAtPath:directory.path error:&error]) {
@@ -144,8 +144,8 @@ static BOOL encryptTests(void) {
         [self deleteFiles];
 
         if (self.encryptTests) {
-            RLMRealmConfiguration *configuration = [RLMRealmConfiguration rawDefaultConfiguration];
-            configuration.encryptionKey = RLMGenerateKey();
+            LEGACYRealmConfiguration *configuration = [LEGACYRealmConfiguration rawDefaultConfiguration];
+            configuration.encryptionKey = LEGACYGenerateKey();
         }
     }
     @autoreleasepool {
@@ -160,37 +160,37 @@ static BOOL encryptTests(void) {
     }
 }
 
-- (RLMRealm *)realmWithTestPath {
-    return [RLMRealm realmWithURL:RLMTestRealmURL()];
+- (LEGACYRealm *)realmWithTestPath {
+    return [LEGACYRealm realmWithURL:LEGACYTestRealmURL()];
 }
 
-- (RLMRealm *)realmWithTestPathAndSchema:(RLMSchema *)schema {
-    RLMRealmConfiguration *configuration = [RLMRealmConfiguration defaultConfiguration];
-    configuration.fileURL = RLMTestRealmURL();
+- (LEGACYRealm *)realmWithTestPathAndSchema:(LEGACYSchema *)schema {
+    LEGACYRealmConfiguration *configuration = [LEGACYRealmConfiguration defaultConfiguration];
+    configuration.fileURL = LEGACYTestRealmURL();
     if (schema)
         configuration.customSchema = schema;
     else
         configuration.dynamic = true;
-    return [RLMRealm realmWithConfiguration:configuration error:nil];
+    return [LEGACYRealm realmWithConfiguration:configuration error:nil];
 }
 
-- (RLMRealm *)inMemoryRealmWithIdentifier:(NSString *)identifier {
-    RLMRealmConfiguration *configuration = [RLMRealmConfiguration defaultConfiguration];
+- (LEGACYRealm *)inMemoryRealmWithIdentifier:(NSString *)identifier {
+    LEGACYRealmConfiguration *configuration = [LEGACYRealmConfiguration defaultConfiguration];
     configuration.encryptionKey = nil;
     configuration.inMemoryIdentifier = identifier;
-    return [RLMRealm realmWithConfiguration:configuration error:nil];
+    return [LEGACYRealm realmWithConfiguration:configuration error:nil];
 }
 
-- (RLMRealm *)readOnlyRealmWithURL:(NSURL *)fileURL error:(NSError **)error {
-    RLMRealmConfiguration *configuration = [RLMRealmConfiguration defaultConfiguration];
+- (LEGACYRealm *)readOnlyRealmWithURL:(NSURL *)fileURL error:(NSError **)error {
+    LEGACYRealmConfiguration *configuration = [LEGACYRealmConfiguration defaultConfiguration];
     configuration.fileURL = fileURL;
     configuration.readOnly = true;
-    return [RLMRealm realmWithConfiguration:configuration error:error];
+    return [LEGACYRealm realmWithConfiguration:configuration error:error];
 }
 
-- (void)waitForNotification:(NSString *)expectedNote realm:(RLMRealm *)realm block:(dispatch_block_t)block {
+- (void)waitForNotification:(NSString *)expectedNote realm:(LEGACYRealm *)realm block:(dispatch_block_t)block {
     XCTestExpectation *notificationFired = [self expectationWithDescription:@"notification fired"];
-    __block RLMNotificationToken *token = [realm addNotificationBlock:^(NSString *note, RLMRealm *realm) {
+    __block LEGACYNotificationToken *token = [realm addNotificationBlock:^(NSString *note, LEGACYRealm *realm) {
         XCTAssertNotNil(note, @"Note should not be nil");
         XCTAssertNotNil(realm, @"Realm should not be nil");
         if (note == expectedNote) { // Check pointer equality to ensure we're using the interned string constant
@@ -219,7 +219,7 @@ static BOOL encryptTests(void) {
     return _bgQueue;
 }
 
-- (void)dispatchAsync:(RLM_SWIFT_SENDABLE dispatch_block_t)block {
+- (void)dispatchAsync:(LEGACY_SWIFT_SENDABLE dispatch_block_t)block {
     dispatch_async(self.bgQueue, ^{
         @autoreleasepool {
             block();
@@ -227,7 +227,7 @@ static BOOL encryptTests(void) {
     });
 }
 
-- (void)dispatchAsyncAndWait:(RLM_SWIFT_SENDABLE dispatch_block_t)block {
+- (void)dispatchAsyncAndWait:(LEGACY_SWIFT_SENDABLE dispatch_block_t)block {
     [self dispatchAsync:block];
     dispatch_sync(_bgQueue, ^{});
 }

@@ -16,62 +16,62 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@protocol RLMBSON;
+@protocol LEGACYBSON;
 
-/// Options to use when executing a `find` command on a `RLMMongoCollection`.
-@interface RLMFindOptions : NSObject
+/// Options to use when executing a `find` command on a `LEGACYMongoCollection`.
+@interface LEGACYFindOptions : NSObject
 
 /// The maximum number of documents to return. Specifying 0 will return all documents.
 @property (nonatomic) NSInteger limit;
 
 /// Limits the fields to return for all matching documents.
-@property (nonatomic, nullable) id<RLMBSON> projection NS_REFINED_FOR_SWIFT;
+@property (nonatomic, nullable) id<LEGACYBSON> projection NS_REFINED_FOR_SWIFT;
 
 /// The order in which to return matching documents.
-@property (nonatomic, nullable) id<RLMBSON> sort NS_REFINED_FOR_SWIFT
+@property (nonatomic, nullable) id<LEGACYBSON> sort NS_REFINED_FOR_SWIFT
 __attribute__((deprecated("Use `sorting` instead, which correctly sort more than one sort attribute", "sorting")));
 
 /// The order in which to return matching documents.
-@property (nonatomic) NSArray<id<RLMBSON>> *sorting NS_REFINED_FOR_SWIFT;
+@property (nonatomic) NSArray<id<LEGACYBSON>> *sorting NS_REFINED_FOR_SWIFT;
 
-/// Options to use when executing a `find` command on a `RLMMongoCollection`.
+/// Options to use when executing a `find` command on a `LEGACYMongoCollection`.
 /// @param limit The maximum number of documents to return. Specifying 0 will return all documents.
 /// @param projection Limits the fields to return for all matching documents.
 /// @param sort The order in which to return matching documents.
 - (instancetype)initWithLimit:(NSInteger)limit
-                   projection:(id<RLMBSON> _Nullable)projection
-                         sort:(id<RLMBSON> _Nullable)sort
+                   projection:(id<LEGACYBSON> _Nullable)projection
+                         sort:(id<LEGACYBSON> _Nullable)sort
 __attribute__((deprecated("Please use `initWithLimit:projection:sorting:`")))
     NS_SWIFT_UNAVAILABLE("Please see FindOption");
 
 
-/// Options to use when executing a `find` command on a `RLMMongoCollection`.
+/// Options to use when executing a `find` command on a `LEGACYMongoCollection`.
 /// @param projection Limits the fields to return for all matching documents.
 /// @param sort The order in which to return matching documents.
-- (instancetype)initWithProjection:(id<RLMBSON> _Nullable)projection
-                              sort:(id<RLMBSON> _Nullable)sort __deprecated
+- (instancetype)initWithProjection:(id<LEGACYBSON> _Nullable)projection
+                              sort:(id<LEGACYBSON> _Nullable)sort __deprecated
 __attribute__((deprecated("Please use `initWithProjection:sorting:`")))
      NS_SWIFT_UNAVAILABLE("Please see FindOption");
 
 
-/// Options to use when executing a `find` command on a `RLMMongoCollection`.
+/// Options to use when executing a `find` command on a `LEGACYMongoCollection`.
 /// @param limit The maximum number of documents to return. Specifying 0 will return all documents.
 /// @param projection Limits the fields to return for all matching documents.
 /// @param sorting The order in which to return matching documents.
 - (instancetype)initWithLimit:(NSInteger)limit
-                   projection:(id<RLMBSON> _Nullable)projection
-                      sorting:(NSArray<id<RLMBSON>> *)sorting;
+                   projection:(id<LEGACYBSON> _Nullable)projection
+                      sorting:(NSArray<id<LEGACYBSON>> *)sorting;
 
-/// Options to use when executing a `find` command on a `RLMMongoCollection`.
+/// Options to use when executing a `find` command on a `LEGACYMongoCollection`.
 /// @param projection Limits the fields to return for all matching documents.
 /// @param sorting The order in which to return matching documents.
-- (instancetype)initWithProjection:(id<RLMBSON> _Nullable)projection
-                           sorting:(NSArray<id<RLMBSON>> *)sorting;
+- (instancetype)initWithProjection:(id<LEGACYBSON> _Nullable)projection
+                           sorting:(NSArray<id<LEGACYBSON>> *)sorting;
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

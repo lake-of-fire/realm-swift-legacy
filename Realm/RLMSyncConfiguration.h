@@ -18,21 +18,21 @@
 
 #import <Foundation/Foundation.h>
 
-#import <Realm/RLMSyncManager.h>
+#import <Realm/LEGACYSyncManager.h>
 
-@class RLMApp;
-@class RLMRealm;
-@class RLMRealmConfiguration;
-@class RLMUser;
-@protocol RLMBSON;
+@class LEGACYApp;
+@class LEGACYRealm;
+@class LEGACYRealmConfiguration;
+@class LEGACYUser;
+@protocol LEGACYBSON;
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 /**  Determines file behavior during a client reset.
 
  @see: https://docs.mongodb.com/realm/sync/error-handling/client-resets/
 */
-typedef NS_ENUM(NSUInteger, RLMClientResetMode) {
+typedef NS_ENUM(NSUInteger, LEGACYClientResetMode) {
     /// The local copy of the Realm is copied into a recovery
     /// directory for safekeeping, and then deleted from the original location. The next time
     /// the Realm for that partition value is opened, the Realm will automatically be re-downloaded from
@@ -43,42 +43,42 @@ typedef NS_ENUM(NSUInteger, RLMClientResetMode) {
     /// re-downloaded Realm will initially contain only the data present at the time the Realm
     /// was backed up on the server.
     ///
-    /// @see: ``rlmSync_clientResetBackedUpRealmPath`` and ``RLMSyncErrorActionToken`` for more information on accessing the recovery directory and error information.
+    /// @see: ``rlmSync_clientResetBackedUpRealmPath`` and ``LEGACYSyncErrorActionToken`` for more information on accessing the recovery directory and error information.
     ///
     /// The manual client reset mode handler can be set in two places:
-    ///  1. As an ErrorReportingBlock argument at ``RLMSyncConfiguration.manualClientResetHandler``.
-    ///  2. As an ErrorReportingBlock in the ``RLMSyncManager.errorHandler`` property.
-    ///  @see: ``RLMSyncManager.errorHandler``
+    ///  1. As an ErrorReportingBlock argument at ``LEGACYSyncConfiguration.manualClientResetHandler``.
+    ///  2. As an ErrorReportingBlock in the ``LEGACYSyncManager.errorHandler`` property.
+    ///  @see: ``LEGACYSyncManager.errorHandler``
     ///
-    ///  When an ``RLMSyncErrorClientResetError`` is thrown, the following rules determine which block is executed:
-    ///  - If an error reporting block is set in ``.manualClientResetHandler`` and the ``RLMSyncManager.errorHandler``, the ``.manualClientResetHandler`` block will be executed.
-    ///  - If an error reporting block is set in either the ``.manualClientResetHandler`` or the ``RLMSyncManager``, but not both, the single block will execute.
+    ///  When an ``LEGACYSyncErrorClientResetError`` is thrown, the following rules determine which block is executed:
+    ///  - If an error reporting block is set in ``.manualClientResetHandler`` and the ``LEGACYSyncManager.errorHandler``, the ``.manualClientResetHandler`` block will be executed.
+    ///  - If an error reporting block is set in either the ``.manualClientResetHandler`` or the ``LEGACYSyncManager``, but not both, the single block will execute.
     ///  - If no block is set in either location, the client reset will not be handled. The application will likely need to be restarted and unsynced local changes may be lost.
-    /// @note: The ``RLMSyncManager.errorHandler`` is still invoked under all ``RLMSyncError``s *other than* ``RLMSyncErrorClientResetError``.
-    /// @see ``RLMSyncError`` for an exhaustive list.
-    RLMClientResetModeManual = 0,
+    /// @note: The ``LEGACYSyncManager.errorHandler`` is still invoked under all ``LEGACYSyncError``s *other than* ``LEGACYSyncErrorClientResetError``.
+    /// @see ``LEGACYSyncError`` for an exhaustive list.
+    LEGACYClientResetModeManual = 0,
     /// All unsynchronized local changes are automatically discarded and the local state is
     /// automatically reverted to the most recent state from the server. Unsynchronized changes
     /// can then be recovered in the post-client-reset callback block.
     ///
-    /// If ``RLMClientResetModeDiscardLocal`` is enabled but the client reset operation is unable to complete
+    /// If ``LEGACYClientResetModeDiscardLocal`` is enabled but the client reset operation is unable to complete
     /// then the client reset process reverts to manual mode. Example) During a destructive schema change this
     /// mode will fail and invoke the manual client reset handler.
     ///
-    /// The RLMClientResetModeDiscardLocal mode supports two client reset callbacks -- ``RLMClientResetBeforeBlock``, ``RLMClientResetAfterBlock`` -- which can be passed as arguments when creating the ``RLMSyncConfiguration``.
-    /// @see: ``RLMClientResetAfterBlock`` and ``RLMClientResetBeforeBlock``
-    RLMClientResetModeDiscardLocal __deprecated_enum_msg("Use RLMClientResetModeDiscardUnsyncedChanges") = 1,
+    /// The LEGACYClientResetModeDiscardLocal mode supports two client reset callbacks -- ``LEGACYClientResetBeforeBlock``, ``LEGACYClientResetAfterBlock`` -- which can be passed as arguments when creating the ``LEGACYSyncConfiguration``.
+    /// @see: ``LEGACYClientResetAfterBlock`` and ``LEGACYClientResetBeforeBlock``
+    LEGACYClientResetModeDiscardLocal __deprecated_enum_msg("Use LEGACYClientResetModeDiscardUnsyncedChanges") = 1,
     /// All unsynchronized local changes are automatically discarded and the local state is
     /// automatically reverted to the most recent state from the server. Unsynchronized changes
     /// can then be recovered in the post-client-reset callback block.
     ///
-    /// If ``RLMClientResetModeDiscardUnsyncedChanges`` is enabled but the client reset operation is unable to complete
+    /// If ``LEGACYClientResetModeDiscardUnsyncedChanges`` is enabled but the client reset operation is unable to complete
     /// then the client reset process reverts to manual mode. Example) During a destructive schema change this
     /// mode will fail and invoke the manual client reset handler.
     ///
-    /// The RLMClientResetModeDiscardUnsyncedChanges mode supports two client reset callbacks -- ``RLMClientResetBeforeBlock``, ``RLMClientResetAfterBlock`` -- which can be passed as arguments when creating the ``RLMSyncConfiguration``.
-    /// @see: ``RLMClientResetAfterBlock`` and ``RLMClientResetBeforeBlock``
-    RLMClientResetModeDiscardUnsyncedChanges = 1,
+    /// The LEGACYClientResetModeDiscardUnsyncedChanges mode supports two client reset callbacks -- ``LEGACYClientResetBeforeBlock``, ``LEGACYClientResetAfterBlock`` -- which can be passed as arguments when creating the ``LEGACYSyncConfiguration``.
+    /// @see: ``LEGACYClientResetAfterBlock`` and ``LEGACYClientResetBeforeBlock``
+    LEGACYClientResetModeDiscardUnsyncedChanges = 1,
     /// The client device will download a realm realm which reflects the latest
     /// state of the server after a client reset. A recovery process is run locally in
     /// an attempt to integrate the server version with any local changes from
@@ -90,13 +90,13 @@ typedef NS_ENUM(NSUInteger, RLMClientResetMode) {
     /// 3. If an object was deleted on the client, but not the server, then the client delete instruction is applied.
     /// 4. In the case of conflicting updates to the same field, the client update is applied.
     ///
-    /// If the recovery integration fails, the client reset process falls back to ``RLMClientResetModeManual``.
+    /// If the recovery integration fails, the client reset process falls back to ``LEGACYClientResetModeManual``.
     /// The recovery integration will fail if the "Client Recovery" setting is not enabled on the server.
     /// Integration may also fail in the event of an incompatible schema change.
     ///
-    /// The RLMClientResetModeRecoverUnsyncedChanges mode supports two client reset callbacks -- ``RLMClientResetBeforeBlock``, ``RLMClientResetAfterBlock`` -- which can be passed as arguments when creating the ``RLMSyncConfiguration``.
-    /// @see: ``RLMClientResetAfterBlock`` and ``RLMClientResetBeforeBlock``
-    RLMClientResetModeRecoverUnsyncedChanges = 2,
+    /// The LEGACYClientResetModeRecoverUnsyncedChanges mode supports two client reset callbacks -- ``LEGACYClientResetBeforeBlock``, ``LEGACYClientResetAfterBlock`` -- which can be passed as arguments when creating the ``LEGACYSyncConfiguration``.
+    /// @see: ``LEGACYClientResetAfterBlock`` and ``LEGACYClientResetBeforeBlock``
+    LEGACYClientResetModeRecoverUnsyncedChanges = 2,
     /// The client device will download a realm with objects reflecting the latest version of the server. A recovery
     /// process is run locally in an attempt to integrate the server version with any local changes from before the
     /// client reset occurred.
@@ -107,73 +107,73 @@ typedef NS_ENUM(NSUInteger, RLMClientResetMode) {
     /// 3. If an object was deleted on the client, but not the server, then the client delete instruction is applied.
     /// 4. In the case of conflicting updates to the same field, the client update is applied.
     ///
-    /// If the recovery integration fails, the client reset process falls back to ``RLMClientResetModeDiscardUnsyncedChanges``.
+    /// If the recovery integration fails, the client reset process falls back to ``LEGACYClientResetModeDiscardUnsyncedChanges``.
     /// The recovery integration will fail if the "Client Recovery" setting is not enabled on the server.
     /// Integration may also fail in the event of an incompatible schema change.
     ///
-    /// The RLMClientResetModeRecoverOrDiscardUnsyncedChanges mode supports two client reset callbacks -- ``RLMClientResetBeforeBlock``, ``RLMClientResetAfterBlock`` -- which can be passed as arguments when creating the ``RLMSyncConfiguration``.
-    /// @see: ``RLMClientResetAfterBlock`` and ``RLMClientResetBeforeBlock``
-    RLMClientResetModeRecoverOrDiscardUnsyncedChanges = 3
+    /// The LEGACYClientResetModeRecoverOrDiscardUnsyncedChanges mode supports two client reset callbacks -- ``LEGACYClientResetBeforeBlock``, ``LEGACYClientResetAfterBlock`` -- which can be passed as arguments when creating the ``LEGACYSyncConfiguration``.
+    /// @see: ``LEGACYClientResetAfterBlock`` and ``LEGACYClientResetBeforeBlock``
+    LEGACYClientResetModeRecoverOrDiscardUnsyncedChanges = 3
 };
 
 /**
  A block type used to report before a client reset will occur.
  The `beforeFrozen` is a frozen copy of the local state prior to client reset.
  */
-RLM_SWIFT_SENDABLE // invoked on a background thread
-typedef void(^RLMClientResetBeforeBlock)(RLMRealm * _Nonnull beforeFrozen);
+LEGACY_SWIFT_SENDABLE // invoked on a background thread
+typedef void(^LEGACYClientResetBeforeBlock)(LEGACYRealm * _Nonnull beforeFrozen);
 
 /**
  A block type used to report after a client reset occurred.
  The `beforeFrozen` argument is a frozen copy of the local state prior to client reset.
  The `after` argument contains the local database state after the client reset occurred.
  */
-RLM_SWIFT_SENDABLE // invoked on a backgroun thread
-typedef void(^RLMClientResetAfterBlock)(RLMRealm * _Nonnull beforeFrozen, RLMRealm * _Nonnull after);
+LEGACY_SWIFT_SENDABLE // invoked on a backgroun thread
+typedef void(^LEGACYClientResetAfterBlock)(LEGACYRealm * _Nonnull beforeFrozen, LEGACYRealm * _Nonnull after);
 
 /**
  A configuration object representing configuration state for a Realm which is intended to sync with a Realm Object
  Server.
  */
-@interface RLMSyncConfiguration : NSObject
+@interface LEGACYSyncConfiguration : NSObject
 
 /// The user to which the remote Realm belongs.
-@property (nonatomic, readonly) RLMUser *user;
+@property (nonatomic, readonly) LEGACYUser *user;
 
 /**
  The value this Realm is partitioned on. The partition key is a property defined in
  Atlas App Services. All classes with a property with this value will be synchronized to the
  Realm.
  */
-@property (nonatomic, readonly) id<RLMBSON> partitionValue;
+@property (nonatomic, readonly) id<LEGACYBSON> partitionValue;
 
 /**
  An enum which determines file recovery behavior in the event of a client reset.
- @note: Defaults to `RLMClientResetModeRecoverUnsyncedChanges`
+ @note: Defaults to `LEGACYClientResetModeRecoverUnsyncedChanges`
 
- @see: `RLMClientResetMode`
+ @see: `LEGACYClientResetMode`
  @see: https://docs.mongodb.com/realm/sync/error-handling/client-resets/
 */
-@property (nonatomic) RLMClientResetMode clientResetMode;
+@property (nonatomic) LEGACYClientResetMode clientResetMode;
 
 /**
  A callback which notifies prior to  prior to a client reset occurring.
- @see: `RLMClientResetBeforeBlock`
+ @see: `LEGACYClientResetBeforeBlock`
  */
-@property (nonatomic, nullable) RLMClientResetBeforeBlock beforeClientReset;
+@property (nonatomic, nullable) LEGACYClientResetBeforeBlock beforeClientReset;
 
 /**
  A callback which notifies after a client reset has occurred.
- @see: `RLMClientResetAfterBlock`
+ @see: `LEGACYClientResetAfterBlock`
  */
-@property (nonatomic, nullable) RLMClientResetAfterBlock afterClientReset;
+@property (nonatomic, nullable) LEGACYClientResetAfterBlock afterClientReset;
 
 /**
-    A callback that's executed when an `RLMSyncErrorClientResetError` is encountered.
-    @See RLMSyncErrorReportingBlock and RLMSyncErrorClientResetError for more
+    A callback that's executed when an `LEGACYSyncErrorClientResetError` is encountered.
+    @See LEGACYSyncErrorReportingBlock and LEGACYSyncErrorClientResetError for more
     details on handling a client reset manually.
  */
-@property (nonatomic, nullable) RLMSyncErrorReportingBlock manualClientResetHandler;
+@property (nonatomic, nullable) LEGACYSyncErrorReportingBlock manualClientResetHandler;
 
 
 /**
@@ -193,4 +193,4 @@ typedef void(^RLMClientResetAfterBlock)(RLMRealm * _Nonnull beforeFrozen, RLMRea
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

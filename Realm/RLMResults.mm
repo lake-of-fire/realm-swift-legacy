@@ -16,24 +16,24 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMResults_Private.hpp"
+#import "LEGACYResults_Private.hpp"
 
-#import "RLMAccessor.hpp"
-#import "RLMArray_Private.hpp"
-#import "RLMCollection_Private.hpp"
-#import "RLMObjectSchema_Private.hpp"
-#import "RLMObjectStore.h"
-#import "RLMObject_Private.hpp"
-#import "RLMObservation.hpp"
-#import "RLMProperty_Private.h"
-#import "RLMQueryUtil.hpp"
-#import "RLMRealmConfiguration_Private.hpp"
-#import "RLMScheduler.h"
-#import "RLMSchema_Private.h"
-#import "RLMSectionedResults_Private.hpp"
-#import "RLMSyncSubscription_Private.hpp"
-#import "RLMThreadSafeReference_Private.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYAccessor.hpp"
+#import "LEGACYArray_Private.hpp"
+#import "LEGACYCollection_Private.hpp"
+#import "LEGACYObjectSchema_Private.hpp"
+#import "LEGACYObjectStore.h"
+#import "LEGACYObject_Private.hpp"
+#import "LEGACYObservation.hpp"
+#import "LEGACYProperty_Private.h"
+#import "LEGACYQueryUtil.hpp"
+#import "LEGACYRealmConfiguration_Private.hpp"
+#import "LEGACYScheduler.h"
+#import "LEGACYSchema_Private.h"
+#import "LEGACYSectionedResults_Private.hpp"
+#import "LEGACYSyncSubscription_Private.hpp"
+#import "LEGACYThreadSafeReference_Private.hpp"
+#import "LEGACYUtil.hpp"
 
 #import <realm/object-store/results.hpp>
 #import <realm/object-store/shared_realm.hpp>
@@ -45,27 +45,27 @@ using namespace realm;
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wincomplete-implementation"
-@implementation RLMNotificationToken
+@implementation LEGACYNotificationToken
 - (bool)invalidate {
     return false;
 }
 @end
 #pragma clang diagnostic pop
 
-@interface RLMResults () <RLMThreadConfined_Private>
+@interface LEGACYResults () <LEGACYThreadConfined_Private>
 @end
 
 // private properties
-@interface RLMResults ()
-@property (nonatomic, nullable) RLMObjectId *associatedSubscriptionId;
+@interface LEGACYResults ()
+@property (nonatomic, nullable) LEGACYObjectId *associatedSubscriptionId;
 @end
 
 //
-// RLMResults implementation
+// LEGACYResults implementation
 //
-@implementation RLMResults {
-    RLMRealm *_realm;
-    RLMClassInfo *_info;
+@implementation LEGACYResults {
+    LEGACYRealm *_realm;
+    LEGACYClassInfo *_info;
 }
 
 - (instancetype)initPrivate {
@@ -82,26 +82,26 @@ using namespace realm;
 
 static void assertKeyPathIsNotNested(NSString *keyPath) {
     if ([keyPath rangeOfString:@"."].location != NSNotFound) {
-        @throw RLMException(@"Nested key paths are not supported yet for KVC collection operators.");
+        @throw LEGACYException(@"Nested key paths are not supported yet for KVC collection operators.");
     }
 }
 
-void RLMThrowCollectionException(NSString *collectionName) {
+void LEGACYThrowCollectionException(NSString *collectionName) {
     try {
         throw;
     }
     catch (realm::WrongTransactionState const&) {
-        @throw RLMException(@"Cannot modify %@ outside of a write transaction.", collectionName);
+        @throw LEGACYException(@"Cannot modify %@ outside of a write transaction.", collectionName);
     }
     catch (realm::OutOfBounds const& e) {
-        @throw RLMException(@"Index %zu is out of bounds (must be less than %zu).",
+        @throw LEGACYException(@"Index %zu is out of bounds (must be less than %zu).",
                             e.index, e.size);
     }
     catch (realm::Exception const& e) {
-        @throw RLMException(e);
+        @throw LEGACYException(e);
     }
     catch (std::exception const& e) {
-        @throw RLMException(e);
+        @throw LEGACYException(e);
     }
 }
 
@@ -111,7 +111,7 @@ static auto translateErrors(Function&& f) {
     return translateCollectionError(static_cast<Function&&>(f), @"Results");
 }
 
-- (instancetype)initWithObjectInfo:(RLMClassInfo&)info
+- (instancetype)initWithObjectInfo:(LEGACYClassInfo&)info
                            results:(realm::Results&&)results {
     if (self = [super init]) {
         _results = std::move(results);
@@ -121,7 +121,7 @@ static auto translateErrors(Function&& f) {
     return self;
 }
 
-+ (instancetype)resultsWithObjectInfo:(RLMClassInfo&)info
++ (instancetype)resultsWithObjectInfo:(LEGACYClassInfo&)info
                               results:(realm::Results&&)results {
     return [[self alloc] initWithObjectInfo:info results:std::move(results)];
 }
@@ -134,7 +134,7 @@ static auto translateErrors(Function&& f) {
     return [self.class resultsWithObjectInfo:*_info results:std::move(results)];
 }
 
-static inline void RLMResultsValidateInWriteTransaction(__unsafe_unretained RLMResults *const ar) {
+static inline void LEGACYResultsValidateInWriteTransaction(__unsafe_unretained LEGACYResults *const ar) {
     ar->_realm->_realm->verify_thread();
     ar->_realm->_realm->verify_in_write();
 }
@@ -147,9 +147,9 @@ static inline void RLMResultsValidateInWriteTransaction(__unsafe_unretained RLMR
     return translateErrors([&] { return _results.size(); });
 }
 
-- (RLMPropertyType)type {
+- (LEGACYPropertyType)type {
     return translateErrors([&] {
-        return static_cast<RLMPropertyType>(_results.get_type() & ~realm::PropertyType::Nullable);
+        return static_cast<LEGACYPropertyType>(_results.get_type() & ~realm::PropertyType::Nullable);
     });
 }
 
@@ -168,7 +168,7 @@ static inline void RLMResultsValidateInWriteTransaction(__unsafe_unretained RLMR
     });
 }
 
-- (RLMClassInfo *)objectInfo {
+- (LEGACYClassInfo *)objectInfo {
     return _info;
 }
 
@@ -183,7 +183,7 @@ static inline void RLMResultsValidateInWriteTransaction(__unsafe_unretained RLMR
             _results.evaluate_query_if_needed();
         });
     }
-    return RLMFastEnumerate(state, len, self);
+    return LEGACYFastEnumerate(state, len, self);
 }
 
 - (NSUInteger)indexOfObjectWhere:(NSString *)predicateFormat, ... {
@@ -206,14 +206,14 @@ static inline void RLMResultsValidateInWriteTransaction(__unsafe_unretained RLMR
 
     return translateErrors([&] {
         if (_results.get_type() != realm::PropertyType::Object) {
-            @throw RLMException(@"Querying is currently only implemented for arrays of Realm Objects");
+            @throw LEGACYException(@"Querying is currently only implemented for arrays of Realm Objects");
         }
-        return RLMConvertNotFound(_results.index_of(RLMPredicateToQuery(predicate, _info->rlmObjectSchema, _realm.schema, _realm.group)));
+        return LEGACYConvertNotFound(_results.index_of(LEGACYPredicateToQuery(predicate, _info->rlmObjectSchema, _realm.schema, _realm.group)));
     });
 }
 
 - (id)objectAtIndex:(NSUInteger)index {
-    RLMAccessorContext ctx(*_info);
+    LEGACYAccessorContext ctx(*_info);
     return translateErrors([&] {
         return _results.get(ctx, index);
     });
@@ -226,7 +226,7 @@ static inline void RLMResultsValidateInWriteTransaction(__unsafe_unretained RLMR
     size_t c = self.count;
     NSMutableArray *result = [[NSMutableArray alloc] initWithCapacity:indexes.count];
     NSUInteger i = [indexes firstIndex];
-    RLMAccessorContext context(*_info);
+    LEGACYAccessorContext context(*_info);
     while (i != NSNotFound) {
         if (i >= 0 && i < c) {
             [result addObject:_results.get(context, i)];
@@ -242,7 +242,7 @@ static inline void RLMResultsValidateInWriteTransaction(__unsafe_unretained RLMR
     if (!_info) {
         return nil;
     }
-    RLMAccessorContext ctx(*_info);
+    LEGACYAccessorContext ctx(*_info);
     return translateErrors([&] {
         return _results.first(ctx);
     });
@@ -252,7 +252,7 @@ static inline void RLMResultsValidateInWriteTransaction(__unsafe_unretained RLMR
     if (!_info) {
         return nil;
     }
-    RLMAccessorContext ctx(*_info);
+    LEGACYAccessorContext ctx(*_info);
     return translateErrors([&] {
         return _results.last(ctx);
     });
@@ -262,15 +262,15 @@ static inline void RLMResultsValidateInWriteTransaction(__unsafe_unretained RLMR
     if (!_info || !object) {
         return NSNotFound;
     }
-    if (RLMObjectBase *obj = RLMDynamicCast<RLMObjectBase>(object)) {
+    if (LEGACYObjectBase *obj = LEGACYDynamicCast<LEGACYObjectBase>(object)) {
         // Unmanaged objects are considered not equal to all managed objects
         if (!obj->_realm && !obj.invalidated) {
             return NSNotFound;
         }
     }
-    RLMAccessorContext ctx(*_info);
+    LEGACYAccessorContext ctx(*_info);
     return translateErrors([&] {
-        return RLMConvertNotFound(_results.index_of(ctx, object));
+        return LEGACYConvertNotFound(_results.index_of(ctx, object));
     });
 }
 
@@ -288,10 +288,10 @@ static inline void RLMResultsValidateInWriteTransaction(__unsafe_unretained RLMR
     NSString *operatorName = [keyPath substringWithRange:NSMakeRange(1, separatorIndex - 1)];
     SEL opSelector = NSSelectorFromString([NSString stringWithFormat:@"_%@ForKeyPath:", operatorName]);
     if (![self respondsToSelector:opSelector]) {
-        @throw RLMException(@"Unsupported KVC collection operator found in key path '%@'", keyPath);
+        @throw LEGACYException(@"Unsupported KVC collection operator found in key path '%@'", keyPath);
     }
     if (separatorIndex >= keyPathLength - 1) {
-        @throw RLMException(@"Missing key path for KVC collection operator %@ in key path '%@'",
+        @throw LEGACYException(@"Missing key path for KVC collection operator %@ in key path '%@'",
                             operatorName, keyPath);
     }
     NSString *operatorKeyPath = [keyPath substringFromIndex:separatorIndex + 1];
@@ -303,13 +303,13 @@ static inline void RLMResultsValidateInWriteTransaction(__unsafe_unretained RLMR
         return @[];
     }
     return translateErrors([&] {
-        return RLMCollectionValueForKey(_results, key, *_info);
+        return LEGACYCollectionValueForKey(_results, key, *_info);
     });
 }
 
 - (void)setValue:(id)value forKey:(NSString *)key {
-    translateErrors([&] { RLMResultsValidateInWriteTransaction(self); });
-    RLMCollectionSetValueForKey(self, key, value);
+    translateErrors([&] { LEGACYResultsValidateInWriteTransaction(self); });
+    LEGACYCollectionSetValueForKey(self, key, value);
 }
 
 - (NSNumber *)_aggregateForKeyPath:(NSString *)keyPath
@@ -339,7 +339,7 @@ static inline void RLMResultsValidateInWriteTransaction(__unsafe_unretained RLMR
 - (NSArray *)_unionOfObjectsForKeyPath:(NSString *)keyPath {
     assertKeyPathIsNotNested(keyPath);
     return translateErrors([&] {
-        return RLMCollectionValueForKey(_results, keyPath, *_info);
+        return LEGACYCollectionValueForKey(_results, keyPath, *_info);
     });
 }
 
@@ -350,12 +350,12 @@ static inline void RLMResultsValidateInWriteTransaction(__unsafe_unretained RLMR
 - (NSArray *)_unionOfArraysForKeyPath:(NSString *)keyPath {
     assertKeyPathIsNotNested(keyPath);
     if ([keyPath isEqualToString:@"self"]) {
-        @throw RLMException(@"self is not a valid key-path for a KVC array collection operator as 'unionOfArrays'.");
+        @throw LEGACYException(@"self is not a valid key-path for a KVC array collection operator as 'unionOfArrays'.");
     }
 
     return translateErrors([&] {
         NSMutableArray *flatArray = [NSMutableArray new];
-        for (id<NSFastEnumeration> array in RLMCollectionValueForKey(_results, keyPath, *_info)) {
+        for (id<NSFastEnumeration> array in LEGACYCollectionValueForKey(_results, keyPath, *_info)) {
             for (id value in array) {
                 [flatArray addObject:value];
             }
@@ -368,36 +368,36 @@ static inline void RLMResultsValidateInWriteTransaction(__unsafe_unretained RLMR
     return [NSSet setWithArray:[self _unionOfArraysForKeyPath:keyPath]].allObjects;
 }
 
-- (RLMResults *)objectsWhere:(NSString *)predicateFormat, ... {
+- (LEGACYResults *)objectsWhere:(NSString *)predicateFormat, ... {
     va_list args;
     va_start(args, predicateFormat);
-    RLMResults *results = [self objectsWhere:predicateFormat args:args];
+    LEGACYResults *results = [self objectsWhere:predicateFormat args:args];
     va_end(args);
     return results;
 }
 
-- (RLMResults *)objectsWhere:(NSString *)predicateFormat args:(va_list)args {
+- (LEGACYResults *)objectsWhere:(NSString *)predicateFormat args:(va_list)args {
     return [self objectsWithPredicate:[NSPredicate predicateWithFormat:predicateFormat arguments:args]];
 }
 
-- (RLMResults *)objectsWithPredicate:(NSPredicate *)predicate {
+- (LEGACYResults *)objectsWithPredicate:(NSPredicate *)predicate {
     return translateErrors([&] {
         if (_results.get_mode() == Results::Mode::Empty) {
             return self;
         }
         if (_results.get_type() != realm::PropertyType::Object) {
-            @throw RLMException(@"Querying is currently only implemented for arrays of Realm Objects");
+            @throw LEGACYException(@"Querying is currently only implemented for arrays of Realm Objects");
         }
-        auto query = RLMPredicateToQuery(predicate, _info->rlmObjectSchema, _realm.schema, _realm.group);
+        auto query = LEGACYPredicateToQuery(predicate, _info->rlmObjectSchema, _realm.schema, _realm.group);
         return [self subresultsWithResults:_results.filter(std::move(query))];
     });
 }
 
-- (RLMResults *)sortedResultsUsingKeyPath:(NSString *)keyPath ascending:(BOOL)ascending {
-    return [self sortedResultsUsingDescriptors:@[[RLMSortDescriptor sortDescriptorWithKeyPath:keyPath ascending:ascending]]];
+- (LEGACYResults *)sortedResultsUsingKeyPath:(NSString *)keyPath ascending:(BOOL)ascending {
+    return [self sortedResultsUsingDescriptors:@[[LEGACYSortDescriptor sortDescriptorWithKeyPath:keyPath ascending:ascending]]];
 }
 
-- (RLMResults *)sortedResultsUsingDescriptors:(NSArray<RLMSortDescriptor *> *)properties {
+- (LEGACYResults *)sortedResultsUsingDescriptors:(NSArray<LEGACYSortDescriptor *> *)properties {
     if (properties.count == 0) {
         return self;
     }
@@ -405,14 +405,14 @@ static inline void RLMResultsValidateInWriteTransaction(__unsafe_unretained RLMR
         if (_results.get_mode() == Results::Mode::Empty) {
             return self;
         }
-        return [self subresultsWithResults:_results.sort(RLMSortDescriptorsToKeypathArray(properties))];
+        return [self subresultsWithResults:_results.sort(LEGACYSortDescriptorsToKeypathArray(properties))];
     });
 }
 
-- (RLMResults *)distinctResultsUsingKeyPaths:(NSArray<NSString *> *)keyPaths {
+- (LEGACYResults *)distinctResultsUsingKeyPaths:(NSArray<NSString *> *)keyPaths {
     for (NSString *keyPath in keyPaths) {
         if ([keyPath rangeOfString:@"@"].location != NSNotFound) {
-            @throw RLMException(@"Cannot distinct on keypath '%@': KVC collection operators are not supported.", keyPath);
+            @throw LEGACYException(@"Cannot distinct on keypath '%@': KVC collection operators are not supported.", keyPath);
         }
     }
     return translateErrors([&] {
@@ -440,12 +440,12 @@ returnNilForEmpty:(BOOL)returnNilForEmpty {
         return returnNilForEmpty ? nil : @0;
     }
     ColKey column;
-    if (self.type == RLMPropertyTypeObject || ![property isEqualToString:@"self"]) {
+    if (self.type == LEGACYPropertyTypeObject || ![property isEqualToString:@"self"]) {
         column = _info->tableColumn(property);
     }
 
     auto value = translateErrors([&] { return (_results.*method)(column); });
-    return value ? RLMMixedToObjc(*value) : nil;
+    return value ? LEGACYMixedToObjc(*value) : nil;
 }
 
 - (id)minOfProperty:(NSString *)property {
@@ -464,53 +464,53 @@ returnNilForEmpty:(BOOL)returnNilForEmpty {
     return [self aggregate:property method:&Results::average returnNilForEmpty:YES];
 }
 
-- (RLMSectionedResults *)sectionedResultsSortedUsingKeyPath:(NSString *)keyPath
+- (LEGACYSectionedResults *)sectionedResultsSortedUsingKeyPath:(NSString *)keyPath
                                                   ascending:(BOOL)ascending
-                                                   keyBlock:(RLMSectionedResultsKeyBlock)keyBlock {
-    return [[RLMSectionedResults alloc] initWithResults:[self sortedResultsUsingKeyPath:keyPath ascending:ascending]
+                                                   keyBlock:(LEGACYSectionedResultsKeyBlock)keyBlock {
+    return [[LEGACYSectionedResults alloc] initWithResults:[self sortedResultsUsingKeyPath:keyPath ascending:ascending]
                                                keyBlock:keyBlock];
 }
 
-- (RLMSectionedResults *)sectionedResultsUsingSortDescriptors:(NSArray<RLMSortDescriptor *> *)sortDescriptors
-                                                     keyBlock:(RLMSectionedResultsKeyBlock)keyBlock {
-    return [[RLMSectionedResults alloc] initWithResults:[self sortedResultsUsingDescriptors:sortDescriptors]
+- (LEGACYSectionedResults *)sectionedResultsUsingSortDescriptors:(NSArray<LEGACYSortDescriptor *> *)sortDescriptors
+                                                     keyBlock:(LEGACYSectionedResultsKeyBlock)keyBlock {
+    return [[LEGACYSectionedResults alloc] initWithResults:[self sortedResultsUsingDescriptors:sortDescriptors]
                                                keyBlock:keyBlock];
 }
 
 - (void)deleteObjectsFromRealm {
-    if (self.type != RLMPropertyTypeObject) {
-        @throw RLMException(@"Cannot delete objects from RLMResults<%@>: only RLMObjects can be deleted.",
-                            RLMTypeToString(self.type));
+    if (self.type != LEGACYPropertyTypeObject) {
+        @throw LEGACYException(@"Cannot delete objects from LEGACYResults<%@>: only LEGACYObjects can be deleted.",
+                            LEGACYTypeToString(self.type));
     }
     return translateErrors([&] {
         if (_results.get_mode() == Results::Mode::Table) {
-            RLMResultsValidateInWriteTransaction(self);
-            RLMClearTable(*_info);
+            LEGACYResultsValidateInWriteTransaction(self);
+            LEGACYClearTable(*_info);
         }
         else {
-            RLMObservationTracker tracker(_realm, true);
+            LEGACYObservationTracker tracker(_realm, true);
             _results.clear();
         }
     });
 }
 
 - (NSString *)description {
-    return RLMDescriptionWithMaxDepth(@"RLMResults", self, RLMDescriptionMaxDepth);
+    return LEGACYDescriptionWithMaxDepth(@"LEGACYResults", self, LEGACYDescriptionMaxDepth);
 }
 
 - (realm::TableView)tableView {
     return translateErrors([&] { return _results.get_tableview(); });
 }
 
-- (RLMFastEnumerator *)fastEnumerator {
+- (LEGACYFastEnumerator *)fastEnumerator {
     return translateErrors([&] {
-        return [[RLMFastEnumerator alloc] initWithResults:_results
+        return [[LEGACYFastEnumerator alloc] initWithResults:_results
                                                collection:self
                                                 classInfo:*_info];
     });
 }
 
-- (RLMResults *)snapshot {
+- (LEGACYResults *)snapshot {
     return translateErrors([&] {
         return [self subresultsWithResults:_results.snapshot()];
     });
@@ -520,7 +520,7 @@ returnNilForEmpty:(BOOL)returnNilForEmpty {
     return _realm.frozen;
 }
 
-- (instancetype)resolveInRealm:(RLMRealm *)realm {
+- (instancetype)resolveInRealm:(LEGACYRealm *)realm {
     return translateErrors([&] {
         return [self.class resultsWithObjectInfo:_info->resolve(realm)
                                          results:_results.freeze(realm->_realm)];
@@ -547,42 +547,42 @@ returnNilForEmpty:(BOOL)returnNilForEmpty {
 // http://www.openradar.me/radar?id=6135653276319744
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmismatched-parameter-types"
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMResults *, RLMCollectionChange *, NSError *))block {
-    return RLMAddNotificationBlock(self, block, nil, nil);
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYResults *, LEGACYCollectionChange *, NSError *))block {
+    return LEGACYAddNotificationBlock(self, block, nil, nil);
 }
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMResults *, RLMCollectionChange *, NSError *))block queue:(dispatch_queue_t)queue {
-    return RLMAddNotificationBlock(self, block, nil, queue);
-}
-
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMResults *, RLMCollectionChange *, NSError *))block keyPaths:(NSArray<NSString *> *)keyPaths {
-    return RLMAddNotificationBlock(self, block, keyPaths, nil);
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYResults *, LEGACYCollectionChange *, NSError *))block queue:(dispatch_queue_t)queue {
+    return LEGACYAddNotificationBlock(self, block, nil, queue);
 }
 
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMResults *, RLMCollectionChange *, NSError *))block
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYResults *, LEGACYCollectionChange *, NSError *))block keyPaths:(NSArray<NSString *> *)keyPaths {
+    return LEGACYAddNotificationBlock(self, block, keyPaths, nil);
+}
+
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYResults *, LEGACYCollectionChange *, NSError *))block
                                       keyPaths:(NSArray<NSString *> *)keyPaths
                                          queue:(dispatch_queue_t)queue {
-    return RLMAddNotificationBlock(self, block, keyPaths, queue);
+    return LEGACYAddNotificationBlock(self, block, keyPaths, queue);
 }
 #pragma clang diagnostic pop
 
 - (realm::NotificationToken)addNotificationCallback:(id)block
 keyPaths:(std::optional<std::vector<std::vector<std::pair<realm::TableKey, realm::ColKey>>>>&&)keyPaths {
-    return _results.add_notification_callback(RLMWrapCollectionChangeCallback(block, self, true), std::move(keyPaths));
+    return _results.add_notification_callback(LEGACYWrapCollectionChangeCallback(block, self, true), std::move(keyPaths));
 }
 
-- (void)completionWithThreadSafeReference:(RLMThreadSafeReference * _Nullable)reference
-                               confinedTo:(RLMScheduler *)confinement
-                               completion:(RLMResultsCompletionBlock)completion
+- (void)completionWithThreadSafeReference:(LEGACYThreadSafeReference * _Nullable)reference
+                               confinedTo:(LEGACYScheduler *)confinement
+                               completion:(LEGACYResultsCompletionBlock)completion
                                     error:(NSError *_Nullable)error {
-    RLMRealmConfiguration *configuration = _realm.configuration;
+    LEGACYRealmConfiguration *configuration = _realm.configuration;
     [confinement invoke:^{
         if (error) {
             return completion(nil, error);
         }
 
         NSError *err;
-        RLMRealm *realm = [RLMRealm realmWithConfiguration:configuration error:&err];
-        RLMResults *collection = [realm resolveThreadSafeReference:reference];
+        LEGACYRealm *realm = [LEGACYRealm realmWithConfiguration:configuration error:&err];
+        LEGACYResults *collection = [realm resolveThreadSafeReference:reference];
         collection.associatedSubscriptionId = self.associatedSubscriptionId;
         completion(collection, err);
     }];
@@ -590,20 +590,20 @@ keyPaths:(std::optional<std::vector<std::vector<std::pair<realm::TableKey, realm
 
 // Returns true if the calling method should call immediately the completion block, this can happen if the subscription
 // was already created in case of `onCreation` or we have selected `never` as sync mode (which doesn't require the subscription to complete to return)
-- (bool)shouldNotWaitForSubscriptionToComplete:(RLMWaitForSyncMode)waitForSyncMode
+- (bool)shouldNotWaitForSubscriptionToComplete:(LEGACYWaitForSyncMode)waitForSyncMode
                                           name:(NSString *)name {
-    RLMSyncSubscriptionSet *subscriptions = self.realm.subscriptions;
+    LEGACYSyncSubscriptionSet *subscriptions = self.realm.subscriptions;
     switch(waitForSyncMode) {
-        case RLMWaitForSyncModeOnCreation:
+        case LEGACYWaitForSyncModeOnCreation:
             // If an existing named subscription matches the provided name and local query, return.
             if (name) {
-                RLMSyncSubscription *sub = [subscriptions subscriptionWithName:name query:_results.get_query()];
+                LEGACYSyncSubscription *sub = [subscriptions subscriptionWithName:name query:_results.get_query()];
                 if (sub != nil) {
                     return true;
                 }
             } else {
                 // otherwise check if an unnamed subscription already exists. Return if it does exist.
-                RLMSyncSubscription *sub = [subscriptions subscriptionWithQuery:_results.get_query()];
+                LEGACYSyncSubscription *sub = [subscriptions subscriptionWithQuery:_results.get_query()];
                 if (sub != nil && sub.name == nil) {
                     return true;
                 }
@@ -611,10 +611,10 @@ keyPaths:(std::optional<std::vector<std::vector<std::pair<realm::TableKey, realm
             // If no name was provided and no existing unnamed subscription matches.
             // break and create new subscription later.
             break;
-        case RLMWaitForSyncModeAlways:
+        case LEGACYWaitForSyncModeAlways:
             // never returns early
             break;
-        case RLMWaitForSyncModeNever:
+        case LEGACYWaitForSyncModeNever:
             // commit subscription synchronously and return.
             [subscriptions update:^{
                 self.associatedSubscriptionId = [subscriptions addSubscriptionWithClassName:self.objectClassName
@@ -628,16 +628,16 @@ keyPaths:(std::optional<std::vector<std::vector<std::pair<realm::TableKey, realm
 }
 
 - (void)subscribeWithName:(NSString *_Nullable)name
-              waitForSync:(RLMWaitForSyncMode)waitForSyncMode
-               confinedTo:(RLMScheduler *)confinement
+              waitForSync:(LEGACYWaitForSyncMode)waitForSyncMode
+               confinedTo:(LEGACYScheduler *)confinement
                   timeout:(NSTimeInterval)timeout
-               completion:(RLMResultsCompletionBlock)completion {
-    RLMThreadSafeReference *reference = [RLMThreadSafeReference referenceWithThreadConfined:self];
+               completion:(LEGACYResultsCompletionBlock)completion {
+    LEGACYThreadSafeReference *reference = [LEGACYThreadSafeReference referenceWithThreadConfined:self];
     if ([self shouldNotWaitForSubscriptionToComplete:waitForSyncMode name:name]) {
         [self completionWithThreadSafeReference:reference confinedTo:confinement completion:completion error:nil];
     } else {
-        RLMThreadSafeReference *reference = [RLMThreadSafeReference referenceWithThreadConfined:self];
-        RLMSyncSubscriptionSet *subscriptions = _realm.subscriptions;
+        LEGACYThreadSafeReference *reference = [LEGACYThreadSafeReference referenceWithThreadConfined:self];
+        LEGACYSyncSubscriptionSet *subscriptions = _realm.subscriptions;
         [subscriptions update:^{
             // associated subscription id is nil when no name is provided.
             self.associatedSubscriptionId = [subscriptions addSubscriptionWithClassName:self.objectClassName
@@ -651,20 +651,20 @@ keyPaths:(std::optional<std::vector<std::vector<std::pair<realm::TableKey, realm
 }
 
 - (void)subscribeWithCompletionOnQueue:(dispatch_queue_t _Nullable)queue
-                            completion:(RLMResultsCompletionBlock)completion {
+                            completion:(LEGACYResultsCompletionBlock)completion {
     return [self subscribeWithName:nil onQueue:queue completion:completion];
 };
 
 - (void)subscribeWithName:(NSString *_Nullable)name
                   onQueue:(dispatch_queue_t _Nullable)queue
-               completion:(RLMResultsCompletionBlock)completion {
-    return [self subscribeWithName:name waitForSync:RLMWaitForSyncModeOnCreation onQueue:queue completion:completion];
+               completion:(LEGACYResultsCompletionBlock)completion {
+    return [self subscribeWithName:name waitForSync:LEGACYWaitForSyncModeOnCreation onQueue:queue completion:completion];
 }
 
 - (void)subscribeWithName:(NSString *_Nullable)name
-              waitForSync:(RLMWaitForSyncMode)waitForSyncMode
+              waitForSync:(LEGACYWaitForSyncMode)waitForSyncMode
                   onQueue:(dispatch_queue_t _Nullable)queue
-               completion:(RLMResultsCompletionBlock)completion {
+               completion:(LEGACYResultsCompletionBlock)completion {
     [self subscribeWithName:name 
                 waitForSync:waitForSyncMode
                     onQueue:queue
@@ -673,26 +673,26 @@ keyPaths:(std::optional<std::vector<std::vector<std::pair<realm::TableKey, realm
 }
 
 - (void)subscribeWithName:(NSString *_Nullable)name
-              waitForSync:(RLMWaitForSyncMode)waitForSyncMode
+              waitForSync:(LEGACYWaitForSyncMode)waitForSyncMode
                   onQueue:(dispatch_queue_t _Nullable)queue
                   timeout:(NSTimeInterval)timeout
-               completion:(RLMResultsCompletionBlock)completion {
+               completion:(LEGACYResultsCompletionBlock)completion {
     [self subscribeWithName:name 
                 waitForSync:waitForSyncMode
-                 confinedTo:[RLMScheduler dispatchQueue:queue]
+                 confinedTo:[LEGACYScheduler dispatchQueue:queue]
                     timeout:timeout
                  completion:completion];
 }
 
 - (void)unsubscribe {
-    RLMSyncSubscriptionSet *subscriptions = self.realm.subscriptions;
+    LEGACYSyncSubscriptionSet *subscriptions = self.realm.subscriptions;
 
     if (self.associatedSubscriptionId) {
         [subscriptions update:^{
             [subscriptions removeSubscriptionWithId:self.associatedSubscriptionId];
         }];
     } else {
-        RLMSyncSubscription *sub = [subscriptions subscriptionWithQuery:_results.get_query()];
+        LEGACYSyncSubscription *sub = [subscriptions subscriptionWithQuery:_results.get_query()];
         if (sub.name == nil) {
             [subscriptions update:^{
                 [subscriptions removeSubscriptionWithClassName:self.objectClassName
@@ -718,16 +718,16 @@ keyPaths:(std::optional<std::vector<std::vector<std::pair<realm::TableKey, realm
 
 + (instancetype)objectWithThreadSafeReference:(realm::ThreadSafeReference)reference
                                      metadata:(__unused id)metadata
-                                        realm:(RLMRealm *)realm {
+                                        realm:(LEGACYRealm *)realm {
     auto results = reference.resolve<Results>(realm->_realm);
-    return [RLMResults resultsWithObjectInfo:realm->_info[RLMStringDataToNSString(results.get_object_type())]
+    return [LEGACYResults resultsWithObjectInfo:realm->_info[LEGACYStringDataToNSString(results.get_object_type())]
                                      results:std::move(results)];
 }
 
 @end
 
-@implementation RLMLinkingObjects
+@implementation LEGACYLinkingObjects
 - (NSString *)description {
-    return RLMDescriptionWithMaxDepth(@"RLMLinkingObjects", self, RLMDescriptionMaxDepth);
+    return LEGACYDescriptionWithMaxDepth(@"LEGACYLinkingObjects", self, LEGACYDescriptionMaxDepth);
 }
 @end

@@ -16,29 +16,29 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-/// Allowed HTTP methods to be used with `RLMNetworkTransport`.
-typedef RLM_CLOSED_ENUM(int32_t, RLMHTTPMethod) {
+/// Allowed HTTP methods to be used with `LEGACYNetworkTransport`.
+typedef LEGACY_CLOSED_ENUM(int32_t, LEGACYHTTPMethod) {
     /// GET is used to request data from a specified resource.
-    RLMHTTPMethodGET    = 0,
+    LEGACYHTTPMethodGET    = 0,
     /// POST is used to send data to a server to create/update a resource.
-    RLMHTTPMethodPOST   = 1,
+    LEGACYHTTPMethodPOST   = 1,
     /// PATCH is used to send data to a server to update a resource.
-    RLMHTTPMethodPATCH  = 2,
+    LEGACYHTTPMethodPATCH  = 2,
     /// PUT is used to send data to a server to create/update a resource.
-    RLMHTTPMethodPUT    = 3,
+    LEGACYHTTPMethodPUT    = 3,
     /// The DELETE method deletes the specified resource.
-    RLMHTTPMethodDELETE = 4
+    LEGACYHTTPMethodDELETE = 4
 };
 
 /// An HTTP request that can be made to an arbitrary server.
-@interface RLMRequest : NSObject
+@interface LEGACYRequest : NSObject
 
 /// The HTTP method of this request.
-@property (nonatomic, assign) RLMHTTPMethod method;
+@property (nonatomic, assign) LEGACYHTTPMethod method;
 
 /// The URL to which this request will be made.
 @property (nonatomic, strong) NSString *url;
@@ -56,7 +56,7 @@ typedef RLM_CLOSED_ENUM(int32_t, RLMHTTPMethod) {
 @end
 
 /// The contents of an HTTP response.
-@interface RLMResponse : NSObject
+@interface LEGACYResponse : NSObject
 
 /// The status code of the HTTP response.
 @property (nonatomic, assign) NSInteger httpStatusCode;
@@ -73,7 +73,7 @@ typedef RLM_CLOSED_ENUM(int32_t, RLMHTTPMethod) {
 @end
 
 /// Delegate which is used for subscribing to changes.
-@protocol RLMEventDelegate <NSObject>
+@protocol LEGACYEventDelegate <NSObject>
 /// Invoked when a change event has been received.
 /// @param event The change event encoded as NSData
 - (void)didReceiveEvent:(NSData *)event;
@@ -87,14 +87,14 @@ typedef RLM_CLOSED_ENUM(int32_t, RLMHTTPMethod) {
 - (void)didCloseWithError:(NSError *_Nullable)error;
 @end
 
-/// A block for receiving an `RLMResponse` from the `RLMNetworkTransport`.
-RLM_SWIFT_SENDABLE // invoked on a backgroun thread
-typedef void(^RLMNetworkTransportCompletionBlock)(RLMResponse *);
+/// A block for receiving an `LEGACYResponse` from the `LEGACYNetworkTransport`.
+LEGACY_SWIFT_SENDABLE // invoked on a backgroun thread
+typedef void(^LEGACYNetworkTransportCompletionBlock)(LEGACYResponse *);
 
 /// Transporting protocol for foreign interfaces. Allows for custom
 /// request/response handling.
-RLM_SWIFT_SENDABLE // used from multiple threads so must be internally thread-safe
-@protocol RLMNetworkTransport <NSObject>
+LEGACY_SWIFT_SENDABLE // used from multiple threads so must be internally thread-safe
+@protocol LEGACYNetworkTransport <NSObject>
 
 /**
  Sends a request to a given endpoint.
@@ -102,21 +102,21 @@ RLM_SWIFT_SENDABLE // used from multiple threads so must be internally thread-sa
  @param request The request to send.
  @param completionBlock A callback invoked on completion of the request.
 */
-- (void)sendRequestToServer:(RLMRequest *)request
-                 completion:(RLMNetworkTransportCompletionBlock)completionBlock;
+- (void)sendRequestToServer:(LEGACYRequest *)request
+                 completion:(LEGACYNetworkTransportCompletionBlock)completionBlock;
 
 /// Starts an event stream request.
-/// @param request The RLMRequest to start.
-/// @param subscriber The RLMEventDelegate which will subscribe to changes from the server.
-- (NSURLSession *)doStreamRequest:(RLMRequest *)request
-                  eventSubscriber:(id<RLMEventDelegate>)subscriber;
+/// @param request The LEGACYRequest to start.
+/// @param subscriber The LEGACYEventDelegate which will subscribe to changes from the server.
+- (NSURLSession *)doStreamRequest:(LEGACYRequest *)request
+                  eventSubscriber:(id<LEGACYEventDelegate>)subscriber;
 
 @end
 
 /// Transporting protocol for foreign interfaces. Allows for custom
 /// request/response handling.
-RLM_SWIFT_SENDABLE // is internally thread-safe
-@interface RLMNetworkTransport : NSObject<RLMNetworkTransport>
+LEGACY_SWIFT_SENDABLE // is internally thread-safe
+@interface LEGACYNetworkTransport : NSObject<LEGACYNetworkTransport>
 
 /**
  Sends a request to a given endpoint.
@@ -124,9 +124,9 @@ RLM_SWIFT_SENDABLE // is internally thread-safe
  @param request The request to send.
  @param completionBlock A callback invoked on completion of the request.
 */
-- (void)sendRequestToServer:(RLMRequest *) request
-                 completion:(RLMNetworkTransportCompletionBlock)completionBlock;
+- (void)sendRequestToServer:(LEGACYRequest *) request
+                 completion:(LEGACYNetworkTransportCompletionBlock)completionBlock;
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

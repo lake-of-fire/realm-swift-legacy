@@ -16,9 +16,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSwiftSupport.h"
+#import "LEGACYSwiftSupport.h"
 
-@implementation RLMSwiftSupport
+@implementation LEGACYSwiftSupport
 
 + (BOOL)isSwiftClassName:(NSString *)className {
     return [className rangeOfString:@"."].location != NSNotFound;

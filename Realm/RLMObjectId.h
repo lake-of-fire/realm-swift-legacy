@@ -16,9 +16,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 /**
  A 12-byte (probably) unique object identifier.
@@ -34,8 +34,8 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  ObjectIds are intended to be fast to generate. Sorting by an ObjectId field
  will typically result in the objects being sorted in creation order.
  */
-RLM_SWIFT_SENDABLE // immutable
-@interface RLMObjectId : NSObject <NSCopying>
+LEGACY_SWIFT_SENDABLE // immutable
+@interface LEGACYObjectId : NSObject <NSCopying>
 /// Creates a new randomly-initialized ObjectId.
 + (nonnull instancetype)objectId NS_SWIFT_NAME(generate());
 
@@ -61,19 +61,19 @@ RLM_SWIFT_SENDABLE // immutable
                 processIdentifier:(int)processIdentifier;
 
 /// Comparision operator to check if the right hand side is greater than the current value.
-- (BOOL)isGreaterThan:(nullable RLMObjectId *)objectId;
+- (BOOL)isGreaterThan:(nullable LEGACYObjectId *)objectId;
 /// Comparision operator to check if the right hand side is greater than or equal to the current value.
-- (BOOL)isGreaterThanOrEqualTo:(nullable RLMObjectId *)objectId;
+- (BOOL)isGreaterThanOrEqualTo:(nullable LEGACYObjectId *)objectId;
 /// Comparision operator to check if the right hand side is less than the current value.
-- (BOOL)isLessThan:(nullable RLMObjectId *)objectId;
+- (BOOL)isLessThan:(nullable LEGACYObjectId *)objectId;
 /// Comparision operator to check if the right hand side is less than or equal to the current value.
-- (BOOL)isLessThanOrEqualTo:(nullable RLMObjectId *)objectId;
+- (BOOL)isLessThanOrEqualTo:(nullable LEGACYObjectId *)objectId;
 
 /// Get the ObjectId as a 24-character hexadecimal string.
 @property (nonatomic, readonly) NSString *stringValue;
-/// Get the timestamp for the RLMObjectId
+/// Get the timestamp for the LEGACYObjectId
 @property (nonatomic, readonly) NSDate *timestamp;
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

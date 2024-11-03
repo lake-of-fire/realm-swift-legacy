@@ -16,14 +16,14 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMFindOptions.h>
+#import <Realm/LEGACYFindOptions.h>
 
 #import <realm/object-store/sync/mongo_collection.hpp>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@interface RLMFindOptions ()
+@interface LEGACYFindOptions ()
 - (realm::app::MongoCollection::FindOptions)_findOptions;
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

@@ -54,7 +54,7 @@ import RealmLegacy
                 return "LinkingObjects<\(Element.className())> <\($0)> (\n\n)"
             }
         }
-        return RLMDescriptionWithMaxDepth("LinkingObjects", collection, RLMDescriptionMaxDepth)
+        return LEGACYDescriptionWithMaxDepth("LinkingObjects", collection, LEGACYDescriptionMaxDepth)
     }
 
     // MARK: Object Retrieval
@@ -79,25 +79,25 @@ import RealmLegacy
     }
 
     // MARK: Implementation
-    internal init(propertyName: String, handle: RLMLinkingObjectsHandle?) {
+    internal init(propertyName: String, handle: LEGACYLinkingObjectsHandle?) {
         self.propertyName = propertyName
         self.handle = handle
     }
-    internal init(collection: RLMCollection) {
+    internal init(collection: LEGACYCollection) {
         self.propertyName = ""
-        self.handle = RLMLinkingObjectsHandle(linkingObjects: collection as! RLMResults<AnyObject>)
+        self.handle = LEGACYLinkingObjectsHandle(linkingObjects: collection as! LEGACYResults<AnyObject>)
     }
 
-    internal var collection: RLMCollection {
-        return handle?.results ?? RLMResults<AnyObject>.emptyDetached()
+    internal var collection: LEGACYCollection {
+        return handle?.results ?? LEGACYResults<AnyObject>.emptyDetached()
     }
 
     internal var propertyName: String
-    internal var handle: RLMLinkingObjectsHandle?
+    internal var handle: LEGACYLinkingObjectsHandle?
     internal var lastAccessedNames: NSMutableArray?
 
     /// :nodoc:
-    public func makeIterator() -> RLMIterator<Element> {
-        return RLMIterator(collection: collection)
+    public func makeIterator() -> LEGACYIterator<Element> {
+        return LEGACYIterator(collection: collection)
     }
 }

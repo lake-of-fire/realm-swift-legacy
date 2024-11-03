@@ -18,7 +18,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface RLMChildProcessEnvironment : NSObject 
+@interface LEGACYChildProcessEnvironment : NSObject 
 
 /// A single app identifier provided by the parent process.
 @property (nonatomic, readonly, nullable) NSString *appId;

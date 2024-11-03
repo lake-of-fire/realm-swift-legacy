@@ -16,17 +16,17 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMUser_Private.hpp"
+#import "LEGACYUser_Private.hpp"
 
-#import "RLMAPIKeyAuth.h"
-#import "RLMApp_Private.hpp"
-#import "RLMBSON_Private.hpp"
-#import "RLMCredentials_Private.hpp"
-#import "RLMMongoClient_Private.hpp"
-#import "RLMRealmConfiguration_Private.h"
-#import "RLMSyncConfiguration_Private.hpp"
-#import "RLMSyncSession_Private.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYAPIKeyAuth.h"
+#import "LEGACYApp_Private.hpp"
+#import "LEGACYBSON_Private.hpp"
+#import "LEGACYCredentials_Private.hpp"
+#import "LEGACYMongoClient_Private.hpp"
+#import "LEGACYRealmConfiguration_Private.h"
+#import "LEGACYSyncConfiguration_Private.hpp"
+#import "LEGACYSyncSession_Private.hpp"
+#import "LEGACYUtil.hpp"
 
 #import <realm/object-store/sync/sync_manager.hpp>
 #import <realm/object-store/sync/sync_session.hpp>
@@ -35,12 +35,12 @@
 
 using namespace realm;
 
-@interface RLMUser () {
+@interface LEGACYUser () {
     std::shared_ptr<SyncUser> _user;
 }
 @end
 
-@implementation RLMUserSubscriptionToken {
+@implementation LEGACYUserSubscriptionToken {
     std::shared_ptr<SyncUser> _user;
     std::optional<realm::Subscribable<SyncUser>::Token> _token;
 }
@@ -59,12 +59,12 @@ using namespace realm;
 }
 @end
 
-@implementation RLMUser
+@implementation LEGACYUser
 
 #pragma mark - API
 
 - (instancetype)initWithUser:(std::shared_ptr<SyncUser>)user
-                         app:(RLMApp *)app {
+                         app:(LEGACYApp *)app {
     if (self = [super init]) {
         _user = user;
         _app = app;
@@ -74,63 +74,63 @@ using namespace realm;
 }
 
 - (BOOL)isEqual:(id)object {
-    if (![object isKindOfClass:[RLMUser class]]) {
+    if (![object isKindOfClass:[LEGACYUser class]]) {
         return NO;
     }
-    return _user == ((RLMUser *)object)->_user;
+    return _user == ((LEGACYUser *)object)->_user;
 }
 
-- (RLMRealmConfiguration *)configurationWithPartitionValue:(nullable id<RLMBSON>)partitionValue {
-    return [self configurationWithPartitionValue:partitionValue clientResetMode:RLMClientResetModeRecoverUnsyncedChanges];
+- (LEGACYRealmConfiguration *)configurationWithPartitionValue:(nullable id<LEGACYBSON>)partitionValue {
+    return [self configurationWithPartitionValue:partitionValue clientResetMode:LEGACYClientResetModeRecoverUnsyncedChanges];
 }
 
-- (RLMRealmConfiguration *)configurationWithPartitionValue:(nullable id<RLMBSON>)partitionValue
-                                           clientResetMode:(RLMClientResetMode)clientResetMode {
-    auto syncConfig = [[RLMSyncConfiguration alloc] initWithUser:self
+- (LEGACYRealmConfiguration *)configurationWithPartitionValue:(nullable id<LEGACYBSON>)partitionValue
+                                           clientResetMode:(LEGACYClientResetMode)clientResetMode {
+    auto syncConfig = [[LEGACYSyncConfiguration alloc] initWithUser:self
                                                   partitionValue:partitionValue];
     syncConfig.clientResetMode = clientResetMode;
-    RLMRealmConfiguration *config = [[RLMRealmConfiguration alloc] init];
+    LEGACYRealmConfiguration *config = [[LEGACYRealmConfiguration alloc] init];
     config.syncConfiguration = syncConfig;
     return config;
 }
 
-- (RLMRealmConfiguration *)configurationWithPartitionValue:(nullable id<RLMBSON>)partitionValue
-                                           clientResetMode:(RLMClientResetMode)clientResetMode
-                                         notifyBeforeReset:(nullable RLMClientResetBeforeBlock)beforeResetBlock
-                                          notifyAfterReset:(nullable RLMClientResetAfterBlock)afterResetBlock {
-    auto syncConfig = [[RLMSyncConfiguration alloc] initWithUser:self
+- (LEGACYRealmConfiguration *)configurationWithPartitionValue:(nullable id<LEGACYBSON>)partitionValue
+                                           clientResetMode:(LEGACYClientResetMode)clientResetMode
+                                         notifyBeforeReset:(nullable LEGACYClientResetBeforeBlock)beforeResetBlock
+                                          notifyAfterReset:(nullable LEGACYClientResetAfterBlock)afterResetBlock {
+    auto syncConfig = [[LEGACYSyncConfiguration alloc] initWithUser:self
                                                   partitionValue:partitionValue];
     syncConfig.clientResetMode = clientResetMode;
     syncConfig.beforeClientReset = beforeResetBlock;
     syncConfig.afterClientReset = afterResetBlock;
-    RLMRealmConfiguration *config = [[RLMRealmConfiguration alloc] init];
+    LEGACYRealmConfiguration *config = [[LEGACYRealmConfiguration alloc] init];
     config.syncConfiguration = syncConfig;
     return config;
 }
 
-- (RLMRealmConfiguration *)configurationWithPartitionValue:(nullable id<RLMBSON>)partitionValue
-                                           clientResetMode:(RLMClientResetMode)clientResetMode
-                                  manualClientResetHandler:(nullable RLMSyncErrorReportingBlock)manualClientResetHandler {
-    auto syncConfig = [[RLMSyncConfiguration alloc] initWithUser:self
+- (LEGACYRealmConfiguration *)configurationWithPartitionValue:(nullable id<LEGACYBSON>)partitionValue
+                                           clientResetMode:(LEGACYClientResetMode)clientResetMode
+                                  manualClientResetHandler:(nullable LEGACYSyncErrorReportingBlock)manualClientResetHandler {
+    auto syncConfig = [[LEGACYSyncConfiguration alloc] initWithUser:self
                                                   partitionValue:partitionValue];
     syncConfig.clientResetMode = clientResetMode;
     syncConfig.manualClientResetHandler = manualClientResetHandler;
-    RLMRealmConfiguration *config = [[RLMRealmConfiguration alloc] init];
+    LEGACYRealmConfiguration *config = [[LEGACYRealmConfiguration alloc] init];
     config.syncConfiguration = syncConfig;
     return config;
 }
 
-- (RLMRealmConfiguration *)flexibleSyncConfiguration {
-    RLMRealmConfiguration *config = [[RLMRealmConfiguration alloc] init];
-    config.syncConfiguration = [[RLMSyncConfiguration alloc] initWithUser:self];
+- (LEGACYRealmConfiguration *)flexibleSyncConfiguration {
+    LEGACYRealmConfiguration *config = [[LEGACYRealmConfiguration alloc] init];
+    config.syncConfiguration = [[LEGACYSyncConfiguration alloc] initWithUser:self];
     return config;
 }
 
-- (RLMRealmConfiguration *)flexibleSyncConfigurationWithClientResetMode:(RLMClientResetMode)clientResetMode
-                                                      notifyBeforeReset:(nullable RLMClientResetBeforeBlock)beforeResetBlock
-                                                       notifyAfterReset:(nullable RLMClientResetAfterBlock)afterResetBlock {
-    auto syncConfig = [[RLMSyncConfiguration alloc] initWithUser:self];
-    RLMRealmConfiguration *config = [[RLMRealmConfiguration alloc] init];
+- (LEGACYRealmConfiguration *)flexibleSyncConfigurationWithClientResetMode:(LEGACYClientResetMode)clientResetMode
+                                                      notifyBeforeReset:(nullable LEGACYClientResetBeforeBlock)beforeResetBlock
+                                                       notifyAfterReset:(nullable LEGACYClientResetAfterBlock)afterResetBlock {
+    auto syncConfig = [[LEGACYSyncConfiguration alloc] initWithUser:self];
+    LEGACYRealmConfiguration *config = [[LEGACYRealmConfiguration alloc] init];
     syncConfig.clientResetMode = clientResetMode;
     syncConfig.beforeClientReset = beforeResetBlock;
     syncConfig.afterClientReset = afterResetBlock;
@@ -138,33 +138,33 @@ using namespace realm;
     return config;
 }
 
-- (RLMRealmConfiguration *)flexibleSyncConfigurationWithClientResetMode:(RLMClientResetMode)clientResetMode
-                                               manualClientResetHandler:(nullable RLMSyncErrorReportingBlock)manualClientResetHandler {
-    auto syncConfig = [[RLMSyncConfiguration alloc] initWithUser:self];
-    RLMRealmConfiguration *config = [[RLMRealmConfiguration alloc] init];
+- (LEGACYRealmConfiguration *)flexibleSyncConfigurationWithClientResetMode:(LEGACYClientResetMode)clientResetMode
+                                               manualClientResetHandler:(nullable LEGACYSyncErrorReportingBlock)manualClientResetHandler {
+    auto syncConfig = [[LEGACYSyncConfiguration alloc] initWithUser:self];
+    LEGACYRealmConfiguration *config = [[LEGACYRealmConfiguration alloc] init];
     syncConfig.clientResetMode = clientResetMode;
     syncConfig.manualClientResetHandler = manualClientResetHandler;
     config.syncConfiguration = syncConfig;
     return config;
 }
 
-- (RLMRealmConfiguration *)flexibleSyncConfigurationWithInitialSubscriptions:(RLMFlexibleSyncInitialSubscriptionsBlock)initialSubscriptions
+- (LEGACYRealmConfiguration *)flexibleSyncConfigurationWithInitialSubscriptions:(LEGACYFlexibleSyncInitialSubscriptionsBlock)initialSubscriptions
                                                                  rerunOnOpen:(BOOL)rerunOnOpen {
-    auto syncConfig = [[RLMSyncConfiguration alloc] initWithUser:self];
-    RLMRealmConfiguration *config = [[RLMRealmConfiguration alloc] init];
+    auto syncConfig = [[LEGACYSyncConfiguration alloc] initWithUser:self];
+    LEGACYRealmConfiguration *config = [[LEGACYRealmConfiguration alloc] init];
     config.initialSubscriptions = initialSubscriptions;
     config.rerunOnOpen = rerunOnOpen;
     config.syncConfiguration = syncConfig;
     return config;
 }
 
-- (RLMRealmConfiguration *)flexibleSyncConfigurationWithInitialSubscriptions:(RLMFlexibleSyncInitialSubscriptionsBlock)initialSubscriptions
+- (LEGACYRealmConfiguration *)flexibleSyncConfigurationWithInitialSubscriptions:(LEGACYFlexibleSyncInitialSubscriptionsBlock)initialSubscriptions
                                                                  rerunOnOpen:(BOOL)rerunOnOpen
-                                                             clientResetMode:(RLMClientResetMode)clientResetMode
-                                                           notifyBeforeReset:(nullable RLMClientResetBeforeBlock)beforeResetBlock
-                                                            notifyAfterReset:(nullable RLMClientResetAfterBlock)afterResetBlock {
-    auto syncConfig = [[RLMSyncConfiguration alloc] initWithUser:self];
-    RLMRealmConfiguration *config = [[RLMRealmConfiguration alloc] init];
+                                                             clientResetMode:(LEGACYClientResetMode)clientResetMode
+                                                           notifyBeforeReset:(nullable LEGACYClientResetBeforeBlock)beforeResetBlock
+                                                            notifyAfterReset:(nullable LEGACYClientResetAfterBlock)afterResetBlock {
+    auto syncConfig = [[LEGACYSyncConfiguration alloc] initWithUser:self];
+    LEGACYRealmConfiguration *config = [[LEGACYRealmConfiguration alloc] init];
     syncConfig.clientResetMode = clientResetMode;
     syncConfig.beforeClientReset = beforeResetBlock;
     syncConfig.afterClientReset = afterResetBlock;
@@ -174,12 +174,12 @@ using namespace realm;
     return config;
 }
 
-- (RLMRealmConfiguration *)flexibleSyncConfigurationWithInitialSubscriptions:(RLMFlexibleSyncInitialSubscriptionsBlock)initialSubscriptions
+- (LEGACYRealmConfiguration *)flexibleSyncConfigurationWithInitialSubscriptions:(LEGACYFlexibleSyncInitialSubscriptionsBlock)initialSubscriptions
                                                                  rerunOnOpen:(BOOL)rerunOnOpen
-                                                             clientResetMode:(RLMClientResetMode)clientResetMode
-                                                    manualClientResetHandler:(nullable RLMSyncErrorReportingBlock)manualClientResetHandler {
-    auto syncConfig = [[RLMSyncConfiguration alloc] initWithUser:self];
-    RLMRealmConfiguration *config = [[RLMRealmConfiguration alloc] init];
+                                                             clientResetMode:(LEGACYClientResetMode)clientResetMode
+                                                    manualClientResetHandler:(nullable LEGACYSyncErrorReportingBlock)manualClientResetHandler {
+    auto syncConfig = [[LEGACYSyncConfiguration alloc] initWithUser:self];
+    LEGACYRealmConfiguration *config = [[LEGACYRealmConfiguration alloc] init];
     syncConfig.clientResetMode = clientResetMode;
     syncConfig.manualClientResetHandler = manualClientResetHandler;
     config.initialSubscriptions = initialSubscriptions;
@@ -232,35 +232,35 @@ using namespace realm;
 
 - (std::string)pathForFlexibleSync {
     if (!_user) {
-        @throw RLMException(@"This is an exceptional state, `RLMUser` cannot be initialised without a reference to `SyncUser`");
+        @throw LEGACYException(@"This is an exceptional state, `LEGACYUser` cannot be initialised without a reference to `SyncUser`");
     }
 
     SyncConfig config(_user, SyncConfig::FLXSyncEnabled{});
     return _user->sync_manager()->path_for_realm(config, realm::none);
 }
 
-- (nullable RLMSyncSession *)sessionForPartitionValue:(id<RLMBSON>)partitionValue {
+- (nullable LEGACYSyncSession *)sessionForPartitionValue:(id<LEGACYBSON>)partitionValue {
     if (!_user) {
         return nil;
     }
 
     std::stringstream s;
-    s << RLMConvertRLMBSONToBson(partitionValue);
+    s << LEGACYConvertRLMBSONToBson(partitionValue);
     auto path = [self pathForPartitionValue:s.str()];
     if (auto session = _user->session_for_on_disk_path(path)) {
-        return [[RLMSyncSession alloc] initWithSyncSession:session];
+        return [[LEGACYSyncSession alloc] initWithSyncSession:session];
     }
     return nil;
 }
 
-- (NSArray<RLMSyncSession *> *)allSessions {
+- (NSArray<LEGACYSyncSession *> *)allSessions {
     if (!_user) {
         return @[];
     }
-    NSMutableArray<RLMSyncSession *> *buffer = [NSMutableArray array];
+    NSMutableArray<LEGACYSyncSession *> *buffer = [NSMutableArray array];
     auto sessions = _user->all_sessions();
     for (auto session : sessions) {
-        [buffer addObject:[[RLMSyncSession alloc] initWithSyncSession:std::move(session)]];
+        [buffer addObject:[[LEGACYSyncSession alloc] initWithSyncSession:std::move(session)]];
     }
     return [buffer copy];
 }
@@ -272,35 +272,35 @@ using namespace realm;
     return @(_user->identity().c_str());
 }
 
-- (NSArray<RLMUserIdentity *> *)identities {
+- (NSArray<LEGACYUserIdentity *> *)identities {
     if (!_user) {
         return @[];
     }
-    NSMutableArray<RLMUserIdentity *> *buffer = [NSMutableArray array];
+    NSMutableArray<LEGACYUserIdentity *> *buffer = [NSMutableArray array];
     auto identities = _user->identities();
     for (auto& identity : identities) {
-        [buffer addObject: [[RLMUserIdentity alloc] initUserIdentityWithProviderType:@(identity.provider_type.c_str())
+        [buffer addObject: [[LEGACYUserIdentity alloc] initUserIdentityWithProviderType:@(identity.provider_type.c_str())
                                                                           identifier:@(identity.id.c_str())]];
     }
 
     return [buffer copy];
 }
 
-- (RLMUserState)state {
+- (LEGACYUserState)state {
     if (!_user) {
-        return RLMUserStateRemoved;
+        return LEGACYUserStateRemoved;
     }
     switch (_user->state()) {
         case SyncUser::State::LoggedIn:
-            return RLMUserStateLoggedIn;
+            return LEGACYUserStateLoggedIn;
         case SyncUser::State::LoggedOut:
-            return RLMUserStateLoggedOut;
+            return LEGACYUserStateLoggedOut;
         case SyncUser::State::Removed:
-            return RLMUserStateRemoved;
+            return LEGACYUserStateRemoved;
     }
 }
 
-- (void)refreshCustomDataWithCompletion:(RLMUserCustomDataBlock)completion {
+- (void)refreshCustomDataWithCompletion:(LEGACYUserCustomDataBlock)completion {
     _user->refresh_custom_data([completion, self](std::optional<app::AppError> error) {
         if (!error) {
             return completion([self customData], nil);
@@ -310,51 +310,51 @@ using namespace realm;
     });
 }
 
-- (void)linkUserWithCredentials:(RLMCredentials *)credentials
-                     completion:(RLMOptionalUserBlock)completion {
+- (void)linkUserWithCredentials:(LEGACYCredentials *)credentials
+                     completion:(LEGACYOptionalUserBlock)completion {
     _app._realmApp->link_user(_user, credentials.appCredentials,
                    ^(std::shared_ptr<SyncUser> user, std::optional<app::AppError> error) {
         if (error) {
             return completion(nil, makeError(*error));
         }
 
-        completion([[RLMUser alloc] initWithUser:user app:_app], nil);
+        completion([[LEGACYUser alloc] initWithUser:user app:_app], nil);
     });
 }
 
-- (void)removeWithCompletion:(RLMOptionalErrorBlock)completion {
+- (void)removeWithCompletion:(LEGACYOptionalErrorBlock)completion {
     _app._realmApp->remove_user(_user, ^(std::optional<app::AppError> error) {
         [self handleResponse:error completion:completion];
     });
 }
 
-- (void)deleteWithCompletion:(RLMUserOptionalErrorBlock)completion {
+- (void)deleteWithCompletion:(LEGACYUserOptionalErrorBlock)completion {
     _app._realmApp->delete_user(_user, ^(std::optional<app::AppError> error) {
         [self handleResponse:error completion:completion];
     });
 }
 
-- (void)logOutWithCompletion:(RLMOptionalErrorBlock)completion {
+- (void)logOutWithCompletion:(LEGACYOptionalErrorBlock)completion {
     _app._realmApp->log_out(_user, ^(std::optional<app::AppError> error) {
         [self handleResponse:error completion:completion];
     });
 }
 
-- (RLMAPIKeyAuth *)apiKeysAuth {
-    return [[RLMAPIKeyAuth alloc] initWithApp:_app];
+- (LEGACYAPIKeyAuth *)apiKeysAuth {
+    return [[LEGACYAPIKeyAuth alloc] initWithApp:_app];
 }
 
-- (RLMMongoClient *)mongoClientWithServiceName:(NSString *)serviceName {
-    return [[RLMMongoClient alloc] initWithUser:self serviceName:serviceName];
+- (LEGACYMongoClient *)mongoClientWithServiceName:(NSString *)serviceName {
+    return [[LEGACYMongoClient alloc] initWithUser:self serviceName:serviceName];
 }
 
 - (void)callFunctionNamed:(NSString *)name
-                arguments:(NSArray<id<RLMBSON>> *)arguments
-          completionBlock:(RLMCallFunctionCompletionBlock)completionBlock {
+                arguments:(NSArray<id<LEGACYBSON>> *)arguments
+          completionBlock:(LEGACYCallFunctionCompletionBlock)completionBlock {
     bson::BsonArray args;
 
-    for (id<RLMBSON> argument in arguments) {
-        args.push_back(RLMConvertRLMBSONToBson(argument));
+    for (id<LEGACYBSON> argument in arguments) {
+        args.push_back(LEGACYConvertRLMBSONToBson(argument));
     }
 
     _app._realmApp->call_function(_user, name.UTF8String, args,
@@ -364,12 +364,12 @@ using namespace realm;
             return completionBlock(nil, makeError(*error));
         }
 
-        completionBlock(RLMConvertBsonToRLMBSON(*response), nil);
+        completionBlock(LEGACYConvertBsonToRLMBSON(*response), nil);
     });
 }
 
 - (void)handleResponse:(std::optional<realm::app::AppError>)error
-            completion:(RLMOptionalErrorBlock)completion {
+            completion:(LEGACYOptionalErrorBlock)completion {
     if (error) {
         return completion(makeError(*error));
     }
@@ -397,30 +397,30 @@ using namespace realm;
         return @{};
     }
 
-    return (NSDictionary *)RLMConvertBsonToRLMBSON(*_user->custom_data());
+    return (NSDictionary *)LEGACYConvertBsonToRLMBSON(*_user->custom_data());
 }
 
-- (RLMUserProfile *)profile {
+- (LEGACYUserProfile *)profile {
     if (!_user) {
-        return [RLMUserProfile new];
+        return [LEGACYUserProfile new];
     }
 
-    return [[RLMUserProfile alloc] initWithUserProfile:_user->user_profile()];
+    return [[LEGACYUserProfile alloc] initWithUserProfile:_user->user_profile()];
 }
 - (std::shared_ptr<SyncUser>)_syncUser {
     return _user;
 }
 
-- (RLMUserSubscriptionToken *)subscribe:(RLMUserNotificationBlock)block {
-    return [[RLMUserSubscriptionToken alloc] initWithUser:_user token:_user->subscribe([block, self] (auto&) {
+- (LEGACYUserSubscriptionToken *)subscribe:(LEGACYUserNotificationBlock)block {
+    return [[LEGACYUserSubscriptionToken alloc] initWithUser:_user token:_user->subscribe([block, self] (auto&) {
         block(self);
     })];
 }
 @end
 
-#pragma mark - RLMUserIdentity
+#pragma mark - LEGACYUserIdentity
 
-@implementation RLMUserIdentity
+@implementation LEGACYUserIdentity
 
 - (instancetype)initUserIdentityWithProviderType:(NSString *)providerType
                                       identifier:(NSString *)identifier {
@@ -433,9 +433,9 @@ using namespace realm;
 
 @end
 
-#pragma mark - RLMUserProfile
+#pragma mark - LEGACYUserProfile
 
-@interface RLMUserProfile () {
+@interface LEGACYUserProfile () {
     SyncUserProfile _userProfile;
 }
 @end
@@ -447,7 +447,7 @@ static NSString* userProfileMemberToNSString(const std::optional<std::string>& m
     return @(member->c_str());
 }
 
-@implementation RLMUserProfile
+@implementation LEGACYUserProfile
 
 using UserProfileMember = std::optional<std::string> (SyncUserProfile::*)() const;
 
@@ -486,7 +486,7 @@ using UserProfileMember = std::optional<std::string> (SyncUserProfile::*)() cons
     return userProfileMemberToNSString(_userProfile.max_age());
 }
 - (NSDictionary *)metadata {
-    return (NSDictionary *)RLMConvertBsonToRLMBSON(_userProfile.data());
+    return (NSDictionary *)LEGACYConvertBsonToRLMBSON(_userProfile.data());
 }
 
 @end

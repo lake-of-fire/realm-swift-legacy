@@ -54,8 +54,8 @@
 // - The XCode version.
 // - Some info about the features been used when opening the realm for the first time.
 
-#import <Realm/RLMRealm.h>
+#import <Realm/LEGACYRealm.h>
 #import <Foundation/Foundation.h>
 
-void RLMSendAnalytics(RLMRealmConfiguration *configuration, RLMSchema *schema);
-NSString *RLMHashBase16Data(const void *bytes, size_t length);
+void LEGACYSendAnalytics(LEGACYRealmConfiguration *configuration, LEGACYSchema *schema);
+NSString *LEGACYHashBase16Data(const void *bytes, size_t length);

@@ -16,34 +16,34 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMArray.h>
-#import <Realm/RLMObject.h>
+#import <Realm/LEGACYArray.h>
+#import <Realm/LEGACYObject.h>
 
-@interface RLMRealm (Swift)
+@interface LEGACYRealm (Swift)
 + (void)resetRealmState;
 @end
 
-@interface RLMArray (Swift)
+@interface LEGACYArray (Swift)
 
 - (instancetype)initWithObjectClassName:(NSString *)objectClassName;
 
 - (NSUInteger)indexOfObjectWhere:(NSString *)predicateFormat args:(va_list)args;
-- (RLMResults *)objectsWhere:(NSString *)predicateFormat args:(va_list)args;
+- (LEGACYResults *)objectsWhere:(NSString *)predicateFormat args:(va_list)args;
 
 @end
 
-@interface RLMResults (Swift)
+@interface LEGACYResults (Swift)
 
 - (NSUInteger)indexOfObjectWhere:(NSString *)predicateFormat args:(va_list)args;
-- (RLMResults *)objectsWhere:(NSString *)predicateFormat args:(va_list)args;
+- (LEGACYResults *)objectsWhere:(NSString *)predicateFormat args:(va_list)args;
 
 @end
 
-@interface RLMObjectBase (Swift)
+@interface LEGACYObjectBase (Swift)
 
-- (instancetype)initWithRealm:(RLMRealm *)realm schema:(RLMObjectSchema *)schema defaultValues:(BOOL)useDefaults;
+- (instancetype)initWithRealm:(LEGACYRealm *)realm schema:(LEGACYObjectSchema *)schema defaultValues:(BOOL)useDefaults;
 
-+ (RLMResults *)objectsWhere:(NSString *)predicateFormat args:(va_list)args;
-+ (RLMResults *)objectsInRealm:(RLMRealm *)realm where:(NSString *)predicateFormat args:(va_list)args;
++ (LEGACYResults *)objectsWhere:(NSString *)predicateFormat args:(va_list)args;
++ (LEGACYResults *)objectsInRealm:(LEGACYRealm *)realm where:(NSString *)predicateFormat args:(va_list)args;
 
 @end

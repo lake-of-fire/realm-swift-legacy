@@ -16,41 +16,41 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-@class RLMRealmConfiguration, RLMRealm, RLMObject, RLMSchema, RLMMigration, RLMNotificationToken, RLMThreadSafeReference, RLMAsyncOpenTask, RLMSyncSubscriptionSet;
+@class LEGACYRealmConfiguration, LEGACYRealm, LEGACYObject, LEGACYSchema, LEGACYMigration, LEGACYNotificationToken, LEGACYThreadSafeReference, LEGACYAsyncOpenTask, LEGACYSyncSubscriptionSet;
 
 /**
  A callback block for opening Realms asynchronously.
 
  Returns the Realm if the open was successful, or an error otherwise.
  */
-typedef void(^RLMAsyncOpenRealmCallback)(RLMRealm * _Nullable realm, NSError * _Nullable error);
+typedef void(^LEGACYAsyncOpenRealmCallback)(LEGACYRealm * _Nullable realm, NSError * _Nullable error);
 
 /// The Id of the asynchronous transaction.
-typedef unsigned RLMAsyncTransactionId;
+typedef unsigned LEGACYAsyncTransactionId;
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 /**
- An `RLMRealm` instance (also referred to as "a Realm") represents a Realm
+ An `LEGACYRealm` instance (also referred to as "a Realm") represents a Realm
  database.
 
- Realms can either be stored on disk (see `+[RLMRealm realmWithURL:]`) or in
- memory (see `RLMRealmConfiguration`).
+ Realms can either be stored on disk (see `+[LEGACYRealm realmWithURL:]`) or in
+ memory (see `LEGACYRealmConfiguration`).
 
- `RLMRealm` instances are cached internally, and constructing equivalent `RLMRealm`
+ `LEGACYRealm` instances are cached internally, and constructing equivalent `LEGACYRealm`
  objects (for example, by using the same path or identifier) multiple times on a single thread
  within a single iteration of the run loop will normally return the same
- `RLMRealm` object.
+ `LEGACYRealm` object.
 
- If you specifically want to ensure an `RLMRealm` instance is
+ If you specifically want to ensure an `LEGACYRealm` instance is
  destroyed (for example, if you wish to open a Realm, check some property, and
  then possibly delete the Realm file and re-open it), place the code which uses
  the Realm within an `@autoreleasepool {}` and ensure you have no other
  strong references to it.
 
- @warning Non-frozen `RLMRealm` instances are thread-confined and cannot be
+ @warning Non-frozen `LEGACYRealm` instances are thread-confined and cannot be
  shared across threads or dispatch queues. Trying to do so will cause an
  exception to be thrown. You must call this method on each thread you want to
  interact with the Realm on. For dispatch queues, this means that you must call
@@ -58,23 +58,23 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  of its blocks on the same thread.
  */
 
-@interface RLMRealm : NSObject
+@interface LEGACYRealm : NSObject
 
 #pragma mark - Creating & Initializing a Realm
 
 /**
  Obtains an instance of the default Realm.
 
- The default Realm is used by the `RLMObject` class methods
- which do not take an `RLMRealm` parameter, but is otherwise not special. The
+ The default Realm is used by the `LEGACYObject` class methods
+ which do not take an `LEGACYRealm` parameter, but is otherwise not special. The
  default Realm is persisted as *default.realm* under the *Documents* directory of
  your Application on iOS, in your application's *Application Support*
  directory on macOS, and in the *Cache* directory on tvOS.
 
- The default Realm is created using the default `RLMRealmConfiguration`, which
- can be changed via `+[RLMRealmConfiguration setDefaultConfiguration:]`.
+ The default Realm is created using the default `LEGACYRealmConfiguration`, which
+ can be changed via `+[LEGACYRealmConfiguration setDefaultConfiguration:]`.
 
- @return The default `RLMRealm` instance for the current thread.
+ @return The default `LEGACYRealm` instance for the current thread.
  */
 + (instancetype)defaultRealm;
 
@@ -82,44 +82,44 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  Obtains an instance of the default Realm bound to the given queue.
 
  Rather than being confined to the thread they are opened on, queue-bound
- RLMRealms are confined to the given queue. They can be accessed from any
+ LEGACYRealms are confined to the given queue. They can be accessed from any
  thread as long as it is from within a block dispatch to the queue, and
  notifications will be delivered to the queue instead of a thread's run loop.
 
- Realms can only be confined to a serial queue. Queue-confined RLMRealm
+ Realms can only be confined to a serial queue. Queue-confined LEGACYRealm
  instances can be obtained when not on that queue, but attempting to do
  anything with that instance without first dispatching to the queue will throw
  an incorrect thread exception.
 
- The default Realm is created using the default `RLMRealmConfiguration`, which
- can be changed via `+[RLMRealmConfiguration setDefaultConfiguration:]`.
+ The default Realm is created using the default `LEGACYRealmConfiguration`, which
+ can be changed via `+[LEGACYRealmConfiguration setDefaultConfiguration:]`.
 
  @param queue A serial dispatch queue to confine the Realm to.
- @return The default `RLMRealm` instance for the given queue.
+ @return The default `LEGACYRealm` instance for the given queue.
  */
 + (instancetype)defaultRealmForQueue:(dispatch_queue_t)queue;
 
 /**
- Obtains an `RLMRealm` instance with the given configuration.
+ Obtains an `LEGACYRealm` instance with the given configuration.
 
  @param configuration A configuration object to use when creating the Realm.
  @param error         If an error occurs, upon return contains an `NSError` object
                       that describes the problem. If you are not interested in
                       possible errors, pass in `NULL`.
 
- @return An `RLMRealm` instance.
+ @return An `LEGACYRealm` instance.
  */
-+ (nullable instancetype)realmWithConfiguration:(RLMRealmConfiguration *)configuration error:(NSError **)error;
++ (nullable instancetype)realmWithConfiguration:(LEGACYRealmConfiguration *)configuration error:(NSError **)error;
 
 /**
- Obtains an `RLMRealm` instance with the given configuration bound to the given queue.
+ Obtains an `LEGACYRealm` instance with the given configuration bound to the given queue.
 
  Rather than being confined to the thread they are opened on, queue-bound
- RLMRealms are confined to the given queue. They can be accessed from any
+ LEGACYRealms are confined to the given queue. They can be accessed from any
  thread as long as it is from within a block dispatch to the queue, and
  notifications will be delivered to the queue instead of a thread's run loop.
 
- Realms can only be confined to a serial queue. Queue-confined RLMRealm
+ Realms can only be confined to a serial queue. Queue-confined LEGACYRealm
  instances can be obtained when not on that queue, but attempting to do
  anything with that instance without first dispatching to the queue will throw
  an incorrect thread exception.
@@ -130,18 +130,18 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
                       that describes the problem. If you are not interested in
                       possible errors, pass in `NULL`.
 
- @return An `RLMRealm` instance.
+ @return An `LEGACYRealm` instance.
  */
-+ (nullable instancetype)realmWithConfiguration:(RLMRealmConfiguration *)configuration
++ (nullable instancetype)realmWithConfiguration:(LEGACYRealmConfiguration *)configuration
                                           queue:(nullable dispatch_queue_t)queue
                                           error:(NSError **)error;
 
 /**
- Obtains an `RLMRealm` instance persisted at a specified file URL.
+ Obtains an `LEGACYRealm` instance persisted at a specified file URL.
 
  @param fileURL The local URL of the file the Realm should be saved at.
 
- @return An `RLMRealm` instance.
+ @return An `LEGACYRealm` instance.
  */
 + (instancetype)realmWithURL:(NSURL *)fileURL;
 
@@ -155,7 +155,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  operation began to be downloaded and available locally.
 
  The Realm passed to the callback function is confined to the callback queue as
- if `-[RLMRealm realmWithConfiguration:queue:error]` was used.
+ if `-[LEGACYRealm realmWithConfiguration:queue:error]` was used.
 
  @param configuration A configuration object to use when opening the Realm.
  @param callbackQueue The serial dispatch queue on which the callback should be run.
@@ -164,14 +164,14 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
                       Otherwise, an `NSError` describing what went wrong will be
                       passed to the block instead.
  */
-+ (RLMAsyncOpenTask *)asyncOpenWithConfiguration:(RLMRealmConfiguration *)configuration
++ (LEGACYAsyncOpenTask *)asyncOpenWithConfiguration:(LEGACYRealmConfiguration *)configuration
                                    callbackQueue:(dispatch_queue_t)callbackQueue
-                                        callback:(RLMAsyncOpenRealmCallback)callback;
+                                        callback:(LEGACYAsyncOpenRealmCallback)callback;
 
 /**
- The `RLMSchema` used by the Realm.
+ The `LEGACYSchema` used by the Realm.
  */
-@property (nonatomic, readonly) RLMSchema *schema;
+@property (nonatomic, readonly) LEGACYSchema *schema;
 
 /**
  Indicates if the Realm is currently engaged in a write transaction.
@@ -183,9 +183,9 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 @property (nonatomic, readonly) BOOL inWriteTransaction;
 
 /**
- The `RLMRealmConfiguration` object that was used to create this `RLMRealm` instance.
+ The `LEGACYRealmConfiguration` object that was used to create this `LEGACYRealm` instance.
  */
-@property (nonatomic, readonly) RLMRealmConfiguration *configuration;
+@property (nonatomic, readonly) LEGACYRealmConfiguration *configuration;
 
 /**
  Indicates if this Realm contains any objects.
@@ -195,7 +195,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 /**
  Indicates if this Realm is frozen.
 
- @see `-[RLMRealm freeze]`
+ @see `-[LEGACYRealm freeze]`
  */
 @property (nonatomic, readonly, getter=isFrozen) BOOL frozen;
 
@@ -203,14 +203,14 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  Returns a frozen (immutable) snapshot of this Realm.
 
  A frozen Realm is an immutable snapshot view of a particular version of a
- Realm's data. Unlike normal RLMRealm instances, it does not live-update to
+ Realm's data. Unlike normal LEGACYRealm instances, it does not live-update to
  reflect writes made to the Realm, and can be accessed from any thread. Writing
  to a frozen Realm is not allowed, and attempting to begin a write transaction
  will throw an exception.
 
  All objects and collections read from a frozen Realm will also be frozen.
  */
-- (RLMRealm *)freeze NS_RETURNS_RETAINED;
+- (LEGACYRealm *)freeze NS_RETURNS_RETAINED;
 
 /**
  Returns a live reference of this Realm.
@@ -218,7 +218,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  All objects and collections read from the returned Realm will no longer be frozen.
  This method will return `self` if it is not already frozen.
  */
-- (RLMRealm *)thaw;
+- (LEGACYRealm *)thaw;
 
 #pragma mark - File Management
 
@@ -244,7 +244,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 /**
  Writes a copy of the Realm to a given location specified by a given configuration.
 
- If the configuration supplied is derived from a `RLMUser` then this Realm will be copied with
+ If the configuration supplied is derived from a `LEGACYUser` then this Realm will be copied with
  sync functionality enabled.
 
  The destination file cannot already exist.
@@ -256,7 +256,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @return `YES` if the Realm was successfully written to disk, `NO` if an error occurred.
  */
-- (BOOL)writeCopyForConfiguration:(RLMRealmConfiguration *)configuration error:(NSError **)error;
+- (BOOL)writeCopyForConfiguration:(LEGACYRealmConfiguration *)configuration error:(NSError **)error;
 
 /**
  Checks if the Realm file for the given configuration exists locally on disk.
@@ -269,7 +269,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  @param config A Realm configuration to check the existence of.
  @return YES if the Realm file for the given configuration exists on disk, NO otherwise.
  */
-+ (BOOL)fileExistsForConfiguration:(RLMRealmConfiguration *)config;
++ (BOOL)fileExistsForConfiguration:(LEGACYRealmConfiguration *)config;
 
 /**
  Deletes the local Realm file and associated temporary files for the given configuration.
@@ -280,7 +280,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  scratch every time the Realm file is opened).
 
  The Realm must not be currently open on any thread or in another process. If
- it is, this will return NO and report the error RLMErrorAlreadyOpen. Attempting to open
+ it is, this will return NO and report the error LEGACYErrorAlreadyOpen. Attempting to open
  the Realm on another thread while the deletion is happening will block (and
  then create a new Realm and open that afterwards).
 
@@ -289,7 +289,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  @param config A Realm configuration identifying the Realm to be deleted.
  @return YES if any files were deleted, NO otherwise.
  */
-+ (BOOL)deleteFilesForConfiguration:(RLMRealmConfiguration *)config error:(NSError **)error
++ (BOOL)deleteFilesForConfiguration:(LEGACYRealmConfiguration *)config error:(NSError **)error
  __attribute__((swift_error(nonnull_error)));
 
 #pragma mark - Notifications
@@ -297,9 +297,9 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 /**
  The type of a block to run whenever the data within the Realm is modified.
 
- @see `-[RLMRealm addNotificationBlock:]`
+ @see `-[LEGACYRealm addNotificationBlock:]`
  */
-typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *realm);
+typedef void (^LEGACYNotificationBlock)(LEGACYNotification notification, LEGACYRealm *realm);
 
 #pragma mark - Receiving Notification when a Realm Changes
 
@@ -316,21 +316,21 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
 
  The block has the following definition:
 
-     typedef void(^RLMNotificationBlock)(RLMNotification notification, RLMRealm *realm);
+     typedef void(^LEGACYNotificationBlock)(LEGACYNotification notification, LEGACYRealm *realm);
 
  It receives the following parameters:
 
  - `NSString` \***notification**:    The name of the incoming notification. See
-                                     `RLMRealmNotification` for information on what
+                                     `LEGACYRealmNotification` for information on what
                                      notifications are sent.
- - `RLMRealm` \***realm**:           The Realm for which this notification occurred.
+ - `LEGACYRealm` \***realm**:           The Realm for which this notification occurred.
 
  @param block   A block which is called to process Realm notifications.
 
  @return A token object which must be retained as long as you wish to continue
          receiving change notifications.
  */
-- (RLMNotificationToken *)addNotificationBlock:(RLMNotificationBlock)block __attribute__((warn_unused_result));
+- (LEGACYNotificationToken *)addNotificationBlock:(LEGACYNotificationBlock)block __attribute__((warn_unused_result));
 
 #pragma mark - Writing to a Realm
 
@@ -340,12 +340,12 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
  Only one write transaction can be open at a time for each Realm file. Write
  transactions cannot be nested, and trying to begin a write transaction on a
  Realm which is already in a write transaction will throw an exception. Calls to
- `beginWriteTransaction` from `RLMRealm` instances for the same Realm file in
+ `beginWriteTransaction` from `LEGACYRealm` instances for the same Realm file in
  other threads or other processes will block until the current write transaction
  completes or is cancelled.
 
  Before beginning the write transaction, `beginWriteTransaction` updates the
- `RLMRealm` instance to the latest Realm version, as if `refresh` had been
+ `LEGACYRealm` instance to the latest Realm version, as if `refresh` had been
  called, and generates notifications if applicable. This has no effect if the
  Realm was already up to date.
 
@@ -361,7 +361,7 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
  transaction.
 
  After saving the changes, all notification blocks registered on this specific
- `RLMRealm` instance are invoked synchronously. Notification blocks registered
+ `LEGACYRealm` instance are invoked synchronously. Notification blocks registered
  on other threads or on collections are invoked asynchronously. If you do not
  want to receive a specific notification for this write tranaction, see
  `commitWriteTransactionWithoutNotifying:error:`.
@@ -380,7 +380,7 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
  transaction.
 
  After saving the changes, all notification blocks registered on this specific
- `RLMRealm` instance are invoked synchronously. Notification blocks registered
+ `LEGACYRealm` instance are invoked synchronously. Notification blocks registered
  on other threads or on collections are invoked asynchronously. If you do not
  want to receive a specific notification for this write tranaction, see
  `commitWriteTransactionWithoutNotifying:error:`.
@@ -403,7 +403,7 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
  notifying specific notification blocks of the changes.
 
  After saving the changes, all notification blocks registered on this specific
- `RLMRealm` instance are invoked synchronously. Notification blocks registered
+ `LEGACYRealm` instance are invoked synchronously. Notification blocks registered
  on other threads or on collections are scheduled to be invoked asynchronously.
 
  You can skip notifiying specific notification blocks about the changes made
@@ -413,7 +413,7 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
  re-apply the same changes.
 
  The tokens passed to this method must be for notifications for this specific
- `RLMRealm` instance. Notifications for different threads cannot be skipped
+ `LEGACYRealm` instance. Notifications for different threads cannot be skipped
  using this method.
 
  This method can fail if there is insufficient disk space available to save the
@@ -430,7 +430,7 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
 
  @return Whether the transaction succeeded.
  */
-- (BOOL)commitWriteTransactionWithoutNotifying:(NSArray<RLMNotificationToken *> *)tokens error:(NSError **)error;
+- (BOOL)commitWriteTransactionWithoutNotifying:(NSArray<LEGACYNotificationToken *> *)tokens error:(NSError **)error;
 
 /**
  Reverts all writes made during the current write transaction and ends the transaction.
@@ -439,7 +439,7 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
  beginning of the write transaction, and then ends the transaction.
 
  This restores the data for deleted objects, but does not revive invalidated
- object instances. Any `RLMObject`s which were added to the Realm will be
+ object instances. Any `LEGACYObject`s which were added to the Realm will be
  invalidated rather than becoming unmanaged.
  Given the following code:
 
@@ -466,34 +466,34 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
 /**
  Performs actions contained within the given block inside a write transaction.
 
- @see `[RLMRealm transactionWithoutNotifying:block:error:]`
+ @see `[LEGACYRealm transactionWithoutNotifying:block:error:]`
  */
 - (void)transactionWithBlock:(__attribute__((noescape)) void(^)(void))block NS_SWIFT_UNAVAILABLE("");
 
 /**
  Performs actions contained within the given block inside a write transaction.
 
- @see `[RLMRealm transactionWithoutNotifying:block:error:]`
+ @see `[LEGACYRealm transactionWithoutNotifying:block:error:]`
  */
 - (BOOL)transactionWithBlock:(__attribute__((noescape)) void(^)(void))block error:(NSError **)error;
 
 /**
  Performs actions contained within the given block inside a write transaction.
 
- @see `[RLMRealm transactionWithoutNotifying:block:error:]`
+ @see `[LEGACYRealm transactionWithoutNotifying:block:error:]`
  */
-- (void)transactionWithoutNotifying:(NSArray<RLMNotificationToken *> *)tokens block:(__attribute__((noescape)) void(^)(void))block;
+- (void)transactionWithoutNotifying:(NSArray<LEGACYNotificationToken *> *)tokens block:(__attribute__((noescape)) void(^)(void))block;
 
 /**
  Performs actions contained within the given block inside a write transaction.
 
  Write transactions cannot be nested, and trying to execute a write transaction
  on a Realm which is already participating in a write transaction will throw an
- exception. Calls to `transactionWithBlock:` from `RLMRealm` instances in other
+ exception. Calls to `transactionWithBlock:` from `LEGACYRealm` instances in other
  threads will block until the current write transaction completes.
 
  Before beginning the write transaction, `transactionWithBlock:` updates the
- `RLMRealm` instance to the latest Realm version, as if `refresh` had been called, and
+ `LEGACYRealm` instance to the latest Realm version, as if `refresh` had been called, and
  generates notifications if applicable. This has no effect if the Realm
  was already up to date.
 
@@ -504,7 +504,7 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
  re-apply the same changes.
 
  The tokens passed to this method must be for notifications for this specific
- `RLMRealm` instance. Notifications for different threads cannot be skipped
+ `LEGACYRealm` instance. Notifications for different threads cannot be skipped
  using this method.
 
  @param tokens An array of notification tokens which were returned from adding
@@ -517,7 +517,7 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
 
  @return Whether the transaction succeeded.
  */
-- (BOOL)transactionWithoutNotifying:(NSArray<RLMNotificationToken *> *)tokens block:(__attribute__((noescape)) void(^)(void))block error:(NSError **)error;
+- (BOOL)transactionWithoutNotifying:(NSArray<LEGACYNotificationToken *> *)tokens block:(__attribute__((noescape)) void(^)(void))block error:(NSError **)error;
 
 /**
  Indicates if the Realm is currently performing async write operations.
@@ -550,7 +550,7 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
          `cancelAsyncTransaction:` prior to the block being called to cancel
          the pending invocation of the block.
  */
-- (RLMAsyncTransactionId)beginAsyncWriteTransaction:(void(^)(void))block;
+- (LEGACYAsyncTransactionId)beginAsyncWriteTransaction:(void(^)(void))block;
 
 /**
  Asynchronously commits a write transaction.
@@ -578,7 +578,7 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
          to cancel the pending invocation of the block. Note that this does
          *not* cancel the commit itself.
 */
-- (RLMAsyncTransactionId)commitAsyncWriteTransaction:(nullable void(^)(NSError *_Nullable))completionBlock
+- (LEGACYAsyncTransactionId)commitAsyncWriteTransaction:(nullable void(^)(NSError *_Nullable))completionBlock
                                        allowGrouping:(BOOL)allowGrouping;
 
 /**
@@ -597,7 +597,7 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
          to cancel the pending invocation of the block. Note that this does
          *not* cancel the commit itself.
 */
-- (RLMAsyncTransactionId)commitAsyncWriteTransaction:(void(^)(NSError *_Nullable))completionBlock;
+- (LEGACYAsyncTransactionId)commitAsyncWriteTransaction:(void(^)(NSError *_Nullable))completionBlock;
 
 /**
  Asynchronously commits a write transaction.
@@ -611,7 +611,7 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
          to cancel the pending invocation of the block. Note that this does
          *not* cancel the commit itself.
 */
-- (RLMAsyncTransactionId)commitAsyncWriteTransaction;
+- (LEGACYAsyncTransactionId)commitAsyncWriteTransaction;
 
 /**
  Cancels a queued block for an asynchronous transaction.
@@ -624,7 +624,7 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
  
  @param asyncTransactionId A transaction id from either `beginAsyncWriteTransaction:` or `commitAsyncWriteTransaction:`.
 */
-- (void)cancelAsyncTransaction:(RLMAsyncTransactionId)asyncTransactionId;
+- (void)cancelAsyncTransaction:(LEGACYAsyncTransactionId)asyncTransactionId;
 
 /**
  Asynchronously performs actions contained within the given block inside a
@@ -645,7 +645,7 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
          `cancelAsyncTransaction:` prior to the block being called to cancel
          the pending invocation of the block.
 */
-- (RLMAsyncTransactionId)asyncTransactionWithBlock:(void(^)(void))block onComplete:(nullable void(^)(NSError *))completionBlock;
+- (LEGACYAsyncTransactionId)asyncTransactionWithBlock:(void(^)(void))block onComplete:(nullable void(^)(NSError *))completionBlock;
 
 /**
  Asynchronously performs actions contained within the given block inside a
@@ -662,7 +662,7 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
          `cancelAsyncTransaction:` prior to the block being called to cancel
          the pending invocation of the block.
 */
-- (RLMAsyncTransactionId)asyncTransactionWithBlock:(void(^)(void))block;
+- (LEGACYAsyncTransactionId)asyncTransactionWithBlock:(void(^)(void))block;
 
 /**
  Updates the Realm and outstanding objects managed by the Realm to point to the
@@ -700,9 +700,9 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
  Disabling `autorefresh` on a Realm without any strong references to it will not
  have any effect, and `autorefresh` will revert back to `YES` the next time the
  Realm is created. This is normally irrelevant as it means that there is nothing
- to refresh (as managed `RLMObject`s, `RLMArray`s, and `RLMResults` have strong
+ to refresh (as managed `LEGACYObject`s, `LEGACYArray`s, and `LEGACYResults` have strong
  references to the Realm that manages them), but it means that setting
- `RLMRealm.defaultRealm.autorefresh = NO` in
+ `LEGACYRealm.defaultRealm.autorefresh = NO` in
  `application:didFinishLaunchingWithOptions:` and only later storing Realm
  objects will not work.
 
@@ -711,7 +711,7 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
 @property (nonatomic) BOOL autorefresh;
 
 /**
- Invalidates all `RLMObject`s, `RLMResults`, `RLMLinkingObjects`, and `RLMArray`s managed by the Realm.
+ Invalidates all `LEGACYObject`s, `LEGACYResults`, `LEGACYLinkingObjects`, and `LEGACYArray`s managed by the Realm.
 
  A Realm holds a read lock on the version of the data accessed by it, so
  that changes made to the Realm on different threads do not modify or delete the
@@ -721,9 +721,9 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
  blocking operations on a background thread on which you previously read data
  from the Realm which you no longer need.
 
- All `RLMObject`, `RLMResults` and `RLMArray` instances obtained from this
- `RLMRealm` instance on the current thread are invalidated. `RLMObject`s and `RLMArray`s
- cannot be used. `RLMResults` will become empty. The Realm itself remains valid,
+ All `LEGACYObject`, `LEGACYResults` and `LEGACYArray` instances obtained from this
+ `LEGACYRealm` instance on the current thread are invalidated. `LEGACYObject`s and `LEGACYArray`s
+ cannot be used. `LEGACYResults` will become empty. The Realm itself remains valid,
  and a new read transaction is implicitly begun the next time data is read from the Realm.
 
  Calling this method multiple times in a row without reading any data from the
@@ -734,14 +734,14 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
 #pragma mark - Accessing Objects
 
 /**
- Returns the same object as the one referenced when the `RLMThreadSafeReference` was first created,
+ Returns the same object as the one referenced when the `LEGACYThreadSafeReference` was first created,
  but resolved for the current Realm for this thread. Returns `nil` if this object was deleted after
  the reference was created.
 
  @param reference The thread-safe reference to the thread-confined object to resolve in this Realm.
 
- @warning A `RLMThreadSafeReference` object must be resolved at most once.
-          Failing to resolve a `RLMThreadSafeReference` will result in the source version of the
+ @warning A `LEGACYThreadSafeReference` object must be resolved at most once.
+          Failing to resolve a `LEGACYThreadSafeReference` will result in the source version of the
           Realm being pinned until the reference is deallocated.
           An exception will be thrown if a reference is resolved more than once.
 
@@ -749,9 +749,9 @@ typedef void (^RLMNotificationBlock)(RLMNotification notification, RLMRealm *rea
 
  @note Will refresh this Realm if the source Realm was at a later version than this one.
 
- @see `+[RLMThreadSafeReference referenceWithThreadConfined:]`
+ @see `+[LEGACYThreadSafeReference referenceWithThreadConfined:]`
  */
-- (nullable id)resolveThreadSafeReference:(RLMThreadSafeReference *)reference
+- (nullable id)resolveThreadSafeReference:(LEGACYThreadSafeReference *)reference
 NS_REFINED_FOR_SWIFT;
 
 #pragma mark - Adding and Removing Objects from a Realm
@@ -760,13 +760,13 @@ NS_REFINED_FOR_SWIFT;
  Adds an object to the Realm.
 
  Once added, this object is considered to be managed by the Realm. It can be retrieved
- using the `objectsWhere:` selectors on `RLMRealm` and on subclasses of `RLMObject`.
+ using the `objectsWhere:` selectors on `LEGACYRealm` and on subclasses of `LEGACYObject`.
 
  When added, all child relationships referenced by this object will also be added to
  the Realm if they are not already in it.
 
  If the object or any related objects are already being managed by a different Realm
- an exception will be thrown. Use `-[RLMObject createInRealm:withObject:]` to insert a copy of a managed object
+ an exception will be thrown. Use `-[LEGACYObject createInRealm:withObject:]` to insert a copy of a managed object
  into a different Realm.
 
  The object to be added must be valid and cannot have been previously deleted
@@ -776,7 +776,7 @@ NS_REFINED_FOR_SWIFT;
 
  @param object  The object to be added to this Realm.
  */
-- (void)addObject:(RLMObject *)object;
+- (void)addObject:(LEGACYObject *)object;
 
 /**
  Adds all the objects in a collection to the Realm.
@@ -785,7 +785,7 @@ NS_REFINED_FOR_SWIFT;
 
  @warning This method may only be called during a write transaction.
 
- @param objects   An enumerable collection such as `NSArray`, `RLMArray`, or `RLMResults`,
+ @param objects   An enumerable collection such as `NSArray`, `LEGACYArray`, or `LEGACYResults`,
                   containing Realm objects to be added to the Realm.
 
  @see   `addObject:`
@@ -800,7 +800,7 @@ NS_REFINED_FOR_SWIFT;
  updated with any changed values.
 
  As with `addObject:`, the object cannot already be managed by a different
- Realm. Use `-[RLMObject createOrUpdateInRealm:withValue:]` to copy values to
+ Realm. Use `-[LEGACYObject createOrUpdateInRealm:withValue:]` to copy values to
  a different Realm.
 
  If there is a property or KVC value on `object` whose value is nil, and it corresponds
@@ -811,7 +811,7 @@ NS_REFINED_FOR_SWIFT;
 
  @param object  The object to be added or updated.
  */
-- (void)addOrUpdateObject:(RLMObject *)object;
+- (void)addOrUpdateObject:(LEGACYObject *)object;
 
 /**
  Adds or updates all the objects in a collection into the Realm.
@@ -820,7 +820,7 @@ NS_REFINED_FOR_SWIFT;
 
  @warning This method may only be called during a write transaction.
 
- @param objects  An enumerable collection such as `NSArray`, `RLMArray`, or `RLMResults`,
+ @param objects  An enumerable collection such as `NSArray`, `LEGACYArray`, or `LEGACYResults`,
                  containing Realm objects to be added to or updated within the Realm.
 
  @see   `addOrUpdateObject:`
@@ -834,7 +834,7 @@ NS_REFINED_FOR_SWIFT;
 
  @param object  The object to be deleted.
  */
-- (void)deleteObject:(RLMObject *)object;
+- (void)deleteObject:(LEGACYObject *)object;
 
 /**
  Deletes one or more objects from the Realm.
@@ -843,7 +843,7 @@ NS_REFINED_FOR_SWIFT;
 
  @warning This method may only be called during a write transaction.
 
- @param objects  An enumerable collection such as `NSArray`, `RLMArray`, or `RLMResults`,
+ @param objects  An enumerable collection such as `NSArray`, `LEGACYArray`, or `LEGACYResults`,
                  containing objects to be deleted from the Realm.
 
  @see `deleteObject:`
@@ -866,7 +866,7 @@ NS_REFINED_FOR_SWIFT;
  and search flexible sync subscriptions.
  Getting the subscriptions from a local or partition-based configured realm will thrown an exception.
  */
-@property (nonatomic, readonly, nonnull) RLMSyncSubscriptionSet *subscriptions;
+@property (nonatomic, readonly, nonnull) LEGACYSyncSubscriptionSet *subscriptions;
 
 
 #pragma mark - Migrations
@@ -874,14 +874,14 @@ NS_REFINED_FOR_SWIFT;
 /**
  The type of a migration block used to migrate a Realm.
 
- @param migration   A `RLMMigration` object used to perform the migration. The
+ @param migration   A `LEGACYMigration` object used to perform the migration. The
                     migration object allows you to enumerate and alter any
                     existing objects which require migration.
 
  @param oldSchemaVersion    The schema version of the Realm being migrated.
  */
-RLM_SWIFT_SENDABLE
-typedef void (^RLMMigrationBlock)(RLMMigration *migration, uint64_t oldSchemaVersion);
+LEGACY_SWIFT_SENDABLE
+typedef void (^LEGACYMigrationBlock)(LEGACYMigration *migration, uint64_t oldSchemaVersion);
 
 /**
  Returns the schema version for a Realm at a given local URL.
@@ -892,7 +892,7 @@ typedef void (^RLMMigrationBlock)(RLMMigration *migration, uint64_t oldSchemaVer
                 that describes the problem. If you are not interested in
                 possible errors, pass in `NULL`.
 
- @return The version of the Realm at `fileURL`, or `RLMNotVersioned` if the version cannot be read.
+ @return The version of the Realm at `fileURL`, or `LEGACYNotVersioned` if the version cannot be read.
  */
 + (uint64_t)schemaVersionAtURL:(NSURL *)fileURL encryptionKey:(nullable NSData *)key
                          error:(NSError **)error
@@ -908,25 +908,25 @@ NS_REFINED_FOR_SWIFT;
  @param configuration The Realm configuration used to open and migrate the Realm.
  @return              The error that occurred while applying the migration, if any.
 
- @see                 RLMMigration
+ @see                 LEGACYMigration
  */
-+ (BOOL)performMigrationForConfiguration:(RLMRealmConfiguration *)configuration error:(NSError **)error;
++ (BOOL)performMigrationForConfiguration:(LEGACYRealmConfiguration *)configuration error:(NSError **)error;
 
 #pragma mark - Unavailable Methods
 
 /**
- RLMRealm instances are cached internally by Realm and cannot be created directly.
+ LEGACYRealm instances are cached internally by Realm and cannot be created directly.
 
- Use `+[RLMRealm defaultRealm]`, `+[RLMRealm realmWithConfiguration:error:]` or
- `+[RLMRealm realmWithURL]` to obtain a reference to an RLMRealm.
+ Use `+[LEGACYRealm defaultRealm]`, `+[LEGACYRealm realmWithConfiguration:error:]` or
+ `+[LEGACYRealm realmWithURL]` to obtain a reference to an LEGACYRealm.
  */
 - (instancetype)init __attribute__((unavailable("Use +defaultRealm, +realmWithConfiguration: or +realmWithURL:.")));
 
 /**
- RLMRealm instances are cached internally by Realm and cannot be created directly.
+ LEGACYRealm instances are cached internally by Realm and cannot be created directly.
 
- Use `+[RLMRealm defaultRealm]`, `+[RLMRealm realmWithConfiguration:error:]` or
- `+[RLMRealm realmWithURL]` to obtain a reference to an RLMRealm.
+ Use `+[LEGACYRealm defaultRealm]`, `+[LEGACYRealm realmWithConfiguration:error:]` or
+ `+[LEGACYRealm realmWithURL]` to obtain a reference to an LEGACYRealm.
  */
 + (instancetype)new __attribute__((unavailable("Use +defaultRealm, +realmWithConfiguration: or +realmWithURL:.")));
 
@@ -935,19 +935,19 @@ NS_REFINED_FOR_SWIFT;
 
 @end
 
-// MARK: - RLMNotificationToken
+// MARK: - LEGACYNotificationToken
 
 /**
  A token which is returned from methods which subscribe to changes to a Realm.
 
- Change subscriptions in Realm return an `RLMNotificationToken` instance,
+ Change subscriptions in Realm return an `LEGACYNotificationToken` instance,
  which can be used to unsubscribe from the changes. You must store a strong
  reference to the token for as long as you want to continue to receive notifications.
  When you wish to stop, call the `-invalidate` method. Notifications are also stopped if
  the token is deallocated.
  */
-RLM_SWIFT_SENDABLE // is internally thread-safe
-@interface RLMNotificationToken : NSObject
+LEGACY_SWIFT_SENDABLE // is internally thread-safe
+@interface LEGACYNotificationToken : NSObject
 /// Stops notifications for the change subscription that returned this token.
 ///
 /// @return True if the token was previously valid, and false if it was already invalidated.
@@ -957,4 +957,4 @@ RLM_SWIFT_SENDABLE // is internally thread-safe
 - (void)stop __attribute__((unavailable("Renamed to -invalidate."))) NS_REFINED_FOR_SWIFT;
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

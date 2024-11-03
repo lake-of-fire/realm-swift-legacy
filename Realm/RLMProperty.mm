@@ -16,35 +16,35 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMProperty_Private.hpp"
+#import "LEGACYProperty_Private.hpp"
 
-#import "RLMArray_Private.hpp"
-#import "RLMDictionary_Private.hpp"
-#import "RLMObject.h"
-#import "RLMObjectSchema_Private.hpp"
-#import "RLMObject_Private.h"
-#import "RLMSchema_Private.h"
-#import "RLMSet_Private.hpp"
-#import "RLMSwiftSupport.h"
-#import "RLMUtil.hpp"
+#import "LEGACYArray_Private.hpp"
+#import "LEGACYDictionary_Private.hpp"
+#import "LEGACYObject.h"
+#import "LEGACYObjectSchema_Private.hpp"
+#import "LEGACYObject_Private.h"
+#import "LEGACYSchema_Private.h"
+#import "LEGACYSet_Private.hpp"
+#import "LEGACYSwiftSupport.h"
+#import "LEGACYUtil.hpp"
 
 #import <realm/object-store/property.hpp>
 
-static_assert((int)RLMPropertyTypeInt        == (int)realm::PropertyType::Int);
-static_assert((int)RLMPropertyTypeBool       == (int)realm::PropertyType::Bool);
-static_assert((int)RLMPropertyTypeFloat      == (int)realm::PropertyType::Float);
-static_assert((int)RLMPropertyTypeDouble     == (int)realm::PropertyType::Double);
-static_assert((int)RLMPropertyTypeString     == (int)realm::PropertyType::String);
-static_assert((int)RLMPropertyTypeData       == (int)realm::PropertyType::Data);
-static_assert((int)RLMPropertyTypeDate       == (int)realm::PropertyType::Date);
-static_assert((int)RLMPropertyTypeObject     == (int)realm::PropertyType::Object);
-static_assert((int)RLMPropertyTypeObjectId   == (int)realm::PropertyType::ObjectId);
-static_assert((int)RLMPropertyTypeDecimal128 == (int)realm::PropertyType::Decimal);
-static_assert((int)RLMPropertyTypeUUID       == (int)realm::PropertyType::UUID);
-static_assert((int)RLMPropertyTypeAny        == (int)realm::PropertyType::Mixed);
+static_assert((int)LEGACYPropertyTypeInt        == (int)realm::PropertyType::Int);
+static_assert((int)LEGACYPropertyTypeBool       == (int)realm::PropertyType::Bool);
+static_assert((int)LEGACYPropertyTypeFloat      == (int)realm::PropertyType::Float);
+static_assert((int)LEGACYPropertyTypeDouble     == (int)realm::PropertyType::Double);
+static_assert((int)LEGACYPropertyTypeString     == (int)realm::PropertyType::String);
+static_assert((int)LEGACYPropertyTypeData       == (int)realm::PropertyType::Data);
+static_assert((int)LEGACYPropertyTypeDate       == (int)realm::PropertyType::Date);
+static_assert((int)LEGACYPropertyTypeObject     == (int)realm::PropertyType::Object);
+static_assert((int)LEGACYPropertyTypeObjectId   == (int)realm::PropertyType::ObjectId);
+static_assert((int)LEGACYPropertyTypeDecimal128 == (int)realm::PropertyType::Decimal);
+static_assert((int)LEGACYPropertyTypeUUID       == (int)realm::PropertyType::UUID);
+static_assert((int)LEGACYPropertyTypeAny        == (int)realm::PropertyType::Mixed);
 
-BOOL RLMPropertyTypeIsComputed(RLMPropertyType propertyType) {
-    return propertyType == RLMPropertyTypeLinkingObjects;
+BOOL LEGACYPropertyTypeIsComputed(LEGACYPropertyType propertyType) {
+    return propertyType == LEGACYPropertyTypeLinkingObjects;
 }
 
 // Swift obeys the ARC naming conventions for method families (except for init)
@@ -53,7 +53,7 @@ BOOL RLMPropertyTypeIsComputed(RLMPropertyType propertyType) {
 // in crashes). Objective-C makes properties with naming fitting the method
 // families a compile error, so we just disallow them in Swift as well.
 // http://clang.llvm.org/docs/AutomaticReferenceCounting.html#arc-method-families
-void RLMValidateSwiftPropertyName(NSString *name) {
+void LEGACYValidateSwiftPropertyName(NSString *name) {
     // To belong to a method family, the property name must begin with the family
     // name followed by a non-lowercase letter (or nothing), with an optional
     // leading underscore
@@ -70,7 +70,7 @@ void RLMValidateSwiftPropertyName(NSString *name) {
             continue;
         }
         if (familySize == nameSize || !islower(str[familySize])) {
-            @throw RLMException(@"Property names beginning with '%s' are not "
+            @throw LEGACYException(@"Property names beginning with '%s' are not "
                                  "supported. Swift follows ARC's ownership "
                                  "rules for methods based on their name, which "
                                  "results in memory leaks when accessing "
@@ -82,14 +82,14 @@ void RLMValidateSwiftPropertyName(NSString *name) {
 }
 
 static bool rawTypeShouldBeTreatedAsComputedProperty(NSString *rawType) {
-    return [rawType isEqualToString:@"@\"RLMLinkingObjects\""] || [rawType hasPrefix:@"@\"RLMLinkingObjects<"];
+    return [rawType isEqualToString:@"@\"LEGACYLinkingObjects\""] || [rawType hasPrefix:@"@\"LEGACYLinkingObjects<"];
 }
 
-@implementation RLMProperty
+@implementation LEGACYProperty
 
 + (instancetype)propertyForObjectStoreProperty:(const realm::Property &)prop {
-    auto ret = [[RLMProperty alloc] initWithName:@(prop.name.c_str())
-                                            type:static_cast<RLMPropertyType>(prop.type & ~realm::PropertyType::Flags)
+    auto ret = [[LEGACYProperty alloc] initWithName:@(prop.name.c_str())
+                                            type:static_cast<LEGACYPropertyType>(prop.type & ~realm::PropertyType::Flags)
                                  objectClassName:prop.object_type.length() ? @(prop.object_type.c_str()) : nil
                           linkOriginPropertyName:prop.link_origin_property_name.length() ? @(prop.link_origin_property_name.c_str()) : nil
                                          indexed:prop.is_indexed
@@ -104,7 +104,7 @@ static bool rawTypeShouldBeTreatedAsComputedProperty(NSString *rawType) {
         // TODO: We need a way to store the dictionary
         // key type in realm::Property once we support more
         // key types.
-        ret->_dictionaryKeyType = RLMPropertyTypeString;
+        ret->_dictionaryKeyType = LEGACYPropertyTypeString;
         ret->_dictionary = true;
     }
     if (!prop.public_name.empty()) {
@@ -115,7 +115,7 @@ static bool rawTypeShouldBeTreatedAsComputedProperty(NSString *rawType) {
 }
 
 - (instancetype)initWithName:(NSString *)name
-                        type:(RLMPropertyType)type
+                        type:(LEGACYPropertyType)type
              objectClassName:(NSString *)objectClassName
       linkOriginPropertyName:(NSString *)linkOriginPropertyName
                      indexed:(BOOL)indexed
@@ -152,48 +152,48 @@ static bool rawTypeShouldBeTreatedAsComputedProperty(NSString *rawType) {
     _setterSel = NSSelectorFromString(_setterName);
 }
 
-static std::optional<RLMPropertyType> typeFromProtocolString(const char *type) {
-    if (strcmp(type, "RLMValue>\"") == 0) {
-        return RLMPropertyTypeAny;
+static std::optional<LEGACYPropertyType> typeFromProtocolString(const char *type) {
+    if (strcmp(type, "LEGACYValue>\"") == 0) {
+        return LEGACYPropertyTypeAny;
     }
     if (strncmp(type, "RLM", 3)) {
         return realm::none;
     }
     type += 3;
     if (strcmp(type, "Int>\"") == 0) {
-        return RLMPropertyTypeInt;
+        return LEGACYPropertyTypeInt;
     }
     if (strcmp(type, "Float>\"") == 0) {
-        return RLMPropertyTypeFloat;
+        return LEGACYPropertyTypeFloat;
     }
     if (strcmp(type, "Double>\"") == 0) {
-        return RLMPropertyTypeDouble;
+        return LEGACYPropertyTypeDouble;
     }
     if (strcmp(type, "Bool>\"") == 0) {
-        return RLMPropertyTypeBool;
+        return LEGACYPropertyTypeBool;
     }
     if (strcmp(type, "String>\"") == 0) {
-        return RLMPropertyTypeString;
+        return LEGACYPropertyTypeString;
     }
     if (strcmp(type, "Data>\"") == 0) {
-        return RLMPropertyTypeData;
+        return LEGACYPropertyTypeData;
     }
     if (strcmp(type, "Date>\"") == 0) {
-        return RLMPropertyTypeDate;
+        return LEGACYPropertyTypeDate;
     }
     if (strcmp(type, "Decimal128>\"") == 0) {
-        return RLMPropertyTypeDecimal128;
+        return LEGACYPropertyTypeDecimal128;
     }
     if (strcmp(type, "ObjectId>\"") == 0) {
-        return RLMPropertyTypeObjectId;
+        return LEGACYPropertyTypeObjectId;
     }
     if (strcmp(type, "UUID>\"") == 0) {
-        return RLMPropertyTypeUUID;
+        return LEGACYPropertyTypeUUID;
     }
     return realm::none;
 }
 
-// determine RLMPropertyType from objc code - returns true if valid type was found/set
+// determine LEGACYPropertyType from objc code - returns true if valid type was found/set
 - (BOOL)setTypeFromRawType:(NSString *)rawType {
     const char *code = rawType.UTF8String;
     switch (*code) {
@@ -201,17 +201,17 @@ static std::optional<RLMPropertyType> typeFromProtocolString(const char *type) {
         case 'i':   // int
         case 'l':   // long
         case 'q':   // long long
-            _type = RLMPropertyTypeInt;
+            _type = LEGACYPropertyTypeInt;
             return YES;
         case 'f':
-            _type = RLMPropertyTypeFloat;
+            _type = LEGACYPropertyTypeFloat;
             return YES;
         case 'd':
-            _type = RLMPropertyTypeDouble;
+            _type = LEGACYPropertyTypeDouble;
             return YES;
         case 'c':   // BOOL is stored as char - since rlm has no char type this is ok
         case 'B':
-            _type = RLMPropertyTypeBool;
+            _type = LEGACYPropertyTypeBool;
             return YES;
         case '@':
             break;
@@ -220,19 +220,19 @@ static std::optional<RLMPropertyType> typeFromProtocolString(const char *type) {
     }
 
     _optional = true;
-    static const char arrayPrefix[] = "@\"RLMArray<";
+    static const char arrayPrefix[] = "@\"LEGACYArray<";
     static const int arrayPrefixLen = sizeof(arrayPrefix) - 1;
 
-    static const char setPrefix[] = "@\"RLMSet<";
+    static const char setPrefix[] = "@\"LEGACYSet<";
     static const int setPrefixLen = sizeof(setPrefix) - 1;
 
-    static const char dictionaryPrefix[] = "@\"RLMDictionary<";
+    static const char dictionaryPrefix[] = "@\"LEGACYDictionary<";
     static const int dictionaryPrefixLen = sizeof(dictionaryPrefix) - 1;
 
     static const char numberPrefix[] = "@\"NSNumber<";
     static const int numberPrefixLen = sizeof(numberPrefix) - 1;
 
-    static const char linkingObjectsPrefix[] = "@\"RLMLinkingObjects";
+    static const char linkingObjectsPrefix[] = "@\"LEGACYLinkingObjects";
     static const int linkingObjectsPrefixLen = sizeof(linkingObjectsPrefix) - 1;
 
     _array = strncmp(code, arrayPrefix, arrayPrefixLen) == 0;
@@ -240,25 +240,25 @@ static std::optional<RLMPropertyType> typeFromProtocolString(const char *type) {
     _dictionary = strncmp(code, dictionaryPrefix, dictionaryPrefixLen) == 0;
 
     if (strcmp(code, "@\"NSString\"") == 0) {
-        _type = RLMPropertyTypeString;
+        _type = LEGACYPropertyTypeString;
     }
     else if (strcmp(code, "@\"NSDate\"") == 0) {
-        _type = RLMPropertyTypeDate;
+        _type = LEGACYPropertyTypeDate;
     }
     else if (strcmp(code, "@\"NSData\"") == 0) {
-        _type = RLMPropertyTypeData;
+        _type = LEGACYPropertyTypeData;
     }
-    else if (strcmp(code, "@\"RLMDecimal128\"") == 0) {
-        _type = RLMPropertyTypeDecimal128;
+    else if (strcmp(code, "@\"LEGACYDecimal128\"") == 0) {
+        _type = LEGACYPropertyTypeDecimal128;
     }
-    else if (strcmp(code, "@\"RLMObjectId\"") == 0) {
-        _type = RLMPropertyTypeObjectId;
+    else if (strcmp(code, "@\"LEGACYObjectId\"") == 0) {
+        _type = LEGACYPropertyTypeObjectId;
     }
     else if (strcmp(code, "@\"NSUUID\"") == 0) {
-        _type = RLMPropertyTypeUUID;
+        _type = LEGACYPropertyTypeUUID;
     }
-    else if (strcmp(code, "@\"<RLMValue>\"") == 0) {
-        _type = RLMPropertyTypeAny;
+    else if (strcmp(code, "@\"<LEGACYValue>\"") == 0) {
+        _type = LEGACYPropertyTypeAny;
         // Mixed can represent a null type but can't explicitly be an optional type.
         _optional = false;
     }
@@ -267,14 +267,14 @@ static std::optional<RLMPropertyType> typeFromProtocolString(const char *type) {
         NSString *collectionName;
         if (_array) {
             prefixLen = arrayPrefixLen;
-            collectionName = @"RLMArray";
+            collectionName = @"LEGACYArray";
         }
         else if (_set) {
             prefixLen = setPrefixLen;
-            collectionName = @"RLMSet";
+            collectionName = @"LEGACYSet";
         }
         else if (_dictionary) {
-            // get the type, by working backward from RLMDictionary<Key, Type>
+            // get the type, by working backward from LEGACYDictionary<Key, Type>
             size_t typeLen = 0;
             size_t codeSize = strlen(code);
             for (size_t i = codeSize; i > 0; i--) {
@@ -284,11 +284,11 @@ static std::optional<RLMPropertyType> typeFromProtocolString(const char *type) {
                 }
             }
             prefixLen = typeLen+size_t(2); // +2 start at the type name
-            collectionName = @"RLMDictionary";
+            collectionName = @"LEGACYDictionary";
 
             // Get the key type
-            if (strstr(code + dictionaryPrefixLen, "RLMString><") != NULL) {
-                _dictionaryKeyType = RLMPropertyTypeString;
+            if (strstr(code + dictionaryPrefixLen, "LEGACYString><") != NULL) {
+                _dictionaryKeyType = LEGACYPropertyTypeString;
             }
         }
 
@@ -297,43 +297,43 @@ static std::optional<RLMPropertyType> typeFromProtocolString(const char *type) {
             return YES;
         }
 
-        // get object class from type string - @"RLMSomeCollection<objectClassName>"
+        // get object class from type string - @"LEGACYSomeCollection<objectClassName>"
         _objectClassName = [[NSString alloc] initWithBytes:code + prefixLen
                                                     length:strlen(code + prefixLen) - 2 // drop trailing >"
                                                   encoding:NSUTF8StringEncoding];
 
-        if ([RLMSchema classForString:_objectClassName]) {
+        if ([LEGACYSchema classForString:_objectClassName]) {
             // Dictionaries require object types to be nullable. This is due to
             // the fact that if you delete a realm object that exists in a dictionary
             // the key should stay present but the value should be null.
             _optional = _dictionary;
-            _type = RLMPropertyTypeObject;
+            _type = LEGACYPropertyTypeObject;
             return YES;
         }
-        @throw RLMException(@"Property '%@' is of type '%@<%@>' which is not a supported %@ object type. "
-                            @"%@ can only contain instances of RLMObject subclasses. "
+        @throw LEGACYException(@"Property '%@' is of type '%@<%@>' which is not a supported %@ object type. "
+                            @"%@ can only contain instances of LEGACYObject subclasses. "
                             @"See https://www.mongodb.com/docs/realm/sdk/swift/fundamentals/relationships/#to-many-relationship "
                             @"for more information.", _name, collectionName, _objectClassName, collectionName, collectionName);
     }
     else if (strncmp(code, numberPrefix, numberPrefixLen) == 0) {
         auto type = typeFromProtocolString(code + numberPrefixLen);
-        if (type && (*type == RLMPropertyTypeInt || *type == RLMPropertyTypeFloat || *type == RLMPropertyTypeDouble || *type == RLMPropertyTypeBool)) {
+        if (type && (*type == LEGACYPropertyTypeInt || *type == LEGACYPropertyTypeFloat || *type == LEGACYPropertyTypeDouble || *type == LEGACYPropertyTypeBool)) {
             _type = *type;
             return YES;
         }
-        @throw RLMException(@"Property '%@' is of type %s which is not a supported NSNumber object type. "
-                            @"NSNumbers can only be RLMInt, RLMFloat, RLMDouble, and RLMBool at the moment. "
+        @throw LEGACYException(@"Property '%@' is of type %s which is not a supported NSNumber object type. "
+                            @"NSNumbers can only be LEGACYInt, LEGACYFloat, LEGACYDouble, and LEGACYBool at the moment. "
                             @"See https://www.mongodb.com/docs/realm/sdk/swift/data-types/supported-property-types/ "
                             @"for more information.", _name, code + 1);
     }
     else if (strncmp(code, linkingObjectsPrefix, linkingObjectsPrefixLen) == 0 &&
              (code[linkingObjectsPrefixLen] == '"' || code[linkingObjectsPrefixLen] == '<')) {
-        _type = RLMPropertyTypeLinkingObjects;
+        _type = LEGACYPropertyTypeLinkingObjects;
         _optional = false;
         _array = true;
 
         if (!_objectClassName || !_linkOriginPropertyName) {
-            @throw RLMException(@"Property '%@' is of type RLMLinkingObjects but +linkingObjectsProperties did not specify the class "
+            @throw LEGACYException(@"Property '%@' is of type LEGACYLinkingObjects but +linkingObjectsProperties did not specify the class "
                                 "or property that is the origin of the link.", _name);
         }
 
@@ -344,23 +344,23 @@ static std::optional<RLMPropertyType> typeFromProtocolString(const char *type) {
                                                                        length:strlen(code + linkingObjectsPrefixLen) - 3 // drop trailing >"
                                                                      encoding:NSUTF8StringEncoding];
             if (![_objectClassName isEqualToString:classNameFromProtocol]) {
-                @throw RLMException(@"Property '%@' was declared with type RLMLinkingObjects<%@>, but a conflicting "
+                @throw LEGACYException(@"Property '%@' was declared with type LEGACYLinkingObjects<%@>, but a conflicting "
                                     "class name of '%@' was returned by +linkingObjectsProperties.", _name,
                                     classNameFromProtocol, _objectClassName);
             }
         }
     }
     else if (strcmp(code, "@\"NSNumber\"") == 0) {
-        @throw RLMException(@"Property '%@' requires a protocol defining the contained type - example: NSNumber<RLMInt>.", _name);
+        @throw LEGACYException(@"Property '%@' requires a protocol defining the contained type - example: NSNumber<LEGACYInt>.", _name);
     }
-    else if (strcmp(code, "@\"RLMArray\"") == 0) {
-        @throw RLMException(@"Property '%@' requires a protocol defining the contained type - example: RLMArray<Person>.", _name);
+    else if (strcmp(code, "@\"LEGACYArray\"") == 0) {
+        @throw LEGACYException(@"Property '%@' requires a protocol defining the contained type - example: LEGACYArray<Person>.", _name);
     }
-    else if (strcmp(code, "@\"RLMSet\"") == 0) {
-        @throw RLMException(@"Property '%@' requires a protocol defining the contained type - example: RLMSet<Person>.", _name);
+    else if (strcmp(code, "@\"LEGACYSet\"") == 0) {
+        @throw LEGACYException(@"Property '%@' requires a protocol defining the contained type - example: LEGACYSet<Person>.", _name);
     }
-    else if (strcmp(code, "@\"RLMDictionary\"") == 0) {
-        @throw RLMException(@"Property '%@' requires a protocol defining the contained type - example: RLMDictionary<NSString *, Person *><RLMString, Person>.", _name);
+    else if (strcmp(code, "@\"LEGACYDictionary\"") == 0) {
+        @throw LEGACYException(@"Property '%@' requires a protocol defining the contained type - example: LEGACYDictionary<NSString *, Person *><LEGACYString, Person>.", _name);
     }
     else {
         NSString *className;
@@ -371,18 +371,18 @@ static std::optional<RLMPropertyType> typeFromProtocolString(const char *type) {
         else {
             // for objects strip the quotes and @
             className = [rawType substringWithRange:NSMakeRange(2, rawType.length-3)];
-            cls = [RLMSchema classForString:className];
+            cls = [LEGACYSchema classForString:className];
         }
 
         if (!cls) {
-            @throw RLMException(@"Property '%@' is declared as '%@', which is not a supported RLMObject property type. "
-                                @"All properties must be primitives, NSString, NSDate, NSData, NSNumber, RLMArray, RLMSet, "
-                                @"RLMDictionary, RLMLinkingObjects, RLMDecimal128, RLMObjectId, or subclasses of RLMObject. "
-                                @"See https://www.mongodb.com/docs/realm-legacy/docs/objc/latest/api/Classes/RLMObject.html "
+            @throw LEGACYException(@"Property '%@' is declared as '%@', which is not a supported LEGACYObject property type. "
+                                @"All properties must be primitives, NSString, NSDate, NSData, NSNumber, LEGACYArray, LEGACYSet, "
+                                @"LEGACYDictionary, LEGACYLinkingObjects, LEGACYDecimal128, LEGACYObjectId, or subclasses of LEGACYObject. "
+                                @"See https://www.mongodb.com/docs/realm-legacy/docs/objc/latest/api/Classes/LEGACYObject.html "
                                 @"for more information.", _name, className);
         }
 
-        _type = RLMPropertyTypeObject;
+        _type = LEGACYPropertyTypeObject;
         _optional = true;
         _objectClassName = [cls className] ?: className;
     }
@@ -442,15 +442,15 @@ static std::optional<RLMPropertyType> typeFromProtocolString(const char *type) {
 
 - (instancetype)initSwiftPropertyWithName:(NSString *)name
                                   indexed:(BOOL)indexed
-                   linkPropertyDescriptor:(RLMPropertyDescriptor *)linkPropertyDescriptor
+                   linkPropertyDescriptor:(LEGACYPropertyDescriptor *)linkPropertyDescriptor
                                  property:(objc_property_t)property
-                                 instance:(RLMObject *)obj {
+                                 instance:(LEGACYObject *)obj {
     self = [super init];
     if (!self) {
         return nil;
     }
 
-    RLMValidateSwiftPropertyName(name);
+    LEGACYValidateSwiftPropertyName(name);
 
     _name = name;
     _indexed = indexed;
@@ -473,7 +473,7 @@ static std::optional<RLMPropertyType> typeFromProtocolString(const char *type) {
 
     // Check if there's a storage ivar for a lazy property in this name. We don't honor
     // @lazy in managed objects, but allow it for unmanaged objects which are
-    // subclasses of RLMObject (but not RealmSwift.Object). It's unclear if there's a
+    // subclasses of LEGACYObject (but not RealmSwift.Object). It's unclear if there's a
     // good reason for this difference.
     if (!readOnly && isComputed) {
         // Xcode 10 and earlier
@@ -503,47 +503,47 @@ static std::optional<RLMPropertyType> typeFromProtocolString(const char *type) {
             rawType = [NSString stringWithFormat:@"@\"%@\"", [propertyValue class]];
         } else if (linkPropertyDescriptor) {
             // we're going to naively assume that the user used the correct type since we can't check it
-            rawType = @"@\"RLMLinkingObjects\"";
+            rawType = @"@\"LEGACYLinkingObjects\"";
         }
     }
 
     // convert array / set / dictionary types to objc variant
-    if ([rawType isEqualToString:@"@\"RLMArray\""]) {
-        RLMArray *value = propertyValue;
+    if ([rawType isEqualToString:@"@\"LEGACYArray\""]) {
+        LEGACYArray *value = propertyValue;
         _type = value.type;
         _optional = value.optional;
         _array = true;
         _objectClassName = value.objectClassName;
-        if (_type == RLMPropertyTypeObject && ![RLMSchema classForString:_objectClassName]) {
-            @throw RLMException(@"Property '%@' is of type 'RLMArray<%@>' which is not a supported RLMArray object type. "
-                                @"RLMArrays can only contain instances of RLMObject subclasses. "
+        if (_type == LEGACYPropertyTypeObject && ![LEGACYSchema classForString:_objectClassName]) {
+            @throw LEGACYException(@"Property '%@' is of type 'LEGACYArray<%@>' which is not a supported LEGACYArray object type. "
+                                @"LEGACYArrays can only contain instances of LEGACYObject subclasses. "
                                 @"See https://www.mongodb.com/docs/realm/sdk/swift/fundamentals/relationships/#to-many-relationship "
                                 @"for more information.", _name, _objectClassName);
         }
     }
-    else if ([rawType isEqualToString:@"@\"RLMSet\""]) {
-        RLMSet *value = propertyValue;
+    else if ([rawType isEqualToString:@"@\"LEGACYSet\""]) {
+        LEGACYSet *value = propertyValue;
         _type = value.type;
         _optional = value.optional;
         _set = true;
         _objectClassName = value.objectClassName;
-        if (_type == RLMPropertyTypeObject && ![RLMSchema classForString:_objectClassName]) {
-            @throw RLMException(@"Property '%@' is of type 'RLMSet<%@>' which is not a supported RLMSet object type. "
-                                @"RLMSets can only contain instances of RLMObject subclasses. "
+        if (_type == LEGACYPropertyTypeObject && ![LEGACYSchema classForString:_objectClassName]) {
+            @throw LEGACYException(@"Property '%@' is of type 'LEGACYSet<%@>' which is not a supported LEGACYSet object type. "
+                                @"LEGACYSets can only contain instances of LEGACYObject subclasses. "
                                 @"See https://www.mongodb.com/docs/realm/sdk/swift/fundamentals/relationships/#to-many-relationship "
                                 @"for more information.", _name, _objectClassName);
         }
     }
-    else if ([rawType isEqualToString:@"@\"RLMDictionary\""]) {
-        RLMDictionary *value = propertyValue;
+    else if ([rawType isEqualToString:@"@\"LEGACYDictionary\""]) {
+        LEGACYDictionary *value = propertyValue;
         _type = value.type;
         _dictionaryKeyType = value.keyType;
         _optional = value.optional;
         _dictionary = true;
         _objectClassName = value.objectClassName;
-        if (_type == RLMPropertyTypeObject && ![RLMSchema classForString:_objectClassName]) {
-            @throw RLMException(@"Property '%@' is of type 'RLMDictionary<KeyType, %@>' which is not a supported RLMDictionary object type. "
-                                @"RLMDictionarys can only contain instances of RLMObject subclasses. "
+        if (_type == LEGACYPropertyTypeObject && ![LEGACYSchema classForString:_objectClassName]) {
+            @throw LEGACYException(@"Property '%@' is of type 'LEGACYDictionary<KeyType, %@>' which is not a supported LEGACYDictionary object type. "
+                                @"LEGACYDictionarys can only contain instances of LEGACYObject subclasses. "
                                 @"See https://www.mongodb.com/docs/realm/sdk/swift/fundamentals/relationships/#to-many-relationship "
                                 @"for more information.", _name, _objectClassName);
         }
@@ -551,28 +551,28 @@ static std::optional<RLMPropertyType> typeFromProtocolString(const char *type) {
     else if ([rawType isEqualToString:@"@\"NSNumber\""]) {
         const char *numberType = [propertyValue objCType];
         if (!numberType) {
-            @throw RLMException(@"Can't persist NSNumber without default value: use a Swift-native number type or provide a default value.");
+            @throw LEGACYException(@"Can't persist NSNumber without default value: use a Swift-native number type or provide a default value.");
         }
         _optional = true;
         switch (*numberType) {
             case 'i': case 'l': case 'q':
-                _type = RLMPropertyTypeInt;
+                _type = LEGACYPropertyTypeInt;
                 break;
             case 'f':
-                _type = RLMPropertyTypeFloat;
+                _type = LEGACYPropertyTypeFloat;
                 break;
             case 'd':
-                _type = RLMPropertyTypeDouble;
+                _type = LEGACYPropertyTypeDouble;
                 break;
             case 'B': case 'c':
-                _type = RLMPropertyTypeBool;
+                _type = LEGACYPropertyTypeBool;
                 break;
             default:
-                @throw RLMException(@"Can't persist NSNumber of type '%s': only integers, floats, doubles, and bools are currently supported.", numberType);
+                @throw LEGACYException(@"Can't persist NSNumber of type '%s': only integers, floats, doubles, and bools are currently supported.", numberType);
         }
     }
     else if (![self setTypeFromRawType:rawType]) {
-        @throw RLMException(@"Can't persist property '%@' with incompatible type. "
+        @throw LEGACYException(@"Can't persist property '%@' with incompatible type. "
                             "Add to Object.ignoredProperties() class method to ignore.",
                             self.name);
     }
@@ -582,7 +582,7 @@ static std::optional<RLMPropertyType> typeFromProtocolString(const char *type) {
         // it actually sets it to 1.
         [obj setValue:@2 forKey:name];
         NSNumber *value = [obj valueForKey:name];
-        _type = value.intValue == 2 ? RLMPropertyTypeInt : RLMPropertyTypeBool;
+        _type = value.intValue == 2 ? LEGACYPropertyTypeInt : LEGACYPropertyTypeBool;
     }
 
     // update getter/setter names
@@ -593,7 +593,7 @@ static std::optional<RLMPropertyType> typeFromProtocolString(const char *type) {
 
 - (instancetype)initWithName:(NSString *)name
                      indexed:(BOOL)indexed
-      linkPropertyDescriptor:(RLMPropertyDescriptor *)linkPropertyDescriptor
+      linkPropertyDescriptor:(LEGACYPropertyDescriptor *)linkPropertyDescriptor
                     property:(objc_property_t)property
 {
     self = [super init];
@@ -619,13 +619,13 @@ static std::optional<RLMPropertyType> typeFromProtocolString(const char *type) {
     }
 
     if (![self setTypeFromRawType:rawType]) {
-        @throw RLMException(@"Can't persist property '%@' with incompatible type. "
+        @throw LEGACYException(@"Can't persist property '%@' with incompatible type. "
                              "Add to ignoredPropertyNames: method to ignore.", self.name);
     }
 
     if (!isReadOnly && shouldBeTreatedAsComputedProperty) {
-        @throw RLMException(@"Property '%@' must be declared as readonly as %@ properties cannot be written to.",
-                            self.name, RLMTypeToString(_type));
+        @throw LEGACYException(@"Property '%@' must be declared as readonly as %@ properties cannot be written to.",
+                            self.name, LEGACYTypeToString(_type));
     }
 
     // update getter/setter names
@@ -635,7 +635,7 @@ static std::optional<RLMPropertyType> typeFromProtocolString(const char *type) {
 }
 
 - (id)copyWithZone:(NSZone *)zone {
-    RLMProperty *prop = [[RLMProperty allocWithZone:zone] init];
+    LEGACYProperty *prop = [[LEGACYProperty allocWithZone:zone] init];
     prop->_name = _name;
     prop->_columnName = _columnName;
     prop->_type = _type;
@@ -657,21 +657,21 @@ static std::optional<RLMPropertyType> typeFromProtocolString(const char *type) {
     return prop;
 }
 
-- (RLMProperty *)copyWithNewName:(NSString *)name {
-    RLMProperty *prop = [self copy];
+- (LEGACYProperty *)copyWithNewName:(NSString *)name {
+    LEGACYProperty *prop = [self copy];
     prop.name = name;
     return prop;
 }
 
 - (BOOL)isEqual:(id)object {
-    if (![object isKindOfClass:[RLMProperty class]]) {
+    if (![object isKindOfClass:[LEGACYProperty class]]) {
         return NO;
     }
 
     return [self isEqualToProperty:object];
 }
 
-- (BOOL)isEqualToProperty:(RLMProperty *)property {
+- (BOOL)isEqualToProperty:(LEGACYProperty *)property {
     return _type == property->_type
         && _indexed == property->_indexed
         && _isPrimary == property->_isPrimary
@@ -688,7 +688,7 @@ static std::optional<RLMPropertyType> typeFromProtocolString(const char *type) {
 
 - (NSString *)description {
     NSString *objectClassName = @"";
-    if (self.type == RLMPropertyTypeObject || self.type == RLMPropertyTypeLinkingObjects) {
+    if (self.type == LEGACYPropertyTypeObject || self.type == LEGACYPropertyTypeLinkingObjects) {
         objectClassName = [NSString stringWithFormat:
                            @"\tobjectClassName = %@;\n"
                            @"\tlinkOriginPropertyName = %@;\n",
@@ -706,7 +706,7 @@ static std::optional<RLMPropertyType> typeFromProtocolString(const char *type) {
              "\tdictionary = %@;\n"
              "\toptional = %@;\n"
              "}",
-            self.name, RLMTypeToString(self.type),
+            self.name, LEGACYTypeToString(self.type),
             objectClassName,
             self.columnName,
             self.indexed ? @"YES" : @"NO",
@@ -721,14 +721,14 @@ static std::optional<RLMPropertyType> typeFromProtocolString(const char *type) {
     return _columnName ?: _name;
 }
 
-- (realm::Property)objectStoreCopy:(RLMSchema *)schema {
+- (realm::Property)objectStoreCopy:(LEGACYSchema *)schema {
     realm::Property p;
     p.name = self.columnName.UTF8String;
     if (_columnName) {
         p.public_name = _name.UTF8String;
     }
     if (_objectClassName) {
-        RLMObjectSchema *targetSchema = schema[_objectClassName];
+        LEGACYObjectSchema *targetSchema = schema[_objectClassName];
         p.object_type = (targetSchema.objectName ?: _objectClassName).UTF8String;
         if (_linkOriginPropertyName) {
             p.link_origin_property_name = (targetSchema[_linkOriginPropertyName].columnName ?: _linkOriginPropertyName).UTF8String;
@@ -753,7 +753,7 @@ static std::optional<RLMPropertyType> typeFromProtocolString(const char *type) {
 
 - (NSString *)typeName {
     if (!self.collection) {
-        return RLMTypeToString(_type);
+        return LEGACYTypeToString(_type);
     }
     NSString *collectionName;
     if (_swiftAccessor) {
@@ -762,20 +762,20 @@ static std::optional<RLMPropertyType> typeFromProtocolString(const char *type) {
                                   @"Map";
     }
     else {
-        collectionName = _array ? @"RLMArray" :
-                         _set   ? @"RLMSet" :
-                                  @"RLMDictionary";
+        collectionName = _array ? @"LEGACYArray" :
+                         _set   ? @"LEGACYSet" :
+                                  @"LEGACYDictionary";
     }
-    return [NSString stringWithFormat:@"%@<%@>", collectionName, RLMTypeToString(_type)];
+    return [NSString stringWithFormat:@"%@<%@>", collectionName, LEGACYTypeToString(_type)];
 }
 
 @end
 
-@implementation RLMPropertyDescriptor
+@implementation LEGACYPropertyDescriptor
 
 + (instancetype)descriptorWithClass:(Class)objectClass propertyName:(NSString *)propertyName
 {
-    RLMPropertyDescriptor *descriptor = [[RLMPropertyDescriptor alloc] init];
+    LEGACYPropertyDescriptor *descriptor = [[LEGACYPropertyDescriptor alloc] init];
     descriptor->_objectClass = objectClass;
     descriptor->_propertyName = propertyName;
     return descriptor;

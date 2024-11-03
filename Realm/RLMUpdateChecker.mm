@@ -16,18 +16,18 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMUpdateChecker.hpp"
+#import "LEGACYUpdateChecker.hpp"
 
-#import "RLMRealm.h"
-#import "RLMUtil.hpp"
+#import "LEGACYRealm.h"
+#import "LEGACYUtil.hpp"
 
 #if TARGET_IPHONE_SIMULATOR && !defined(REALM_COCOA_VERSION)
-#import "RLMVersion.h"
+#import "LEGACYVersion.h"
 #endif
 
-void RLMCheckForUpdates() {
+void LEGACYCheckForUpdates() {
 #if TARGET_IPHONE_SIMULATOR
-    if (getenv("REALM_DISABLE_UPDATE_CHECKER") || RLMIsRunningInPlayground()) {
+    if (getenv("REALM_DISABLE_UPDATE_CHECKER") || LEGACYIsRunningInPlayground()) {
         return;
     }
 

@@ -16,19 +16,19 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSectionedResults_Private.hpp"
-#import "RLMAccessor.hpp"
-#import "RLMCollection_Private.hpp"
-#import "RLMObjectSchema_Private.hpp"
-#import "RLMObservation.hpp"
-#import "RLMRealm_Private.hpp"
-#import "RLMResults.h"
-#import "RLMResults_Private.hpp"
-#import "RLMThreadSafeReference_Private.hpp"
+#import "LEGACYSectionedResults_Private.hpp"
+#import "LEGACYAccessor.hpp"
+#import "LEGACYCollection_Private.hpp"
+#import "LEGACYObjectSchema_Private.hpp"
+#import "LEGACYObservation.hpp"
+#import "LEGACYRealm_Private.hpp"
+#import "LEGACYResults.h"
+#import "LEGACYResults_Private.hpp"
+#import "LEGACYThreadSafeReference_Private.hpp"
 
 namespace {
 struct CollectionCallbackWrapper {
-    void (^block)(id, RLMSectionedResultsChange *);
+    void (^block)(id, LEGACYSectionedResultsChange *);
     id collection;
     bool ignoreChangesInInitialNotification = true;
 
@@ -38,7 +38,7 @@ struct CollectionCallbackWrapper {
             return block(collection, nil);
         }
 
-        block(collection, [[RLMSectionedResultsChange alloc] initWithChanges:changes]);
+        block(collection, [[LEGACYSectionedResultsChange alloc] initWithChanges:changes]);
     }
 };
 
@@ -49,7 +49,7 @@ auto translateErrors(Function&& f) {
 }
 } // anonymous namespace
 
-@implementation RLMSectionedResultsChange {
+@implementation LEGACYSectionedResultsChange {
     realm::SectionedResultsChangeSet _indices;
 }
 
@@ -103,17 +103,17 @@ auto translateErrors(Function&& f) {
 
 /// Returns the index paths of the deletion indices in the given section.
 - (NSArray<NSIndexPath *> *)deletionsInSection:(NSUInteger)section {
-    return RLMToIndexPathArray(_indices.deletions[section], section);
+    return LEGACYToIndexPathArray(_indices.deletions[section], section);
 }
 
 /// Returns the index paths of the insertion indices in the given section.
 - (NSArray<NSIndexPath *> *)insertionsInSection:(NSUInteger)section {
-    return RLMToIndexPathArray(_indices.insertions[section], section);
+    return LEGACYToIndexPathArray(_indices.insertions[section], section);
 }
 
 /// Returns the index paths of the modification indices in the given section.
 - (NSArray<NSIndexPath *> *)modificationsInSection:(NSUInteger)section {
-    return RLMToIndexPathArray(_indices.modifications[section], section);
+    return LEGACYToIndexPathArray(_indices.modifications[section], section);
 }
 
 static NSString *indexPathToString(NSArray<NSIndexPath *> *indexes) {
@@ -131,7 +131,7 @@ static NSString *indexSetToString(NSIndexSet *sections) {
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"<RLMSectionedResultsChange: %p> {\n\tinsertions: %@,\n\tdeletions: %@,\n\tmodifications: %@,\n\tsectionsToInsert: %@,\n\tsectionsToRemove: %@\n}",
+    return [NSString stringWithFormat:@"<LEGACYSectionedResultsChange: %p> {\n\tinsertions: %@,\n\tdeletions: %@,\n\tmodifications: %@,\n\tsectionsToInsert: %@,\n\tsectionsToRemove: %@\n}",
             (__bridge void *)self,
             indexPathToString(self.insertions),
             indexPathToString(self.deletions),
@@ -142,29 +142,29 @@ static NSString *indexSetToString(NSIndexSet *sections) {
 @end
 
 struct SectionedResultsKeyProjection {
-    RLMClassInfo *_info;
-    RLMSectionedResultsKeyBlock _block;
+    LEGACYClassInfo *_info;
+    LEGACYSectionedResultsKeyBlock _block;
 
     realm::Mixed operator()(realm::Mixed obj, realm::SharedRealm) {
-        RLMAccessorContext context(*_info);
+        LEGACYAccessorContext context(*_info);
         id value = _block(context.box(obj));
         return context.unbox<realm::Mixed>(value);
     }
 };
 
-@interface RLMSectionedResultsEnumerator() {
+@interface LEGACYSectionedResultsEnumerator() {
     // The buffer supplied by fast enumeration does not retain the objects given
     // to it, but because we create objects on-demand and don't want them
     // autoreleased (a table can have more rows than the device has memory for
     // accessor objects) we need a thing to retain them.
     id _strongBuffer[16];
-    id<RLMSectionedResult> _sectionedResult;
+    id<LEGACYSectionedResult> _sectionedResult;
 }
 @end
 
-@implementation RLMSectionedResultsEnumerator
+@implementation LEGACYSectionedResultsEnumerator
 
-- (instancetype)initWithSectionedResults:(RLMSectionedResults *)sectionedResults {
+- (instancetype)initWithSectionedResults:(LEGACYSectionedResults *)sectionedResults {
     if (self = [super init]) {
         _sectionedResult = [sectionedResults snapshot];
         return self;
@@ -172,7 +172,7 @@ struct SectionedResultsKeyProjection {
     return nil;
 }
 
-- (instancetype)initWithResultsSection:(RLMSection *)resultsSection {
+- (instancetype)initWithResultsSection:(LEGACYSection *)resultsSection {
     if (self = [super init]) {
         _sectionedResult = resultsSection;
         return self;
@@ -184,7 +184,7 @@ struct SectionedResultsKeyProjection {
                                     count:(NSUInteger)len {
     NSUInteger batchCount = 0, count = [_sectionedResult count];
     for (NSUInteger index = state->state; index < count && batchCount < len; ++index) {
-        id<RLMSectionedResult> sectionedResults = [_sectionedResult objectAtIndex:index];
+        id<LEGACYSectionedResult> sectionedResults = [_sectionedResult objectAtIndex:index];
         _strongBuffer[batchCount] = sectionedResults;
         batchCount++;
     }
@@ -210,10 +210,10 @@ struct SectionedResultsKeyProjection {
 
 @end
 
-NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
+NSUInteger LEGACYFastEnumerate(NSFastEnumerationState *state,
                             NSUInteger len,
-                            RLMSectionedResults *collection) {
-    __autoreleasing RLMSectionedResultsEnumerator *enumerator;
+                            LEGACYSectionedResults *collection) {
+    __autoreleasing LEGACYSectionedResultsEnumerator *enumerator;
     if (state->state == 0) {
         enumerator = collection.fastEnumerator;
         state->extra[0] = (long)enumerator;
@@ -226,10 +226,10 @@ NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
     return [enumerator countByEnumeratingWithState:state count:len];
 }
 
-NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
+NSUInteger LEGACYFastEnumerate(NSFastEnumerationState *state,
                             NSUInteger len,
-                            RLMSection *collection) {
-    __autoreleasing RLMSectionedResultsEnumerator *enumerator;
+                            LEGACYSection *collection) {
+    __autoreleasing LEGACYSectionedResultsEnumerator *enumerator;
     if (state->state == 0) {
         enumerator = collection.fastEnumerator;
         state->extra[0] = (long)enumerator;
@@ -242,26 +242,26 @@ NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
     return [enumerator countByEnumeratingWithState:state count:len];
 }
 
-@interface RLMSectionedResults () <RLMThreadConfined_Private>
+@interface LEGACYSectionedResults () <LEGACYThreadConfined_Private>
 @end
 
-@implementation RLMSectionedResults {
+@implementation LEGACYSectionedResults {
     @public
     realm::SectionedResults _sectionedResults;
-    RLMSectionedResultsKeyBlock _keyBlock;
+    LEGACYSectionedResultsKeyBlock _keyBlock;
     // We need to hold an instance to the parent
     // `Results` so we can obtain a ThreadSafeReference
     // for notifications.
     realm::Results _results;
     @private
-    RLMRealm *_realm;
-    RLMClassInfo *_info;
+    LEGACYRealm *_realm;
+    LEGACYClassInfo *_info;
 }
 
 - (instancetype)initWithResults:(realm::Results&&)results
-                          realm:(RLMRealm *)realm
-                     objectInfo:(RLMClassInfo&)objectInfo
-                       keyBlock:(RLMSectionedResultsKeyBlock)keyBlock {
+                          realm:(LEGACYRealm *)realm
+                     objectInfo:(LEGACYClassInfo&)objectInfo
+                       keyBlock:(LEGACYSectionedResultsKeyBlock)keyBlock {
     if (self = [super init]) {
         _info = &objectInfo;
         _realm = realm;
@@ -273,8 +273,8 @@ NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
 }
 
 - (instancetype)initWithSectionedResults:(realm::SectionedResults&&)sectionedResults
-                              objectInfo:(RLMClassInfo&)objectInfo
-                                keyBlock:(RLMSectionedResultsKeyBlock)keyBlock{
+                              objectInfo:(LEGACYClassInfo&)objectInfo
+                                keyBlock:(LEGACYSectionedResultsKeyBlock)keyBlock{
     if (self = [super init]) {
         _info = &objectInfo;
         _realm = _info->realm;
@@ -284,8 +284,8 @@ NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
     return self;
 }
 
-- (instancetype)initWithResults:(RLMResults *)results
-                       keyBlock:(RLMSectionedResultsKeyBlock)keyBlock {
+- (instancetype)initWithResults:(LEGACYResults *)results
+                       keyBlock:(LEGACYSectionedResultsKeyBlock)keyBlock {
     if (self = [super init]) {
         _info = results.objectInfo;
         _realm = results.realm;
@@ -301,17 +301,17 @@ NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
         NSUInteger count = [self count];
         NSMutableArray *arr = [NSMutableArray arrayWithCapacity:count];
         for (NSUInteger i = 0; i < count; i++) {
-            [arr addObject:RLMMixedToObjc(_sectionedResults[i].key())];
+            [arr addObject:LEGACYMixedToObjc(_sectionedResults[i].key())];
         }
         return arr;
     });
 }
 
-- (RLMSectionedResultsEnumerator *)fastEnumerator {
-    return [[RLMSectionedResultsEnumerator alloc] initWithSectionedResults:self];
+- (LEGACYSectionedResultsEnumerator *)fastEnumerator {
+    return [[LEGACYSectionedResultsEnumerator alloc] initWithSectionedResults:self];
 }
 
-- (RLMRealm *)realm {
+- (LEGACYRealm *)realm {
     return _realm;
 }
 
@@ -324,7 +324,7 @@ NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
 - (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state
                                   objects:(__unused __unsafe_unretained id [])buffer
                                     count:(NSUInteger)len {
-    return RLMFastEnumerate(state, len, self);
+    return LEGACYFastEnumerate(state, len, self);
 }
 
 - (id)objectAtIndexedSubscript:(NSUInteger)index {
@@ -332,7 +332,7 @@ NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
 }
 
 - (id)objectAtIndex:(NSUInteger)index {
-    return [[RLMSection alloc] initWithResultsSection:_sectionedResults[index]
+    return [[LEGACYSection alloc] initWithResultsSection:_sectionedResults[index]
                                                parent:self];
 }
 
@@ -342,22 +342,22 @@ NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
 // http://www.openradar.me/radar?id=6135653276319744
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmismatched-parameter-types"
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMResults *, RLMSectionedResultsChange *))block {
-    return RLMAddNotificationBlock(self, block, nil, nil);
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYResults *, LEGACYSectionedResultsChange *))block {
+    return LEGACYAddNotificationBlock(self, block, nil, nil);
 }
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMResults *, RLMSectionedResultsChange *))block queue:(dispatch_queue_t)queue {
-    return RLMAddNotificationBlock(self, block, nil, queue);
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYResults *, LEGACYSectionedResultsChange *))block queue:(dispatch_queue_t)queue {
+    return LEGACYAddNotificationBlock(self, block, nil, queue);
 }
 
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMResults *, RLMSectionedResultsChange *))block
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYResults *, LEGACYSectionedResultsChange *))block
                                       keyPaths:(NSArray<NSString *> *)keyPaths {
-    return RLMAddNotificationBlock(self, block, keyPaths, nil);
+    return LEGACYAddNotificationBlock(self, block, keyPaths, nil);
 }
 
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMResults *, RLMSectionedResultsChange *))block
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYResults *, LEGACYSectionedResultsChange *))block
                                       keyPaths:(NSArray<NSString *> *)keyPaths
                                          queue:(dispatch_queue_t)queue {
-    return RLMAddNotificationBlock(self, block, keyPaths, queue);
+    return LEGACYAddNotificationBlock(self, block, keyPaths, queue);
 }
 #pragma clang diagnostic pop
 
@@ -366,21 +366,21 @@ keyPaths:(std::optional<std::vector<std::vector<std::pair<realm::TableKey, realm
     return _sectionedResults.add_notification_callback(CollectionCallbackWrapper{block, self}, std::move(keyPaths));
 }
 
-- (RLMClassInfo *)objectInfo {
+- (LEGACYClassInfo *)objectInfo {
     return _info;
 }
 
-- (instancetype)resolveInRealm:(RLMRealm *)realm {
+- (instancetype)resolveInRealm:(LEGACYRealm *)realm {
      return translateErrors([&] {
         if (realm.isFrozen) {
-            return [[RLMSectionedResults alloc] initWithSectionedResults:_sectionedResults.freeze(realm->_realm)
+            return [[LEGACYSectionedResults alloc] initWithSectionedResults:_sectionedResults.freeze(realm->_realm)
                                                               objectInfo:_info->resolve(realm)
                                                                 keyBlock:_keyBlock];
         }
         else {
             auto sr = _sectionedResults.freeze(realm->_realm);
             sr.reset_section_callback(SectionedResultsKeyProjection {&_info->resolve(realm), _keyBlock});
-            return [[RLMSectionedResults alloc] initWithSectionedResults:std::move(sr)
+            return [[LEGACYSectionedResults alloc] initWithSectionedResults:std::move(sr)
                                                               objectInfo:_info->resolve(realm)
                                                                 keyBlock:_keyBlock];
         }
@@ -414,13 +414,13 @@ keyPaths:(std::optional<std::vector<std::vector<std::pair<realm::TableKey, realm
 
 + (instancetype)objectWithThreadSafeReference:(realm::ThreadSafeReference)reference
                                      metadata:(id)metadata
-                                        realm:(RLMRealm *)realm {
+                                        realm:(LEGACYRealm *)realm {
     auto results = reference.resolve<realm::Results>(realm->_realm);
-    auto objType = RLMStringDataToNSString(results.get_object_type());
-    return [[RLMSectionedResults alloc] initWithResults:std::move(results)
+    auto objType = LEGACYStringDataToNSString(results.get_object_type());
+    return [[LEGACYSectionedResults alloc] initWithResults:std::move(results)
                                                   realm:realm
                                              objectInfo:realm->_info[objType]
-                                               keyBlock:(RLMSectionedResultsKeyBlock)metadata];
+                                               keyBlock:(LEGACYSectionedResultsKeyBlock)metadata];
 }
 
 - (BOOL)isInvalidated {
@@ -433,9 +433,9 @@ keyPaths:(std::optional<std::vector<std::vector<std::pair<realm::TableKey, realm
         objType = [NSString stringWithFormat:@"<%@>", _info->rlmObjectSchema.className];
     }
     const NSUInteger maxObjects = 100;
-    auto str = [NSMutableString stringWithFormat:@"RLMSectionedResults%@ <%p> (\n", objType, (void *)self];
+    auto str = [NSMutableString stringWithFormat:@"LEGACYSectionedResults%@ <%p> (\n", objType, (void *)self];
     size_t index = 0, skipped = 0;
-    for (RLMSection *section in self) {
+    for (LEGACYSection *section in self) {
         NSString *sub = [section description];
         // Indent child objects
         NSString *objDescription = [sub stringByReplacingOccurrencesOfString:@"\n"
@@ -459,8 +459,8 @@ keyPaths:(std::optional<std::vector<std::vector<std::pair<realm::TableKey, realm
     return str;
 }
 
-- (RLMSectionedResults *)snapshot {
-    RLMSectionedResults *sr = [RLMSectionedResults new];
+- (LEGACYSectionedResults *)snapshot {
+    LEGACYSectionedResults *sr = [LEGACYSectionedResults new];
     sr->_sectionedResults = _sectionedResults.snapshot();
     sr->_info = _info;
     sr->_realm = _realm;
@@ -474,18 +474,18 @@ keyPaths:(std::optional<std::vector<std::vector<std::pair<realm::TableKey, realm
 @end
 
 /// Stores information about a given section during thread handover.
-@interface RLMSectionMetadata : NSObject
+@interface LEGACYSectionMetadata : NSObject
 
-@property (nonatomic, strong) RLMSectionedResultsKeyBlock keyBlock;
-@property (nonatomic, copy) id<RLMValue> sectionKey;
+@property (nonatomic, strong) LEGACYSectionedResultsKeyBlock keyBlock;
+@property (nonatomic, copy) id<LEGACYValue> sectionKey;
 
-- (instancetype)initWithKeyBlock:(RLMSectionedResultsKeyBlock)keyBlock
-                      sectionKey:(id<RLMValue>)sectionKey;
+- (instancetype)initWithKeyBlock:(LEGACYSectionedResultsKeyBlock)keyBlock
+                      sectionKey:(id<LEGACYValue>)sectionKey;
 @end
 
-@implementation RLMSectionMetadata
-- (instancetype)initWithKeyBlock:(RLMSectionedResultsKeyBlock)keyBlock
-                      sectionKey:(id<RLMValue>)sectionKey {
+@implementation LEGACYSectionMetadata
+- (instancetype)initWithKeyBlock:(LEGACYSectionedResultsKeyBlock)keyBlock
+                      sectionKey:(id<LEGACYValue>)sectionKey {
     if (self = [super init]) {
         _keyBlock = keyBlock;
         _sectionKey = sectionKey;
@@ -494,17 +494,17 @@ keyPaths:(std::optional<std::vector<std::vector<std::pair<realm::TableKey, realm
 }
 @end
 
-@interface RLMSection () <RLMThreadConfined_Private>
+@interface LEGACYSection () <LEGACYThreadConfined_Private>
 @end
 
-@implementation RLMSection {
-    RLMSectionedResults *_parent;
+@implementation LEGACYSection {
+    LEGACYSectionedResults *_parent;
     realm::ResultsSection _resultsSection;
 }
 
 - (NSString *)description {
     const NSUInteger maxObjects = 100;
-    auto str = [NSMutableString stringWithFormat:@"RLMSection <%p> (\n", (void *)self];
+    auto str = [NSMutableString stringWithFormat:@"LEGACYSection <%p> (\n", (void *)self];
     size_t index = 0, skipped = 0;
     for (id obj in self) {
         NSString *sub = [obj description];
@@ -530,7 +530,7 @@ keyPaths:(std::optional<std::vector<std::vector<std::pair<realm::TableKey, realm
 }
 
 - (instancetype)initWithResultsSection:(realm::ResultsSection&&)resultsSection
-                                parent:(RLMSectionedResults *)parent
+                                parent:(LEGACYSectionedResults *)parent
 {
     if (self = [super init]) {
         _resultsSection = std::move(resultsSection);
@@ -544,7 +544,7 @@ keyPaths:(std::optional<std::vector<std::vector<std::pair<realm::TableKey, realm
 }
 
 - (id)objectAtIndex:(NSUInteger)index {
-    RLMAccessorContext ctx(*_parent.objectInfo);
+    LEGACYAccessorContext ctx(*_parent.objectInfo);
     return translateErrors([&] {
         return ctx.box(_resultsSection[index]);
     });
@@ -556,27 +556,27 @@ keyPaths:(std::optional<std::vector<std::vector<std::pair<realm::TableKey, realm
     });
 }
 
-- (id<RLMValue>)key {
+- (id<LEGACYValue>)key {
     return translateErrors([&] {
-        return RLMMixedToObjc(_resultsSection.key());
+        return LEGACYMixedToObjc(_resultsSection.key());
     });
 }
 
-- (RLMSectionedResultsEnumerator *)fastEnumerator {
-    return [[RLMSectionedResultsEnumerator alloc] initWithResultsSection:self];
+- (LEGACYSectionedResultsEnumerator *)fastEnumerator {
+    return [[LEGACYSectionedResultsEnumerator alloc] initWithResultsSection:self];
 }
 
 - (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state
                                   objects:(__unused __unsafe_unretained id [])buffer
                                     count:(NSUInteger)len {
-    return RLMFastEnumerate(state, len, self);
+    return LEGACYFastEnumerate(state, len, self);
 }
 
-- (RLMRealm *)realm {
+- (LEGACYRealm *)realm {
     return _parent.realm;
 }
 
-- (RLMClassInfo *)objectInfo {
+- (LEGACYClassInfo *)objectInfo {
     return _parent.objectInfo;
 }
 
@@ -594,21 +594,21 @@ keyPaths:(std::optional<std::vector<std::vector<std::pair<realm::TableKey, realm
 // http://www.openradar.me/radar?id=6135653276319744
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmismatched-parameter-types"
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMResults *, RLMSectionedResultsChange *))block {
-    return RLMAddNotificationBlock(self, block, nil, nil);
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYResults *, LEGACYSectionedResultsChange *))block {
+    return LEGACYAddNotificationBlock(self, block, nil, nil);
 }
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMResults *, RLMSectionedResultsChange *))block queue:(dispatch_queue_t)queue {
-    return RLMAddNotificationBlock(self, block, nil, queue);
-}
-
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMResults *, RLMSectionedResultsChange *))block keyPaths:(NSArray<NSString *> *)keyPaths {
-    return RLMAddNotificationBlock(self, block, keyPaths, nil);
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYResults *, LEGACYSectionedResultsChange *))block queue:(dispatch_queue_t)queue {
+    return LEGACYAddNotificationBlock(self, block, nil, queue);
 }
 
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMResults *, RLMSectionedResultsChange *))block
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYResults *, LEGACYSectionedResultsChange *))block keyPaths:(NSArray<NSString *> *)keyPaths {
+    return LEGACYAddNotificationBlock(self, block, keyPaths, nil);
+}
+
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYResults *, LEGACYSectionedResultsChange *))block
                                       keyPaths:(NSArray<NSString *> *)keyPaths
                                          queue:(dispatch_queue_t)queue {
-    return RLMAddNotificationBlock(self, block, keyPaths, queue);
+    return LEGACYAddNotificationBlock(self, block, keyPaths, queue);
 }
 #pragma clang diagnostic pop
 
@@ -623,31 +623,31 @@ keyPaths:(std::optional<std::vector<std::vector<std::pair<realm::TableKey, realm
     return _parent->_results;
 }
 
-- (RLMSectionMetadata *)objectiveCMetadata {
-    return [[RLMSectionMetadata alloc] initWithKeyBlock:_parent->_keyBlock
+- (LEGACYSectionMetadata *)objectiveCMetadata {
+    return [[LEGACYSectionMetadata alloc] initWithKeyBlock:_parent->_keyBlock
                                              sectionKey:self.key];
 }
 
 + (instancetype)objectWithThreadSafeReference:(realm::ThreadSafeReference)reference
-                                     metadata:(RLMSectionMetadata *)metadata
-                                        realm:(RLMRealm *)realm {
+                                     metadata:(LEGACYSectionMetadata *)metadata
+                                        realm:(LEGACYRealm *)realm {
     auto results = reference.resolve<realm::Results>(realm->_realm);
-    auto objType = RLMStringDataToNSString(results.get_object_type());
+    auto objType = LEGACYStringDataToNSString(results.get_object_type());
 
-    RLMSectionedResults *sr = [[RLMSectionedResults alloc] initWithResults:std::move(results)
+    LEGACYSectionedResults *sr = [[LEGACYSectionedResults alloc] initWithResults:std::move(results)
                                                                      realm:realm
                                                                 objectInfo:realm->_info[objType]
                                                                   keyBlock:metadata.keyBlock];
     return translateErrors([&] {
-        return [[RLMSection alloc] initWithResultsSection:sr->_sectionedResults[RLMObjcToMixed(metadata.sectionKey)]
+        return [[LEGACYSection alloc] initWithResultsSection:sr->_sectionedResults[LEGACYObjcToMixed(metadata.sectionKey)]
                                                    parent:sr];
     });
 }
 
-- (instancetype)resolveInRealm:(RLMRealm *)realm {
+- (instancetype)resolveInRealm:(LEGACYRealm *)realm {
      return translateErrors([&] {
-        RLMSectionedResults *sr = realm.isFrozen ? [_parent freeze] : [_parent thaw];
-        return [[RLMSection alloc] initWithResultsSection:sr->_sectionedResults[RLMObjcToMixed(self.key)]
+        LEGACYSectionedResults *sr = realm.isFrozen ? [_parent freeze] : [_parent thaw];
+        return [[LEGACYSection alloc] initWithResultsSection:sr->_sectionedResults[LEGACYObjcToMixed(self.key)]
                                                    parent:sr];
     });
 }

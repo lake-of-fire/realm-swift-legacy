@@ -96,7 +96,7 @@ public protocol ThreadConfined {
      */
     public var isInvalidated: Bool { return objectiveCReference.isInvalidated }
 
-    private let objectiveCReference: RLMThreadSafeReference<RLMThreadConfined>
+    private let objectiveCReference: LEGACYThreadSafeReference<LEGACYThreadConfined>
 
     /**
      Create a thread-safe reference to the thread-confined object.
@@ -107,11 +107,11 @@ public protocol ThreadConfined {
              constructor.
      */
     public init(to threadConfined: Confined) {
-        objectiveCReference = RLMThreadSafeReference(threadConfined: (threadConfined as! _ObjcBridgeable)._rlmObjcValue as! RLMThreadConfined)
+        objectiveCReference = LEGACYThreadSafeReference(threadConfined: (threadConfined as! _ObjcBridgeable)._rlmObjcValue as! LEGACYThreadConfined)
     }
 
     internal func resolve(in realm: RealmLegacy) -> Confined? {
-        guard let resolved = realm.rlmRealm.__resolve(objectiveCReference) as? RLMThreadConfined else { return nil }
+        guard let resolved = realm.rlmRealm.__resolve(objectiveCReference) as? LEGACYThreadConfined else { return nil }
         return (Confined.self as! _ObjcBridgeable.Type)._rlmFromObjc(resolved).flatMap { $0 as? Confined }
     }
 }
@@ -136,7 +136,7 @@ public protocol ThreadConfined {
 */
 @propertyWrapper public final class ThreadSafe<T: ThreadConfined> {
     private var threadSafeReference: ThreadSafeReference<T>?
-    private var rlmConfiguration: RLMRealmConfiguration?
+    private var rlmConfiguration: LEGACYRealmConfiguration?
     private let lock = NSLock()
 
     /// :nodoc:
@@ -149,7 +149,7 @@ public protocol ThreadConfined {
                 return nil
             }
             do {
-                let rlmRealm = try RLMRealm(configuration: rlmConfig)
+                let rlmRealm = try LEGACYRealm(configuration: rlmConfig)
                 let realm = RealmLegacy(rlmRealm)
                 guard let value = threadSafeReference.resolve(in: realm) else {
                     self.threadSafeReference = nil
@@ -218,7 +218,7 @@ extension RealmLegacy {
 
 extension ThreadSafeReference: Sendable {
 }
-extension RLMThreadSafeReference: @unchecked Sendable {
+extension LEGACYThreadSafeReference: @unchecked Sendable {
 }
 extension ThreadSafe: @unchecked Sendable {
 }

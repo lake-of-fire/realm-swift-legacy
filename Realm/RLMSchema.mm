@@ -16,16 +16,16 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSchema_Private.hpp"
+#import "LEGACYSchema_Private.hpp"
 
-#import "RLMAccessor.h"
-#import "RLMObjectBase_Private.h"
-#import "RLMObject_Private.hpp"
-#import "RLMObjectSchema_Private.hpp"
-#import "RLMProperty_Private.h"
-#import "RLMRealm_Private.hpp"
-#import "RLMSwiftSupport.h"
-#import "RLMUtil.hpp"
+#import "LEGACYAccessor.h"
+#import "LEGACYObjectBase_Private.h"
+#import "LEGACYObject_Private.hpp"
+#import "LEGACYObjectSchema_Private.hpp"
+#import "LEGACYProperty_Private.h"
+#import "LEGACYRealm_Private.hpp"
+#import "LEGACYSwiftSupport.h"
+#import "LEGACYUtil.hpp"
 
 #import <realm/group.hpp>
 #import <realm/object-store/object_schema.hpp>
@@ -38,29 +38,29 @@
 
 using namespace realm;
 
-const uint64_t RLMNotVersioned = realm::ObjectStore::NotVersioned;
+const uint64_t LEGACYNotVersioned = realm::ObjectStore::NotVersioned;
 
-// RLMSchema private properties
-@interface RLMSchema ()
+// LEGACYSchema private properties
+@interface LEGACYSchema ()
 @property (nonatomic, readwrite) NSMutableDictionary *objectSchemaByName;
 @end
 
-// Private RLMSchema subclass that skips class registration on lookup
-@interface RLMPrivateSchema : RLMSchema
+// Private LEGACYSchema subclass that skips class registration on lookup
+@interface LEGACYPrivateSchema : LEGACYSchema
 @end
-@implementation RLMPrivateSchema
-- (RLMObjectSchema *)schemaForClassName:(NSString *)className {
+@implementation LEGACYPrivateSchema
+- (LEGACYObjectSchema *)schemaForClassName:(NSString *)className {
     return self.objectSchemaByName[className];
 }
 
-- (RLMObjectSchema *)objectForKeyedSubscript:(__unsafe_unretained NSString *const)className {
+- (LEGACYObjectSchema *)objectForKeyedSubscript:(__unsafe_unretained NSString *const)className {
     return [self schemaForClassName:className];
 }
 @end
 
-static RLMSchema *s_sharedSchema = [[RLMSchema alloc] init];
+static LEGACYSchema *s_sharedSchema = [[LEGACYSchema alloc] init];
 static NSMutableDictionary *s_localNameToClass = [[NSMutableDictionary alloc] init];
-static RLMSchema *s_privateSharedSchema = [[RLMPrivateSchema alloc] init];
+static LEGACYSchema *s_privateSharedSchema = [[LEGACYPrivateSchema alloc] init];
 
 static enum class SharedSchemaState {
     Uninitialized,
@@ -68,12 +68,12 @@ static enum class SharedSchemaState {
     Initialized
 } s_sharedSchemaState = SharedSchemaState::Uninitialized;
 
-@implementation RLMSchema {
+@implementation LEGACYSchema {
     NSArray *_objectSchema;
     realm::Schema _objectStoreSchema;
 }
 
-static void createAccessors(RLMObjectSchema *objectSchema) {
+static void createAccessors(LEGACYObjectSchema *objectSchema) {
     constexpr const size_t bufferSize
         = sizeof("RLM:Managed  ") // includes spot for null terminator
         + std::numeric_limits<unsigned long long>::digits10
@@ -85,12 +85,12 @@ static void createAccessors(RLMObjectSchema *objectSchema) {
     static unsigned long long count = 0;
     snprintf(start, bufferSize - strlen(className),
              "%llu %s", count++, objectSchema.className.UTF8String);
-    objectSchema.accessorClass = RLMManagedAccessorClassForObjectClass(objectSchema.objectClass, objectSchema, className);
-    objectSchema.unmanagedClass = RLMUnmanagedAccessorClassForObjectClass(objectSchema.objectClass, objectSchema);
+    objectSchema.accessorClass = LEGACYManagedAccessorClassForObjectClass(objectSchema.objectClass, objectSchema, className);
+    objectSchema.unmanagedClass = LEGACYUnmanagedAccessorClassForObjectClass(objectSchema.objectClass, objectSchema);
 }
 
-void RLMSchemaEnsureAccessorsCreated(RLMSchema *schema) {
-    for (RLMObjectSchema *objectSchema in schema.objectSchema) {
+void LEGACYSchemaEnsureAccessorsCreated(LEGACYSchema *schema) {
+    for (LEGACYObjectSchema *objectSchema in schema.objectSchema) {
         if (objectSchema.accessorClass == objectSchema.objectClass) {
             // Locking inside the loop to optimize for the common case at
             // the expense of worse perf in the rare scenario where this is
@@ -103,24 +103,24 @@ void RLMSchemaEnsureAccessorsCreated(RLMSchema *schema) {
 }
 
 // Caller must @synchronize on s_localNameToClass
-static RLMObjectSchema *registerClass(Class cls) {
-    if (RLMObjectSchema *schema = s_privateSharedSchema[[cls className]]) {
+static LEGACYObjectSchema *registerClass(Class cls) {
+    if (LEGACYObjectSchema *schema = s_privateSharedSchema[[cls className]]) {
         return schema;
     }
 
     auto prevState = s_sharedSchemaState;
     s_sharedSchemaState = SharedSchemaState::Initializing;
-    RLMObjectSchema *schema;
+    LEGACYObjectSchema *schema;
     {
         util::ScopeExit cleanup([&]() noexcept {
             s_sharedSchemaState = prevState;
         });
-        schema = [RLMObjectSchema schemaForObjectClass:cls];
+        schema = [LEGACYObjectSchema schemaForObjectClass:cls];
     }
 
     createAccessors(schema);
     // override sharedSchema class methods for performance
-    RLMReplaceSharedSchemaMethod(cls, schema);
+    LEGACYReplaceSharedSchemaMethod(cls, schema);
 
     s_privateSharedSchema.objectSchemaByName[schema.className] = schema;
     if ([cls shouldIncludeInDefaultSchema] && prevState != SharedSchemaState::Initialized) {
@@ -131,10 +131,10 @@ static RLMObjectSchema *registerClass(Class cls) {
 }
 
 // Caller must @synchronize on s_localNameToClass
-static void RLMRegisterClassLocalNames(Class *classes, NSUInteger count) {
+static void LEGACYRegisterClassLocalNames(Class *classes, NSUInteger count) {
     for (NSUInteger i = 0; i < count; i++) {
         Class cls = classes[i];
-        if (!RLMIsObjectSubclass(cls)) {
+        if (!LEGACYIsObjectSubclass(cls)) {
             continue;
         }
         if ([cls _realmIgnoreClass]) {
@@ -146,26 +146,26 @@ static void RLMRegisterClassLocalNames(Class *classes, NSUInteger count) {
             continue;
         }
 
-        if ([RLMSwiftSupport isSwiftClassName:className]) {
-            className = [RLMSwiftSupport demangleClassName:className];
+        if ([LEGACYSwiftSupport isSwiftClassName:className]) {
+            className = [LEGACYSwiftSupport demangleClassName:className];
         }
         // NSStringFromClass demangles the names for top-level Swift classes
         // but not for nested classes. _T indicates it's a Swift symbol, t
         // indicates it's a type, and C indicates it's a class.
         else if ([className hasPrefix:@"_TtC"]) {
-            @throw RLMException(@"Object subclass '%@' must explicitly set the class's objective-c name with @objc(ClassName) because it is not a top-level public class.", className);
+            @throw LEGACYException(@"Object subclass '%@' must explicitly set the class's objective-c name with @objc(ClassName) because it is not a top-level public class.", className);
         }
 
         if (Class existingClass = s_localNameToClass[className]) {
             if (existingClass != cls) {
-                @throw RLMException(@"RLMObject subclasses with the same name cannot be included twice in the same target. "
+                @throw LEGACYException(@"LEGACYObject subclasses with the same name cannot be included twice in the same target. "
                                     @"Please make sure '%@' is only linked once to your current target.", className);
             }
             continue;
         }
 
         s_localNameToClass[className] = cls;
-        RLMReplaceClassNameMethod(cls, className);
+        LEGACYReplaceClassNameMethod(cls, className);
     }
 }
 
@@ -187,15 +187,15 @@ static void RLMRegisterClassLocalNames(Class *classes, NSUInteger count) {
 - (void)setObjectSchema:(NSArray *)objectSchema {
     _objectSchema = objectSchema;
     _objectSchemaByName = [NSMutableDictionary dictionaryWithCapacity:objectSchema.count];
-    for (RLMObjectSchema *object in objectSchema) {
+    for (LEGACYObjectSchema *object in objectSchema) {
         [_objectSchemaByName setObject:object forKey:object.className];
     }
 }
 
-- (RLMObjectSchema *)schemaForClassName:(NSString *)className {
-    if (RLMObjectSchema *schema = _objectSchemaByName[className]) {
+- (LEGACYObjectSchema *)schemaForClassName:(NSString *)className {
+    if (LEGACYObjectSchema *schema = _objectSchemaByName[className]) {
         return schema; // fast path for already-initialized schemas
-    } else if (Class cls = [RLMSchema classForString:className]) {
+    } else if (Class cls = [LEGACYSchema classForString:className]) {
         [cls sharedSchema];                    // initialize the schema
         return _objectSchemaByName[className]; // try again
     } else {
@@ -203,10 +203,10 @@ static void RLMRegisterClassLocalNames(Class *classes, NSUInteger count) {
     }
 }
 
-- (RLMObjectSchema *)objectForKeyedSubscript:(__unsafe_unretained NSString *const)className {
-    RLMObjectSchema *schema = [self schemaForClassName:className];
+- (LEGACYObjectSchema *)objectForKeyedSubscript:(__unsafe_unretained NSString *const)className {
+    LEGACYObjectSchema *schema = [self schemaForClassName:className];
     if (!schema) {
-        @throw RLMException(@"Object type '%@' not managed by the Realm", className);
+        @throw LEGACYException(@"Object type '%@' not managed by the Realm", className);
     }
     return schema;
 }
@@ -216,14 +216,14 @@ static void RLMRegisterClassLocalNames(Class *classes, NSUInteger count) {
     auto classArray = std::make_unique<__unsafe_unretained Class[]>(count);
     [classes getObjects:classArray.get() range:NSMakeRange(0, count)];
 
-    RLMSchema *schema = [[self alloc] init];
+    LEGACYSchema *schema = [[self alloc] init];
     @synchronized(s_localNameToClass) {
-        RLMRegisterClassLocalNames(classArray.get(), count);
+        LEGACYRegisterClassLocalNames(classArray.get(), count);
 
         schema->_objectSchemaByName = [NSMutableDictionary dictionaryWithCapacity:count];
         for (Class cls in classes) {
-            if (!RLMIsObjectSubclass(cls)) {
-                @throw RLMException(@"Can't add non-Object type '%@' to a schema.", cls);
+            if (!LEGACYIsObjectSubclass(cls)) {
+                @throw LEGACYException(@"Can't add non-Object type '%@' to a schema.", cls);
             }
             schema->_objectSchemaByName[[cls className]] = registerClass(cls);
         }
@@ -231,9 +231,9 @@ static void RLMRegisterClassLocalNames(Class *classes, NSUInteger count) {
 
     NSMutableArray *errors = [NSMutableArray new];
     // Verify that all of the targets of links are included in the class list
-    [schema->_objectSchemaByName enumerateKeysAndObjectsUsingBlock:^(id, RLMObjectSchema *objectSchema, BOOL *) {
-        for (RLMProperty *prop in objectSchema.properties) {
-            if (prop.type != RLMPropertyTypeObject) {
+    [schema->_objectSchemaByName enumerateKeysAndObjectsUsingBlock:^(id, LEGACYObjectSchema *objectSchema, BOOL *) {
+        for (LEGACYProperty *prop in objectSchema.properties) {
+            if (prop.type != LEGACYPropertyTypeObject) {
                 continue;
             }
             if (!schema->_objectSchemaByName[prop.objectClassName]) {
@@ -242,13 +242,13 @@ static void RLMRegisterClassLocalNames(Class *classes, NSUInteger count) {
         }
     }];
     if (errors.count) {
-        @throw RLMException(@"Invalid class subset list:\n%@", [errors componentsJoinedByString:@"\n"]);
+        @throw LEGACYException(@"Invalid class subset list:\n%@", [errors componentsJoinedByString:@"\n"]);
     }
 
     return schema;
 }
 
-+ (RLMObjectSchema *)sharedSchemaForClass:(Class)cls {
++ (LEGACYObjectSchema *)sharedSchemaForClass:(Class)cls {
     @synchronized(s_localNameToClass) {
         // We create instances of Swift objects during schema init, and they
         // obviously need to not also try to initialize the schema
@@ -257,12 +257,12 @@ static void RLMRegisterClassLocalNames(Class *classes, NSUInteger count) {
         }
         // Don't register the base classes in the schema even if someone calls
         // sharedSchema on them directly
-        if (cls == [RLMObjectBase class] || class_getSuperclass(cls) == [RLMObjectBase class]) {
+        if (cls == [LEGACYObjectBase class] || class_getSuperclass(cls) == [LEGACYObjectBase class]) {
             return nil;
         }
 
-        RLMRegisterClassLocalNames(&cls, 1);
-        RLMObjectSchema *objectSchema = registerClass(cls);
+        LEGACYRegisterClassLocalNames(&cls, 1);
+        LEGACYObjectSchema *objectSchema = registerClass(cls);
         [cls initializeLinkedObjectSchemas];
         return objectSchema;
     }
@@ -288,7 +288,7 @@ static void RLMRegisterClassLocalNames(Class *classes, NSUInteger count) {
         }
 
         if (s_sharedSchemaState == SharedSchemaState::Initializing) {
-            @throw RLMException(@"Illegal recursive call of +[%@ %@]. Note: Properties of Swift `Object` classes must not be prepopulated with queried results from a Realm.", self, NSStringFromSelector(_cmd));
+            @throw LEGACYException(@"Illegal recursive call of +[%@ %@]. Note: Properties of Swift `Object` classes must not be prepopulated with queried results from a Realm.", self, NSStringFromSelector(_cmd));
         }
 
         s_sharedSchemaState = SharedSchemaState::Initializing;
@@ -298,7 +298,7 @@ static void RLMRegisterClassLocalNames(Class *classes, NSUInteger count) {
                 unsigned int numClasses;
                 using malloc_ptr = std::unique_ptr<__unsafe_unretained Class[], decltype(&free)>;
                 malloc_ptr classes(objc_copyClassList(&numClasses), &free);
-                RLMRegisterClassLocalNames(classes.get(), numClasses);
+                LEGACYRegisterClassLocalNames(classes.get(), numClasses);
             }
 
             [s_localNameToClass enumerateKeysAndObjectsUsingBlock:^(NSString *, Class cls, BOOL *) {
@@ -323,15 +323,15 @@ static void RLMRegisterClassLocalNames(Class *classes, NSUInteger count) {
 
 // schema based on tables in a realm
 + (instancetype)dynamicSchemaFromObjectStoreSchema:(Schema const&)objectStoreSchema {
-    // cache descriptors for all subclasses of RLMObject
+    // cache descriptors for all subclasses of LEGACYObject
     NSMutableArray *schemaArray = [NSMutableArray arrayWithCapacity:objectStoreSchema.size()];
     for (auto &objectSchema : objectStoreSchema) {
-        RLMObjectSchema *schema = [RLMObjectSchema objectSchemaForObjectStoreSchema:objectSchema];
+        LEGACYObjectSchema *schema = [LEGACYObjectSchema objectSchemaForObjectStoreSchema:objectSchema];
         [schemaArray addObject:schema];
     }
 
     // set class array and mapping
-    RLMSchema *schema = [RLMSchema new];
+    LEGACYSchema *schema = [LEGACYSchema new];
     schema.objectSchema = schemaArray;
     return schema;
 }
@@ -342,7 +342,7 @@ static void RLMRegisterClassLocalNames(Class *classes, NSUInteger count) {
     }
 
     if (Class cls = NSClassFromString(className)) {
-        return RLMIsObjectSubclass(cls) ? cls : nil;
+        return LEGACYIsObjectSubclass(cls) ? cls : nil;
     }
 
     // className might be the local name of a Swift class we haven't registered
@@ -350,25 +350,25 @@ static void RLMRegisterClassLocalNames(Class *classes, NSUInteger count) {
     {
         unsigned int numClasses;
         std::unique_ptr<__unsafe_unretained Class[], decltype(&free)> classes(objc_copyClassList(&numClasses), &free);
-        RLMRegisterClassLocalNames(classes.get(), numClasses);
+        LEGACYRegisterClassLocalNames(classes.get(), numClasses);
     }
 
     return s_localNameToClass[className];
 }
 
 - (id)copyWithZone:(NSZone *)zone {
-    RLMSchema *schema = [[RLMSchema allocWithZone:zone] init];
+    LEGACYSchema *schema = [[LEGACYSchema allocWithZone:zone] init];
     schema->_objectSchemaByName = [[NSMutableDictionary allocWithZone:zone]
                                    initWithDictionary:_objectSchemaByName copyItems:YES];
     return schema;
 }
 
-- (BOOL)isEqualToSchema:(RLMSchema *)schema {
+- (BOOL)isEqualToSchema:(LEGACYSchema *)schema {
     if (_objectSchemaByName.count != schema->_objectSchemaByName.count) {
         return NO;
     }
     __block BOOL matches = YES;
-    [_objectSchemaByName enumerateKeysAndObjectsUsingBlock:^(NSString *name, RLMObjectSchema *objectSchema, BOOL *stop) {
+    [_objectSchemaByName enumerateKeysAndObjectsUsingBlock:^(NSString *name, LEGACYObjectSchema *objectSchema, BOOL *stop) {
         if (![schema->_objectSchemaByName[name] isEqualToObjectSchema:objectSchema]) {
             *stop = YES;
             matches = NO;
@@ -380,7 +380,7 @@ static void RLMRegisterClassLocalNames(Class *classes, NSUInteger count) {
 - (NSString *)description {
     NSMutableString *objectSchemaString = [NSMutableString string];
     NSArray *sort = @[[NSSortDescriptor sortDescriptorWithKey:@"className" ascending:YES]];
-    for (RLMObjectSchema *objectSchema in [self.objectSchema sortedArrayUsingDescriptors:sort]) {
+    for (LEGACYObjectSchema *objectSchema in [self.objectSchema sortedArrayUsingDescriptors:sort]) {
         [objectSchemaString appendFormat:@"\t%@\n",
          [objectSchema.description stringByReplacingOccurrencesOfString:@"\n" withString:@"\n\t"]];
     }
@@ -391,7 +391,7 @@ static void RLMRegisterClassLocalNames(Class *classes, NSUInteger count) {
     if (_objectStoreSchema.size() == 0) {
         std::vector<realm::ObjectSchema> schema;
         schema.reserve(_objectSchemaByName.count);
-        [_objectSchemaByName enumerateKeysAndObjectsUsingBlock:[&](NSString *, RLMObjectSchema *objectSchema, BOOL *) {
+        [_objectSchemaByName enumerateKeysAndObjectsUsingBlock:[&](NSString *, LEGACYObjectSchema *objectSchema, BOOL *) {
             schema.push_back([objectSchema objectStoreCopy:self]);
         }];
 

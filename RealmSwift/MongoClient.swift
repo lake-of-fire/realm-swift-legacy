@@ -33,7 +33,7 @@ import RealmLegacy.Private
  * - SeeAlso:
  * `App`, `MongoDatabase`, `MongoCollection`
  */
-public typealias MongoClient = RLMMongoClient
+public typealias MongoClient = LEGACYMongoClient
 
 /**
  * The `MongoDatabase` represents a MongoDB database, which holds a group
@@ -49,10 +49,10 @@ public typealias MongoClient = RLMMongoClient
  * - SeeAlso:
  * `MongoClient`, `MongoCollection`
  */
-public typealias MongoDatabase = RLMMongoDatabase
+public typealias MongoDatabase = LEGACYMongoDatabase
 
 /// Options to use when executing a `find` command on a `MongoCollection`.
-public typealias FindOptions = RLMFindOptions
+public typealias FindOptions = LEGACYFindOptions
 
 extension FindOptions {
     /// Limits the fields to return for all matching documents.
@@ -126,7 +126,7 @@ extension FindOptions {
 
 /// Options to use when executing a `findOneAndUpdate`, `findOneAndReplace`,
 /// or `findOneAndDelete` command on a `MongoCollection`.
-public typealias FindOneAndModifyOptions = RLMFindOneAndModifyOptions
+public typealias FindOneAndModifyOptions = LEGACYFindOneAndModifyOptions
 
 extension FindOneAndModifyOptions {
     /// Limits the fields to return for all matching documents.
@@ -223,7 +223,7 @@ extension FindOneAndModifyOptions {
 }
 
 /// The result of an `updateOne` or `updateMany` operation a `MongoCollection`.
-public typealias UpdateResult = RLMUpdateResult
+public typealias UpdateResult = LEGACYUpdateResult
 
 /// Block which returns Result.success(DocumentId) on a successful insert or Result.failure(error)
 public typealias MongoInsertBlock = @Sendable (Result<AnyBSON, Error>) -> Void
@@ -253,10 +253,10 @@ public typealias MongoUpdateBlock = @Sendable (Result<UpdateResult, Error>) -> V
  * - SeeAlso:
  * `MongoClient`, `MongoDatabase`
  */
-public typealias MongoCollection = RLMMongoCollection
+public typealias MongoCollection = LEGACYMongoCollection
 
 /// Acts as a middleman and processes events with WatchStream
-public typealias ChangeStream = RLMChangeStream
+public typealias ChangeStream = LEGACYChangeStream
 
 /// Delegate which is used for subscribing to changes on a `MongoCollection.watch()` stream.
 public protocol ChangeEventDelegate: AnyObject {
@@ -760,7 +760,7 @@ extension MongoCollection {
     }
 }
 
-private class ChangeEventDelegateProxy: RLMChangeEventDelegate {
+private class ChangeEventDelegateProxy: LEGACYChangeEventDelegate {
     // NEXT-MAJOR: This doesn't need to be weak and making it not weak would
     // allow removing the class requirement on ChangeEventDelegate
     private weak var proxyDelegate: ChangeEventDelegate?
@@ -769,7 +769,7 @@ private class ChangeEventDelegateProxy: RLMChangeEventDelegate {
         self.proxyDelegate = proxyDelegate
     }
 
-    func changeStreamDidOpen(_ changeStream: RLMChangeStream) {
+    func changeStreamDidOpen(_ changeStream: LEGACYChangeStream) {
         proxyDelegate?.changeStreamDidOpen(changeStream)
     }
 
@@ -781,7 +781,7 @@ private class ChangeEventDelegateProxy: RLMChangeEventDelegate {
         proxyDelegate?.changeStreamDidReceive(error: error)
     }
 
-    func changeStreamDidReceiveChangeEvent(_ changeEvent: RLMBSON) {
+    func changeStreamDidReceiveChangeEvent(_ changeEvent: LEGACYBSON) {
         let bson = ObjectiveCSupport.convert(object: changeEvent)
         proxyDelegate?.changeStreamDidReceive(changeEvent: bson)
     }
@@ -789,8 +789,8 @@ private class ChangeEventDelegateProxy: RLMChangeEventDelegate {
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension Publishers {
-    private class WatchSubscription<S: Subscriber>: RLMChangeEventDelegate, Subscription where S.Input == AnyBSON, S.Failure == Error {
-        private var changeStream: RLMChangeStream!
+    private class WatchSubscription<S: Subscriber>: LEGACYChangeEventDelegate, Subscription where S.Input == AnyBSON, S.Failure == Error {
+        private var changeStream: LEGACYChangeStream!
         private var subscriber: S
         private var onOpen: (@Sendable () -> Void)?
 
@@ -799,10 +799,10 @@ extension Publishers {
             self.onOpen = publisher.openEvent
             let scheduler = publisher.scheduler
             changeStream = publisher.collection.watch(
-                withMatchFilter: publisher.matchFilter.map(ObjectiveCSupport.convert) as RLMBSON?,
-                idFilter: publisher.filterIds as RLMBSON?,
-                delegate: self as RLMChangeEventDelegate,
-                scheduler: scheduler ?? DispatchQueue.main.schedule) as RLMChangeStream
+                withMatchFilter: publisher.matchFilter.map(ObjectiveCSupport.convert) as LEGACYBSON?,
+                idFilter: publisher.filterIds as LEGACYBSON?,
+                delegate: self as LEGACYChangeEventDelegate,
+                scheduler: scheduler ?? DispatchQueue.main.schedule) as LEGACYChangeStream
         }
 
         func request(_ demand: Subscribers.Demand) { }
@@ -811,7 +811,7 @@ extension Publishers {
             changeStream.close()
         }
 
-        func changeStreamDidOpen(_ changeStream: RLMChangeStream) {
+        func changeStreamDidOpen(_ changeStream: LEGACYChangeStream) {
             onOpen?()
         }
 
@@ -827,7 +827,7 @@ extension Publishers {
             subscriber.receive(completion: .failure(error))
         }
 
-        func changeStreamDidReceiveChangeEvent(_ changeEvent: RLMBSON) {
+        func changeStreamDidReceiveChangeEvent(_ changeEvent: LEGACYBSON) {
             if let changeEvent = ObjectiveCSupport.convert(object: changeEvent) {
                 _ = subscriber.receive(changeEvent)
             }

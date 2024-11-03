@@ -16,7 +16,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSchema_Private.h"
+#import "LEGACYSchema_Private.h"
 
 #import <memory>
 
@@ -25,8 +25,8 @@ namespace realm {
     class ObjectSchema;
 }
 
-RLM_DIRECT_MEMBERS
-@interface RLMSchema ()
+LEGACY_DIRECT_MEMBERS
+@interface LEGACYSchema ()
 + (instancetype)dynamicSchemaFromObjectStoreSchema:(realm::Schema const&)objectStoreSchema;
 - (realm::Schema)objectStoreCopy;
 @end
@@ -34,4 +34,4 @@ RLM_DIRECT_MEMBERS
 // Ensure that all objectSchema in the given schema have managed accessors created.
 // This is normally done during schema discovery but may not be when using
 // dynamically created schemas.
-void RLMSchemaEnsureAccessorsCreated(RLMSchema *schema);
+void LEGACYSchemaEnsureAccessorsCreated(LEGACYSchema *schema);

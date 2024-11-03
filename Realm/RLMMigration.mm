@@ -16,19 +16,19 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMMigration_Private.h"
+#import "LEGACYMigration_Private.h"
 
-#import "RLMAccessor.h"
-#import "RLMObject_Private.h"
-#import "RLMObject_Private.hpp"
-#import "RLMObjectSchema_Private.hpp"
-#import "RLMObjectStore.h"
-#import "RLMProperty_Private.h"
-#import "RLMRealm_Dynamic.h"
-#import "RLMRealm_Private.hpp"
-#import "RLMResults_Private.hpp"
-#import "RLMSchema_Private.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYAccessor.h"
+#import "LEGACYObject_Private.h"
+#import "LEGACYObject_Private.hpp"
+#import "LEGACYObjectSchema_Private.hpp"
+#import "LEGACYObjectStore.h"
+#import "LEGACYProperty_Private.h"
+#import "LEGACYRealm_Dynamic.h"
+#import "LEGACYRealm_Private.hpp"
+#import "LEGACYResults_Private.hpp"
+#import "LEGACYSchema_Private.hpp"
+#import "LEGACYUtil.hpp"
 
 #import <realm/object-store/object_store.hpp>
 #import <realm/object-store/shared_realm.hpp>
@@ -37,11 +37,11 @@
 
 using namespace realm;
 
-@implementation RLMMigration {
+@implementation LEGACYMigration {
     realm::Schema *_schema;
 }
 
-- (instancetype)initWithRealm:(RLMRealm *)realm oldRealm:(RLMRealm *)oldRealm schema:(realm::Schema &)schema {
+- (instancetype)initWithRealm:(LEGACYRealm *)realm oldRealm:(LEGACYRealm *)oldRealm schema:(realm::Schema &)schema {
     self = [super init];
     if (self) {
         _realm = realm;
@@ -51,24 +51,24 @@ using namespace realm;
     return self;
 }
 
-- (RLMSchema *)oldSchema {
+- (LEGACYSchema *)oldSchema {
     return self.oldRealm.schema;
 }
 
-- (RLMSchema *)newSchema {
+- (LEGACYSchema *)newSchema {
     return self.realm.schema;
 }
 
-- (void)enumerateObjects:(NSString *)className block:(__attribute__((noescape)) RLMObjectMigrationBlock)block {
-    RLMResults *objects = [_realm.schema schemaForClassName:className] ? [_realm allObjects:className] : nil;
-    RLMResults *oldObjects = [_oldRealm.schema schemaForClassName:className] ? [_oldRealm allObjects:className] : nil;
+- (void)enumerateObjects:(NSString *)className block:(__attribute__((noescape)) LEGACYObjectMigrationBlock)block {
+    LEGACYResults *objects = [_realm.schema schemaForClassName:className] ? [_realm allObjects:className] : nil;
+    LEGACYResults *oldObjects = [_oldRealm.schema schemaForClassName:className] ? [_oldRealm allObjects:className] : nil;
 
     // For whatever reason if this is a newly added table we enumerate the
     // objects in it, while in all other cases we enumerate only the existing
     // objects. It's unclear how this could be useful, but changing it would
     // also be a pointless breaking change and it's unlikely to be hurting anyone.
     if (objects && !oldObjects) {
-        for (RLMObject *object in objects) {
+        for (LEGACYObject *object in objects) {
             @autoreleasepool {
                 block(nil, object);
             }
@@ -79,7 +79,7 @@ using namespace realm;
     // If a table will be deleted it can still be enumerated during the migration
     // so that data can be saved or transfered to other tables if necessary.
     if (!objects && oldObjects) {
-        for (RLMObject *oldObject in oldObjects) {
+        for (LEGACYObject *oldObject in oldObjects) {
             @autoreleasepool {
                 block(oldObject, nil);
             }
@@ -92,7 +92,7 @@ using namespace realm;
     }
 
     auto& info = _realm->_info[className];
-    for (RLMObject *oldObject in oldObjects) {
+    for (LEGACYObject *oldObject in oldObjects) {
         @autoreleasepool {
             Obj newObj;
             try {
@@ -101,22 +101,22 @@ using namespace realm;
             catch (KeyNotFound const&) {
                 continue;
             }
-            block(oldObject, (id)RLMCreateObjectAccessor(info, std::move(newObj)));
+            block(oldObject, (id)LEGACYCreateObjectAccessor(info, std::move(newObj)));
         }
     }
 }
 
-- (void)execute:(RLMMigrationBlock)block objectClass:(::Class)dynamicObjectClass {
+- (void)execute:(LEGACYMigrationBlock)block objectClass:(::Class)dynamicObjectClass {
     if (!dynamicObjectClass) {
-        dynamicObjectClass = RLMDynamicObject.class;
+        dynamicObjectClass = LEGACYDynamicObject.class;
     }
     @autoreleasepool {
         // disable all primary keys for migration and use DynamicObject for all types
-        for (RLMObjectSchema *objectSchema in _realm.schema.objectSchema) {
+        for (LEGACYObjectSchema *objectSchema in _realm.schema.objectSchema) {
             objectSchema.accessorClass = dynamicObjectClass;
             objectSchema.primaryKeyProperty.isPrimary = NO;
         }
-        for (RLMObjectSchema *objectSchema in _oldRealm.schema.objectSchema) {
+        for (LEGACYObjectSchema *objectSchema in _oldRealm.schema.objectSchema) {
             objectSchema.accessorClass = dynamicObjectClass;
         }
 
@@ -127,15 +127,15 @@ using namespace realm;
     }
 }
 
-- (RLMObject *)createObject:(NSString *)className withValue:(id)value {
+- (LEGACYObject *)createObject:(NSString *)className withValue:(id)value {
     return [_realm createObject:className withValue:value];
 }
 
-- (RLMObject *)createObject:(NSString *)className withObject:(id)object {
+- (LEGACYObject *)createObject:(NSString *)className withObject:(id)object {
     return [self createObject:className withValue:object];
 }
 
-- (void)deleteObject:(RLMObject *)object {
+- (void)deleteObject:(LEGACYObject *)object {
     [_realm deleteObject:object];
 }
 

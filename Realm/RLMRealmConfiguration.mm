@@ -16,29 +16,29 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMRealmConfiguration_Private.h"
+#import "LEGACYRealmConfiguration_Private.h"
 
-#import "RLMEvent.h"
-#import "RLMObjectSchema_Private.hpp"
-#import "RLMRealm_Private.h"
-#import "RLMSchema_Private.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYEvent.h"
+#import "LEGACYObjectSchema_Private.hpp"
+#import "LEGACYRealm_Private.h"
+#import "LEGACYSchema_Private.hpp"
+#import "LEGACYUtil.hpp"
 
 #import <realm/object-store/schema.hpp>
 #import <realm/object-store/shared_realm.hpp>
 
 #if REALM_ENABLE_SYNC
-#import "RLMSyncConfiguration_Private.hpp"
-#import "RLMUser_Private.hpp"
+#import "LEGACYSyncConfiguration_Private.hpp"
+#import "LEGACYUser_Private.hpp"
 
 #import <realm/object-store/sync/sync_manager.hpp>
 #import <realm/util/bson/bson.hpp>
 #import <realm/sync/config.hpp>
 #else
-@class RLMSyncConfiguration;
+@class LEGACYSyncConfiguration;
 #endif
 
-static NSString *const c_RLMRealmConfigurationProperties[] = {
+static NSString *const c_LEGACYRealmConfigurationProperties[] = {
     @"fileURL",
     @"inMemoryIdentifier",
     @"encryptionKey",
@@ -52,21 +52,21 @@ static NSString *const c_RLMRealmConfigurationProperties[] = {
 };
 
 static NSString *const c_defaultRealmFileName = @"default.realm";
-RLMRealmConfiguration *s_defaultConfiguration;
+LEGACYRealmConfiguration *s_defaultConfiguration;
 
-NSString *RLMRealmPathForFileAndBundleIdentifier(NSString *fileName, NSString *bundleIdentifier) {
-    return [RLMDefaultDirectoryForBundleIdentifier(bundleIdentifier)
+NSString *LEGACYRealmPathForFileAndBundleIdentifier(NSString *fileName, NSString *bundleIdentifier) {
+    return [LEGACYDefaultDirectoryForBundleIdentifier(bundleIdentifier)
             stringByAppendingPathComponent:fileName];
 }
 
-NSString *RLMRealmPathForFile(NSString *fileName) {
-    static NSString *directory = RLMDefaultDirectoryForBundleIdentifier(nil);
+NSString *LEGACYRealmPathForFile(NSString *fileName) {
+    static NSString *directory = LEGACYDefaultDirectoryForBundleIdentifier(nil);
     return [directory stringByAppendingPathComponent:fileName];
 }
 
-@implementation RLMRealmConfiguration {
+@implementation LEGACYRealmConfiguration {
     realm::Realm::Config _config;
-    RLMSyncErrorReportingBlock _manualClientResetHandler;
+    LEGACYSyncErrorReportingBlock _manualClientResetHandler;
 }
 
 - (realm::Realm::Config&)configRef {
@@ -81,20 +81,20 @@ NSString *RLMRealmPathForFile(NSString *fileName) {
     return [[self rawDefaultConfiguration] copy];
 }
 
-+ (void)setDefaultConfiguration:(RLMRealmConfiguration *)configuration {
++ (void)setDefaultConfiguration:(LEGACYRealmConfiguration *)configuration {
     if (!configuration) {
-        @throw RLMException(@"Cannot set the default configuration to nil.");
+        @throw LEGACYException(@"Cannot set the default configuration to nil.");
     }
     @synchronized(c_defaultRealmFileName) {
         s_defaultConfiguration = [configuration copy];
     }
 }
 
-+ (RLMRealmConfiguration *)rawDefaultConfiguration {
-    RLMRealmConfiguration *configuration;
++ (LEGACYRealmConfiguration *)rawDefaultConfiguration {
+    LEGACYRealmConfiguration *configuration;
     @synchronized(c_defaultRealmFileName) {
         if (!s_defaultConfiguration) {
-            s_defaultConfiguration = [[RLMRealmConfiguration alloc] init];
+            s_defaultConfiguration = [[LEGACYRealmConfiguration alloc] init];
         }
         configuration = s_defaultConfiguration;
     }
@@ -110,7 +110,7 @@ NSString *RLMRealmPathForFile(NSString *fileName) {
 - (instancetype)init {
     self = [super init];
     if (self) {
-        static NSURL *defaultRealmURL = [NSURL fileURLWithPath:RLMRealmPathForFile(c_defaultRealmFileName)];
+        static NSURL *defaultRealmURL = [NSURL fileURLWithPath:LEGACYRealmPathForFile(c_defaultRealmFileName)];
         self.fileURL = defaultRealmURL;
         self.schemaVersion = 0;
         self.cache = YES;
@@ -121,7 +121,7 @@ NSString *RLMRealmPathForFile(NSString *fileName) {
 }
 
 - (instancetype)copyWithZone:(NSZone *)zone {
-    RLMRealmConfiguration *configuration = [[[self class] allocWithZone:zone] init];
+    LEGACYRealmConfiguration *configuration = [[[self class] allocWithZone:zone] init];
     configuration->_config = _config;
     configuration->_cache = _cache;
     configuration->_dynamic = _dynamic;
@@ -137,7 +137,7 @@ NSString *RLMRealmPathForFile(NSString *fileName) {
 
 - (NSString *)description {
     NSMutableString *string = [NSMutableString stringWithFormat:@"%@ {\n", self.class];
-    for (NSString *key : c_RLMRealmConfigurationProperties) {
+    for (NSString *key : c_LEGACYRealmConfigurationProperties) {
         NSString *description = [[self valueForKey:key] description];
         description = [description stringByReplacingOccurrencesOfString:@"\n" withString:@"\n\t"];
 
@@ -156,10 +156,10 @@ NSString *RLMRealmPathForFile(NSString *fileName) {
 - (void)setFileURL:(NSURL *)fileURL {
     NSString *path = fileURL.path;
     if (path.length == 0) {
-        @throw RLMException(@"Realm path must not be empty");
+        @throw LEGACYException(@"Realm path must not be empty");
     }
 
-    RLMNSStringToStdString(_config.path, path);
+    LEGACYNSStringToStdString(_config.path, path);
     _config.in_memory = false;
 }
 
@@ -172,11 +172,11 @@ NSString *RLMRealmPathForFile(NSString *fileName) {
 
 - (void)setInMemoryIdentifier:(NSString *)inMemoryIdentifier {
     if (inMemoryIdentifier.length == 0) {
-        @throw RLMException(@"In-memory identifier must not be empty");
+        @throw LEGACYException(@"In-memory identifier must not be empty");
     }
     _seedFilePath = nil;
 
-    RLMNSStringToStdString(_config.path, [NSTemporaryDirectory() stringByAppendingPathComponent:inMemoryIdentifier]);
+    LEGACYNSStringToStdString(_config.path, [NSTemporaryDirectory() stringByAppendingPathComponent:inMemoryIdentifier]);
     _config.in_memory = true;
 }
 
@@ -192,7 +192,7 @@ NSString *RLMRealmPathForFile(NSString *fileName) {
 }
 
 - (void)setEncryptionKey:(NSData * __nullable)encryptionKey {
-    if (NSData *key = RLMRealmValidatedEncryptionKey(encryptionKey)) {
+    if (NSData *key = LEGACYRealmValidatedEncryptionKey(encryptionKey)) {
         auto bytes = static_cast<const char *>(key.bytes);
         _config.encryption_key.assign(bytes, bytes + key.length);
     }
@@ -215,7 +215,7 @@ static bool isSync(realm::Realm::Config const& config) {
 - (void)updateSchemaMode {
     if (self.deleteRealmIfMigrationNeeded) {
         if (isSync(_config)) {
-            @throw RLMException(@"Cannot set 'deleteRealmIfMigrationNeeded' when sync is enabled ('syncConfig' is set).");
+            @throw LEGACYException(@"Cannot set 'deleteRealmIfMigrationNeeded' when sync is enabled ('syncConfig' is set).");
         }
     }
     else if (self.readOnly) {
@@ -237,9 +237,9 @@ static bool isSync(realm::Realm::Config const& config) {
 - (void)setReadOnly:(BOOL)readOnly {
     if (readOnly) {
         if (self.deleteRealmIfMigrationNeeded) {
-            @throw RLMException(@"Cannot set `readOnly` when `deleteRealmIfMigrationNeeded` is set.");
+            @throw LEGACYException(@"Cannot set `readOnly` when `deleteRealmIfMigrationNeeded` is set.");
         } else if (self.shouldCompactOnLaunch) {
-            @throw RLMException(@"Cannot set `readOnly` when `shouldCompactOnLaunch` is set.");
+            @throw LEGACYException(@"Cannot set `readOnly` when `shouldCompactOnLaunch` is set.");
         }
         _config.schema_mode = isSync(_config) ? realm::SchemaMode::ReadOnly : realm::SchemaMode::Immutable;
     }
@@ -254,8 +254,8 @@ static bool isSync(realm::Realm::Config const& config) {
 }
 
 - (void)setSchemaVersion:(uint64_t)schemaVersion {
-    if (schemaVersion == RLMNotVersioned) {
-        @throw RLMException(@"Cannot set schema version to %llu (RLMNotVersioned)", RLMNotVersioned);
+    if (schemaVersion == LEGACYNotVersioned) {
+        @throw LEGACYException(@"Cannot set schema version to %llu (LEGACYNotVersioned)", LEGACYNotVersioned);
     }
     _config.schema_version = schemaVersion;
 }
@@ -267,10 +267,10 @@ static bool isSync(realm::Realm::Config const& config) {
 - (void)setDeleteRealmIfMigrationNeeded:(BOOL)deleteRealmIfMigrationNeeded {
     if (deleteRealmIfMigrationNeeded) {
         if (self.readOnly) {
-            @throw RLMException(@"Cannot set `deleteRealmIfMigrationNeeded` when `readOnly` is set.");
+            @throw LEGACYException(@"Cannot set `deleteRealmIfMigrationNeeded` when `readOnly` is set.");
         }
         if (isSync(_config)) {
-            @throw RLMException(@"Cannot set 'deleteRealmIfMigrationNeeded' when sync is enabled ('syncConfig' is set).");
+            @throw LEGACYException(@"Cannot set 'deleteRealmIfMigrationNeeded' when sync is enabled ('syncConfig' is set).");
         }
         _config.schema_mode = realm::SchemaMode::SoftResetFile;
     }
@@ -284,7 +284,7 @@ static bool isSync(realm::Realm::Config const& config) {
 }
 
 - (void)setObjectClasses:(NSArray *)objectClasses {
-    _customSchema = objectClasses ? [RLMSchema schemaWithObjectClasses:objectClasses] : nil;
+    _customSchema = objectClasses ? [LEGACYSchema schemaWithObjectClasses:objectClasses] : nil;
     [self updateSchemaMode];
 }
 
@@ -329,10 +329,10 @@ static bool isSync(realm::Realm::Config const& config) {
     return @(_config.path.c_str());
 }
 
-- (void)setShouldCompactOnLaunch:(RLMShouldCompactOnLaunchBlock)shouldCompactOnLaunch {
+- (void)setShouldCompactOnLaunch:(LEGACYShouldCompactOnLaunchBlock)shouldCompactOnLaunch {
     if (shouldCompactOnLaunch) {
         if (_config.immutable()) {
-            @throw RLMException(@"Cannot set `shouldCompactOnLaunch` when `readOnly` is set.");
+            @throw LEGACYException(@"Cannot set `shouldCompactOnLaunch` when `readOnly` is set.");
         }
         _config.should_compact_on_launch_function = shouldCompactOnLaunch;
     }
@@ -342,7 +342,7 @@ static bool isSync(realm::Realm::Config const& config) {
     _shouldCompactOnLaunch = shouldCompactOnLaunch;
 }
 
-- (void)setCustomSchemaWithoutCopying:(RLMSchema *)schema {
+- (void)setCustomSchemaWithoutCopying:(LEGACYSchema *)schema {
     _customSchema = schema;
 }
 
@@ -355,14 +355,14 @@ static bool isSync(realm::Realm::Config const& config) {
 }
 
 #if REALM_ENABLE_SYNC
-- (void)setSyncConfiguration:(RLMSyncConfiguration *)syncConfiguration {
+- (void)setSyncConfiguration:(LEGACYSyncConfiguration *)syncConfiguration {
     if (syncConfiguration == nil) {
         _config.sync_config = nullptr;
         return;
     }
-    RLMUser *user = syncConfiguration.user;
-    if (user.state == RLMUserStateRemoved) {
-        @throw RLMException(@"Cannot set a sync configuration which has an errored-out user.");
+    LEGACYUser *user = syncConfiguration.user;
+    if (user.state == LEGACYUserStateRemoved) {
+        @throw LEGACYException(@"Cannot set a sync configuration which has an errored-out user.");
     }
 
     NSAssert(user.identifier, @"Cannot call this method on a user that doesn't have an identifier.");
@@ -376,17 +376,17 @@ static bool isSync(realm::Realm::Config const& config) {
     [self updateSchemaMode];
 }
 
-- (RLMSyncConfiguration *)syncConfiguration {
+- (LEGACYSyncConfiguration *)syncConfiguration {
     if (!_config.sync_config) {
         return nil;
     }
-    RLMSyncConfiguration* syncConfig = [[RLMSyncConfiguration alloc] initWithRawConfig:*_config.sync_config path:_config.path];
+    LEGACYSyncConfiguration* syncConfig = [[LEGACYSyncConfiguration alloc] initWithRawConfig:*_config.sync_config path:_config.path];
     syncConfig.manualClientResetHandler = _manualClientResetHandler;
     return syncConfig;
 }
 
 #else // REALM_ENABLE_SYNC
-- (RLMSyncConfiguration *)syncConfiguration {
+- (LEGACYSyncConfiguration *)syncConfiguration {
     return nil;
 }
 #endif // REALM_ENABLE_SYNC
@@ -398,7 +398,7 @@ static bool isSync(realm::Realm::Config const& config) {
     }
 #if REALM_ENABLE_SYNC
     if (config.sync_config) {
-        RLMSetConfigInfoForClientResetCallbacks(*config.sync_config, self);
+        LEGACYSetConfigInfoForClientResetCallbacks(*config.sync_config, self);
     }
     if (_eventConfiguration) {
         config.audit_config = [_eventConfiguration auditConfigWithRealmConfiguration:self];

@@ -16,13 +16,13 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSyncConfiguration_Private.h"
+#import "LEGACYSyncConfiguration_Private.h"
 
 #import <realm/object-store/sync/sync_manager.hpp>
 
-realm::SyncSessionStopPolicy translateStopPolicy(RLMSyncStopPolicy stopPolicy);
-RLMSyncStopPolicy translateStopPolicy(realm::SyncSessionStopPolicy stop_policy);
+realm::SyncSessionStopPolicy translateStopPolicy(LEGACYSyncStopPolicy stopPolicy);
+LEGACYSyncStopPolicy translateStopPolicy(realm::SyncSessionStopPolicy stop_policy);
 
-typedef NS_ENUM(NSUInteger, RLMClientResetMode);
-RLMClientResetMode translateClientResetMode(realm::ClientResyncMode mode);
-realm::ClientResyncMode translateClientResetMode(RLMClientResetMode mode);
+typedef NS_ENUM(NSUInteger, LEGACYClientResetMode);
+LEGACYClientResetMode translateClientResetMode(realm::ClientResyncMode mode);
+realm::ClientResyncMode translateClientResetMode(LEGACYClientResetMode mode);

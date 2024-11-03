@@ -16,11 +16,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMDictionary_Private.h"
+#import "LEGACYDictionary_Private.h"
 
-#import "RLMCollection_Private.hpp"
+#import "LEGACYCollection_Private.hpp"
 
-#import "RLMResults_Private.hpp"
+#import "LEGACYResults_Private.hpp"
 
 #import <realm/table_ref.hpp>
 
@@ -28,40 +28,40 @@ namespace realm {
     class Results;
 }
 
-@class RLMObjectBase, RLMObjectSchema, RLMProperty;
-class RLMClassInfo;
-class RLMObservationInfo;
+@class LEGACYObjectBase, LEGACYObjectSchema, LEGACYProperty;
+class LEGACYClassInfo;
+class LEGACYObservationInfo;
 
-@interface RLMDictionary () {
+@interface LEGACYDictionary () {
 @protected
     NSString *_objectClassName;
-    RLMPropertyType _type;
+    LEGACYPropertyType _type;
     BOOL _optional;
 @public
-    // The name of the property which this RLMDictionary represents
+    // The name of the property which this LEGACYDictionary represents
     NSString *_key;
-    __weak RLMObjectBase *_parentObject;
+    __weak LEGACYObjectBase *_parentObject;
 }
 @end
 
-@interface RLMManagedDictionary () <RLMCollectionPrivate>
+@interface LEGACYManagedDictionary () <LEGACYCollectionPrivate>
 
-- (RLMManagedDictionary *)initWithBackingCollection:(realm::object_store::Dictionary)dictionary
-                                         parentInfo:(RLMClassInfo *)parentInfo
-                                           property:(__unsafe_unretained RLMProperty *const)property;
-- (RLMManagedDictionary *)initWithParent:(realm::Obj)parent
-                                property:(RLMProperty *)property
-                              parentInfo:(RLMClassInfo&)info;
+- (LEGACYManagedDictionary *)initWithBackingCollection:(realm::object_store::Dictionary)dictionary
+                                         parentInfo:(LEGACYClassInfo *)parentInfo
+                                           property:(__unsafe_unretained LEGACYProperty *const)property;
+- (LEGACYManagedDictionary *)initWithParent:(realm::Obj)parent
+                                property:(LEGACYProperty *)property
+                              parentInfo:(LEGACYClassInfo&)info;
 
 - (bool)isBackedByDictionary:(realm::object_store::Dictionary const&)dictionary;
 
-// deletes all objects in the RLMDictionary from their containing realms
+// deletes all objects in the LEGACYDictionary from their containing realms
 - (void)deleteObjectsFromRealm;
 @end
 
-void RLMDictionaryValidateObservationKey(__unsafe_unretained NSString *const keyPath,
-                                         __unsafe_unretained RLMDictionary *const collection);
+void LEGACYDictionaryValidateObservationKey(__unsafe_unretained NSString *const keyPath,
+                                         __unsafe_unretained LEGACYDictionary *const collection);
 
 // Initialize the observation info for an dictionary if needed
-void RLMEnsureDictionaryObservationInfo(std::unique_ptr<RLMObservationInfo>& info,
-                                        NSString *keyPath, RLMDictionary *array, id observed);
+void LEGACYEnsureDictionaryObservationInfo(std::unique_ptr<LEGACYObservationInfo>& info,
+                                        NSString *keyPath, LEGACYDictionary *array, id observed);

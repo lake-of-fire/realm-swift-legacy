@@ -16,29 +16,29 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMObject_Private.hpp"
-#import "RLMObjectBase_Private.h"
+#import "LEGACYObject_Private.hpp"
+#import "LEGACYObjectBase_Private.h"
 
-#import "RLMAccessor.h"
-#import "RLMArray_Private.hpp"
-#import "RLMDecimal128.h"
-#import "RLMObjectSchema_Private.hpp"
-#import "RLMObjectStore.h"
-#import "RLMObservation.hpp"
-#import "RLMProperty_Private.h"
-#import "RLMRealm_Private.hpp"
-#import "RLMSchema_Private.h"
-#import "RLMSet_Private.hpp"
-#import "RLMSwiftCollectionBase.h"
-#import "RLMSwiftSupport.h"
-#import "RLMThreadSafeReference_Private.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYAccessor.h"
+#import "LEGACYArray_Private.hpp"
+#import "LEGACYDecimal128.h"
+#import "LEGACYObjectSchema_Private.hpp"
+#import "LEGACYObjectStore.h"
+#import "LEGACYObservation.hpp"
+#import "LEGACYProperty_Private.h"
+#import "LEGACYRealm_Private.hpp"
+#import "LEGACYSchema_Private.h"
+#import "LEGACYSet_Private.hpp"
+#import "LEGACYSwiftCollectionBase.h"
+#import "LEGACYSwiftSupport.h"
+#import "LEGACYThreadSafeReference_Private.hpp"
+#import "LEGACYUtil.hpp"
 
 #import <realm/object-store/object.hpp>
 #import <realm/object-store/object_schema.hpp>
 #import <realm/object-store/shared_realm.hpp>
 
-const NSUInteger RLMDescriptionMaxDepth = 5;
+const NSUInteger LEGACYDescriptionMaxDepth = 5;
 
 static bool isManagedAccessorClass(Class cls) {
     const char *className = class_getName(cls);
@@ -46,7 +46,7 @@ static bool isManagedAccessorClass(Class cls) {
     return strncmp(className, accessorClassPrefix, sizeof(accessorClassPrefix) - 1) == 0;
 }
 
-static void maybeInitObjectSchemaForUnmanaged(RLMObjectBase *obj) {
+static void maybeInitObjectSchemaForUnmanaged(LEGACYObjectBase *obj) {
     Class cls = obj.class;
     if (isManagedAccessorClass(cls)) {
         return;
@@ -59,7 +59,7 @@ static void maybeInitObjectSchemaForUnmanaged(RLMObjectBase *obj) {
 
     // set default values
     if (!obj->_objectSchema.isSwiftClass) {
-        NSDictionary *dict = RLMDefaultValuesForObjectSchema(obj->_objectSchema);
+        NSDictionary *dict = LEGACYDefaultValuesForObjectSchema(obj->_objectSchema);
         for (NSString *key in dict) {
             [obj setValue:dict[key] forKey:key];
         }
@@ -69,10 +69,10 @@ static void maybeInitObjectSchemaForUnmanaged(RLMObjectBase *obj) {
     object_setClass(obj, obj->_objectSchema.unmanagedClass);
 }
 
-@interface RLMObjectBase () <RLMThreadConfined, RLMThreadConfined_Private>
+@interface LEGACYObjectBase () <LEGACYThreadConfined, LEGACYThreadConfined_Private>
 @end
 
-@implementation RLMObjectBase
+@implementation LEGACYObjectBase
 
 - (instancetype)init {
     if ((self = [super init])) {
@@ -89,31 +89,31 @@ static void maybeInitObjectSchemaForUnmanaged(RLMObjectBase *obj) {
     _observationInfo = nullptr;
 }
 
-static id coerceToObjectType(id obj, Class cls, RLMSchema *schema) {
+static id coerceToObjectType(id obj, Class cls, LEGACYSchema *schema) {
     if ([obj isKindOfClass:cls]) {
         return obj;
     }
-    obj = RLMBridgeSwiftValue(obj) ?: obj;
+    obj = LEGACYBridgeSwiftValue(obj) ?: obj;
     id value = [[cls alloc] init];
-    RLMInitializeWithValue(value, obj, schema);
+    LEGACYInitializeWithValue(value, obj, schema);
     return value;
 }
 
 static id validatedObjectForProperty(__unsafe_unretained id const obj,
-                                     __unsafe_unretained RLMObjectSchema *const objectSchema,
-                                     __unsafe_unretained RLMProperty *const prop,
-                                     __unsafe_unretained RLMSchema *const schema) {
-    RLMValidateValueForProperty(obj, objectSchema, prop);
+                                     __unsafe_unretained LEGACYObjectSchema *const objectSchema,
+                                     __unsafe_unretained LEGACYProperty *const prop,
+                                     __unsafe_unretained LEGACYSchema *const schema) {
+    LEGACYValidateValueForProperty(obj, objectSchema, prop);
     if (!obj || obj == NSNull.null) {
         return nil;
     }
-    if (prop.type == RLMPropertyTypeObject) {
+    if (prop.type == LEGACYPropertyTypeObject) {
         Class objectClass = schema[prop.objectClassName].objectClass;
-        id enumerable = RLMAsFastEnumeration(obj);
+        id enumerable = LEGACYAsFastEnumeration(obj);
         if (prop.dictionary) {
             NSMutableDictionary *ret = [[NSMutableDictionary alloc] init];
             for (id key in enumerable) {
-                id val = RLMCoerceToNil(obj[key]);
+                id val = LEGACYCoerceToNil(obj[key]);
                 if (val) {
                     val = coerceToObjectType(obj[key], objectClass, schema);
                 }
@@ -130,18 +130,18 @@ static id validatedObjectForProperty(__unsafe_unretained id const obj,
         }
         return coerceToObjectType(obj, objectClass, schema);
     }
-    else if (prop.type == RLMPropertyTypeDecimal128 && !prop.collection) {
-        return [[RLMDecimal128 alloc] initWithValue:obj];
+    else if (prop.type == LEGACYPropertyTypeDecimal128 && !prop.collection) {
+        return [[LEGACYDecimal128 alloc] initWithValue:obj];
     }
     return obj;
 }
 
-void RLMInitializeWithValue(RLMObjectBase *self, id value, RLMSchema *schema) {
+void LEGACYInitializeWithValue(LEGACYObjectBase *self, id value, LEGACYSchema *schema) {
     if (!value || value == NSNull.null) {
-        @throw RLMException(@"Must provide a non-nil value.");
+        @throw LEGACYException(@"Must provide a non-nil value.");
     }
 
-    RLMObjectSchema *objectSchema = self->_objectSchema;
+    LEGACYObjectSchema *objectSchema = self->_objectSchema;
     if (!objectSchema) {
         // Will be nil if we're called during schema init, when we don't want
         // to actually populate the object anyway
@@ -149,36 +149,36 @@ void RLMInitializeWithValue(RLMObjectBase *self, id value, RLMSchema *schema) {
     }
 
     NSArray *properties = objectSchema.properties;
-    if (NSArray *array = RLMDynamicCast<NSArray>(value)) {
+    if (NSArray *array = LEGACYDynamicCast<NSArray>(value)) {
         if (array.count > properties.count) {
-            @throw RLMException(@"Invalid array input: more values (%llu) than properties (%llu).",
+            @throw LEGACYException(@"Invalid array input: more values (%llu) than properties (%llu).",
                                 (unsigned long long)array.count, (unsigned long long)properties.count);
         }
         NSUInteger i = 0;
         for (id val in array) {
-            RLMProperty *prop = properties[i++];
-            [self setValue:validatedObjectForProperty(RLMCoerceToNil(val), objectSchema, prop, schema)
+            LEGACYProperty *prop = properties[i++];
+            [self setValue:validatedObjectForProperty(LEGACYCoerceToNil(val), objectSchema, prop, schema)
                     forKey:prop.name];
         }
     }
     else {
         // assume our object is an NSDictionary or an object with kvc properties
-        for (RLMProperty *prop in properties) {
-            id obj = RLMValidatedValueForProperty(value, prop.name, objectSchema.className);
+        for (LEGACYProperty *prop in properties) {
+            id obj = LEGACYValidatedValueForProperty(value, prop.name, objectSchema.className);
 
             // don't set unspecified properties
             if (!obj) {
                 continue;
             }
 
-            [self setValue:validatedObjectForProperty(RLMCoerceToNil(obj), objectSchema, prop, schema)
+            [self setValue:validatedObjectForProperty(LEGACYCoerceToNil(obj), objectSchema, prop, schema)
                     forKey:prop.name];
         }
     }
 }
 
-id RLMCreateManagedAccessor(Class cls, RLMClassInfo *info) {
-    RLMObjectBase *obj = [[cls alloc] init];
+id LEGACYCreateManagedAccessor(Class cls, LEGACYClassInfo *info) {
+    LEGACYObjectBase *obj = [[cls alloc] init];
     obj->_info = info;
     obj->_realm = info->realm;
     obj->_objectSchema = info->rlmObjectSchema;
@@ -194,20 +194,20 @@ id RLMCreateManagedAccessor(Class cls, RLMClassInfo *info) {
 
 // Generic Swift properties can't be dynamic, so KVO doesn't work for them by default
 - (id)valueForUndefinedKey:(NSString *)key {
-    RLMProperty *prop = _objectSchema[key];
+    LEGACYProperty *prop = _objectSchema[key];
     if (Class swiftAccessor = prop.swiftAccessor) {
-        return RLMCoerceToNil([swiftAccessor get:prop on:self]);
+        return LEGACYCoerceToNil([swiftAccessor get:prop on:self]);
     }
     return [super valueForUndefinedKey:key];
 }
 
 - (void)setValue:(id)value forUndefinedKey:(NSString *)key {
-    value = RLMCoerceToNil(value);
-    RLMProperty *property = _objectSchema[key];
+    value = LEGACYCoerceToNil(value);
+    LEGACYProperty *property = _objectSchema[key];
     if (property.collection) {
-        if (id enumerable = RLMAsFastEnumeration(value)) {
+        if (id enumerable = LEGACYAsFastEnumeration(value)) {
             value = validatedObjectForProperty(value, _objectSchema, property,
-                                               RLMSchema.partialPrivateSharedSchema);
+                                               LEGACYSchema.partialPrivateSharedSchema);
         }
     }
     if (auto swiftAccessor = property.swiftAccessor) {
@@ -221,26 +221,26 @@ id RLMCreateManagedAccessor(Class cls, RLMClassInfo *info) {
 // overridden at runtime per-class for performance
 + (NSString *)className {
     NSString *className = NSStringFromClass(self);
-    if ([RLMSwiftSupport isSwiftClassName:className]) {
-        className = [RLMSwiftSupport demangleClassName:className];
+    if ([LEGACYSwiftSupport isSwiftClassName:className]) {
+        className = [LEGACYSwiftSupport demangleClassName:className];
     }
     return className;
 }
 
 // overridden at runtime per-class for performance
-+ (RLMObjectSchema *)sharedSchema {
-    return [RLMSchema sharedSchemaForClass:self.class];
++ (LEGACYObjectSchema *)sharedSchema {
+    return [LEGACYSchema sharedSchemaForClass:self.class];
 }
 
 + (void)initializeLinkedObjectSchemas {
-    for (RLMProperty *prop in self.sharedSchema.properties) {
-        if (prop.type == RLMPropertyTypeObject && !RLMSchema.partialPrivateSharedSchema[prop.objectClassName]) {
-            [[RLMSchema classForString:prop.objectClassName] initializeLinkedObjectSchemas];
+    for (LEGACYProperty *prop in self.sharedSchema.properties) {
+        if (prop.type == LEGACYPropertyTypeObject && !LEGACYSchema.partialPrivateSharedSchema[prop.objectClassName]) {
+            [[LEGACYSchema classForString:prop.objectClassName] initializeLinkedObjectSchemas];
         }
     }
 }
 
-+ (nullable NSArray<RLMProperty *> *)_getProperties {
++ (nullable NSArray<LEGACYProperty *> *)_getProperties {
     return nil;
 }
 
@@ -249,7 +249,7 @@ id RLMCreateManagedAccessor(Class cls, RLMClassInfo *info) {
         return @"[invalid object]";
     }
 
-    return [self descriptionWithMaxDepth:RLMDescriptionMaxDepth];
+    return [self descriptionWithMaxDepth:LEGACYDescriptionMaxDepth];
 }
 
 - (NSString *)descriptionWithMaxDepth:(NSUInteger)depth {
@@ -260,13 +260,13 @@ id RLMCreateManagedAccessor(Class cls, RLMClassInfo *info) {
     NSString *baseClassName = _objectSchema.className;
     NSMutableString *mString = [NSMutableString stringWithFormat:@"%@ {\n", baseClassName];
 
-    for (RLMProperty *property in _objectSchema.properties) {
+    for (LEGACYProperty *property in _objectSchema.properties) {
         id object = [(id)self objectForKeyedSubscript:property.name];
         NSString *sub;
         if ([object respondsToSelector:@selector(descriptionWithMaxDepth:)]) {
             sub = [object descriptionWithMaxDepth:depth - 1];
         }
-        else if (property.type == RLMPropertyTypeData) {
+        else if (property.type == LEGACYPropertyTypeData) {
             static NSUInteger maxPrintedDataLength = 24;
             NSData *data = object;
             NSUInteger length = data.length;
@@ -286,11 +286,11 @@ id RLMCreateManagedAccessor(Class cls, RLMClassInfo *info) {
     return [NSString stringWithString:mString];
 }
 
-- (RLMRealm *)realm {
+- (LEGACYRealm *)realm {
     return _realm;
 }
 
-- (RLMObjectSchema *)objectSchema {
+- (LEGACYObjectSchema *)objectSchema {
     return _objectSchema;
 }
 
@@ -300,9 +300,9 @@ id RLMCreateManagedAccessor(Class cls, RLMClassInfo *info) {
 }
 
 - (BOOL)isEqual:(id)object {
-    if (RLMObjectBase *other = RLMDynamicCast<RLMObjectBase>(object)) {
+    if (LEGACYObjectBase *other = LEGACYDynamicCast<LEGACYObjectBase>(object)) {
         if (_objectSchema.primaryKeyProperty || _realm.isFrozen) {
-            return RLMObjectBaseAreEqual(self, other);
+            return LEGACYObjectBaseAreEqual(self, other);
         }
     }
     return [super isEqual:object];
@@ -331,7 +331,7 @@ id RLMCreateManagedAccessor(Class cls, RLMClassInfo *info) {
 }
 
 + (BOOL)shouldIncludeInDefaultSchema {
-    return RLMIsObjectSubclass(self);
+    return LEGACYIsObjectSubclass(self);
 }
 
 + (NSString *)primaryKey {
@@ -365,7 +365,7 @@ id RLMCreateManagedAccessor(Class cls, RLMClassInfo *info) {
 
 - (id)mutableArrayValueForKey:(NSString *)key {
     id obj = [self valueForKey:key];
-    if ([obj isKindOfClass:[RLMArray class]]) {
+    if ([obj isKindOfClass:[LEGACYArray class]]) {
         return obj;
     }
     return [super mutableArrayValueForKey:key];
@@ -373,7 +373,7 @@ id RLMCreateManagedAccessor(Class cls, RLMClassInfo *info) {
 
 - (id)mutableSetValueForKey:(NSString *)key {
     id obj = [self valueForKey:key];
-    if ([obj isKindOfClass:[RLMSet class]]) {
+    if ([obj isKindOfClass:[LEGACYSet class]]) {
         return obj;
     }
     return [super mutableSetValueForKey:key];
@@ -384,7 +384,7 @@ id RLMCreateManagedAccessor(Class cls, RLMClassInfo *info) {
             options:(NSKeyValueObservingOptions)options
             context:(void *)context {
     if (!_observationInfo) {
-        _observationInfo = new RLMObservationInfo(self);
+        _observationInfo = new LEGACYObservationInfo(self);
     }
     _observationInfo->recordObserver(_row, _info, _objectSchema, keyPath);
 
@@ -398,7 +398,7 @@ id RLMCreateManagedAccessor(Class cls, RLMClassInfo *info) {
 }
 
 + (BOOL)automaticallyNotifiesObserversForKey:(NSString *)key {
-    RLMProperty *prop = [self.class sharedSchema][key];
+    LEGACYProperty *prop = [self.class sharedSchema][key];
     if (isManagedAccessorClass(self)) {
         // Managed accessors explicitly call willChange/didChange for managed
         // properties, so we don't want KVO to override the setters to do that
@@ -413,10 +413,10 @@ id RLMCreateManagedAccessor(Class cls, RLMClassInfo *info) {
     return [super automaticallyNotifiesObserversForKey:key];
 }
 
-+ (void)observe:(RLMObjectBase *)object
++ (void)observe:(LEGACYObjectBase *)object
        keyPaths:(nullable NSArray<NSString *> *)keyPaths
-          block:(RLMObjectNotificationCallback)block
-     completion:(void (^)(RLMNotificationToken *))completion {
+          block:(LEGACYObjectNotificationCallback)block
+     completion:(void (^)(LEGACYNotificationToken *))completion {
 }
 
 #pragma mark - Thread Confined Protocol Conformance
@@ -431,45 +431,45 @@ id RLMCreateManagedAccessor(Class cls, RLMClassInfo *info) {
 
 + (instancetype)objectWithThreadSafeReference:(realm::ThreadSafeReference)reference
                                      metadata:(__unused id)metadata
-                                        realm:(RLMRealm *)realm {
+                                        realm:(LEGACYRealm *)realm {
     auto object = reference.resolve<realm::Object>(realm->_realm);
     if (!object.is_valid()) {
         return nil;
     }
     NSString *objectClassName = @(object.get_object_schema().name.c_str());
-    return RLMCreateObjectAccessor(realm->_info[objectClassName], object.get_obj());
+    return LEGACYCreateObjectAccessor(realm->_info[objectClassName], object.get_obj());
 }
 
 @end
 
-RLMRealm *RLMObjectBaseRealm(__unsafe_unretained RLMObjectBase *object) {
+LEGACYRealm *LEGACYObjectBaseRealm(__unsafe_unretained LEGACYObjectBase *object) {
     return object ? object->_realm : nil;
 }
 
-RLMObjectSchema *RLMObjectBaseObjectSchema(__unsafe_unretained RLMObjectBase *object) {
+LEGACYObjectSchema *LEGACYObjectBaseObjectSchema(__unsafe_unretained LEGACYObjectBase *object) {
     return object ? object->_objectSchema : nil;
 }
 
-id RLMObjectBaseObjectForKeyedSubscript(RLMObjectBase *object, NSString *key) {
+id LEGACYObjectBaseObjectForKeyedSubscript(LEGACYObjectBase *object, NSString *key) {
     if (!object) {
         return nil;
     }
 
     if (object->_realm) {
-        return RLMDynamicGetByName(object, key);
+        return LEGACYDynamicGetByName(object, key);
     }
     else {
         return [object valueForKey:key];
     }
 }
 
-void RLMObjectBaseSetObjectForKeyedSubscript(RLMObjectBase *object, NSString *key, id obj) {
+void LEGACYObjectBaseSetObjectForKeyedSubscript(LEGACYObjectBase *object, NSString *key, id obj) {
     if (!object) {
         return;
     }
 
     if (object->_realm || object.class == object->_objectSchema.accessorClass) {
-        RLMDynamicValidatedSet(object, key, obj);
+        LEGACYDynamicValidatedSet(object, key, obj);
     }
     else {
         [object setValue:obj forKey:key];
@@ -477,10 +477,10 @@ void RLMObjectBaseSetObjectForKeyedSubscript(RLMObjectBase *object, NSString *ke
 }
 
 
-BOOL RLMObjectBaseAreEqual(RLMObjectBase *o1, RLMObjectBase *o2) {
+BOOL LEGACYObjectBaseAreEqual(LEGACYObjectBase *o1, LEGACYObjectBase *o2) {
     // if not the correct types throw
-    if ((o1 && ![o1 isKindOfClass:RLMObjectBase.class]) || (o2 && ![o2 isKindOfClass:RLMObjectBase.class])) {
-        @throw RLMException(@"Can only compare objects of class RLMObjectBase");
+    if ((o1 && ![o1 isKindOfClass:LEGACYObjectBase.class]) || (o2 && ![o2 isKindOfClass:LEGACYObjectBase.class])) {
+        @throw LEGACYException(@"Can only compare objects of class LEGACYObjectBase");
     }
     // if identical object (or both are nil)
     if (o1 == o2) {
@@ -503,49 +503,49 @@ BOOL RLMObjectBaseAreEqual(RLMObjectBase *o1, RLMObjectBase *o2) {
         && o1->_row.get_key() == o2->_row.get_key();
 }
 
-static id resolveObject(RLMObjectBase *obj, RLMRealm *realm) {
-    RLMObjectBase *resolved = RLMCreateManagedAccessor(obj.class, &realm->_info[obj->_info->rlmObjectSchema.className]);
+static id resolveObject(LEGACYObjectBase *obj, LEGACYRealm *realm) {
+    LEGACYObjectBase *resolved = LEGACYCreateManagedAccessor(obj.class, &realm->_info[obj->_info->rlmObjectSchema.className]);
     resolved->_row = realm->_realm->import_copy_of(obj->_row);
     if (!resolved->_row.is_valid()) {
         return nil;
     }
-    RLMInitializeSwiftAccessor(resolved, false);
+    LEGACYInitializeSwiftAccessor(resolved, false);
     return resolved;
 }
 
-id RLMObjectFreeze(RLMObjectBase *obj) {
+id LEGACYObjectFreeze(LEGACYObjectBase *obj) {
     if (!obj->_realm && !obj.isInvalidated) {
-        @throw RLMException(@"Unmanaged objects cannot be frozen.");
+        @throw LEGACYException(@"Unmanaged objects cannot be frozen.");
     }
-    RLMVerifyAttached(obj);
+    LEGACYVerifyAttached(obj);
     if (obj->_realm.frozen) {
         return obj;
     }
     obj = resolveObject(obj, obj->_realm.freeze);
     if (!obj) {
-        @throw RLMException(@"Cannot freeze an object in the same write transaction as it was created in.");
+        @throw LEGACYException(@"Cannot freeze an object in the same write transaction as it was created in.");
     }
     return obj;
 }
 
-id RLMObjectThaw(RLMObjectBase *obj) {
+id LEGACYObjectThaw(LEGACYObjectBase *obj) {
     if (!obj->_realm && !obj.isInvalidated) {
-        @throw RLMException(@"Unmanaged objects cannot be frozen.");
+        @throw LEGACYException(@"Unmanaged objects cannot be frozen.");
     }
-    RLMVerifyAttached(obj);
+    LEGACYVerifyAttached(obj);
     if (!obj->_realm.frozen) {
         return obj;
     }
     return resolveObject(obj, obj->_realm.thaw);
 }
 
-id RLMValidatedValueForProperty(id object, NSString *key, NSString *className) {
+id LEGACYValidatedValueForProperty(id object, NSString *key, NSString *className) {
     @try {
         return [object valueForKey:key];
     }
     @catch (NSException *e) {
         if ([e.name isEqualToString:NSUndefinedKeyException]) {
-            @throw RLMException(@"Invalid value '%@' to initialize object of type '%@': missing key '%@'",
+            @throw LEGACYException(@"Invalid value '%@' to initialize object of type '%@': missing key '%@'",
                                 object, className, key);
         }
         @throw;
@@ -556,8 +556,8 @@ id RLMValidatedValueForProperty(id object, NSString *key, NSString *className) {
 
 namespace {
 struct ObjectChangeCallbackWrapper {
-    RLMObjectNotificationCallback block;
-    RLMObjectBase *object;
+    LEGACYObjectNotificationCallback block;
+    LEGACYObjectBase *object;
     void (^registrationCompletion)();
 
     NSArray<NSString *> *propertyNames = nil;
@@ -579,13 +579,13 @@ struct ObjectChangeCallbackWrapper {
         // FIXME: It's possible for the column key of a persisted property
         // to equal the column key of a computed property.
         auto properties = [NSMutableArray new];
-        for (RLMProperty *property in object->_info->rlmObjectSchema.properties) {
+        for (LEGACYProperty *property in object->_info->rlmObjectSchema.properties) {
             auto columnKey = object->_info->tableColumn(property).value;
             if (c.columns.count(columnKey)) {
                 [properties addObject:property.name];
             }
         }
-        for (RLMProperty *property in object->_info->rlmObjectSchema.computedProperties) {
+        for (LEGACYProperty *property in object->_info->rlmObjectSchema.computedProperties) {
             auto columnKey = object->_info->computedTableColumn(property).value;
             if (c.columns.count(columnKey)) {
                 [properties addObject:property.name];
@@ -608,7 +608,7 @@ struct ObjectChangeCallbackWrapper {
         auto values = [NSMutableArray arrayWithCapacity:propertyNames.count];
         for (NSString *name in propertyNames) {
             id value = [object valueForKey:name];
-            if (!value || [value isKindOfClass:[RLMArray class]]) {
+            if (!value || [value isKindOfClass:[LEGACYArray class]]) {
                 [values addObject:NSNull.null];
             }
             else {
@@ -644,15 +644,15 @@ struct ObjectChangeCallbackWrapper {
 };
 } // anonymous namespace
 
-@interface RLMPropertyChange ()
+@interface LEGACYPropertyChange ()
 @property (nonatomic, readwrite, strong) NSString *name;
 @property (nonatomic, readwrite, strong, nullable) id previousValue;
 @property (nonatomic, readwrite, strong, nullable) id value;
 @end
 
-@implementation RLMPropertyChange
+@implementation LEGACYPropertyChange
 - (NSString *)description {
-    return [NSString stringWithFormat:@"<RLMPropertyChange: %p> %@ %@ -> %@",
+    return [NSString stringWithFormat:@"<LEGACYPropertyChange: %p> %@ %@ -> %@",
             (__bridge void *)self, _name, _previousValue, _value];
 }
 @end
@@ -663,17 +663,17 @@ enum class TokenState {
     Ready
 };
 
-RLM_DIRECT_MEMBERS
-@implementation RLMObjectNotificationToken {
-    RLMUnfairMutex _mutex;
-    __unsafe_unretained RLMRealm *_realm;
+LEGACY_DIRECT_MEMBERS
+@implementation LEGACYObjectNotificationToken {
+    LEGACYUnfairMutex _mutex;
+    __unsafe_unretained LEGACYRealm *_realm;
     realm::Object _object;
     realm::NotificationToken _token;
     void (^_completion)(void);
     TokenState _state;
 }
 
-- (RLMRealm *)realm {
+- (LEGACYRealm *)realm {
     std::lock_guard lock(_mutex);
     return _realm;
 }
@@ -705,9 +705,9 @@ RLM_DIRECT_MEMBERS
     return true;
 }
 
-- (void)addNotificationBlock:(RLMObjectNotificationCallback)block
-         threadSafeReference:(RLMThreadSafeReference *)tsr
-                      config:(RLMRealmConfiguration *)config
+- (void)addNotificationBlock:(LEGACYObjectNotificationCallback)block
+         threadSafeReference:(LEGACYThreadSafeReference *)tsr
+                      config:(LEGACYRealmConfiguration *)config
                     keyPaths:(NSArray *)keyPaths
                        queue:(dispatch_queue_t)queue {
     std::lock_guard lock(_mutex);
@@ -717,21 +717,21 @@ RLM_DIRECT_MEMBERS
     }
 
     NSError *error;
-    _realm = [RLMRealm realmWithConfiguration:config queue:queue error:&error];
+    _realm = [LEGACYRealm realmWithConfiguration:config queue:queue error:&error];
     if (!_realm) {
         block(nil, nil, nil, nil, error);
         return;
     }
-    RLMObjectBase *obj = [_realm resolveThreadSafeReference:tsr];
+    LEGACYObjectBase *obj = [_realm resolveThreadSafeReference:tsr];
 
     _object = realm::Object(_realm->_realm, *obj->_info->objectSchema, obj->_row);
     _token = _object.add_notification_callback(ObjectChangeCallbackWrapper{block, obj},
                                                obj->_info->keyPathArrayFromStringArray(keyPaths));
 }
 
-- (void)observe:(RLMObjectBase *)obj
+- (void)observe:(LEGACYObjectBase *)obj
        keyPaths:(NSArray *)keyPaths
-          block:(RLMObjectNotificationCallback)block {
+          block:(LEGACYObjectNotificationCallback)block {
     std::lock_guard lock(_mutex);
     if (_state != TokenState::Initializing) {
         return;
@@ -757,7 +757,7 @@ RLM_DIRECT_MEMBERS
                                                    obj->_info->keyPathArrayFromStringArray(keyPaths));
     }
     catch (const realm::Exception& e) {
-        @throw RLMException(e);
+        @throw LEGACYException(e);
     }
 }
 
@@ -772,25 +772,25 @@ RLM_DIRECT_MEMBERS
     completion();
 }
 
-RLMNotificationToken *RLMObjectBaseAddNotificationBlock(RLMObjectBase *obj,
+LEGACYNotificationToken *LEGACYObjectBaseAddNotificationBlock(LEGACYObjectBase *obj,
                                                         NSArray<NSString *> *keyPaths,
                                                         dispatch_queue_t queue,
-                                                        RLMObjectNotificationCallback block) {
+                                                        LEGACYObjectNotificationCallback block) {
     if (!obj->_realm) {
-        @throw RLMException(@"Only objects which are managed by a Realm support change notifications");
+        @throw LEGACYException(@"Only objects which are managed by a Realm support change notifications");
     }
 
     if (!queue) {
         [obj->_realm verifyNotificationsAreSupported:true];
-        auto token = [[RLMObjectNotificationToken alloc] init];
+        auto token = [[LEGACYObjectNotificationToken alloc] init];
         [token observe:obj keyPaths:keyPaths block:block];
         return token;
     }
 
-    RLMThreadSafeReference *tsr = [RLMThreadSafeReference referenceWithThreadConfined:(id)obj];
-    auto token = [[RLMObjectNotificationToken alloc] init];
+    LEGACYThreadSafeReference *tsr = [LEGACYThreadSafeReference referenceWithThreadConfined:(id)obj];
+    auto token = [[LEGACYObjectNotificationToken alloc] init];
     token->_realm = obj->_realm;
-    RLMRealmConfiguration *config = obj->_realm.configuration;
+    LEGACYRealmConfiguration *config = obj->_realm.configuration;
     dispatch_async(queue, ^{
         @autoreleasepool {
             [token addNotificationBlock:block threadSafeReference:tsr config:config keyPaths:keyPaths queue:queue];
@@ -800,8 +800,8 @@ RLMNotificationToken *RLMObjectBaseAddNotificationBlock(RLMObjectBase *obj,
 }
 @end
 
-RLMNotificationToken *RLMObjectAddNotificationBlock(RLMObjectBase *obj, RLMObjectChangeBlock block, NSArray<NSString *> *keyPaths, dispatch_queue_t queue) {
-    return RLMObjectBaseAddNotificationBlock(obj, keyPaths, queue, ^(RLMObjectBase *, NSArray<NSString *> *propertyNames,
+LEGACYNotificationToken *LEGACYObjectAddNotificationBlock(LEGACYObjectBase *obj, LEGACYObjectChangeBlock block, NSArray<NSString *> *keyPaths, dispatch_queue_t queue) {
+    return LEGACYObjectBaseAddNotificationBlock(obj, keyPaths, queue, ^(LEGACYObjectBase *, NSArray<NSString *> *propertyNames,
                                                            NSArray *oldValues, NSArray *newValues, NSError *error) {
         if (error) {
             block(false, nil, error);
@@ -812,10 +812,10 @@ RLMNotificationToken *RLMObjectAddNotificationBlock(RLMObjectBase *obj, RLMObjec
         else {
             auto properties = [NSMutableArray arrayWithCapacity:propertyNames.count];
             for (NSUInteger i = 0, count = propertyNames.count; i < count; ++i) {
-                auto prop = [RLMPropertyChange new];
+                auto prop = [LEGACYPropertyChange new];
                 prop.name = propertyNames[i];
-                prop.previousValue = RLMCoerceToNil(oldValues[i]);
-                prop.value = RLMCoerceToNil(newValues[i]);
+                prop.previousValue = LEGACYCoerceToNil(oldValues[i]);
+                prop.value = LEGACYCoerceToNil(newValues[i]);
                 [properties addObject:prop];
             }
             block(false, properties, nil);
@@ -823,9 +823,9 @@ RLMNotificationToken *RLMObjectAddNotificationBlock(RLMObjectBase *obj, RLMObjec
     });
 }
 
-uint64_t RLMObjectBaseGetCombineId(__unsafe_unretained RLMObjectBase *const obj) {
+uint64_t LEGACYObjectBaseGetCombineId(__unsafe_unretained LEGACYObjectBase *const obj) {
     if (obj.invalidated) {
-        RLMVerifyAttached(obj);
+        LEGACYVerifyAttached(obj);
     }
     if (obj->_realm) {
         return obj->_row.get_key().value;

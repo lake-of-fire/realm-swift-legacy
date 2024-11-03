@@ -16,23 +16,23 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMResults_Private.h"
+#import "LEGACYResults_Private.h"
 
-#import "RLMCollection_Private.hpp"
+#import "LEGACYCollection_Private.hpp"
 
 #import <realm/object-store/results.hpp>
 
-class RLMClassInfo;
+class LEGACYClassInfo;
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@interface RLMResults () <RLMCollectionPrivate> {
+@interface LEGACYResults () <LEGACYCollectionPrivate> {
 @public
     realm::Results _results;
 }
 
 /**
- Initialize a 'raw' `RLMResults` using only an object store level Results.
+ Initialize a 'raw' `LEGACYResults` using only an object store level Results.
  This is only meant for applications where a results collection is being backed
  by an object store object class that has no binding-level equivalent. The
  consumer is responsible for bridging between the underlying objects and whatever
@@ -40,11 +40,11 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  */
 - (instancetype)initWithResults:(realm::Results)results;
 
-- (instancetype)initWithObjectInfo:(RLMClassInfo&)info results:(realm::Results&&)results;
-+ (instancetype)resultsWithObjectInfo:(RLMClassInfo&)info results:(realm::Results&&)results;
+- (instancetype)initWithObjectInfo:(LEGACYClassInfo&)info results:(realm::Results&&)results;
++ (instancetype)resultsWithObjectInfo:(LEGACYClassInfo&)info results:(realm::Results&&)results;
 
 - (instancetype)subresultsWithResults:(realm::Results)results;
-- (RLMClassInfo *)objectInfo;
+- (LEGACYClassInfo *)objectInfo;
 - (void)deleteObjectsFromRealm;
 @end
 
@@ -52,7 +52,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 [[gnu::noinline]]
 [[noreturn]]
-void RLMThrowCollectionException(NSString *collectionName);
+void LEGACYThrowCollectionException(NSString *collectionName);
 
 template<typename Function>
 static auto translateCollectionError(Function&& f, NSString *collectionName) {
@@ -60,8 +60,8 @@ static auto translateCollectionError(Function&& f, NSString *collectionName) {
         return f();
     }
     catch (...) {
-        RLMThrowCollectionException(collectionName);
+        LEGACYThrowCollectionException(collectionName);
     }
 }
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

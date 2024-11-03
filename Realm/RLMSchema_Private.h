@@ -16,27 +16,27 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMSchema.h>
+#import <Realm/LEGACYSchema.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability)
 
-@class RLMRealm;
+@class LEGACYRealm;
 
 //
-// RLMSchema private interface
+// LEGACYSchema private interface
 //
-@interface RLMSchema ()
+@interface LEGACYSchema ()
 
 /**
- Returns an `RLMSchema` containing only the given `RLMObject` subclasses.
+ Returns an `LEGACYSchema` containing only the given `LEGACYObject` subclasses.
 
  @param classes The classes to be included in the schema.
 
- @return An `RLMSchema` containing only the given classes.
+ @return An `LEGACYSchema` containing only the given classes.
  */
 + (instancetype)schemaWithObjectClasses:(NSArray<Class> *)classes;
 
-@property (nonatomic, readwrite, copy) NSArray<RLMObjectSchema *> *objectSchema;
+@property (nonatomic, readwrite, copy) NSArray<LEGACYObjectSchema *> *objectSchema;
 
 // schema based on runtime objects
 + (instancetype)sharedSchema;
@@ -51,8 +51,8 @@ RLM_HEADER_AUDIT_BEGIN(nullability)
 // class for string
 + (nullable Class)classForString:(NSString *)className;
 
-+ (nullable RLMObjectSchema *)sharedSchemaForClass:(Class)cls;
++ (nullable LEGACYObjectSchema *)sharedSchemaForClass:(Class)cls;
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability)
+LEGACY_HEADER_AUDIT_END(nullability)

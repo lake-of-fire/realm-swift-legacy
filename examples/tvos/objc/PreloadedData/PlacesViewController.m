@@ -22,7 +22,7 @@
 @interface PlacesViewController () <UITextFieldDelegate>
 
 @property (nonatomic, weak) IBOutlet UITextField *searchField;
-@property (nonatomic) RLMResults *results;
+@property (nonatomic) LEGACYResults *results;
 
 @end
 
@@ -31,10 +31,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    RLMRealmConfiguration *config = [RLMRealmConfiguration defaultConfiguration];
+    LEGACYRealmConfiguration *config = [LEGACYRealmConfiguration defaultConfiguration];
     config.readOnly = YES;
     config.fileURL = [[NSBundle mainBundle] URLForResource:@"Places" withExtension:@"realm"];
-    [RLMRealmConfiguration setDefaultConfiguration:config];
+    [LEGACYRealmConfiguration setDefaultConfiguration:config];
 
     [self reloadData];
 }

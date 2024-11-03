@@ -44,14 +44,14 @@ extension Bool: RealmOptionalType {}
  To change the underlying value stored by a `RealmOptional` instance, mutate the instance's `value` property.
  */
 @available(*, deprecated, renamed: "RealmProperty", message: "RealmOptional<T> has been deprecated, use RealmProperty<T?> instead.")
-public final class RealmOptional<Value: RealmOptionalType>: RLMSwiftValueStorage {
+public final class RealmOptional<Value: RealmOptionalType>: LEGACYSwiftValueStorage {
     /// The value the optional represents.
     public var value: Value? {
         get {
-            return RLMGetSwiftValueStorage(self).map(staticBridgeCast)
+            return LEGACYGetSwiftValueStorage(self).map(staticBridgeCast)
         }
         set {
-            RLMSetSwiftValueStorage(self, newValue.map(staticBridgeCast))
+            LEGACYSetSwiftValueStorage(self, newValue.map(staticBridgeCast))
         }
     }
 

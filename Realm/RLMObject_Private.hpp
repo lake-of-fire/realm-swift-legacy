@@ -16,45 +16,45 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMObject_Private.h"
+#import "LEGACYObject_Private.h"
 
-#import "RLMSwiftObject.h"
-#import "RLMRealm_Private.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYSwiftObject.h"
+#import "LEGACYRealm_Private.hpp"
+#import "LEGACYUtil.hpp"
 
 #import <realm/obj.hpp>
 
-class RLMObservationInfo;
+class LEGACYObservationInfo;
 
-// RLMObject accessor and read/write realm
-@interface RLMObjectBase () {
+// LEGACYObject accessor and read/write realm
+@interface LEGACYObjectBase () {
     @public
     realm::Obj _row;
-    RLMObservationInfo *_observationInfo;
-    RLMClassInfo *_info;
+    LEGACYObservationInfo *_observationInfo;
+    LEGACYClassInfo *_info;
 }
 @end
 
-id RLMCreateManagedAccessor(Class cls, RLMClassInfo *info) NS_RETURNS_RETAINED;
+id LEGACYCreateManagedAccessor(Class cls, LEGACYClassInfo *info) NS_RETURNS_RETAINED;
 
 // throw an exception if the object is invalidated or on the wrong thread
-static inline void RLMVerifyAttached(__unsafe_unretained RLMObjectBase *const obj) {
+static inline void LEGACYVerifyAttached(__unsafe_unretained LEGACYObjectBase *const obj) {
     if (!obj->_row.is_valid()) {
-        @throw RLMException(@"Object has been deleted or invalidated.");
+        @throw LEGACYException(@"Object has been deleted or invalidated.");
     }
     [obj->_realm verifyThread];
 }
 
 // throw an exception if the object can't be modified for any reason
-static inline void RLMVerifyInWriteTransaction(__unsafe_unretained RLMObjectBase *const obj) {
+static inline void LEGACYVerifyInWriteTransaction(__unsafe_unretained LEGACYObjectBase *const obj) {
     // first verify is attached
-    RLMVerifyAttached(obj);
+    LEGACYVerifyAttached(obj);
 
     if (!obj->_realm.inWriteTransaction) {
         if (obj->_realm.isFrozen) {
-            @throw RLMException(@"Attempting to modify a frozen object - call thaw on the Object instance first.");
+            @throw LEGACYException(@"Attempting to modify a frozen object - call thaw on the Object instance first.");
         }
-        @throw RLMException(@"Attempting to modify object outside of a write transaction - call beginWriteTransaction on an RLMRealm instance first.");
+        @throw LEGACYException(@"Attempting to modify object outside of a write transaction - call beginWriteTransaction on an LEGACYRealm instance first.");
     }
 }
 

@@ -35,14 +35,14 @@ public protocol _RealmSchemaDiscoverable {
     // source property name is runtime data and not part of the type), while
     // wrappers like Optional need to be able to recur to the wrapped type
     // without creating an instance of that.
-    func _rlmPopulateProperty(_ prop: RLMProperty)
-    static func _rlmPopulateProperty(_ prop: RLMProperty)
+    func _rlmPopulateProperty(_ prop: LEGACYProperty)
+    static func _rlmPopulateProperty(_ prop: LEGACYProperty)
 }
 
-extension RLMObjectBase {
+extension LEGACYObjectBase {
     /// Allow client code to generate properties (ie. via Swift Macros)
     @_spi(RealmSwiftPrivate)
-    @objc open class func _customRealmProperties() -> [RLMProperty]? {
+    @objc open class func _customRealmProperties() -> [LEGACYProperty]? {
         return nil
     }
 }
@@ -51,11 +51,11 @@ internal protocol SchemaDiscoverable: _RealmSchemaDiscoverable {}
 extension SchemaDiscoverable {
     public static var _rlmOptional: Bool { false }
     public static var _rlmRequireObjc: Bool { true }
-    public func _rlmPopulateProperty(_ prop: RLMProperty) { }
-    public static func _rlmPopulateProperty(_ prop: RLMProperty) { }
+    public func _rlmPopulateProperty(_ prop: LEGACYProperty) { }
+    public static func _rlmPopulateProperty(_ prop: LEGACYProperty) { }
 }
 
-extension RLMProperty {
+extension LEGACYProperty {
     internal convenience init(name: String, value: _RealmSchemaDiscoverable) {
         let valueType = Swift.type(of: value)
         self.init()
@@ -93,14 +93,14 @@ extension RLMProperty {
     }
 }
 
-private func getModernProperties(_ object: ObjectBase) -> [RLMProperty] {
+private func getModernProperties(_ object: ObjectBase) -> [LEGACYProperty] {
     let columnNames: [String: String] = type(of: object).propertiesMapping()
     return Mirror(reflecting: object).children.compactMap { prop in
         guard let label = prop.label else { return nil }
         guard let value = prop.value as? DiscoverablePersistedProperty else {
             return nil
         }
-        let property = RLMProperty(name: label, value: value)
+        let property = LEGACYProperty(name: label, value: value)
         property.swiftIvar = ivar_getOffset(class_getInstanceVariable(type(of: object), label)!)
         property.columnName = columnNames[property.name]
         return property
@@ -118,7 +118,7 @@ private func baseName(forLazySwiftProperty name: String) -> String? {
     return nil
 }
 
-private func getLegacyProperties(_ object: ObjectBase, _ cls: ObjectBase.Type) -> [RLMProperty] {
+private func getLegacyProperties(_ object: ObjectBase, _ cls: ObjectBase.Type) -> [LEGACYProperty] {
     let indexedProperties: Set<String>
     let ignoredPropNames: Set<String>
     let columnNames: [String: String] = type(of: object).propertiesMapping()
@@ -160,10 +160,10 @@ private func getLegacyProperties(_ object: ObjectBase, _ cls: ObjectBase.Type) -
             return nil
         }
 
-        RLMValidateSwiftPropertyName(label)
+        LEGACYValidateSwiftPropertyName(label)
         let valueType = type(of: value)
 
-        let property = RLMProperty(name: label, value: value)
+        let property = LEGACYProperty(name: label, value: value)
         property.indexed = indexedProperties.contains(property.name)
         property.columnName = columnNames[property.name]
 
@@ -209,7 +209,7 @@ private func getLegacyProperties(_ object: ObjectBase, _ cls: ObjectBase.Type) -
     }
 }
 
-private func getProperties(_ cls: RLMObjectBase.Type) -> [RLMProperty] {
+private func getProperties(_ cls: LEGACYObjectBase.Type) -> [LEGACYProperty] {
     if let props = cls._customRealmProperties() {
         return props
     }
@@ -225,7 +225,7 @@ private func getProperties(_ cls: RLMObjectBase.Type) -> [RLMProperty] {
 
 internal class ObjectUtil {
     private static let runOnce: Void = {
-        RLMSetSwiftBridgeCallback { (value: Any) -> Any? in
+        LEGACYSetSwiftBridgeCallback { (value: Any) -> Any? in
             // `as AnyObject` required on iOS <= 13; it will compile but silently
             // fail to cast otherwise
             if let value = value as AnyObject as? _ObjcBridgeable {
@@ -235,7 +235,7 @@ internal class ObjectUtil {
         }
     }()
 
-    internal class func getSwiftProperties(_ cls: RLMObjectBase.Type) -> [RLMProperty] {
+    internal class func getSwiftProperties(_ cls: LEGACYObjectBase.Type) -> [LEGACYProperty] {
         _ = ObjectUtil.runOnce
         return getProperties(cls)
     }

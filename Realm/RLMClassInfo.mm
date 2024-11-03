@@ -16,14 +16,14 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMClassInfo.hpp"
+#import "LEGACYClassInfo.hpp"
 
-#import "RLMRealm_Private.hpp"
-#import "RLMObjectSchema_Private.hpp"
-#import "RLMSchema.h"
-#import "RLMProperty_Private.h"
-#import "RLMQueryUtil.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYRealm_Private.hpp"
+#import "LEGACYObjectSchema_Private.hpp"
+#import "LEGACYSchema.h"
+#import "LEGACYProperty_Private.h"
+#import "LEGACYQueryUtil.hpp"
+#import "LEGACYUtil.hpp"
 
 #import <realm/object-store/object_schema.hpp>
 #import <realm/object-store/object_store.hpp>
@@ -33,28 +33,28 @@
 
 using namespace realm;
 
-RLMClassInfo::RLMClassInfo(__unsafe_unretained RLMRealm *const realm,
-                           __unsafe_unretained RLMObjectSchema *const rlmObjectSchema,
+LEGACYClassInfo::LEGACYClassInfo(__unsafe_unretained LEGACYRealm *const realm,
+                           __unsafe_unretained LEGACYObjectSchema *const rlmObjectSchema,
                            const realm::ObjectSchema *objectSchema)
 : realm(realm), rlmObjectSchema(rlmObjectSchema), objectSchema(objectSchema) { }
 
-RLMClassInfo::RLMClassInfo(RLMRealm *realm, RLMObjectSchema *rlmObjectSchema,
+LEGACYClassInfo::LEGACYClassInfo(LEGACYRealm *realm, LEGACYObjectSchema *rlmObjectSchema,
                            std::unique_ptr<realm::ObjectSchema> schema)
 : realm(realm)
 , rlmObjectSchema(rlmObjectSchema)
 , objectSchema(&*schema)
 , dynamicObjectSchema(std::move(schema))
-, dynamicRLMObjectSchema(rlmObjectSchema)
+, dynamicLEGACYObjectSchema(rlmObjectSchema)
 { }
 
-realm::TableRef RLMClassInfo::table() const {
+realm::TableRef LEGACYClassInfo::table() const {
     if (auto key = objectSchema->table_key) {
         return realm.group.get_table(objectSchema->table_key);
     }
     return nullptr;
 }
 
-RLMProperty *RLMClassInfo::propertyForTableColumn(ColKey col) const noexcept {
+LEGACYProperty *LEGACYClassInfo::propertyForTableColumn(ColKey col) const noexcept {
     auto const& props = objectSchema->persisted_properties;
     for (size_t i = 0; i < props.size(); ++i) {
         if (props[i].column_key == col) {
@@ -64,22 +64,22 @@ RLMProperty *RLMClassInfo::propertyForTableColumn(ColKey col) const noexcept {
     return nil;
 }
 
-RLMProperty *RLMClassInfo::propertyForPrimaryKey() const noexcept {
+LEGACYProperty *LEGACYClassInfo::propertyForPrimaryKey() const noexcept {
     return rlmObjectSchema.primaryKeyProperty;
 }
 
-realm::ColKey RLMClassInfo::tableColumn(NSString *propertyName) const {
-    return tableColumn(RLMValidatedProperty(rlmObjectSchema, propertyName));
+realm::ColKey LEGACYClassInfo::tableColumn(NSString *propertyName) const {
+    return tableColumn(LEGACYValidatedProperty(rlmObjectSchema, propertyName));
 }
 
-realm::ColKey RLMClassInfo::tableColumn(RLMProperty *property) const {
+realm::ColKey LEGACYClassInfo::tableColumn(LEGACYProperty *property) const {
     return objectSchema->persisted_properties[property.index].column_key;
 }
 
-realm::ColKey RLMClassInfo::computedTableColumn(RLMProperty *property) const {
+realm::ColKey LEGACYClassInfo::computedTableColumn(LEGACYProperty *property) const {
     // Retrieve the table key and class info for the origin property
     // that corresponds to the target property.
-    RLMClassInfo& originInfo = realm->_info[property.objectClassName];
+    LEGACYClassInfo& originInfo = realm->_info[property.objectClassName];
     TableKey originTableKey = originInfo.objectSchema->table_key;
 
     TableRef originTable = realm.group.get_table(originTableKey);
@@ -90,48 +90,48 @@ realm::ColKey RLMClassInfo::computedTableColumn(RLMProperty *property) const {
     return originTable->get_opposite_column(forwardLinkKey);
 }
 
-RLMClassInfo &RLMClassInfo::linkTargetType(size_t propertyIndex) {
+LEGACYClassInfo &LEGACYClassInfo::linkTargetType(size_t propertyIndex) {
     return realm->_info[rlmObjectSchema.properties[propertyIndex].objectClassName];
 }
 
-RLMClassInfo &RLMClassInfo::linkTargetType(realm::Property const& property) {
+LEGACYClassInfo &LEGACYClassInfo::linkTargetType(realm::Property const& property) {
     REALM_ASSERT(property.type == PropertyType::Object);
     return linkTargetType(&property - &objectSchema->persisted_properties[0]);
 }
 
-RLMClassInfo &RLMClassInfo::resolve(__unsafe_unretained RLMRealm *const realm) {
+LEGACYClassInfo &LEGACYClassInfo::resolve(__unsafe_unretained LEGACYRealm *const realm) {
     return realm->_info[rlmObjectSchema.className];
 }
 
-bool RLMClassInfo::isSwiftClass() const noexcept {
+bool LEGACYClassInfo::isSwiftClass() const noexcept {
     return rlmObjectSchema.isSwiftClass;
 }
 
-bool RLMClassInfo::isDynamic() const noexcept {
+bool LEGACYClassInfo::isDynamic() const noexcept {
     return !!dynamicObjectSchema;
 }
 
-static KeyPath keyPathFromString(RLMRealm *realm,
-                                 RLMSchema *schema,
-                                 const RLMClassInfo *info,
-                                 RLMObjectSchema *rlmObjectSchema,
+static KeyPath keyPathFromString(LEGACYRealm *realm,
+                                 LEGACYSchema *schema,
+                                 const LEGACYClassInfo *info,
+                                 LEGACYObjectSchema *rlmObjectSchema,
                                  NSString *keyPath) {
     KeyPath keyPairs;
 
     for (NSString *component in [keyPath componentsSeparatedByString:@"."]) {
-        RLMProperty *property = rlmObjectSchema[component];
+        LEGACYProperty *property = rlmObjectSchema[component];
         if (!property) {
-            throw RLMException(@"Invalid property name: property '%@' not found in object of type '%@'",
+            throw LEGACYException(@"Invalid property name: property '%@' not found in object of type '%@'",
                                component, rlmObjectSchema.className);
         }
 
         TableKey tk = info->objectSchema->table_key;
         ColKey ck;
-        if (property.type == RLMPropertyTypeObject) {
+        if (property.type == LEGACYPropertyTypeObject) {
             ck = info->tableColumn(property.name);
             info = &realm->_info[property.objectClassName];
             rlmObjectSchema = schema[property.objectClassName];
-        } else if (property.type == RLMPropertyTypeLinkingObjects) {
+        } else if (property.type == LEGACYPropertyTypeLinkingObjects) {
             ck = info->computedTableColumn(property);
             info = &realm->_info[property.objectClassName];
             rlmObjectSchema = schema[property.objectClassName];
@@ -144,7 +144,7 @@ static KeyPath keyPathFromString(RLMRealm *realm,
     return keyPairs;
 }
 
-std::optional<realm::KeyPathArray> RLMClassInfo::keyPathArrayFromStringArray(NSArray<NSString *> *keyPaths) const {
+std::optional<realm::KeyPathArray> LEGACYClassInfo::keyPathArrayFromStringArray(NSArray<NSString *> *keyPaths) const {
     std::optional<KeyPathArray> keyPathArray;
     if (keyPaths.count) {
         keyPathArray.emplace();
@@ -156,15 +156,15 @@ std::optional<realm::KeyPathArray> RLMClassInfo::keyPathArrayFromStringArray(NSA
     return keyPathArray;
 }
 
-RLMSchemaInfo::impl::iterator RLMSchemaInfo::begin() noexcept { return m_objects.begin(); }
-RLMSchemaInfo::impl::iterator RLMSchemaInfo::end() noexcept { return m_objects.end(); }
-RLMSchemaInfo::impl::const_iterator RLMSchemaInfo::begin() const noexcept { return m_objects.begin(); }
-RLMSchemaInfo::impl::const_iterator RLMSchemaInfo::end() const noexcept { return m_objects.end(); }
+LEGACYSchemaInfo::impl::iterator LEGACYSchemaInfo::begin() noexcept { return m_objects.begin(); }
+LEGACYSchemaInfo::impl::iterator LEGACYSchemaInfo::end() noexcept { return m_objects.end(); }
+LEGACYSchemaInfo::impl::const_iterator LEGACYSchemaInfo::begin() const noexcept { return m_objects.begin(); }
+LEGACYSchemaInfo::impl::const_iterator LEGACYSchemaInfo::end() const noexcept { return m_objects.end(); }
 
-RLMClassInfo& RLMSchemaInfo::operator[](NSString *name) {
+LEGACYClassInfo& LEGACYSchemaInfo::operator[](NSString *name) {
     auto it = m_objects.find(name);
     if (it == m_objects.end()) {
-        @throw RLMException(@"Object type '%@' is not managed by the Realm. "
+        @throw LEGACYException(@"Object type '%@' is not managed by the Realm. "
                             @"If using a custom `objectClasses` / `objectTypes` array in your configuration, "
                             @"add `%@` to the list of `objectClasses` / `objectTypes`.",
                             name, name);
@@ -172,7 +172,7 @@ RLMClassInfo& RLMSchemaInfo::operator[](NSString *name) {
     return *&it->second;
 }
 
-RLMClassInfo* RLMSchemaInfo::operator[](realm::TableKey key) {
+LEGACYClassInfo* LEGACYSchemaInfo::operator[](realm::TableKey key) {
     for (auto& [name, info] : m_objects) {
         if (info.objectSchema->table_key == key)
             return &info;
@@ -180,14 +180,14 @@ RLMClassInfo* RLMSchemaInfo::operator[](realm::TableKey key) {
     return nullptr;
 }
 
-RLMSchemaInfo::RLMSchemaInfo(RLMRealm *realm) {
-    RLMSchema *rlmSchema = realm.schema;
+LEGACYSchemaInfo::LEGACYSchemaInfo(LEGACYRealm *realm) {
+    LEGACYSchema *rlmSchema = realm.schema;
     realm::Schema const& schema = realm->_realm->schema();
     // rlmSchema can be larger due to multiple classes backed by one table
     REALM_ASSERT(rlmSchema.objectSchema.count >= schema.size());
 
     m_objects.reserve(schema.size());
-    for (RLMObjectSchema *rlmObjectSchema in rlmSchema.objectSchema) {
+    for (LEGACYObjectSchema *rlmObjectSchema in rlmSchema.objectSchema) {
         auto it = schema.find(rlmObjectSchema.objectStoreName);
         if (it == schema.end()) {
             continue;
@@ -199,9 +199,9 @@ RLMSchemaInfo::RLMSchemaInfo(RLMRealm *realm) {
     }
 }
 
-RLMSchemaInfo RLMSchemaInfo::clone(realm::Schema const& source_schema,
-                                   __unsafe_unretained RLMRealm *const target_realm) {
-    RLMSchemaInfo info;
+LEGACYSchemaInfo LEGACYSchemaInfo::clone(realm::Schema const& source_schema,
+                                   __unsafe_unretained LEGACYRealm *const target_realm) {
+    LEGACYSchemaInfo info;
     info.m_objects.reserve(m_objects.size());
 
     auto& schema = target_realm->_realm->schema();
@@ -219,9 +219,9 @@ RLMSchemaInfo RLMSchemaInfo::clone(realm::Schema const& source_schema,
     return info;
 }
 
-void RLMSchemaInfo::appendDynamicObjectSchema(std::unique_ptr<realm::ObjectSchema> schema,
-                                              RLMObjectSchema *objectSchema,
-                                              __unsafe_unretained RLMRealm *const target_realm) {
+void LEGACYSchemaInfo::appendDynamicObjectSchema(std::unique_ptr<realm::ObjectSchema> schema,
+                                              LEGACYObjectSchema *objectSchema,
+                                              __unsafe_unretained LEGACYRealm *const target_realm) {
     m_objects.emplace(std::piecewise_construct,
                       std::forward_as_tuple(objectSchema.className),
                       std::forward_as_tuple(target_realm, objectSchema,

@@ -20,16 +20,16 @@
 #import <Realm/Realm.h>
 
 // Define your models
-@interface Dog : RLMObject
+@interface Dog : LEGACYObject
 @property NSString *name;
 @property NSInteger age;
-@property (readonly) RLMLinkingObjects *owners;
+@property (readonly) LEGACYLinkingObjects *owners;
 @end
-RLM_COLLECTION_TYPE(Dog)
+LEGACY_COLLECTION_TYPE(Dog)
 
-@interface Person : RLMObject
+@interface Person : LEGACYObject
 @property NSString      *name;
-@property RLMArray<Dog> *dogs;
+@property LEGACYArray<Dog> *dogs;
 @end
 
 @implementation Person
@@ -39,7 +39,7 @@ RLM_COLLECTION_TYPE(Dog)
 + (NSDictionary *)linkingObjectsProperties
 {
     // Define "owners" as the inverse relationship to Person.dogs
-    return @{ @"owners": [RLMPropertyDescriptor descriptorWithClass:Person.class propertyName:@"dogs"] };
+    return @{ @"owners": [LEGACYPropertyDescriptor descriptorWithClass:Person.class propertyName:@"dogs"] };
 }
 @end
 
@@ -51,16 +51,16 @@ RLM_COLLECTION_TYPE(Dog)
     self.window.rootViewController = [[UIViewController alloc] init];
     [self.window makeKeyAndVisible];
 
-    [[NSFileManager defaultManager] removeItemAtURL:[RLMRealmConfiguration defaultConfiguration].fileURL error:nil];
+    [[NSFileManager defaultManager] removeItemAtURL:[LEGACYRealmConfiguration defaultConfiguration].fileURL error:nil];
 
-    RLMRealm *realm = [RLMRealm defaultRealm];
+    LEGACYRealm *realm = [LEGACYRealm defaultRealm];
     [realm transactionWithBlock:^{
         [Person createInRealm:realm withValue:@[@"John", @[@[@"Fido", @1]]]];
         [Person createInRealm:realm withValue:@[@"Mary", @[@[@"Rex", @2]]]];
     }];
 
     // Log all dogs and their owners using the "owners" inverse relationship
-    RLMResults *allDogs = [Dog allObjects];
+    LEGACYResults *allDogs = [Dog allObjects];
     for (Dog *dog in allDogs) {
         NSArray *ownerNames = [dog.owners valueForKeyPath:@"name"];
         NSLog(@"%@ has %lu owners (%@)", dog.name, (unsigned long)ownerNames.count, ownerNames);

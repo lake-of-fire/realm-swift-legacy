@@ -16,17 +16,17 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSwiftCollectionBase.h"
+#import "LEGACYSwiftCollectionBase.h"
 
-#import "RLMArray_Private.hpp"
-#import "RLMObjectSchema_Private.h"
-#import "RLMObject_Private.hpp"
-#import "RLMObservation.hpp"
-#import "RLMProperty_Private.h"
-#import "RLMSet_Private.hpp"
-#import "RLMDictionary_Private.hpp"
+#import "LEGACYArray_Private.hpp"
+#import "LEGACYObjectSchema_Private.h"
+#import "LEGACYObject_Private.hpp"
+#import "LEGACYObservation.hpp"
+#import "LEGACYProperty_Private.h"
+#import "LEGACYSet_Private.hpp"
+#import "LEGACYDictionary_Private.hpp"
 
-@interface RLMArray (KVO)
+@interface LEGACYArray (KVO)
 - (NSArray *)objectsAtIndexes:(__unused NSIndexSet *)indexes;
 @end
 
@@ -34,9 +34,9 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wincomplete-implementation"
 
-@implementation RLMSwiftCollectionBase
+@implementation LEGACYSwiftCollectionBase
 
-+ (id<RLMCollection>)_unmanagedCollection {
++ (id<LEGACYCollection>)_unmanagedCollection {
     return nil;
 }
 
@@ -48,12 +48,12 @@
     return self;
 }
 
-- (instancetype)initWithCollection:(id<RLMCollection>)collection {
+- (instancetype)initWithCollection:(id<LEGACYCollection>)collection {
     __rlmCollection = collection;
     return self;
 }
 
-- (id<RLMCollection>)_rlmCollection {
+- (id<LEGACYCollection>)_rlmCollection {
     if (!__rlmCollection) {
         __rlmCollection = self.class._unmanagedCollection;
     }
@@ -61,7 +61,7 @@
 }
 
 - (BOOL)isKindOfClass:(Class)aClass {
-    return [self._rlmCollection isKindOfClass:aClass] || RLMIsKindOfClass(object_getClass(self), aClass);
+    return [self._rlmCollection isKindOfClass:aClass] || LEGACYIsKindOfClass(object_getClass(self), aClass);
 }
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)sel {
@@ -85,7 +85,7 @@
 }
 
 - (BOOL)isEqual:(id)object {
-    if (auto collection = RLMDynamicCast<RLMSwiftCollectionBase>(object)) {
+    if (auto collection = LEGACYDynamicCast<LEGACYSwiftCollectionBase>(object)) {
         if (!__rlmCollection) {
             return !collection->__rlmCollection.realm && collection->__rlmCollection.count == 0;
         }
@@ -102,17 +102,17 @@
 
 #pragma clang diagnostic pop
 
-@implementation RLMLinkingObjectsHandle {
+@implementation LEGACYLinkingObjectsHandle {
     realm::TableKey _tableKey;
     realm::ObjKey _objKey;
-    RLMClassInfo *_info;
-    RLMRealm *_realm;
-    RLMProperty *_property;
+    LEGACYClassInfo *_info;
+    LEGACYRealm *_realm;
+    LEGACYProperty *_property;
 
-    RLMResults *_results;
+    LEGACYResults *_results;
 }
 
-- (instancetype)initWithObject:(RLMObjectBase *)object property:(RLMProperty *)prop {
+- (instancetype)initWithObject:(LEGACYObjectBase *)object property:(LEGACYProperty *)prop {
     if (!(self = [super init])) {
         return nil;
     }
@@ -130,7 +130,7 @@
     return self;
 }
 
-- (instancetype)initWithLinkingObjects:(RLMResults *)linkingObjects {
+- (instancetype)initWithLinkingObjects:(LEGACYResults *)linkingObjects {
     if (!(self = [super init])) {
         return nil;
     }
@@ -140,7 +140,7 @@
     return self;
 }
 
-- (RLMResults *)results {
+- (LEGACYResults *)results {
     if (_results) {
         return _results;
     }
@@ -148,7 +148,7 @@
 
     auto table = _realm.group.get_table(_tableKey);
     if (!table->is_valid(_objKey)) {
-        @throw RLMException(@"Object has been deleted or invalidated.");
+        @throw LEGACYException(@"Object has been deleted or invalidated.");
     }
 
     auto obj = _realm.group.get_table(_tableKey)->get_object(_objKey);
@@ -156,7 +156,7 @@
     auto& linkOrigin = _info->objectSchema->computed_properties[_property.index].link_origin_property_name;
     auto linkingProperty = objectInfo.objectSchema->property_for_name(linkOrigin);
     realm::Results results(_realm->_realm, obj.get_backlink_view(objectInfo.table(), linkingProperty->column_key));
-    _results = [RLMLinkingObjects resultsWithObjectInfo:objectInfo results:std::move(results)];
+    _results = [LEGACYLinkingObjects resultsWithObjectInfo:objectInfo results:std::move(results)];
     _realm = nil;
     return _results;
 }

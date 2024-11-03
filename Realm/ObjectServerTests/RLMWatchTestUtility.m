@@ -16,14 +16,14 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMWatchTestUtility.h"
+#import "LEGACYWatchTestUtility.h"
 
-#import <Realm/RLMBSON.h>
+#import <Realm/LEGACYBSON.h>
 
-@implementation RLMWatchTestUtility {
+@implementation LEGACYWatchTestUtility {
     NSUInteger _targetChangeEventCount;
     NSUInteger _currentChangeEventCount;
-    RLMObjectId *_matchingObjectId;
+    LEGACYObjectId *_matchingObjectId;
     BOOL _didOpenWasCalled;
     __weak XCTestExpectation *_expectation;
 }
@@ -41,7 +41,7 @@
 }
 
 - (instancetype)initWithChangeEventCount:(NSUInteger)changeEventCount
-                        matchingObjectId:(RLMObjectId *)matchingObjectId
+                        matchingObjectId:(LEGACYObjectId *)matchingObjectId
                              expectation:(XCTestExpectation *)expectation {
     if (self = [super init]) {
         _targetChangeEventCount = changeEventCount;
@@ -61,15 +61,15 @@
     [_expectation fulfill];
 }
 
-- (void)changeStreamDidOpen:(nonnull __unused RLMChangeStream *)changeStream {
+- (void)changeStreamDidOpen:(nonnull __unused LEGACYChangeStream *)changeStream {
     _didOpenWasCalled = YES;
     dispatch_semaphore_signal(self.isOpenSemaphore);
 }
 
-- (void)changeStreamDidReceiveChangeEvent:(nonnull id<RLMBSON>)changeEvent {
+- (void)changeStreamDidReceiveChangeEvent:(nonnull id<LEGACYBSON>)changeEvent {
     _currentChangeEventCount++;
     if (_matchingObjectId) {
-        RLMObjectId *objectId = ((NSDictionary *)changeEvent)[@"fullDocument"][@"_id"];
+        LEGACYObjectId *objectId = ((NSDictionary *)changeEvent)[@"fullDocument"][@"_id"];
         XCTAssertTrue([objectId.stringValue isEqualToString:_matchingObjectId.stringValue]);
         dispatch_semaphore_signal(self.semaphore);
     } else {

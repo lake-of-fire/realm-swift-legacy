@@ -16,14 +16,14 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMMultiProcessTestCase.h"
-#import "RLMServerTestObjects.h"
+#import "LEGACYMultiProcessTestCase.h"
+#import "LEGACYServerTestObjects.h"
 
-@class RLMAppConfiguration;
-typedef NS_ENUM(NSUInteger, RLMSyncStopPolicy);
-typedef void(^RLMSyncBasicErrorReportingBlock)(NSError * _Nullable);
+@class LEGACYAppConfiguration;
+typedef NS_ENUM(NSUInteger, LEGACYSyncStopPolicy);
+typedef void(^LEGACYSyncBasicErrorReportingBlock)(NSError * _Nullable);
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 // RealmServer is implemented in Swift
 @interface RealmServer : NSObject
@@ -54,16 +54,16 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 - (BOOL)deleteApp:(NSString *)appId error:(NSError **)error;
 @end
 
-@interface AsyncOpenConnectionTimeoutTransport : RLMNetworkTransport
+@interface AsyncOpenConnectionTimeoutTransport : LEGACYNetworkTransport
 @end
 
-// RLMSyncTestCase adds some helper functions for writing sync tests, and most
+// LEGACYSyncTestCase adds some helper functions for writing sync tests, and most
 // importantly creates a shared Atlas app which is used by all tests in a test
 // case. `self.app` and `self.appId` create the App if needed, and then the
 // App is deleted at the end of the test case (i.e. in `+tearDown`).
 //
 // Each test case subclass must override `defaultObjectTypes` to return the
-// `RLMObject` subclasses which the test case uses. These types are the only
+// `LEGACYObject` subclasses which the test case uses. These types are the only
 // ones which will be present in the server schema, and using any other types
 // will result in an error due to developer mode not being used.
 //
@@ -91,19 +91,19 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 // so will naturally be partitioned from other tests. For flexible sync, we
 // follow the pattern of setting one of the fields in all objects created to
 // the test's name and including that in subscriptions.
-@interface RLMSyncTestCase : RLMMultiProcessTestCase
+@interface LEGACYSyncTestCase : LEGACYMultiProcessTestCase
 
 @property (nonatomic, readonly) NSString *appId;
-@property (nonatomic, readonly) RLMApp *app;
-@property (nonatomic, readonly) RLMUser *anonymousUser;
-@property (nonatomic, readonly) RLMAppConfiguration *defaultAppConfiguration;
+@property (nonatomic, readonly) LEGACYApp *app;
+@property (nonatomic, readonly) LEGACYUser *anonymousUser;
+@property (nonatomic, readonly) LEGACYAppConfiguration *defaultAppConfiguration;
 
 /// Any stray app ids passed between processes
 @property (nonatomic, readonly) NSArray<NSString *> *appIds;
 
 #pragma mark - Customization points
 
-// Override to return the set of RLMObject subclasses used by this test case
+// Override to return the set of LEGACYObject subclasses used by this test case
 - (NSArray<Class> *)defaultObjectTypes;
 // Override to customize how the shared App is created for this test case. Most
 // commonly this is overrided to `return [self createFlexibleSyncAppWithError:error];`
@@ -111,122 +111,122 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 - (nullable NSString *)createAppWithError:(NSError **)error;
 - (nullable NSString *)createFlexibleSyncAppWithError:(NSError **)error;
 // Override to produce flexible sync configurations instead of the default PBS one.
-- (RLMRealmConfiguration *)configurationForUser:(RLMUser *)user;
+- (LEGACYRealmConfiguration *)configurationForUser:(LEGACYUser *)user;
 
 #pragma mark - Helpers
 
 // Obtain a user with a name derived from test selector, registering it first
 // if this is the parent process. This should only be used in multi-process
 // tests (and most tests should not need to be multi-process).
-- (RLMUser *)userForTest:(SEL)sel;
-- (RLMUser *)userForTest:(SEL)sel app:(RLMApp *)app;
+- (LEGACYUser *)userForTest:(SEL)sel;
+- (LEGACYUser *)userForTest:(SEL)sel app:(LEGACYApp *)app;
 
 // Create new login credentials for this test, possibly registering the user
 // first. This is needed to be able to log a user back in after logging out. If
 // a user is only logged in one time, use `createUser` instead.
-- (RLMCredentials *)basicCredentialsWithName:(NSString *)name
+- (LEGACYCredentials *)basicCredentialsWithName:(NSString *)name
                                     register:(BOOL)shouldRegister NS_SWIFT_NAME(basicCredentials(name:register:));
-- (RLMCredentials *)basicCredentialsWithName:(NSString *)name register:(BOOL)shouldRegister
-                                         app:(RLMApp*)app NS_SWIFT_NAME(basicCredentials(name:register:app:));
+- (LEGACYCredentials *)basicCredentialsWithName:(NSString *)name register:(BOOL)shouldRegister
+                                         app:(LEGACYApp*)app NS_SWIFT_NAME(basicCredentials(name:register:app:));
 
 /// Synchronously open a synced Realm via asyncOpen and return the Realm.
-- (RLMRealm *)asyncOpenRealmWithConfiguration:(RLMRealmConfiguration *)configuration;
+- (LEGACYRealm *)asyncOpenRealmWithConfiguration:(LEGACYRealmConfiguration *)configuration;
 
 /// Synchronously open a synced Realm via asyncOpen and return the expected error.
-- (NSError *)asyncOpenErrorWithConfiguration:(RLMRealmConfiguration *)configuration;
+- (NSError *)asyncOpenErrorWithConfiguration:(LEGACYRealmConfiguration *)configuration;
 
 // Create a new user, and return a configuration using that user.
-- (RLMRealmConfiguration *)configuration NS_REFINED_FOR_SWIFT;
+- (LEGACYRealmConfiguration *)configuration NS_REFINED_FOR_SWIFT;
 
 // Open the realm with the partition value `self.name` using a newly created user
-- (RLMRealm *)openRealm NS_REFINED_FOR_SWIFT;
+- (LEGACYRealm *)openRealm NS_REFINED_FOR_SWIFT;
 // Open the realm with the partition value `self.name` using the given user
-- (RLMRealm *)openRealmWithUser:(RLMUser *)user;
+- (LEGACYRealm *)openRealmWithUser:(LEGACYUser *)user;
 
 /// Synchronously open a synced Realm and wait for downloads.
-- (RLMRealm *)openRealmForPartitionValue:(nullable id<RLMBSON>)partitionValue
-                                    user:(RLMUser *)user;
+- (LEGACYRealm *)openRealmForPartitionValue:(nullable id<LEGACYBSON>)partitionValue
+                                    user:(LEGACYUser *)user;
 
 /// Synchronously open a synced Realm and wait for downloads.
-- (RLMRealm *)openRealmForPartitionValue:(nullable id<RLMBSON>)partitionValue
-                                    user:(RLMUser *)user
-                         clientResetMode:(RLMClientResetMode)clientResetMode;
+- (LEGACYRealm *)openRealmForPartitionValue:(nullable id<LEGACYBSON>)partitionValue
+                                    user:(LEGACYUser *)user
+                         clientResetMode:(LEGACYClientResetMode)clientResetMode;
 
 /// Synchronously open a synced Realm with encryption key and stop policy and wait for downloads.
-- (RLMRealm *)openRealmForPartitionValue:(nullable id<RLMBSON>)partitionValue
-                                    user:(RLMUser *)user
+- (LEGACYRealm *)openRealmForPartitionValue:(nullable id<LEGACYBSON>)partitionValue
+                                    user:(LEGACYUser *)user
                            encryptionKey:(nullable NSData *)encryptionKey
-                              stopPolicy:(RLMSyncStopPolicy)stopPolicy;
+                              stopPolicy:(LEGACYSyncStopPolicy)stopPolicy;
 
 /// Synchronously open a synced Realm.
-- (RLMRealm *)openRealmWithConfiguration:(RLMRealmConfiguration *)configuration;
+- (LEGACYRealm *)openRealmWithConfiguration:(LEGACYRealmConfiguration *)configuration;
 
 /// Immediately open a synced Realm.
-- (RLMRealm *)immediatelyOpenRealmForPartitionValue:(nullable id<RLMBSON>)partitionValue user:(RLMUser *)user;
+- (LEGACYRealm *)immediatelyOpenRealmForPartitionValue:(nullable id<LEGACYBSON>)partitionValue user:(LEGACYUser *)user;
 
 /// Immediately open a synced Realm with encryption key and stop policy.
-- (RLMRealm *)immediatelyOpenRealmForPartitionValue:(nullable id<RLMBSON>)partitionValue
-                                               user:(RLMUser *)user
+- (LEGACYRealm *)immediatelyOpenRealmForPartitionValue:(nullable id<LEGACYBSON>)partitionValue
+                                               user:(LEGACYUser *)user
                                       encryptionKey:(nullable NSData *)encryptionKey
-                                         stopPolicy:(RLMSyncStopPolicy)stopPolicy;
+                                         stopPolicy:(LEGACYSyncStopPolicy)stopPolicy;
 
 /// Immediately open a synced Realm with encryption key and stop policy.
-- (RLMRealm *)immediatelyOpenRealmForPartitionValue:(nullable id<RLMBSON>)partitionValue
-                                               user:(RLMUser *)user
-                                    clientResetMode:(RLMClientResetMode)clientResetMode
+- (LEGACYRealm *)immediatelyOpenRealmForPartitionValue:(nullable id<LEGACYBSON>)partitionValue
+                                               user:(LEGACYUser *)user
+                                    clientResetMode:(LEGACYClientResetMode)clientResetMode
                                       encryptionKey:(nullable NSData *)encryptionKey
-                                         stopPolicy:(RLMSyncStopPolicy)stopPolicy;
+                                         stopPolicy:(LEGACYSyncStopPolicy)stopPolicy;
 
 /// Synchronously create, log in, and return a user.
-- (RLMUser *)logInUserForCredentials:(RLMCredentials *)credentials;
-- (RLMUser *)logInUserForCredentials:(RLMCredentials *)credentials app:(RLMApp *)app;
+- (LEGACYUser *)logInUserForCredentials:(LEGACYCredentials *)credentials;
+- (LEGACYUser *)logInUserForCredentials:(LEGACYCredentials *)credentials app:(LEGACYApp *)app;
 
 /// Synchronously register and log in a new non-anonymous user
-- (RLMUser *)createUser;
-- (RLMUser *)createUserForApp:(RLMApp *)app;
+- (LEGACYUser *)createUser;
+- (LEGACYUser *)createUserForApp:(LEGACYApp *)app;
 
-- (RLMCredentials *)jwtCredentialWithAppId:(NSString *)appId;
+- (LEGACYCredentials *)jwtCredentialWithAppId:(NSString *)appId;
 
 /// Log out and wait for the completion handler to be called
-- (void)logOutUser:(RLMUser *)user;
+- (void)logOutUser:(LEGACYUser *)user;
 
-- (void)addPersonsToRealm:(RLMRealm *)realm persons:(NSArray<Person *> *)persons;
+- (void)addPersonsToRealm:(LEGACYRealm *)realm persons:(NSArray<Person *> *)persons;
 
 /// Wait for downloads to complete; drop any error.
-- (void)waitForDownloadsForRealm:(RLMRealm *)realm;
-- (void)waitForDownloadsForRealm:(RLMRealm *)realm error:(NSError **)error;
+- (void)waitForDownloadsForRealm:(LEGACYRealm *)realm;
+- (void)waitForDownloadsForRealm:(LEGACYRealm *)realm error:(NSError **)error;
 
 /// Wait for uploads to complete; drop any error.
-- (void)waitForUploadsForRealm:(RLMRealm *)realm;
-- (void)waitForUploadsForRealm:(RLMRealm *)realm error:(NSError **)error;
+- (void)waitForUploadsForRealm:(LEGACYRealm *)realm;
+- (void)waitForUploadsForRealm:(LEGACYRealm *)realm error:(NSError **)error;
 
 /// Set the user's tokens to invalid ones to test invalid token handling.
-- (void)setInvalidTokensForUser:(RLMUser *)user;
+- (void)setInvalidTokensForUser:(LEGACYUser *)user;
 
-- (void)writeToPartition:(nullable NSString *)partition block:(void (^)(RLMRealm *))block;
+- (void)writeToPartition:(nullable NSString *)partition block:(void (^)(LEGACYRealm *))block;
 
 - (void)resetSyncManager;
 
 - (NSString *)badAccessToken;
 
-- (void)cleanupRemoteDocuments:(RLMMongoCollection *)collection;
+- (void)cleanupRemoteDocuments:(LEGACYMongoCollection *)collection;
 
 - (nonnull NSURL *)clientDataRoot;
 
-- (NSString *)partitionBsonType:(id<RLMBSON>)bson;
+- (NSString *)partitionBsonType:(id<LEGACYBSON>)bson;
 
-- (RLMApp *)appWithId:(NSString *)appId NS_SWIFT_NAME(app(id:));
+- (LEGACYApp *)appWithId:(NSString *)appId NS_SWIFT_NAME(app(id:));
 
 - (void)resetAppCache;
 
 #pragma mark Flexible Sync App
 
-- (void)populateData:(void (^)(RLMRealm *))block;
-- (void)writeQueryAndCompleteForRealm:(RLMRealm *)realm block:(void (^)(RLMSyncSubscriptionSet *))block;
+- (void)populateData:(void (^)(LEGACYRealm *))block;
+- (void)writeQueryAndCompleteForRealm:(LEGACYRealm *)realm block:(void (^)(LEGACYSyncSubscriptionSet *))block;
 
 @end
 
-@interface RLMSyncManager ()
+@interface LEGACYSyncManager ()
 // Wait for all sync sessions associated with this sync manager to be fully
 // torn down. Once this returns, it is guaranteed that reopening a Realm will
 // actually create a new sync session.
@@ -236,21 +236,21 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 // Suspend or resume a sync session without fully tearing it down. These do
 // what `suspend` and `resume` will do in the next major version, but it would
 // be a breaking change to swap them.
-@interface RLMSyncSession ()
+@interface LEGACYSyncSession ()
 - (void)pause;
 - (void)unpause;
 @end
 
-@interface RLMUser (Test)
+@interface LEGACYUser (Test)
 // Get the mongo collection for the given object type in the given app. This
 // must be used instead of the normal public API because we scope our
 // collection names to the app.
-- (RLMMongoCollection *)collectionForType:(Class)type app:(RLMApp *)app NS_SWIFT_NAME(collection(for:app:));
+- (LEGACYMongoCollection *)collectionForType:(Class)type app:(LEGACYApp *)app NS_SWIFT_NAME(collection(for:app:));
 @end
 
-FOUNDATION_EXTERN int64_t RLMGetClientFileIdent(RLMRealm *realm);
+FOUNDATION_EXTERN int64_t LEGACYGetClientFileIdent(LEGACYRealm *realm);
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)
 
 #define WAIT_FOR_SEMAPHORE(macro_semaphore, macro_timeout) do {                                                        \
     int64_t delay_in_ns = (int64_t)(macro_timeout * NSEC_PER_SEC);                                                     \
@@ -260,7 +260,7 @@ RLM_HEADER_AUDIT_END(nullability, sendability)
 
 #define CHECK_COUNT(d_count, macro_object_type, macro_realm) do {                                         \
     [macro_realm refresh];                                                                                \
-    RLMResults *r = [macro_object_type allObjectsInRealm:macro_realm];                                    \
+    LEGACYResults *r = [macro_object_type allObjectsInRealm:macro_realm];                                    \
     NSInteger c = r.count;                                                                                \
     NSString *w = self.isParent ? @"parent" : @"child";                                                   \
     XCTAssert(d_count == c, @"Expected %@ items, but actually got %@ (%@) (%@)", @(d_count), @(c), r, w); \

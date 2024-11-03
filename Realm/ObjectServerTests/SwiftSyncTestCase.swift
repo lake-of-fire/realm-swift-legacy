@@ -33,14 +33,14 @@
 //    return String((0..<length).map { _ in letters.randomElement()! })
 //}
 //
-//public typealias ChildProcessEnvironment = RLMChildProcessEnvironment
+//public typealias ChildProcessEnvironment = LEGACYChildProcessEnvironment
 //
 //public enum ProcessKind {
 //    case parent
 //    case child(environment: ChildProcessEnvironment)
 //
 //    public static var current: ProcessKind {
-//        if getenv("RLMProcessIsChild") == nil {
+//        if getenv("LEGACYProcessIsChild") == nil {
 //            return .parent
 //        } else {
 //            return .child(environment: ChildProcessEnvironment.current())
@@ -48,11 +48,11 @@
 //    }
 //}
 //
-//// SwiftSyncTestCase wraps RLMSyncTestCase to make it more pleasant to use from
+//// SwiftSyncTestCase wraps LEGACYSyncTestCase to make it more pleasant to use from
 //// Swift. Most of the comments there apply to this as well.
 //@available(macOS 13, *)
 //@MainActor
-//open class SwiftSyncTestCase: RLMSyncTestCase {
+//open class SwiftSyncTestCase: LEGACYSyncTestCase {
 //    // overridden in subclasses to generate a FLX config instead of a PBS one
 //    open func configuration(user: User) -> RealmLegacy.Configuration {
 //        user.configuration(partitionValue: self.name)
@@ -135,7 +135,7 @@
 //    public func write(app: App? = nil, _ block: (RealmLegacy) throws -> Void) throws {
 //        try autoreleasepool {
 //            let realm = try openRealm(app: app)
-//            RLMRealmSubscribeToAll(ObjectiveCSupport.convert(object: realm))
+//            LEGACYRealmSubscribeToAll(ObjectiveCSupport.convert(object: realm))
 //
 //            try realm.write {
 //                try block(realm)
@@ -163,22 +163,22 @@
 //
 //    var exceptionThrown = false
 //
-//    public func assertThrows<T>(_ block: @autoclosure () -> T, named: String? = RLMExceptionName,
+//    public func assertThrows<T>(_ block: @autoclosure () -> T, named: String? = LEGACYExceptionName,
 //                                _ message: String? = nil, fileName: String = #file, lineNumber: UInt = #line) {
 //        exceptionThrown = true
-//        RLMAssertThrowsWithName(self, { _ = block() }, named, message, fileName, lineNumber)
+//        LEGACYAssertThrowsWithName(self, { _ = block() }, named, message, fileName, lineNumber)
 //    }
 //
 //    public func assertThrows<T>(_ block: @autoclosure () -> T, reason: String,
 //                                _ message: String? = nil, fileName: String = #file, lineNumber: UInt = #line) {
 //        exceptionThrown = true
-//        RLMAssertThrowsWithReason(self, { _ = block() }, reason, message, fileName, lineNumber)
+//        LEGACYAssertThrowsWithReason(self, { _ = block() }, reason, message, fileName, lineNumber)
 //    }
 //
 //    public func assertThrows<T>(_ block: @autoclosure () -> T, reasonMatching regexString: String,
 //                                _ message: String? = nil, fileName: String = #file, lineNumber: UInt = #line) {
 //        exceptionThrown = true
-//        RLMAssertThrowsWithReasonMatching(self, { _ = block() }, regexString, message, fileName, lineNumber)
+//        LEGACYAssertThrowsWithReasonMatching(self, { _ = block() }, regexString, message, fileName, lineNumber)
 //    }
 //
 //    public static let bigObjectCount = 2

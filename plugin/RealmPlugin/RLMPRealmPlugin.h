@@ -18,6 +18,6 @@
 
 #import <AppKit/AppKit.h>
 
-@interface RLMPRealmPlugin : NSObject
+@interface LEGACYPRealmPlugin : NSObject
 
 @end

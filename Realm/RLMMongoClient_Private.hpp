@@ -16,19 +16,19 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMMongoClient.h>
+#import <Realm/LEGACYMongoClient.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@class RLMUser;
+@class LEGACYUser;
 
-@interface RLMMongoClient ()
+@interface LEGACYMongoClient ()
 
-@property (nonatomic, strong) RLMUser *user;
+@property (nonatomic, strong) LEGACYUser *user;
 
-- (instancetype)initWithUser:(RLMUser *)user serviceName:(NSString *)serviceName;
+- (instancetype)initWithUser:(LEGACYUser *)user serviceName:(NSString *)serviceName;
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)
 

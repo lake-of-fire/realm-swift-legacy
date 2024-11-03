@@ -19,7 +19,7 @@
 #import <Foundation/Foundation.h>
 #import <Realm/Realm.h>
 
-@interface Venue : RLMObject
+@interface Venue : LEGACYObject
 @property NSString * foursquareID;
 @property NSString * name;
 @end

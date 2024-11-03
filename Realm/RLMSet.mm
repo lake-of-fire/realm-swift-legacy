@@ -16,22 +16,22 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSet_Private.hpp"
+#import "LEGACYSet_Private.hpp"
 
-#import "RLMObjectSchema.h"
-#import "RLMObjectStore.h"
-#import "RLMObject_Private.h"
-#import "RLMProperty_Private.h"
-#import "RLMQueryUtil.hpp"
-#import "RLMSchema_Private.h"
-#import "RLMSwiftSupport.h"
-#import "RLMThreadSafeReference_Private.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYObjectSchema.h"
+#import "LEGACYObjectStore.h"
+#import "LEGACYObject_Private.h"
+#import "LEGACYProperty_Private.h"
+#import "LEGACYQueryUtil.hpp"
+#import "LEGACYSchema_Private.h"
+#import "LEGACYSwiftSupport.h"
+#import "LEGACYThreadSafeReference_Private.hpp"
+#import "LEGACYUtil.hpp"
 
-@interface RLMSet () <RLMThreadConfined_Private>
+@interface LEGACYSet () <LEGACYThreadConfined_Private>
 @end
 
-@implementation RLMSet {
+@implementation LEGACYSet {
 @public
     // Backing set when this instance is unmanaged
     NSMutableOrderedSet *_backingCollection;
@@ -40,12 +40,12 @@
 #pragma mark - Initializers
 
 - (instancetype)initWithObjectClassName:(__unsafe_unretained NSString *const)objectClassName
-                                keyType:(__unused RLMPropertyType)keyType {
+                                keyType:(__unused LEGACYPropertyType)keyType {
     return [self initWithObjectClassName:objectClassName];
 }
-- (instancetype)initWithObjectType:(RLMPropertyType)type
+- (instancetype)initWithObjectType:(LEGACYPropertyType)type
                           optional:(BOOL)optional
-                           keyType:(__unused RLMPropertyType)keyType {
+                           keyType:(__unused LEGACYPropertyType)keyType {
     return [self initWithObjectType:type optional:optional];
 }
 
@@ -54,12 +54,12 @@
     self = [super init];
     if (self) {
         _objectClassName = objectClassName;
-        _type = RLMPropertyTypeObject;
+        _type = LEGACYPropertyTypeObject;
     }
     return self;
 }
 
-- (instancetype)initWithObjectType:(RLMPropertyType)type optional:(BOOL)optional {
+- (instancetype)initWithObjectType:(LEGACYPropertyType)type optional:(BOOL)optional {
     self = [super init];
     if (self) {
         _type = type;
@@ -68,13 +68,13 @@
     return self;
 }
 
-- (void)setParent:(RLMObjectBase *)parentObject property:(RLMProperty *)property {
+- (void)setParent:(LEGACYObjectBase *)parentObject property:(LEGACYProperty *)property {
     _parentObject = parentObject;
     _key = property.name;
     _isLegacyProperty = property.isLegacy;
 }
 
-#pragma mark - Convenience wrappers used for all RLMSet types
+#pragma mark - Convenience wrappers used for all LEGACYSet types
 
 - (void)addObjects:(id<NSFastEnumeration>)objects {
     for (id obj in objects) {
@@ -83,19 +83,19 @@
 }
 
 - (void)addObject:(id)object {
-    RLMSetValidateMatchingObjectType(self, object);
+    LEGACYSetValidateMatchingObjectType(self, object);
     changeSet(self, ^{
         [_backingCollection addObject:object];
     });
 }
 
 - (void)setObject:(id)newValue atIndexedSubscript:(NSUInteger)index {
-    REALM_TERMINATE("Replacing objects at an indexed subscript is not supported on RLMSet");
+    REALM_TERMINATE("Replacing objects at an indexed subscript is not supported on LEGACYSet");
 }
 
-- (void)setSet:(RLMSet<id> *)set {
+- (void)setSet:(LEGACYSet<id> *)set {
     for (id obj in set) {
-        RLMSetValidateMatchingObjectType(self, obj);
+        LEGACYSetValidateMatchingObjectType(self, obj);
     }
     changeSet(self, ^{
         [_backingCollection removeAllObjects];
@@ -103,58 +103,58 @@
     });
 }
 
-- (void)intersectSet:(RLMSet<id> *)set {
+- (void)intersectSet:(LEGACYSet<id> *)set {
     for (id obj in set) {
-        RLMSetValidateMatchingObjectType(self, obj);
+        LEGACYSetValidateMatchingObjectType(self, obj);
     }
     changeSet(self, ^{
         [_backingCollection intersectOrderedSet:set->_backingCollection];
     });
 }
 
-- (void)minusSet:(RLMSet<id> *)set {
+- (void)minusSet:(LEGACYSet<id> *)set {
     for (id obj in set) {
-        RLMSetValidateMatchingObjectType(self, obj);
+        LEGACYSetValidateMatchingObjectType(self, obj);
     }
     changeSet(self, ^{
         [_backingCollection minusOrderedSet:set->_backingCollection];
     });
 }
 
-- (void)unionSet:(RLMSet<id> *)set {
+- (void)unionSet:(LEGACYSet<id> *)set {
     for (id obj in set) {
-        RLMSetValidateMatchingObjectType(self, obj);
+        LEGACYSetValidateMatchingObjectType(self, obj);
     }
     changeSet(self, ^{
         [_backingCollection unionOrderedSet:set->_backingCollection];
     });
 }
 
-- (BOOL)isSubsetOfSet:(RLMSet<id> *)set {
+- (BOOL)isSubsetOfSet:(LEGACYSet<id> *)set {
     for (id obj in set) {
-        RLMSetValidateMatchingObjectType(self, obj);
+        LEGACYSetValidateMatchingObjectType(self, obj);
     }
     return [_backingCollection isSubsetOfOrderedSet:set->_backingCollection];
 }
 
-- (BOOL)intersectsSet:(RLMSet<id> *)set {
+- (BOOL)intersectsSet:(LEGACYSet<id> *)set {
     for (id obj in set) {
-        RLMSetValidateMatchingObjectType(self, obj);
+        LEGACYSetValidateMatchingObjectType(self, obj);
     }
     return [_backingCollection intersectsOrderedSet:set->_backingCollection];
 }
 
 - (BOOL)containsObject:(id)obj {
-    RLMSetValidateMatchingObjectType(self, obj);
+    LEGACYSetValidateMatchingObjectType(self, obj);
     return [_backingCollection containsObject:obj];
 }
 
-- (BOOL)isEqualToSet:(RLMSet<id> *)set {
+- (BOOL)isEqualToSet:(LEGACYSet<id> *)set {
     return [self isEqual:set];
 }
 
-- (RLMResults *)sortedResultsUsingKeyPath:(NSString *)keyPath ascending:(BOOL)ascending {
-    return [self sortedResultsUsingDescriptors:@[[RLMSortDescriptor sortDescriptorWithKeyPath:keyPath ascending:ascending]]];
+- (LEGACYResults *)sortedResultsUsingKeyPath:(NSString *)keyPath ascending:(BOOL)ascending {
+    return [self sortedResultsUsingDescriptors:@[[LEGACYSortDescriptor sortDescriptorWithKeyPath:keyPath ascending:ascending]]];
 }
 
 - (nonnull id)objectAtIndexedSubscript:(NSUInteger)index {
@@ -167,29 +167,29 @@
 // http://www.openradar.me/radar?id=6135653276319744
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmismatched-parameter-types"
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMArray *, RLMCollectionChange *, NSError *))block {
-    return RLMAddNotificationBlock(self, block, nil, nil);
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYArray *, LEGACYCollectionChange *, NSError *))block {
+    return LEGACYAddNotificationBlock(self, block, nil, nil);
 }
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMArray *, RLMCollectionChange *, NSError *))block
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYArray *, LEGACYCollectionChange *, NSError *))block
                                          queue:(dispatch_queue_t)queue {
-    return RLMAddNotificationBlock(self, block, nil, queue);
+    return LEGACYAddNotificationBlock(self, block, nil, queue);
 }
 
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMArray *, RLMCollectionChange *, NSError *))block
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYArray *, LEGACYCollectionChange *, NSError *))block
                                       keyPaths:(NSArray<NSString *> *)keyPaths {
-    return RLMAddNotificationBlock(self, block, keyPaths,nil);
+    return LEGACYAddNotificationBlock(self, block, keyPaths,nil);
 }
 
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMArray *, RLMCollectionChange *, NSError *))block
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYArray *, LEGACYCollectionChange *, NSError *))block
                                       keyPaths:(NSArray<NSString *> *)keyPaths
                                          queue:(dispatch_queue_t)queue {
-    return RLMAddNotificationBlock(self, block, keyPaths, queue);
+    return LEGACYAddNotificationBlock(self, block, keyPaths, queue);
 }
 #pragma clang diagnostic pop
 
-#pragma mark - Unmanaged RLMSet implementation
+#pragma mark - Unmanaged LEGACYSet implementation
 
-- (RLMRealm *)realm {
+- (LEGACYRealm *)realm {
     return nil;
 }
 
@@ -230,16 +230,16 @@
 - (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state
                                   objects:(__unused __unsafe_unretained id [])buffer
                                     count:(__unused NSUInteger)len {
-    return RLMUnmanagedFastEnumerate(_backingCollection, state);
+    return LEGACYUnmanagedFastEnumerate(_backingCollection, state);
 }
 
-static void changeSet(__unsafe_unretained RLMSet *const set,
+static void changeSet(__unsafe_unretained LEGACYSet *const set,
                       dispatch_block_t f) {
     if (!set->_backingCollection) {
         set->_backingCollection = [NSMutableOrderedSet new];
     }
 
-    if (RLMObjectBase *parent = set->_parentObject) {
+    if (LEGACYObjectBase *parent = set->_parentObject) {
         [parent willChangeValueForKey:set->_key];
         f();
         [parent didChangeValueForKey:set->_key];
@@ -249,12 +249,12 @@ static void changeSet(__unsafe_unretained RLMSet *const set,
     }
 }
 
-static void validateSetBounds(__unsafe_unretained RLMSet *const set,
+static void validateSetBounds(__unsafe_unretained LEGACYSet *const set,
                               NSUInteger index,
                               bool allowOnePastEnd=false) {
     NSUInteger max = set->_backingCollection.count + allowOnePastEnd;
     if (index >= max) {
-        @throw RLMException(@"Index %llu is out of bounds (must be less than %llu).",
+        @throw LEGACYException(@"Index %llu is out of bounds (must be less than %llu).",
                             (unsigned long long)index, (unsigned long long)max);
     }
 }
@@ -266,7 +266,7 @@ static void validateSetBounds(__unsafe_unretained RLMSet *const set,
 }
 
 - (void)removeObject:(id)object {
-    RLMSetValidateMatchingObjectType(self, object);
+    LEGACYSetValidateMatchingObjectType(self, object);
     changeSet(self, ^{
         [_backingCollection removeObject:object];
     });
@@ -284,32 +284,32 @@ static void validateSetBounds(__unsafe_unretained RLMSet *const set,
     });
 }
 
-- (RLMResults *)objectsWhere:(NSString *)predicateFormat, ... {
+- (LEGACYResults *)objectsWhere:(NSString *)predicateFormat, ... {
     va_list args;
     va_start(args, predicateFormat);
-    RLMResults *results = [self objectsWhere:predicateFormat args:args];
+    LEGACYResults *results = [self objectsWhere:predicateFormat args:args];
     va_end(args);
     return results;
 }
 
-- (RLMResults *)objectsWhere:(NSString *)predicateFormat args:(va_list)args {
+- (LEGACYResults *)objectsWhere:(NSString *)predicateFormat args:(va_list)args {
     return [self objectsWithPredicate:[NSPredicate predicateWithFormat:predicateFormat arguments:args]];
 }
 
-- (RLMPropertyType)typeForProperty:(NSString *)propertyName {
+- (LEGACYPropertyType)typeForProperty:(NSString *)propertyName {
     if ([propertyName isEqualToString:@"self"]) {
         return _type;
     }
 
-    RLMObjectSchema *objectSchema;
+    LEGACYObjectSchema *objectSchema;
     if (_backingCollection.count) {
         objectSchema = [_backingCollection[0] objectSchema];
     }
     else {
-        objectSchema = [RLMSchema.partialPrivateSharedSchema schemaForClassName:_objectClassName];
+        objectSchema = [LEGACYSchema.partialPrivateSharedSchema schemaForClassName:_objectClassName];
     }
 
-    return RLMValidatedProperty(objectSchema, propertyName).type;
+    return LEGACYValidatedProperty(objectSchema, propertyName).type;
 }
 
 - (id)aggregateProperty:(NSString *)key operation:(NSString *)op method:(SEL)sel {
@@ -317,11 +317,11 @@ static void validateSetBounds(__unsafe_unretained RLMSet *const set,
     // nested key paths as well, limiting functionality gives consistency
     // between unmanaged and managed arrays.
     if ([key rangeOfString:@"."].location != NSNotFound) {
-        @throw RLMException(@"Nested key paths are not supported yet for KVC collection operators.");
+        @throw LEGACYException(@"Nested key paths are not supported yet for KVC collection operators.");
     }
 
     if ([op isEqualToString:@"@distinctUnionOfObjects"]) {
-        @throw RLMException(@"this class does not implement the distinctUnionOfObjects");
+        @throw LEGACYException(@"this class does not implement the distinctUnionOfObjects");
     }
 
     bool allowDate = false;
@@ -337,16 +337,16 @@ static void validateSetBounds(__unsafe_unretained RLMSet *const set,
         return [_backingCollection valueForKeyPath:[op stringByAppendingPathExtension:key]];
     }
 
-    RLMPropertyType type = [self typeForProperty:key];
+    LEGACYPropertyType type = [self typeForProperty:key];
     if (!canAggregate(type, allowDate)) {
         NSString *method = sel ? NSStringFromSelector(sel) : op;
-        if (_type == RLMPropertyTypeObject) {
-            @throw RLMException(@"%@: is not supported for %@ property '%@.%@'",
-                                method, RLMTypeToString(type), _objectClassName, key);
+        if (_type == LEGACYPropertyTypeObject) {
+            @throw LEGACYException(@"%@: is not supported for %@ property '%@.%@'",
+                                method, LEGACYTypeToString(type), _objectClassName, key);
         }
         else {
-            @throw RLMException(@"%@ is not supported for %@%s set",
-                                method, RLMTypeToString(_type), _optional ? "?" : "");
+            @throw LEGACYException(@"%@ is not supported for %@%s set",
+                                method, LEGACYTypeToString(_type), _optional ? "?" : "");
         }
     }
 
@@ -370,7 +370,7 @@ static void validateSetBounds(__unsafe_unretained RLMSet *const set,
 }
 
 static NSSet *toUnorderedSet(id value) {
-    if (auto orderedSet = RLMDynamicCast<NSOrderedSet>(value)) {
+    if (auto orderedSet = LEGACYDynamicCast<NSOrderedSet>(value)) {
         return orderedSet.set;
     }
     return value;
@@ -396,7 +396,7 @@ static NSSet *toUnorderedSet(id value) {
 }
 
 - (id)valueForKey:(NSString *)key {
-    if ([key isEqualToString:RLMInvalidatedKey]) {
+    if ([key isEqualToString:LEGACYInvalidatedKey]) {
         return @NO; // Unmanaged sets are never invalidated
     }
     if (!_backingCollection) {
@@ -407,12 +407,12 @@ static NSSet *toUnorderedSet(id value) {
 
 - (void)setValue:(id)value forKey:(NSString *)key {
     if ([key isEqualToString:@"self"]) {
-        RLMSetValidateMatchingObjectType(self, value);
+        LEGACYSetValidateMatchingObjectType(self, value);
         [_backingCollection removeAllObjects];
         [_backingCollection addObject:value];
         return;
     }
-    else if (_type == RLMPropertyTypeObject) {
+    else if (_type == LEGACYPropertyTypeObject) {
         [_backingCollection setValue:value forKey:key];
     }
     else {
@@ -437,7 +437,7 @@ static NSSet *toUnorderedSet(id value) {
 }
 
 - (BOOL)isEqual:(id)object {
-    if (auto set = RLMDynamicCast<RLMSet>(object)) {
+    if (auto set = LEGACYDynamicCast<LEGACYSet>(object)) {
         return !set.realm
         && ((_backingCollection.count == 0 && set->_backingCollection.count == 0)
             || [_backingCollection isEqual:set->_backingCollection]);
@@ -447,36 +447,36 @@ static NSSet *toUnorderedSet(id value) {
 
 - (void)addObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath
             options:(NSKeyValueObservingOptions)options context:(void *)context {
-    RLMValidateSetObservationKey(keyPath, self);
+    LEGACYValidateSetObservationKey(keyPath, self);
     [super addObserver:observer forKeyPath:keyPath options:options context:context];
 }
 
-void RLMSetValidateMatchingObjectType(__unsafe_unretained RLMSet *const set,
+void LEGACYSetValidateMatchingObjectType(__unsafe_unretained LEGACYSet *const set,
                                       __unsafe_unretained id const value) {
     if (!value && !set->_optional) {
-        @throw RLMException(@"Invalid nil value for set of '%@'.",
-                            set->_objectClassName ?: RLMTypeToString(set->_type));
+        @throw LEGACYException(@"Invalid nil value for set of '%@'.",
+                            set->_objectClassName ?: LEGACYTypeToString(set->_type));
     }
-    if (set->_type != RLMPropertyTypeObject) {
-        if (!RLMValidateValue(value, set->_type, set->_optional, false, nil)) {
-            @throw RLMException(@"Invalid value '%@' of type '%@' for expected type '%@%s'.",
-                                value, [value class], RLMTypeToString(set->_type),
+    if (set->_type != LEGACYPropertyTypeObject) {
+        if (!LEGACYValidateValue(value, set->_type, set->_optional, false, nil)) {
+            @throw LEGACYException(@"Invalid value '%@' of type '%@' for expected type '%@%s'.",
+                                value, [value class], LEGACYTypeToString(set->_type),
                                 set->_optional ? "?" : "");
         }
         return;
     }
 
-    auto object = RLMDynamicCast<RLMObjectBase>(value);
+    auto object = LEGACYDynamicCast<LEGACYObjectBase>(value);
     if (!object) {
         return;
     }
     if (!object->_objectSchema) {
-        @throw RLMException(@"Object cannot be inserted unless the schema is initialized. "
-                            "This can happen if you try to insert objects into a RLMSet / Set from a default value or from an overriden unmanaged initializer (`init()`).");
+        @throw LEGACYException(@"Object cannot be inserted unless the schema is initialized. "
+                            "This can happen if you try to insert objects into a LEGACYSet / Set from a default value or from an overriden unmanaged initializer (`init()`).");
     }
     if (![set->_objectClassName isEqualToString:object->_objectSchema.className]
-        && (set->_type != RLMPropertyTypeAny)) {
-        @throw RLMException(@"Object of type '%@' does not match RLMSet type '%@'.",
+        && (set->_type != LEGACYPropertyTypeAny)) {
+        @throw LEGACYException(@"Object of type '%@' does not match LEGACYSet type '%@'.",
                             object->_objectSchema.className, set->_objectClassName);
     }
 }
@@ -487,56 +487,56 @@ void RLMSetValidateMatchingObjectType(__unsafe_unretained RLMSet *const set,
     return _key;
 }
 
-#pragma mark - Methods unsupported on unmanaged RLMSet instances
+#pragma mark - Methods unsupported on unmanaged LEGACYSet instances
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
 
-- (RLMResults *)objectsWithPredicate:(NSPredicate *)predicate {
-    @throw RLMException(@"This method may only be called on RLMSet instances retrieved from an RLMRealm");
+- (LEGACYResults *)objectsWithPredicate:(NSPredicate *)predicate {
+    @throw LEGACYException(@"This method may only be called on LEGACYSet instances retrieved from an LEGACYRealm");
 }
 
-- (RLMResults *)sortedResultsUsingDescriptors:(NSArray<RLMSortDescriptor *> *)properties {
-    @throw RLMException(@"This method may only be called on RLMSet instances retrieved from an RLMRealm");
+- (LEGACYResults *)sortedResultsUsingDescriptors:(NSArray<LEGACYSortDescriptor *> *)properties {
+    @throw LEGACYException(@"This method may only be called on LEGACYSet instances retrieved from an LEGACYRealm");
 }
 
-- (RLMResults *)distinctResultsUsingKeyPaths:(NSArray<NSString *> *)keyPaths {
-    @throw RLMException(@"This method may only be called on RLMSet instances retrieved from an RLMRealm");
+- (LEGACYResults *)distinctResultsUsingKeyPaths:(NSArray<NSString *> *)keyPaths {
+    @throw LEGACYException(@"This method may only be called on LEGACYSet instances retrieved from an LEGACYRealm");
 }
 
-- (RLMSectionedResults *)sectionedResultsSortedUsingKeyPath:(NSString *)keyPath
+- (LEGACYSectionedResults *)sectionedResultsSortedUsingKeyPath:(NSString *)keyPath
                                                   ascending:(BOOL)ascending
-                                                   keyBlock:(RLMSectionedResultsKeyBlock)keyBlock {
-    @throw RLMException(@"This method may only be called on RLMSet instances retrieved from an RLMRealm");
+                                                   keyBlock:(LEGACYSectionedResultsKeyBlock)keyBlock {
+    @throw LEGACYException(@"This method may only be called on LEGACYSet instances retrieved from an LEGACYRealm");
 }
 
-- (RLMSectionedResults *)sectionedResultsUsingSortDescriptors:(NSArray<RLMSortDescriptor *> *)sortDescriptors
-                                                     keyBlock:(RLMSectionedResultsKeyBlock)keyBlock {
-    @throw RLMException(@"This method may only be called on RLMSet instances retrieved from an RLMRealm");
+- (LEGACYSectionedResults *)sectionedResultsUsingSortDescriptors:(NSArray<LEGACYSortDescriptor *> *)sortDescriptors
+                                                     keyBlock:(LEGACYSectionedResultsKeyBlock)keyBlock {
+    @throw LEGACYException(@"This method may only be called on LEGACYSet instances retrieved from an LEGACYRealm");
 }
 
 - (instancetype)freeze {
-    @throw RLMException(@"This method may only be called on RLMSet instances retrieved from an RLMRealm");
+    @throw LEGACYException(@"This method may only be called on LEGACYSet instances retrieved from an LEGACYRealm");
 }
 
 - (instancetype)thaw {
-    @throw RLMException(@"This method may only be called on RLMSet instances retrieved from an RLMRealm");
+    @throw LEGACYException(@"This method may only be called on LEGACYSet instances retrieved from an LEGACYRealm");
 }
 
 #pragma mark - Thread Confined Protocol Conformance
 
 - (realm::ThreadSafeReference)makeThreadSafeReference {
-    REALM_TERMINATE("Unexpected handover of unmanaged `RLMSet`");
+    REALM_TERMINATE("Unexpected handover of unmanaged `LEGACYSet`");
 }
 
 - (id)objectiveCMetadata {
-    REALM_TERMINATE("Unexpected handover of unmanaged `RLMSet`");
+    REALM_TERMINATE("Unexpected handover of unmanaged `LEGACYSet`");
 }
 
 + (instancetype)objectWithThreadSafeReference:(realm::ThreadSafeReference)reference
                                      metadata:(id)metadata
-                                        realm:(RLMRealm *)realm {
-    REALM_TERMINATE("Unexpected handover of unmanaged `RLMSet`");
+                                        realm:(LEGACYRealm *)realm {
+    REALM_TERMINATE("Unexpected handover of unmanaged `LEGACYSet`");
 }
 
 #pragma clang diagnostic pop // unused parameter warning
@@ -544,10 +544,10 @@ void RLMSetValidateMatchingObjectType(__unsafe_unretained RLMSet *const set,
 #pragma mark - Superclass Overrides
 
 - (NSString *)description {
-    return [self descriptionWithMaxDepth:RLMDescriptionMaxDepth];
+    return [self descriptionWithMaxDepth:LEGACYDescriptionMaxDepth];
 }
 
 - (NSString *)descriptionWithMaxDepth:(NSUInteger)depth {
-    return RLMDescriptionWithMaxDepth(@"RLMSet", self, depth);
+    return LEGACYDescriptionWithMaxDepth(@"LEGACYSet", self, depth);
 }
 @end

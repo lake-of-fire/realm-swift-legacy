@@ -16,25 +16,25 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMRealm+Sync.h"
+#import "LEGACYRealm+Sync.h"
 
-#import "RLMObjectBase.h"
-#import "RLMQueryUtil.hpp"
-#import "RLMObjectSchema.h"
-#import "RLMRealm_Private.hpp"
-#import "RLMResults_Private.hpp"
-#import "RLMSchema.h"
-#import "RLMSyncSession.h"
+#import "LEGACYObjectBase.h"
+#import "LEGACYQueryUtil.hpp"
+#import "LEGACYObjectSchema.h"
+#import "LEGACYRealm_Private.hpp"
+#import "LEGACYResults_Private.hpp"
+#import "LEGACYSchema.h"
+#import "LEGACYSyncSession.h"
 
 #import <realm/object-store/results.hpp>
 #import <realm/object-store/shared_realm.hpp>
 
 using namespace realm;
 
-@implementation RLMRealm (Sync)
+@implementation LEGACYRealm (Sync)
 
-- (RLMSyncSession *)syncSession {
-    return [RLMSyncSession sessionForRealm:self];
+- (LEGACYSyncSession *)syncSession {
+    return [LEGACYSyncSession sessionForRealm:self];
 }
 
 @end

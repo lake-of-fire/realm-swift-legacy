@@ -18,7 +18,7 @@
 
 #import <Realm/Realm.h>
 
-@interface ObjcModel : RLMObject
+@interface ObjcModel : LEGACYObject
 @property (nonatomic) int value;
 @end
 

@@ -17,4 +17,4 @@
 ////////////////////////////////////////////////////////////////////////////
 
 // Asynchronously check for updates to Realm if running on a simulator
-void RLMCheckForUpdates();
+void LEGACYCheckForUpdates();

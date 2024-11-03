@@ -16,16 +16,16 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@class RLMObjectId;
-@protocol RLMBSON;
+@class LEGACYObjectId;
+@protocol LEGACYBSON;
 
-/// The result of an `updateOne` or `updateMany` operation a `RLMMongoCollection`.
-RLM_SWIFT_SENDABLE RLM_FINAL // immutable final class
-@interface RLMUpdateResult : NSObject
+/// The result of an `updateOne` or `updateMany` operation a `LEGACYMongoCollection`.
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL // immutable final class
+@interface LEGACYUpdateResult : NSObject
 
 /// The number of documents that matched the filter.
 @property (nonatomic, readonly) NSUInteger matchedCount;
@@ -34,12 +34,12 @@ RLM_SWIFT_SENDABLE RLM_FINAL // immutable final class
 @property (nonatomic, readonly) NSUInteger modifiedCount;
 
 /// The identifier of the inserted document if an upsert took place and the document's primary key is an `ObjectId`.
-@property (nonatomic, nullable, readonly) RLMObjectId *objectId
+@property (nonatomic, nullable, readonly) LEGACYObjectId *objectId
 __attribute__((deprecated("Use documentId instead, which support all BSON types", "documentId")));
 
 /// The identifier of the inserted document if an upsert took place.
-@property (nonatomic, nullable, readonly) id<RLMBSON> documentId;
+@property (nonatomic, nullable, readonly) id<LEGACYBSON> documentId;
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

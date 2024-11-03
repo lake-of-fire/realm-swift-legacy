@@ -16,26 +16,26 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "NSError+RLMSync.h"
+#import "NSError+LEGACYSync.h"
 
-#import "RLMError.h"
+#import "LEGACYError.h"
 
-@implementation NSError (RLMSync)
+@implementation NSError (LEGACYSync)
 
-- (RLMSyncErrorActionToken *)rlmSync_errorActionToken {
-    if (self.domain != RLMSyncErrorDomain) {
+- (LEGACYSyncErrorActionToken *)rlmSync_errorActionToken {
+    if (self.domain != LEGACYSyncErrorDomain) {
         return nil;
     }
-    if (self.code == RLMSyncErrorClientResetError
-        || self.code == RLMSyncErrorPermissionDeniedError) {
-        return (RLMSyncErrorActionToken *)self.userInfo[kRLMSyncErrorActionTokenKey];
+    if (self.code == LEGACYSyncErrorClientResetError
+        || self.code == LEGACYSyncErrorPermissionDeniedError) {
+        return (LEGACYSyncErrorActionToken *)self.userInfo[kLEGACYSyncErrorActionTokenKey];
     }
     return nil;
 }
 
 - (NSString *)rlmSync_clientResetBackedUpRealmPath {
-    if (self.domain == RLMSyncErrorDomain && self.code == RLMSyncErrorClientResetError) {
-        return self.userInfo[kRLMSyncPathOfRealmBackupCopyKey];
+    if (self.domain == LEGACYSyncErrorDomain && self.code == LEGACYSyncErrorClientResetError) {
+        return self.userInfo[kLEGACYSyncPathOfRealmBackupCopyKey];
     }
     return nil;
 }

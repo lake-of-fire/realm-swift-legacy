@@ -19,13 +19,13 @@
 #import <Foundation/Foundation.h>
 #import <stdint.h>
 
-@class RLMObjectBase, RLMArray, RLMSet;
+@class LEGACYObjectBase, LEGACYArray, LEGACYSet;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-RLM_HEADER_AUDIT_BEGIN(nullability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability)
 
 #define REALM_FOR_EACH_SWIFT_PRIMITIVE_TYPE(macro) \
     macro(bool, Bool, bool) \
@@ -38,33 +38,33 @@ RLM_HEADER_AUDIT_BEGIN(nullability)
     macro(NSDate, Date, date) \
     macro(NSData, Data, data) \
     macro(NSUUID, UUID, uuid) \
-    macro(RLMDecimal128, Decimal128, decimal128) \
-    macro(RLMObjectId, ObjectId, objectId)
+    macro(LEGACYDecimal128, Decimal128, decimal128) \
+    macro(LEGACYObjectId, ObjectId, objectId)
 
 #define REALM_SWIFT_PROPERTY_ACCESSOR(objc, swift, rlmtype) \
-    objc RLMGetSwiftProperty##swift(RLMObjectBase *, uint16_t); \
-    objc RLMGetSwiftProperty##swift##Optional(RLMObjectBase *, uint16_t, bool *); \
-    void RLMSetSwiftProperty##swift(RLMObjectBase *, uint16_t, objc);
+    objc LEGACYGetSwiftProperty##swift(LEGACYObjectBase *, uint16_t); \
+    objc LEGACYGetSwiftProperty##swift##Optional(LEGACYObjectBase *, uint16_t, bool *); \
+    void LEGACYSetSwiftProperty##swift(LEGACYObjectBase *, uint16_t, objc);
 REALM_FOR_EACH_SWIFT_PRIMITIVE_TYPE(REALM_SWIFT_PROPERTY_ACCESSOR)
 #undef REALM_SWIFT_PROPERTY_ACCESSOR
 
 #define REALM_SWIFT_PROPERTY_ACCESSOR(objc, swift, rlmtype) \
-    objc *_Nullable RLMGetSwiftProperty##swift(RLMObjectBase *, uint16_t); \
-    void RLMSetSwiftProperty##swift(RLMObjectBase *, uint16_t, objc *_Nullable);
+    objc *_Nullable LEGACYGetSwiftProperty##swift(LEGACYObjectBase *, uint16_t); \
+    void LEGACYSetSwiftProperty##swift(LEGACYObjectBase *, uint16_t, objc *_Nullable);
 REALM_FOR_EACH_SWIFT_OBJECT_TYPE(REALM_SWIFT_PROPERTY_ACCESSOR)
 #undef REALM_SWIFT_PROPERTY_ACCESSOR
 
-id<RLMValue> _Nullable RLMGetSwiftPropertyAny(RLMObjectBase *, uint16_t);
-void RLMSetSwiftPropertyAny(RLMObjectBase *, uint16_t, id<RLMValue>);
-RLMObjectBase *_Nullable RLMGetSwiftPropertyObject(RLMObjectBase *, uint16_t);
-void RLMSetSwiftPropertyNil(RLMObjectBase *, uint16_t);
-void RLMSetSwiftPropertyObject(RLMObjectBase *, uint16_t, RLMObjectBase *_Nullable);
+id<LEGACYValue> _Nullable LEGACYGetSwiftPropertyAny(LEGACYObjectBase *, uint16_t);
+void LEGACYSetSwiftPropertyAny(LEGACYObjectBase *, uint16_t, id<LEGACYValue>);
+LEGACYObjectBase *_Nullable LEGACYGetSwiftPropertyObject(LEGACYObjectBase *, uint16_t);
+void LEGACYSetSwiftPropertyNil(LEGACYObjectBase *, uint16_t);
+void LEGACYSetSwiftPropertyObject(LEGACYObjectBase *, uint16_t, LEGACYObjectBase *_Nullable);
 
-RLMArray *_Nonnull RLMGetSwiftPropertyArray(RLMObjectBase *obj, uint16_t);
-RLMSet *_Nonnull RLMGetSwiftPropertySet(RLMObjectBase *obj, uint16_t);
-RLMDictionary *_Nonnull RLMGetSwiftPropertyMap(RLMObjectBase *obj, uint16_t);
+LEGACYArray *_Nonnull LEGACYGetSwiftPropertyArray(LEGACYObjectBase *obj, uint16_t);
+LEGACYSet *_Nonnull LEGACYGetSwiftPropertySet(LEGACYObjectBase *obj, uint16_t);
+LEGACYDictionary *_Nonnull LEGACYGetSwiftPropertyMap(LEGACYObjectBase *obj, uint16_t);
 
-RLM_HEADER_AUDIT_END(nullability)
+LEGACY_HEADER_AUDIT_END(nullability)
 
 #ifdef __cplusplus
 } // extern "C"

@@ -24,14 +24,14 @@ import RealmLegacy
 public extension ObjectiveCSupport {
     // FIXME: remove these and rename convertBson to convert on the next major
     // version bump
-    static func convert(object: AnyBSON?) -> RLMBSON? {
+    static func convert(object: AnyBSON?) -> LEGACYBSON? {
         if let converted = object.map(self.convertBson), !(converted is NSNull) {
             return converted
         }
         return nil
     }
 
-    static func convert(object: RLMBSON?) -> AnyBSON? {
+    static func convert(object: LEGACYBSON?) -> AnyBSON? {
         if let object = object {
             let converted = convertBson(object: object)
             if converted == .null {
@@ -42,14 +42,14 @@ public extension ObjectiveCSupport {
         return nil
     }
 
-    static func convert(_ object: Document) -> [String: RLMBSON] {
-        object.reduce(into: Dictionary<String, RLMBSON>()) { (result: inout [String: RLMBSON], kvp) in
+    static func convert(_ object: Document) -> [String: LEGACYBSON] {
+        object.reduce(into: Dictionary<String, LEGACYBSON>()) { (result: inout [String: LEGACYBSON], kvp) in
             result[kvp.key] = kvp.value.map(convertBson) ?? NSNull()
         }
     }
 
-    /// Convert an `AnyBSON` to a `RLMBSON`.
-    static func convertBson(object: AnyBSON) -> RLMBSON {
+    /// Convert an `AnyBSON` to a `LEGACYBSON`.
+    static func convertBson(object: AnyBSON) -> LEGACYBSON {
         switch object {
         case .int32(let val):
             return val as NSNumber
@@ -66,9 +66,9 @@ public extension ObjectiveCSupport {
         case .timestamp(let val):
             return val as NSDate
         case .decimal128(let val):
-            return val as RLMDecimal128
+            return val as LEGACYDecimal128
         case .objectId(let val):
-            return val as RLMObjectId
+            return val as LEGACYObjectId
         case .document(let val):
             return convert(val) as NSDictionary
         case .array(let val):
@@ -88,12 +88,12 @@ public extension ObjectiveCSupport {
         }
     }
 
-    static func convert(_ object: [String: RLMBSON]) -> Document {
+    static func convert(_ object: [String: LEGACYBSON]) -> Document {
         object.mapValues { convert(object: $0) }
     }
 
-    /// Convert a `RLMBSON` to an `AnyBSON`.
-    static func convertBson(object bson: RLMBSON) -> AnyBSON? {
+    /// Convert a `LEGACYBSON` to an `AnyBSON`.
+    static func convertBson(object bson: LEGACYBSON) -> AnyBSON? {
         switch bson.__bsonType {
         case .null:
             return .null
@@ -138,13 +138,13 @@ public extension ObjectiveCSupport {
             }
             return .datetime(val as Date)
         case .objectId:
-            guard let val = bson as? RLMObjectId,
+            guard let val = bson as? LEGACYObjectId,
                 let oid = try? ObjectId(string: val.stringValue) else {
                 return nil
             }
             return .objectId(oid)
         case .decimal128:
-            guard let val = bson as? RLMDecimal128 else {
+            guard let val = bson as? LEGACYDecimal128 else {
                 return nil
             }
             return .decimal128(Decimal128(stringLiteral: val.stringValue))
@@ -158,12 +158,12 @@ public extension ObjectiveCSupport {
         case .minKey:
             return .minKey
         case .document:
-            guard let val = bson as? Dictionary<String, RLMBSON> else {
+            guard let val = bson as? Dictionary<String, LEGACYBSON> else {
                 return nil
             }
             return .document(convert(val))
         case .array:
-            guard let val = bson as? Array<RLMBSON?> else {
+            guard let val = bson as? Array<LEGACYBSON?> else {
                 return nil
             }
             return .array(val.compactMap {

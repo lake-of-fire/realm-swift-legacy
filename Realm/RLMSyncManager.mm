@@ -16,20 +16,20 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSyncManager_Private.hpp"
+#import "LEGACYSyncManager_Private.hpp"
 
-#import "RLMApp_Private.hpp"
-#import "RLMSyncSession_Private.hpp"
-#import "RLMUser_Private.hpp"
-#import "RLMSyncUtil_Private.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYApp_Private.hpp"
+#import "LEGACYSyncSession_Private.hpp"
+#import "LEGACYUser_Private.hpp"
+#import "LEGACYSyncUtil_Private.hpp"
+#import "LEGACYUtil.hpp"
 
 #import <realm/sync/config.hpp>
 #import <realm/object-store/sync/sync_manager.hpp>
 #import <realm/object-store/sync/sync_session.hpp>
 
 #if !defined(REALM_COCOA_VERSION)
-#import "RLMVersion.h"
+#import "LEGACYVersion.h"
 #endif
 
 #include <os/lock.h>
@@ -40,32 +40,32 @@ using namespace realm;
 using Level = realm::util::Logger::Level;
 
 namespace {
-Level levelForSyncLogLevel(RLMSyncLogLevel logLevel) {
+Level levelForSyncLogLevel(LEGACYSyncLogLevel logLevel) {
     switch (logLevel) {
-        case RLMSyncLogLevelOff:    return Level::off;
-        case RLMSyncLogLevelFatal:  return Level::fatal;
-        case RLMSyncLogLevelError:  return Level::error;
-        case RLMSyncLogLevelWarn:   return Level::warn;
-        case RLMSyncLogLevelInfo:   return Level::info;
-        case RLMSyncLogLevelDetail: return Level::detail;
-        case RLMSyncLogLevelDebug:  return Level::debug;
-        case RLMSyncLogLevelTrace:  return Level::trace;
-        case RLMSyncLogLevelAll:    return Level::all;
+        case LEGACYSyncLogLevelOff:    return Level::off;
+        case LEGACYSyncLogLevelFatal:  return Level::fatal;
+        case LEGACYSyncLogLevelError:  return Level::error;
+        case LEGACYSyncLogLevelWarn:   return Level::warn;
+        case LEGACYSyncLogLevelInfo:   return Level::info;
+        case LEGACYSyncLogLevelDetail: return Level::detail;
+        case LEGACYSyncLogLevelDebug:  return Level::debug;
+        case LEGACYSyncLogLevelTrace:  return Level::trace;
+        case LEGACYSyncLogLevelAll:    return Level::all;
     }
     REALM_UNREACHABLE();    // Unrecognized log level.
 }
 
-RLMSyncLogLevel logLevelForLevel(Level logLevel) {
+LEGACYSyncLogLevel logLevelForLevel(Level logLevel) {
     switch (logLevel) {
-        case Level::off:    return RLMSyncLogLevelOff;
-        case Level::fatal:  return RLMSyncLogLevelFatal;
-        case Level::error:  return RLMSyncLogLevelError;
-        case Level::warn:   return RLMSyncLogLevelWarn;
-        case Level::info:   return RLMSyncLogLevelInfo;
-        case Level::detail: return RLMSyncLogLevelDetail;
-        case Level::debug:  return RLMSyncLogLevelDebug;
-        case Level::trace:  return RLMSyncLogLevelTrace;
-        case Level::all:    return RLMSyncLogLevelAll;
+        case Level::off:    return LEGACYSyncLogLevelOff;
+        case Level::fatal:  return LEGACYSyncLogLevelFatal;
+        case Level::error:  return LEGACYSyncLogLevelError;
+        case Level::warn:   return LEGACYSyncLogLevelWarn;
+        case Level::info:   return LEGACYSyncLogLevelInfo;
+        case Level::detail: return LEGACYSyncLogLevelDetail;
+        case Level::debug:  return LEGACYSyncLogLevelDebug;
+        case Level::trace:  return LEGACYSyncLogLevelTrace;
+        case Level::all:    return LEGACYSyncLogLevelAll;
     }
     REALM_UNREACHABLE();    // Unrecognized log level.
 }
@@ -74,7 +74,7 @@ RLMSyncLogLevel logLevelForLevel(Level logLevel) {
 
 struct CocoaSyncLogger : public realm::util::Logger {
     void do_log(Level, const std::string& message) override {
-        NSLog(@"Sync: %@", RLMStringDataToNSString(message));
+        NSLog(@"Sync: %@", LEGACYStringDataToNSString(message));
     }
 };
 
@@ -85,30 +85,30 @@ static std::unique_ptr<realm::util::Logger> defaultSyncLogger(realm::util::Logge
 }
 
 struct CallbackLogger : public realm::util::Logger {
-    RLMSyncLogFunction logFn;
+    LEGACYSyncLogFunction logFn;
     void do_log(Level level, const std::string& message) override {
         @autoreleasepool {
-            logFn(logLevelForLevel(level), RLMStringDataToNSString(message));
+            logFn(logLevelForLevel(level), LEGACYStringDataToNSString(message));
         }
     }
 };
 
 } // anonymous namespace
 
-std::shared_ptr<realm::util::Logger> RLMWrapLogFunction(RLMSyncLogFunction fn) {
+std::shared_ptr<realm::util::Logger> LEGACYWrapLogFunction(LEGACYSyncLogFunction fn) {
     auto logger = std::make_shared<CallbackLogger>();
     logger->logFn = fn;
     logger->set_level_threshold(Level::all);
     return logger;
 }
 
-#pragma mark - RLMSyncManager
+#pragma mark - LEGACYSyncManager
 
-@implementation RLMSyncManager {
-    RLMUnfairMutex _mutex;
+@implementation LEGACYSyncManager {
+    LEGACYUnfairMutex _mutex;
     std::shared_ptr<SyncManager> _syncManager;
     NSDictionary<NSString *,NSString *> *_customRequestHeaders;
-    RLMSyncLogFunction _logger;
+    LEGACYSyncLogFunction _logger;
 }
 
 - (instancetype)initWithSyncManager:(std::shared_ptr<realm::SyncManager>)syncManager {
@@ -146,12 +146,12 @@ std::shared_ptr<realm::util::Logger> RLMWrapLogFunction(RLMSyncLogFunction fn) {
     }
 }
 
-- (RLMSyncLogFunction)logger {
+- (LEGACYSyncLogFunction)logger {
     std::lock_guard lock(_mutex);
     return _logger;
 }
 
-- (void)setLogger:(RLMSyncLogFunction)logFn {
+- (void)setLogger:(LEGACYSyncLogFunction)logFn {
     {
         std::lock_guard lock(_mutex);
         _logger = logFn;
@@ -176,22 +176,22 @@ std::shared_ptr<realm::util::Logger> RLMWrapLogFunction(RLMSyncLogFunction fn) {
 }
 
 - (void)setUserAgent:(NSString *)userAgent {
-    _syncManager->set_user_agent(RLMStringDataWithNSString(userAgent));
+    _syncManager->set_user_agent(LEGACYStringDataWithNSString(userAgent));
 }
 
-- (RLMSyncTimeoutOptions *)timeoutOptions {
-    return [[RLMSyncTimeoutOptions alloc] initWithOptions:_syncManager->config().timeouts];
+- (LEGACYSyncTimeoutOptions *)timeoutOptions {
+    return [[LEGACYSyncTimeoutOptions alloc] initWithOptions:_syncManager->config().timeouts];
 }
 
-- (void)setTimeoutOptions:(RLMSyncTimeoutOptions *)timeoutOptions {
+- (void)setTimeoutOptions:(LEGACYSyncTimeoutOptions *)timeoutOptions {
     _syncManager->set_timeouts(timeoutOptions->_options);
 }
 
-- (RLMSyncLogLevel)logLevel {
+- (LEGACYSyncLogLevel)logLevel {
     return logLevelForLevel(_syncManager->log_level());
 }
 
-- (void)setLogLevel:(RLMSyncLogLevel)logLevel {
+- (void)setLogLevel:(LEGACYSyncLogLevel)logLevel {
     _syncManager->set_log_level(levelForSyncLogLevel(logLevel));
 }
 
@@ -225,9 +225,9 @@ std::shared_ptr<realm::util::Logger> RLMWrapLogFunction(RLMSyncLogFunction fn) {
 }
 @end
 
-#pragma mark - RLMSyncTimeoutOptions
+#pragma mark - LEGACYSyncTimeoutOptions
 
-@implementation RLMSyncTimeoutOptions
+@implementation LEGACYSyncTimeoutOptions
 - (instancetype)initWithOptions:(realm::SyncClientTimeouts)options {
     if (self = [super init]) {
         _options = options;

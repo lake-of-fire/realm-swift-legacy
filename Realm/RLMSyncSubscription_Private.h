@@ -16,17 +16,17 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMSyncSubscription.h>
+#import <Realm/LEGACYSyncSubscription.h>
 
-#import <Realm/RLMRealm.h>
+#import <Realm/LEGACYRealm.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 #pragma mark - Subscription
 
-@interface RLMSyncSubscription ()
+@interface LEGACYSyncSubscription ()
 
-@property (nonatomic, readonly) RLMObjectId *identifier;
+@property (nonatomic, readonly) LEGACYObjectId *identifier;
 
 @property (nonatomic, readonly) NSString *queryString;
 
@@ -36,18 +36,18 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 #pragma mark - SubscriptionSet
 
-@interface RLMSyncSubscriptionEnumerator : NSObject
+@interface LEGACYSyncSubscriptionEnumerator : NSObject
 
-@property (nonatomic, readonly) RLMSyncSubscriptionSet *subscriptionSet;
+@property (nonatomic, readonly) LEGACYSyncSubscriptionSet *subscriptionSet;
 
 - (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state
                                     count:(NSUInteger)len;
 
-- (instancetype)initWithSubscriptionSet:(RLMSyncSubscriptionSet *)subscriptionSet;
+- (instancetype)initWithSubscriptionSet:(LEGACYSyncSubscriptionSet *)subscriptionSet;
 
 @end
 
-@interface RLMSyncSubscriptionSet ()
+@interface LEGACYSyncSubscriptionSet ()
 
 @property (readonly) uint64_t version;
 
@@ -65,12 +65,12 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
                               timeout:(NSTimeInterval)timeout
                       completionBlock:(void(^)(NSError *))completionBlock;
 
-- (RLMSyncSubscriptionEnumerator *)fastEnumerator;
+- (LEGACYSyncSubscriptionEnumerator *)fastEnumerator;
 
-NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
+NSUInteger LEGACYFastEnumerate(NSFastEnumerationState *state,
                             NSUInteger len,
-                            RLMSyncSubscriptionSet *collection);
+                            LEGACYSyncSubscriptionSet *collection);
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

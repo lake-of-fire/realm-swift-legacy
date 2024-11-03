@@ -16,11 +16,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMPSimulatorManager.h"
+#import "LEGACYPSimulatorManager.h"
 
-static NSString *const RLMPBootedSimulatorKey = @"Booted";
+static NSString *const LEGACYPBootedSimulatorKey = @"Booted";
 
-static NSTask *RLMPLaunchedTaskSynchonouslyWithProperty(NSString *path, NSArray *arguments, NSString *__autoreleasing *output)
+static NSTask *LEGACYPLaunchedTaskSynchonouslyWithProperty(NSString *path, NSArray *arguments, NSString *__autoreleasing *output)
 {
     // Setup task with given parameters
     NSTask *task = [[NSTask alloc] init];
@@ -41,11 +41,11 @@ static NSTask *RLMPLaunchedTaskSynchonouslyWithProperty(NSString *path, NSArray 
     return task;
 }
 
-@interface RLMPSimulatorManager ()
+@interface LEGACYPSimulatorManager ()
 
 @end
 
-@implementation RLMPSimulatorManager
+@implementation LEGACYPSimulatorManager
 
 + (NSString *)bootedSimulatorUUID
 {
@@ -57,7 +57,7 @@ static NSTask *RLMPLaunchedTaskSynchonouslyWithProperty(NSString *path, NSArray 
         NSDictionary *deviceStatuses = [self processDeviceData:deviceData];
 
         [deviceStatuses enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
-            if ([value isEqualToString:RLMPBootedSimulatorKey]) {
+            if ([value isEqualToString:LEGACYPBootedSimulatorKey]) {
                 bootedDeviceUUID = key;
                 // Stop when we found single booted device
                 *stop = YES;
@@ -81,7 +81,7 @@ static NSTask *RLMPLaunchedTaskSynchonouslyWithProperty(NSString *path, NSArray 
     NSArray *args = @[@"simctl", @"list", @"devices"];
 
     NSString *output;
-    RLMPLaunchedTaskSynchonouslyWithProperty(fullURL.path, args, &output);
+    LEGACYPLaunchedTaskSynchonouslyWithProperty(fullURL.path, args, &output);
 
     return output;
 }

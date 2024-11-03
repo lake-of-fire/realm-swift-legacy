@@ -16,31 +16,31 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMMongoCollection_Private.h"
+#import "LEGACYMongoCollection_Private.h"
 
-#import "RLMApp_Private.hpp"
-#import "RLMBSON_Private.hpp"
-#import "RLMError_Private.hpp"
-#import "RLMFindOneAndModifyOptions_Private.hpp"
-#import "RLMFindOptions_Private.hpp"
-#import "RLMNetworkTransport_Private.hpp"
-#import "RLMUpdateResult_Private.hpp"
-#import "RLMUser_Private.hpp"
+#import "LEGACYApp_Private.hpp"
+#import "LEGACYBSON_Private.hpp"
+#import "LEGACYError_Private.hpp"
+#import "LEGACYFindOneAndModifyOptions_Private.hpp"
+#import "LEGACYFindOptions_Private.hpp"
+#import "LEGACYNetworkTransport_Private.hpp"
+#import "LEGACYUpdateResult_Private.hpp"
+#import "LEGACYUser_Private.hpp"
 
 #import <realm/object-store/sync/mongo_client.hpp>
 #import <realm/object-store/sync/mongo_collection.hpp>
 #import <realm/object-store/sync/mongo_database.hpp>
 
 __attribute__((objc_direct_members))
-@implementation RLMChangeStream {
+@implementation LEGACYChangeStream {
 @public
     realm::app::WatchStream _watchStream;
-    id<RLMChangeEventDelegate> _subscriber;
+    id<LEGACYChangeEventDelegate> _subscriber;
     __weak NSURLSession *_session;
     void (^_schedule)(dispatch_block_t);
 }
 
-- (instancetype)initWithChangeEventSubscriber:(id<RLMChangeEventDelegate>)subscriber
+- (instancetype)initWithChangeEventSubscriber:(id<LEGACYChangeEventDelegate>)subscriber
                                     scheduler:(void (^)(dispatch_block_t))scheduler {
     if (self = [super init]) {
         _subscriber = subscriber;
@@ -75,7 +75,7 @@ __attribute__((objc_direct_members))
     }
 
     while (_watchStream.state() == realm::app::WatchStream::State::HAVE_EVENT) {
-        id<RLMBSON> event = RLMConvertBsonToRLMBSON(_watchStream.next_event());
+        id<LEGACYBSON> event = LEGACYConvertBsonToRLMBSON(_watchStream.next_event());
         _schedule(^{
             [_subscriber changeStreamDidReceiveChangeEvent:event];
         });
@@ -95,23 +95,23 @@ __attribute__((objc_direct_members))
 }
 @end
 
-static realm::bson::BsonDocument toBsonDocument(id<RLMBSON> bson) {
-    return realm::bson::BsonDocument(RLMConvertRLMBSONToBson(bson));
+static realm::bson::BsonDocument toBsonDocument(id<LEGACYBSON> bson) {
+    return realm::bson::BsonDocument(LEGACYConvertRLMBSONToBson(bson));
 }
-static realm::bson::BsonArray toBsonArray(id<RLMBSON> bson) {
-    return realm::bson::BsonArray(RLMConvertRLMBSONToBson(bson));
+static realm::bson::BsonArray toBsonArray(id<LEGACYBSON> bson) {
+    return realm::bson::BsonArray(LEGACYConvertRLMBSONToBson(bson));
 }
 
 __attribute__((objc_direct_members))
-@interface RLMMongoCollection ()
-@property (nonatomic, strong) RLMUser *user;
+@interface LEGACYMongoCollection ()
+@property (nonatomic, strong) LEGACYUser *user;
 @property (nonatomic, strong) NSString *serviceName;
 @property (nonatomic, strong) NSString *databaseName;
 @end
 
 __attribute__((objc_direct_members))
-@implementation RLMMongoCollection
-- (instancetype)initWithUser:(RLMUser *)user
+@implementation LEGACYMongoCollection
+- (instancetype)initWithUser:(LEGACYUser *)user
                  serviceName:(NSString *)serviceName
                 databaseName:(NSString *)databaseName
               collectionName:(NSString *)collectionName {
@@ -133,27 +133,27 @@ __attribute__((objc_direct_members))
     return [self collection:self.name];
 }
 
-- (void)findWhere:(NSDictionary<NSString *, id<RLMBSON>> *)document
-          options:(RLMFindOptions *)options
-       completion:(RLMMongoFindBlock)completion {
+- (void)findWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)document
+          options:(LEGACYFindOptions *)options
+       completion:(LEGACYMongoFindBlock)completion {
     self.collection.find(toBsonDocument(document), [options _findOptions],
                          [completion](std::optional<realm::bson::BsonArray> documents,
                                       std::optional<realm::app::AppError> error) {
         if (error) {
             return completion(nil, makeError(*error));
         }
-        completion((NSArray<NSDictionary<NSString *, id<RLMBSON>> *> *)RLMConvertBsonToRLMBSON(*documents), nil);
+        completion((NSArray<NSDictionary<NSString *, id<LEGACYBSON>> *> *)LEGACYConvertBsonToRLMBSON(*documents), nil);
     });
 }
 
-- (void)findWhere:(NSDictionary<NSString *, id<RLMBSON>> *)document
-       completion:(RLMMongoFindBlock)completion {
-    [self findWhere:document options:[[RLMFindOptions alloc] init] completion:completion];
+- (void)findWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)document
+       completion:(LEGACYMongoFindBlock)completion {
+    [self findWhere:document options:[[LEGACYFindOptions alloc] init] completion:completion];
 }
 
-- (void)findOneDocumentWhere:(NSDictionary<NSString *, id<RLMBSON>> *)document
-                     options:(RLMFindOptions *)options
-                  completion:(RLMMongoFindOneBlock)completion {
+- (void)findOneDocumentWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)document
+                     options:(LEGACYFindOptions *)options
+                  completion:(LEGACYMongoFindOneBlock)completion {
     self.collection.find_one(toBsonDocument(document), [options _findOptions],
                              [completion](std::optional<realm::bson::BsonDocument> document,
                                           std::optional<realm::app::AppError> error) {
@@ -161,32 +161,32 @@ __attribute__((objc_direct_members))
             return completion(nil, makeError(*error));
         }
         if (document) {
-            completion((NSDictionary<NSString *, id<RLMBSON>> *)RLMConvertBsonToRLMBSON(*document), nil);
+            completion((NSDictionary<NSString *, id<LEGACYBSON>> *)LEGACYConvertBsonToRLMBSON(*document), nil);
         } else {
             completion(nil, nil);
         }
     });
 }
 
-- (void)findOneDocumentWhere:(NSDictionary<NSString *, id<RLMBSON>> *)document
-                  completion:(RLMMongoFindOneBlock)completion {
-    [self findOneDocumentWhere:document options:[[RLMFindOptions alloc] init] completion:completion];
+- (void)findOneDocumentWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)document
+                  completion:(LEGACYMongoFindOneBlock)completion {
+    [self findOneDocumentWhere:document options:[[LEGACYFindOptions alloc] init] completion:completion];
 }
 
-- (void)insertOneDocument:(NSDictionary<NSString *, id<RLMBSON>> *)document
-               completion:(RLMMongoInsertBlock)completion {
+- (void)insertOneDocument:(NSDictionary<NSString *, id<LEGACYBSON>> *)document
+               completion:(LEGACYMongoInsertBlock)completion {
     self.collection.insert_one(toBsonDocument(document),
                                [completion](std::optional<realm::bson::Bson> objectId,
                                             std::optional<realm::app::AppError> error) {
         if (error) {
             return completion(nil, makeError(*error));
         }
-        completion(RLMConvertBsonToRLMBSON(*objectId), nil);
+        completion(LEGACYConvertBsonToRLMBSON(*objectId), nil);
     });
 }
 
-- (void)insertManyDocuments:(NSArray<NSDictionary<NSString *, id<RLMBSON>> *> *)documents
-                 completion:(RLMMongoInsertManyBlock)completion {
+- (void)insertManyDocuments:(NSArray<NSDictionary<NSString *, id<LEGACYBSON>> *> *)documents
+                 completion:(LEGACYMongoInsertManyBlock)completion {
     self.collection.insert_many(toBsonArray(documents),
                                 [completion](std::vector<realm::bson::Bson> insertedIds,
                                              std::optional<realm::app::AppError> error) {
@@ -195,27 +195,27 @@ __attribute__((objc_direct_members))
         }
         NSMutableArray *insertedArr = [[NSMutableArray alloc] initWithCapacity:insertedIds.size()];
         for (auto& objectId : insertedIds) {
-            [insertedArr addObject:RLMConvertBsonToRLMBSON(objectId)];
+            [insertedArr addObject:LEGACYConvertBsonToRLMBSON(objectId)];
         }
         completion(insertedArr, nil);
     });
 }
 
-- (void)aggregateWithPipeline:(NSArray<NSDictionary<NSString *, id<RLMBSON>> *> *)pipeline
-                   completion:(RLMMongoFindBlock)completion {
+- (void)aggregateWithPipeline:(NSArray<NSDictionary<NSString *, id<LEGACYBSON>> *> *)pipeline
+                   completion:(LEGACYMongoFindBlock)completion {
     self.collection.aggregate(toBsonArray(pipeline),
                               [completion](std::optional<realm::bson::BsonArray> documents,
                                            std::optional<realm::app::AppError> error) {
         if (error) {
             return completion(nil, makeError(*error));
         }
-        completion((NSArray<id> *)RLMConvertBsonToRLMBSON(*documents), nil);
+        completion((NSArray<id> *)LEGACYConvertBsonToRLMBSON(*documents), nil);
     });
 }
 
-- (void)countWhere:(NSDictionary<NSString *, id<RLMBSON>> *)document
+- (void)countWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)document
              limit:(NSInteger)limit
-        completion:(RLMMongoCountBlock)completion {
+        completion:(LEGACYMongoCountBlock)completion {
     self.collection.count_bson(toBsonDocument(document), limit,
                                [completion](std::optional<realm::bson::Bson>&& value,
                                             std::optional<realm::app::AppError>&& error) {
@@ -230,13 +230,13 @@ __attribute__((objc_direct_members))
     });
 }
 
-- (void)countWhere:(NSDictionary<NSString *, id<RLMBSON>> *)document
-        completion:(RLMMongoCountBlock)completion {
+- (void)countWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)document
+        completion:(LEGACYMongoCountBlock)completion {
     [self countWhere:document limit:0 completion:completion];
 }
 
-- (void)deleteOneDocumentWhere:(NSDictionary<NSString *, id<RLMBSON>> *)document
-                    completion:(RLMMongoCountBlock)completion {
+- (void)deleteOneDocumentWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)document
+                    completion:(LEGACYMongoCountBlock)completion {
     self.collection.delete_one(toBsonDocument(document),
                                [completion](uint64_t count,
                                             std::optional<realm::app::AppError> error) {
@@ -247,8 +247,8 @@ __attribute__((objc_direct_members))
     });
 }
 
-- (void)deleteManyDocumentsWhere:(NSDictionary<NSString *, id<RLMBSON>> *)document
-                      completion:(RLMMongoCountBlock)completion {
+- (void)deleteManyDocumentsWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)document
+                      completion:(LEGACYMongoCountBlock)completion {
     self.collection.delete_many(toBsonDocument(document),
                                 [completion](uint64_t count,
                                              std::optional<realm::app::AppError> error) {
@@ -259,10 +259,10 @@ __attribute__((objc_direct_members))
     });
 }
 
-- (void)updateOneDocumentWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-                updateDocument:(NSDictionary<NSString *, id<RLMBSON>> *)updateDocument
+- (void)updateOneDocumentWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+                updateDocument:(NSDictionary<NSString *, id<LEGACYBSON>> *)updateDocument
                         upsert:(BOOL)upsert
-                    completion:(RLMMongoUpdateBlock)completion {
+                    completion:(LEGACYMongoUpdateBlock)completion {
     self.collection.update_one(toBsonDocument(filterDocument), toBsonDocument(updateDocument),
                                upsert,
                                [completion](realm::app::MongoCollection::UpdateResult result,
@@ -270,23 +270,23 @@ __attribute__((objc_direct_members))
         if (error) {
             return completion(nil, makeError(*error));
         }
-        completion([[RLMUpdateResult alloc] initWithUpdateResult:result], nil);
+        completion([[LEGACYUpdateResult alloc] initWithUpdateResult:result], nil);
     });
 }
 
-- (void)updateOneDocumentWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-                updateDocument:(NSDictionary<NSString *, id<RLMBSON>> *)updateDocument
-                    completion:(RLMMongoUpdateBlock)completion {
+- (void)updateOneDocumentWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+                updateDocument:(NSDictionary<NSString *, id<LEGACYBSON>> *)updateDocument
+                    completion:(LEGACYMongoUpdateBlock)completion {
     [self updateOneDocumentWhere:filterDocument
                   updateDocument:updateDocument
                           upsert:NO
                       completion:completion];
 }
 
-- (void)updateManyDocumentsWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-                  updateDocument:(NSDictionary<NSString *, id<RLMBSON>> *)updateDocument
+- (void)updateManyDocumentsWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+                  updateDocument:(NSDictionary<NSString *, id<LEGACYBSON>> *)updateDocument
                           upsert:(BOOL)upsert
-                      completion:(RLMMongoUpdateBlock)completion {
+                      completion:(LEGACYMongoUpdateBlock)completion {
     self.collection.update_many(toBsonDocument(filterDocument), toBsonDocument(updateDocument),
                                 upsert,
                                 [completion](realm::app::MongoCollection::UpdateResult result,
@@ -294,23 +294,23 @@ __attribute__((objc_direct_members))
         if (error) {
             return completion(nil, makeError(*error));
         }
-        completion([[RLMUpdateResult alloc] initWithUpdateResult:result], nil);
+        completion([[LEGACYUpdateResult alloc] initWithUpdateResult:result], nil);
     });
 }
 
-- (void)updateManyDocumentsWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-                  updateDocument:(NSDictionary<NSString *, id<RLMBSON>> *)updateDocument
-                      completion:(RLMMongoUpdateBlock)completion {
+- (void)updateManyDocumentsWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+                  updateDocument:(NSDictionary<NSString *, id<LEGACYBSON>> *)updateDocument
+                      completion:(LEGACYMongoUpdateBlock)completion {
     [self updateManyDocumentsWhere:filterDocument
                     updateDocument:updateDocument
                             upsert:NO
                         completion:completion];
 }
 
-- (void)findOneAndUpdateWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-               updateDocument:(NSDictionary<NSString *, id<RLMBSON>> *)updateDocument
-                      options:(RLMFindOneAndModifyOptions *)options
-                   completion:(RLMMongoFindOneBlock)completion {
+- (void)findOneAndUpdateWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+               updateDocument:(NSDictionary<NSString *, id<LEGACYBSON>> *)updateDocument
+                      options:(LEGACYFindOneAndModifyOptions *)options
+                   completion:(LEGACYMongoFindOneBlock)completion {
     self.collection.find_one_and_update(toBsonDocument(filterDocument), toBsonDocument(updateDocument),
                                         [options _findOneAndModifyOptions],
                                         [completion](std::optional<realm::bson::BsonDocument> document,
@@ -319,23 +319,23 @@ __attribute__((objc_direct_members))
             return completion(nil, makeError(*error));
         }
 
-        return completion((NSDictionary *)RLMConvertBsonDocumentToRLMBSON(document), nil);
+        return completion((NSDictionary *)LEGACYConvertBsonDocumentToRLMBSON(document), nil);
     });
 }
 
-- (void)findOneAndUpdateWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-               updateDocument:(NSDictionary<NSString *, id<RLMBSON>> *)updateDocument
-                   completion:(RLMMongoFindOneBlock)completion {
+- (void)findOneAndUpdateWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+               updateDocument:(NSDictionary<NSString *, id<LEGACYBSON>> *)updateDocument
+                   completion:(LEGACYMongoFindOneBlock)completion {
     [self findOneAndUpdateWhere:filterDocument
                  updateDocument:updateDocument
-                        options:[[RLMFindOneAndModifyOptions alloc] init]
+                        options:[[LEGACYFindOneAndModifyOptions alloc] init]
                      completion:completion];
 }
 
-- (void)findOneAndReplaceWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-           replacementDocument:(NSDictionary<NSString *, id<RLMBSON>> *)replacementDocument
-                       options:(RLMFindOneAndModifyOptions *)options
-                    completion:(RLMMongoFindOneBlock)completion {
+- (void)findOneAndReplaceWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+           replacementDocument:(NSDictionary<NSString *, id<LEGACYBSON>> *)replacementDocument
+                       options:(LEGACYFindOneAndModifyOptions *)options
+                    completion:(LEGACYMongoFindOneBlock)completion {
     self.collection.find_one_and_replace(toBsonDocument(filterDocument), toBsonDocument(replacementDocument),
                                          [options _findOneAndModifyOptions],
                                          [completion](std::optional<realm::bson::BsonDocument> document,
@@ -344,22 +344,22 @@ __attribute__((objc_direct_members))
             return completion(nil, makeError(*error));
         }
 
-        return completion((NSDictionary *)RLMConvertBsonDocumentToRLMBSON(document), nil);
+        return completion((NSDictionary *)LEGACYConvertBsonDocumentToRLMBSON(document), nil);
     });
 }
 
-- (void)findOneAndReplaceWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-           replacementDocument:(NSDictionary<NSString *, id<RLMBSON>> *)replacementDocument
-                    completion:(RLMMongoFindOneBlock)completion {
+- (void)findOneAndReplaceWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+           replacementDocument:(NSDictionary<NSString *, id<LEGACYBSON>> *)replacementDocument
+                    completion:(LEGACYMongoFindOneBlock)completion {
     [self findOneAndReplaceWhere:filterDocument
              replacementDocument:replacementDocument
-                         options:[[RLMFindOneAndModifyOptions alloc] init]
+                         options:[[LEGACYFindOneAndModifyOptions alloc] init]
                       completion:completion];
 }
 
-- (void)findOneAndDeleteWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-                      options:(RLMFindOneAndModifyOptions *)options
-                   completion:(RLMMongoDeleteBlock)completion {
+- (void)findOneAndDeleteWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+                      options:(LEGACYFindOneAndModifyOptions *)options
+                   completion:(LEGACYMongoDeleteBlock)completion {
     self.collection.find_one_and_delete(toBsonDocument(filterDocument),
                                         [options _findOneAndModifyOptions],
                                         [completion](std::optional<realm::bson::BsonDocument> document,
@@ -368,18 +368,18 @@ __attribute__((objc_direct_members))
             return completion(nil, makeError(*error));
         }
 
-        return completion((NSDictionary *)RLMConvertBsonDocumentToRLMBSON(document), nil);
+        return completion((NSDictionary *)LEGACYConvertBsonDocumentToRLMBSON(document), nil);
     });
 }
 
-- (void)findOneAndDeleteWhere:(NSDictionary<NSString *, id<RLMBSON>> *)filterDocument
-                   completion:(RLMMongoDeleteBlock)completion {
+- (void)findOneAndDeleteWhere:(NSDictionary<NSString *, id<LEGACYBSON>> *)filterDocument
+                   completion:(LEGACYMongoDeleteBlock)completion {
     [self findOneAndDeleteWhere:filterDocument
-                        options:[[RLMFindOneAndModifyOptions alloc] init]
+                        options:[[LEGACYFindOneAndModifyOptions alloc] init]
                      completion:completion];
 }
 
-- (RLMChangeStream *)watchWithDelegate:(id<RLMChangeEventDelegate>)delegate
+- (LEGACYChangeStream *)watchWithDelegate:(id<LEGACYChangeEventDelegate>)delegate
                          delegateQueue:(nullable dispatch_queue_t)delegateQueue {
     return [self watchWithMatchFilter:nil
                              idFilter:nil
@@ -387,8 +387,8 @@ __attribute__((objc_direct_members))
                         delegateQueue:delegateQueue];
 }
 
-- (RLMChangeStream *)watchWithFilterIds:(NSArray<RLMObjectId *> *)filterIds
-                               delegate:(id<RLMChangeEventDelegate>)delegate
+- (LEGACYChangeStream *)watchWithFilterIds:(NSArray<LEGACYObjectId *> *)filterIds
+                               delegate:(id<LEGACYChangeEventDelegate>)delegate
                           delegateQueue:(nullable dispatch_queue_t)delegateQueue {
     return [self watchWithMatchFilter:nil
                              idFilter:filterIds
@@ -396,8 +396,8 @@ __attribute__((objc_direct_members))
                         delegateQueue:delegateQueue];
 }
 
-- (RLMChangeStream *)watchWithMatchFilter:(NSDictionary<NSString *, id<RLMBSON>> *)matchFilter
-                                 delegate:(id<RLMChangeEventDelegate>)delegate
+- (LEGACYChangeStream *)watchWithMatchFilter:(NSDictionary<NSString *, id<LEGACYBSON>> *)matchFilter
+                                 delegate:(id<LEGACYChangeEventDelegate>)delegate
                             delegateQueue:(nullable dispatch_queue_t)delegateQueue {
     return [self watchWithMatchFilter:matchFilter
                              idFilter:nil
@@ -405,9 +405,9 @@ __attribute__((objc_direct_members))
                         delegateQueue:delegateQueue];
 }
 
-- (RLMChangeStream *)watchWithMatchFilter:(nullable id<RLMBSON>)matchFilter
-                                 idFilter:(nullable id<RLMBSON>)idFilter
-                                 delegate:(id<RLMChangeEventDelegate>)delegate
+- (LEGACYChangeStream *)watchWithMatchFilter:(nullable id<LEGACYBSON>)matchFilter
+                                 idFilter:(nullable id<LEGACYBSON>)idFilter
+                                 delegate:(id<LEGACYChangeEventDelegate>)delegate
                             delegateQueue:(nullable dispatch_queue_t)queue {
     queue = queue ?: dispatch_get_main_queue();
     return [self watchWithMatchFilter:matchFilter
@@ -416,9 +416,9 @@ __attribute__((objc_direct_members))
                             scheduler:^(dispatch_block_t block) { dispatch_async(queue, block); }];
 }
 
-- (RLMChangeStream *)watchWithMatchFilter:(nullable id<RLMBSON>)matchFilter
-                                 idFilter:(nullable id<RLMBSON>)idFilter
-                                 delegate:(id<RLMChangeEventDelegate>)delegate
+- (LEGACYChangeStream *)watchWithMatchFilter:(nullable id<LEGACYBSON>)matchFilter
+                                 idFilter:(nullable id<LEGACYBSON>)idFilter
+                                 delegate:(id<LEGACYChangeEventDelegate>)delegate
                                 scheduler:(void (^)(dispatch_block_t))scheduler {
     realm::bson::BsonDocument baseArgs = {
         {"database", self.databaseName.UTF8String},
@@ -426,18 +426,18 @@ __attribute__((objc_direct_members))
     };
 
     if (matchFilter) {
-        baseArgs["filter"] = RLMConvertRLMBSONToBson(matchFilter);
+        baseArgs["filter"] = LEGACYConvertRLMBSONToBson(matchFilter);
     }
     if (idFilter) {
-        baseArgs["ids"] = RLMConvertRLMBSONToBson(idFilter);
+        baseArgs["ids"] = LEGACYConvertRLMBSONToBson(idFilter);
     }
     auto args = realm::bson::BsonArray{baseArgs};
     auto app = self.user.app._realmApp;
     auto request = app->make_streaming_request(app->current_user(), "watch", args,
                                                std::optional<std::string>(self.serviceName.UTF8String));
-    auto changeStream = [[RLMChangeStream alloc] initWithChangeEventSubscriber:delegate scheduler:scheduler];
-    RLMNetworkTransport *transport = self.user.app.configuration.transport;
-    RLMRequest *rlmRequest = RLMRequestFromRequest(request);
+    auto changeStream = [[LEGACYChangeStream alloc] initWithChangeEventSubscriber:delegate scheduler:scheduler];
+    LEGACYNetworkTransport *transport = self.user.app.configuration.transport;
+    LEGACYRequest *rlmRequest = LEGACYRequestFromRequest(request);
     changeStream->_session = [transport doStreamRequest:rlmRequest eventSubscriber:changeStream];
     return changeStream;
 }

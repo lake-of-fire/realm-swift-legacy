@@ -16,45 +16,45 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMLogger_Private.h"
+#import "LEGACYLogger_Private.h"
 
-#import "RLMUtil.hpp"
+#import "LEGACYUtil.hpp"
 
 #import <realm/util/logger.hpp>
 
-typedef void (^RLMLoggerFunction)(RLMLogLevel level, NSString *message);
+typedef void (^LEGACYLoggerFunction)(LEGACYLogLevel level, NSString *message);
 
 using namespace realm;
 using Logger = realm::util::Logger;
 using Level = Logger::Level;
 
 namespace {
-static Level levelForLogLevel(RLMLogLevel logLevel) {
+static Level levelForLogLevel(LEGACYLogLevel logLevel) {
     switch (logLevel) {
-        case RLMLogLevelOff:    return Level::off;
-        case RLMLogLevelFatal:  return Level::fatal;
-        case RLMLogLevelError:  return Level::error;
-        case RLMLogLevelWarn:   return Level::warn;
-        case RLMLogLevelInfo:   return Level::info;
-        case RLMLogLevelDetail: return Level::detail;
-        case RLMLogLevelDebug:  return Level::debug;
-        case RLMLogLevelTrace:  return Level::trace;
-        case RLMLogLevelAll:    return Level::all;
+        case LEGACYLogLevelOff:    return Level::off;
+        case LEGACYLogLevelFatal:  return Level::fatal;
+        case LEGACYLogLevelError:  return Level::error;
+        case LEGACYLogLevelWarn:   return Level::warn;
+        case LEGACYLogLevelInfo:   return Level::info;
+        case LEGACYLogLevelDetail: return Level::detail;
+        case LEGACYLogLevelDebug:  return Level::debug;
+        case LEGACYLogLevelTrace:  return Level::trace;
+        case LEGACYLogLevelAll:    return Level::all;
     }
     REALM_UNREACHABLE();    // Unrecognized log level.
 }
 
-static RLMLogLevel logLevelForLevel(Level logLevel) {
+static LEGACYLogLevel logLevelForLevel(Level logLevel) {
     switch (logLevel) {
-        case Level::off:    return RLMLogLevelOff;
-        case Level::fatal:  return RLMLogLevelFatal;
-        case Level::error:  return RLMLogLevelError;
-        case Level::warn:   return RLMLogLevelWarn;
-        case Level::info:   return RLMLogLevelInfo;
-        case Level::detail: return RLMLogLevelDetail;
-        case Level::debug:  return RLMLogLevelDebug;
-        case Level::trace:  return RLMLogLevelTrace;
-        case Level::all:    return RLMLogLevelAll;
+        case Level::off:    return LEGACYLogLevelOff;
+        case Level::fatal:  return LEGACYLogLevelFatal;
+        case Level::error:  return LEGACYLogLevelError;
+        case Level::warn:   return LEGACYLogLevelWarn;
+        case Level::info:   return LEGACYLogLevelInfo;
+        case Level::detail: return LEGACYLogLevelDetail;
+        case Level::debug:  return LEGACYLogLevelDebug;
+        case Level::trace:  return LEGACYLogLevelTrace;
+        case Level::all:    return LEGACYLogLevelAll;
     }
     REALM_UNREACHABLE();    // Unrecognized log level.
 }
@@ -76,34 +76,34 @@ static NSString* levelPrefix(Level logLevel) {
 
 struct CocoaLogger : public Logger {
     void do_log(Level level, const std::string& message) override {
-        NSLog(@"%@: %@", levelPrefix(level), RLMStringDataToNSString(message));
+        NSLog(@"%@: %@", levelPrefix(level), LEGACYStringDataToNSString(message));
     }
 };
 
 class CustomLogger : public Logger {
 public:
-    RLMLoggerFunction function;
+    LEGACYLoggerFunction function;
     void do_log(Level level, const std::string& message) override {
         @autoreleasepool {
             if (function) {
-                function(logLevelForLevel(level), RLMStringDataToNSString(message));
+                function(logLevelForLevel(level), LEGACYStringDataToNSString(message));
             }
         }
     }
 };
 } // anonymous namespace
 
-@implementation RLMLogger {
+@implementation LEGACYLogger {
     std::shared_ptr<Logger> _logger;
 }
 
-typedef void(^LoggerBlock)(RLMLogLevel level, NSString *message);
+typedef void(^LoggerBlock)(LEGACYLogLevel level, NSString *message);
 
-- (RLMLogLevel)level {
+- (LEGACYLogLevel)level {
     return logLevelForLevel(_logger->get_level_threshold());
 }
 
-- (void)setLevel:(RLMLogLevel)level {
+- (void)setLevel:(LEGACYLogLevel)level {
     _logger->set_level_threshold(levelForLogLevel(level));
 }
 
@@ -120,7 +120,7 @@ typedef void(^LoggerBlock)(RLMLogLevel level, NSString *message);
     return self;
 }
 
-- (instancetype)initWithLevel:(RLMLogLevel)level logFunction:(RLMLogFunction)logFunction {
+- (instancetype)initWithLevel:(LEGACYLogLevel)level logFunction:(LEGACYLogFunction)logFunction {
     if (self = [super init]) {
         auto logger = std::make_shared<CustomLogger>();
         logger->set_level_threshold(levelForLogLevel(level));
@@ -130,7 +130,7 @@ typedef void(^LoggerBlock)(RLMLogLevel level, NSString *message);
     return self;
 }
 
-- (void)logWithLevel:(RLMLogLevel)logLevel message:(NSString *)message, ... {
+- (void)logWithLevel:(LEGACYLogLevel)logLevel message:(NSString *)message, ... {
     auto level = levelForLogLevel(logLevel);
     if (_logger->would_log(level)) {
         va_list args;
@@ -140,7 +140,7 @@ typedef void(^LoggerBlock)(RLMLogLevel level, NSString *message);
     }
 }
 
-- (void)logLevel:(RLMLogLevel)logLevel message:(NSString *)message {
+- (void)logLevel:(LEGACYLogLevel)logLevel message:(NSString *)message {
     auto level = levelForLogLevel(logLevel);
     if (_logger->would_log(level)) {
         _logger->log(level, "%1", message.UTF8String);
@@ -150,10 +150,10 @@ typedef void(^LoggerBlock)(RLMLogLevel level, NSString *message);
 #pragma mark Global Logger Setter
 
 + (instancetype)defaultLogger {
-    return [[RLMLogger alloc] initWithLogger:Logger::get_default_logger()];
+    return [[LEGACYLogger alloc] initWithLogger:Logger::get_default_logger()];
 }
 
-+ (void)setDefaultLogger:(RLMLogger *)logger {
++ (void)setDefaultLogger:(LEGACYLogger *)logger {
     Logger::set_default_logger(logger->_logger);
 }
 @end

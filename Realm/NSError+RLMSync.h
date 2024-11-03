@@ -16,23 +16,23 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability)
 
-@class RLMSyncErrorActionToken;
+@class LEGACYSyncErrorActionToken;
 
 /// NSError category extension providing methods to get data out of Realm's
 /// "client reset" error.
-@interface NSError (RLMSync)
+@interface NSError (LEGACYSync)
 
 /**
  Given an appropriate Atlas App Services error, return the token that
- can be passed into `+[RLMSyncSession immediatelyHandleError:]` to
+ can be passed into `+[LEGACYSyncSession immediatelyHandleError:]` to
  immediately perform error clean-up work, or nil if the error isn't of
  a type that provides a token.
  */
-- (nullable RLMSyncErrorActionToken *)rlmSync_errorActionToken NS_REFINED_FOR_SWIFT;
+- (nullable LEGACYSyncErrorActionToken *)rlmSync_errorActionToken NS_REFINED_FOR_SWIFT;
 
 /**
  Given an Atlas App Services client reset error, return the path where the
@@ -43,4 +43,4 @@ RLM_HEADER_AUDIT_BEGIN(nullability)
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability)
+LEGACY_HEADER_AUDIT_END(nullability)

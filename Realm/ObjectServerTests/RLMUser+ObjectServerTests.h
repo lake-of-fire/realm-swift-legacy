@@ -18,14 +18,14 @@
 
 #import <Realm/Realm.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability)
 
-@interface RLMUser (ObjectServerTests)
+@interface LEGACYUser (ObjectServerTests)
 - (void)simulateClientResetErrorForSession:(NSString *)partitionValue;
 @end
 
-@interface RLMSyncSession (ObjectServerTests)
+@interface LEGACYSyncSession (ObjectServerTests)
 + (dispatch_queue_t)notificationsQueue;
 @end
 
-RLM_HEADER_AUDIT_END(nullability)
+LEGACY_HEADER_AUDIT_END(nullability)

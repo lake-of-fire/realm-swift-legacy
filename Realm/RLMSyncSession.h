@@ -16,37 +16,37 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMRealm.h>
+#import <Realm/LEGACYRealm.h>
 
 /**
  The current state of the session represented by a session object.
  */
-typedef NS_ENUM(NSUInteger, RLMSyncSessionState) {
+typedef NS_ENUM(NSUInteger, LEGACYSyncSessionState) {
     /// The sync session is actively communicating or attempting to communicate
     /// with Atlas App Services. A session is considered Active even if
     /// it is not currently connected. Check the connection state instead if you
     /// wish to know if the connection is currently online.
-    RLMSyncSessionStateActive,
+    LEGACYSyncSessionStateActive,
     /// The sync session is not attempting to communicate with MongoDB
     /// Realm due to the user logging out or synchronization being paused.
-    RLMSyncSessionStateInactive,
+    LEGACYSyncSessionStateInactive,
     /// The sync session encountered a fatal error and is permanently invalid; it should be discarded.
-    RLMSyncSessionStateInvalid
+    LEGACYSyncSessionStateInvalid
 };
 
 /**
  The current state of a sync session's connection. Sessions which are not in
  the Active state will always be Disconnected.
  */
-typedef NS_ENUM(NSUInteger, RLMSyncConnectionState) {
+typedef NS_ENUM(NSUInteger, LEGACYSyncConnectionState) {
     /// The sync session is not connected to the server, and is not attempting
     /// to connect, either because the session is inactive or because it is
     /// waiting to retry after a failed connection.
-    RLMSyncConnectionStateDisconnected,
+    LEGACYSyncConnectionStateDisconnected,
     /// The sync session is attempting to connect to Atlas App Services.
-    RLMSyncConnectionStateConnecting,
+    LEGACYSyncConnectionStateConnecting,
     /// The sync session is currently connected to Atlas App Services.
-    RLMSyncConnectionStateConnected,
+    LEGACYSyncConnectionStateConnected,
 };
 
 /**
@@ -55,11 +55,11 @@ typedef NS_ENUM(NSUInteger, RLMSyncConnectionState) {
  Progress notification blocks can be registered on sessions if your app wishes to be informed
  how many bytes have been uploaded or downloaded, for example to show progress indicator UIs.
  */
-typedef RLM_CLOSED_ENUM(NSUInteger, RLMSyncProgressDirection) {
+typedef LEGACY_CLOSED_ENUM(NSUInteger, LEGACYSyncProgressDirection) {
     /// For monitoring upload progress.
-    RLMSyncProgressDirectionUpload,
+    LEGACYSyncProgressDirectionUpload,
     /// For monitoring download progress.
-    RLMSyncProgressDirectionDownload,
+    LEGACYSyncProgressDirectionDownload,
 };
 
 /**
@@ -68,15 +68,15 @@ typedef RLM_CLOSED_ENUM(NSUInteger, RLMSyncProgressDirection) {
  Progress notification blocks can be registered on sessions if your app wishes to be informed
  how many bytes have been uploaded or downloaded, for example to show progress indicator UIs.
  */
-typedef NS_ENUM(NSUInteger, RLMSyncProgressMode) {
+typedef NS_ENUM(NSUInteger, LEGACYSyncProgressMode) {
     /**
      The block will be called indefinitely, or until it is unregistered by calling
-     `-[RLMProgressNotificationToken invalidate]`.
+     `-[LEGACYProgressNotificationToken invalidate]`.
 
      Notifications will always report the latest number of transferred bytes, and the
      most up-to-date number of total transferrable bytes.
      */
-    RLMSyncProgressModeReportIndefinitely,
+    LEGACYSyncProgressModeReportIndefinitely,
     /**
      The block will, upon registration, store the total number of bytes
      to be transferred. When invoked, it will always report the most up-to-date number
@@ -85,10 +85,10 @@ typedef NS_ENUM(NSUInteger, RLMSyncProgressMode) {
      When the number of transferred bytes reaches or exceeds the
      number of transferrable bytes, the block will be unregistered.
      */
-    RLMSyncProgressModeForCurrentlyOutstandingWork,
+    LEGACYSyncProgressModeForCurrentlyOutstandingWork,
 };
 
-@class RLMUser, RLMSyncConfiguration, RLMSyncErrorActionToken, RLMSyncManager;
+@class LEGACYUser, LEGACYSyncConfiguration, LEGACYSyncErrorActionToken, LEGACYSyncManager;
 
 /**
  The type of a progress notification block intended for reporting a session's network
@@ -97,9 +97,9 @@ typedef NS_ENUM(NSUInteger, RLMSyncProgressMode) {
  `transferredBytes` refers to the number of bytes that have been uploaded or downloaded.
  `transferrableBytes` refers to the total number of bytes transferred, and pending transfer.
  */
-typedef void(^RLMProgressNotificationBlock)(NSUInteger transferredBytes, NSUInteger transferrableBytes);
+typedef void(^LEGACYProgressNotificationBlock)(NSUInteger transferredBytes, NSUInteger transferrableBytes);
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 /**
  A token object corresponding to a progress notification block on a session object.
@@ -107,8 +107,8 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  To stop notifications manually, call `-invalidate` on it. Notifications should be stopped before
  the token goes out of scope or is destroyed.
  */
-RLM_SWIFT_SENDABLE RLM_FINAL // is internally thread-safe
-@interface RLMProgressNotificationToken : RLMNotificationToken
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL // is internally thread-safe
+@interface LEGACYProgressNotificationToken : LEGACYNotificationToken
 @end
 
 /**
@@ -120,29 +120,29 @@ RLM_SWIFT_SENDABLE RLM_FINAL // is internally thread-safe
  lifespans of sessions associated with Realms are managed automatically. Session
  objects can be accessed from any thread.
  */
-RLM_SWIFT_SENDABLE RLM_FINAL // is internally thread-safe
-@interface RLMSyncSession : NSObject
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL // is internally thread-safe
+@interface LEGACYSyncSession : NSObject
 
 /// The session's current state.
 ///
 /// This property is not KVO-compliant.
-@property (nonatomic, readonly) RLMSyncSessionState state;
+@property (nonatomic, readonly) LEGACYSyncSessionState state;
 
 /// The session's current connection state.
 ///
 /// This property is KVO-compliant and can be observed to be notified of changes.
 /// Be warned that KVO observers for this property may be called on a background
 /// thread.
-@property (atomic, readonly) RLMSyncConnectionState connectionState;
+@property (atomic, readonly) LEGACYSyncConnectionState connectionState;
 
 /// The user that owns this session.
-- (nullable RLMUser *)parentUser;
+- (nullable LEGACYUser *)parentUser;
 
 /**
  If the session is valid, return a sync configuration that can be used to open the Realm
  associated with this session.
  */
-- (nullable RLMSyncConfiguration *)configuration;
+- (nullable LEGACYSyncConfiguration *)configuration;
 
 /**
  Temporarily suspend syncronization and disconnect from the server.
@@ -194,7 +194,7 @@ RLM_SWIFT_SENDABLE RLM_FINAL // is internally thread-safe
  If no token is returned, the notification block will never be called again.
  There are a number of reasons this might be true. If the session has previously
  experienced a fatal error it will not accept progress notification blocks. If
- the block was configured in the `RLMSyncProgressForCurrentlyOutstandingWork`
+ the block was configured in the `LEGACYSyncProgressForCurrentlyOutstandingWork`
  mode but there is no additional progress to report (for example, the number
  of transferrable bytes and transferred bytes are equal), the block will not be
  called again.
@@ -205,11 +205,11 @@ RLM_SWIFT_SENDABLE RLM_FINAL // is internally thread-safe
 
  @return A token which must be held for as long as you want notifications to be delivered.
 
- @see `RLMSyncProgressDirection`, `RLMSyncProgress`, `RLMProgressNotificationBlock`, `RLMProgressNotificationToken`
+ @see `LEGACYSyncProgressDirection`, `LEGACYSyncProgress`, `LEGACYProgressNotificationBlock`, `LEGACYProgressNotificationToken`
  */
-- (nullable RLMProgressNotificationToken *)addProgressNotificationForDirection:(RLMSyncProgressDirection)direction
-                                                                          mode:(RLMSyncProgressMode)mode
-                                                                         block:(RLMProgressNotificationBlock)block
+- (nullable LEGACYProgressNotificationToken *)addProgressNotificationForDirection:(LEGACYSyncProgressDirection)direction
+                                                                          mode:(LEGACYSyncProgressMode)mode
+                                                                         block:(LEGACYProgressNotificationBlock)block
 NS_REFINED_FOR_SWIFT;
 
 
@@ -222,15 +222,15 @@ NS_REFINED_FOR_SWIFT;
 /**
  Given an error action token, immediately handle the corresponding action.
  
- @see `RLMSyncErrorClientResetError`, `RLMSyncErrorPermissionDeniedError`
+ @see `LEGACYSyncErrorClientResetError`, `LEGACYSyncErrorPermissionDeniedError`
  */
-+ (void)immediatelyHandleError:(RLMSyncErrorActionToken *)token syncManager:(RLMSyncManager *)syncManager;
++ (void)immediatelyHandleError:(LEGACYSyncErrorActionToken *)token syncManager:(LEGACYSyncManager *)syncManager;
 
 /**
  Get the sync session for the given Realm if it is a synchronized Realm, or `nil`
  if it is not.
  */
-+ (nullable RLMSyncSession *)sessionForRealm:(RLMRealm *)realm;
++ (nullable LEGACYSyncSession *)sessionForRealm:(LEGACYRealm *)realm;
 
 @end
 
@@ -242,10 +242,10 @@ NS_REFINED_FOR_SWIFT;
  An opaque token returned as part of certain errors. It can be
  passed into certain APIs to perform certain actions.
 
- @see `RLMSyncErrorClientResetError`, `RLMSyncErrorPermissionDeniedError`
+ @see `LEGACYSyncErrorClientResetError`, `LEGACYSyncErrorPermissionDeniedError`
  */
-RLM_SWIFT_SENDABLE RLM_FINAL
-@interface RLMSyncErrorActionToken : NSObject
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL
+@interface LEGACYSyncErrorActionToken : NSObject
 
 /// :nodoc:
 - (instancetype)init __attribute__((unavailable("This type cannot be created directly")));
@@ -255,4 +255,4 @@ RLM_SWIFT_SENDABLE RLM_FINAL
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

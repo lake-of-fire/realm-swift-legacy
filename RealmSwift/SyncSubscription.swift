@@ -58,9 +58,9 @@ import RealmLegacy.Private
 @frozen public struct SyncSubscription {
 
     // MARK: Initializers
-    fileprivate let _rlmSyncSubscription: RLMSyncSubscription
+    fileprivate let _rlmSyncSubscription: LEGACYSyncSubscription
 
-    fileprivate init(_ rlmSyncSubscription: RLMSyncSubscription) {
+    fileprivate init(_ rlmSyncSubscription: LEGACYSyncSubscription) {
         self._rlmSyncSubscription = rlmSyncSubscription
     }
 
@@ -229,11 +229,11 @@ import RealmLegacy.Private
 @frozen public struct SyncSubscriptionSet {
     // MARK: Internal
 
-    internal let rlmSyncSubscriptionSet: RLMSyncSubscriptionSet
+    internal let rlmSyncSubscriptionSet: LEGACYSyncSubscriptionSet
 
     // MARK: Initializers
 
-    internal init(_ rlmSyncSubscriptionSet: RLMSyncSubscriptionSet) {
+    internal init(_ rlmSyncSubscriptionSet: LEGACYSyncSubscriptionSet) {
         self.rlmSyncSubscriptionSet = rlmSyncSubscriptionSet
     }
 
@@ -461,10 +461,10 @@ extension SyncSubscriptionSet: Sequence {
  This struct enables sequence-style enumeration for `SyncSubscriptionSet`.
  */
 @frozen public struct SyncSubscriptionSetIterator: IteratorProtocol {
-    private let rlmSubscriptionSet: RLMSyncSubscriptionSet
+    private let rlmSubscriptionSet: LEGACYSyncSubscriptionSet
     private var index: Int = -1
 
-    init(_ rlmSubscriptionSet: RLMSyncSubscriptionSet) {
+    init(_ rlmSubscriptionSet: LEGACYSyncSubscriptionSet) {
         self.rlmSubscriptionSet = rlmSubscriptionSet
     }
 
@@ -475,7 +475,7 @@ extension SyncSubscriptionSet: Sequence {
         return nil
     }
 
-    mutating public func next() -> RLMSyncSubscription? {
+    mutating public func next() -> LEGACYSyncSubscription? {
         if let index = self.nextIndex(for: self.index) {
             self.index = index
             return rlmSubscriptionSet.object(at: UInt(index))

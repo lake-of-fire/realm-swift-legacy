@@ -16,21 +16,21 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSyncTestCase.h"
+#import "LEGACYSyncTestCase.h"
 
 #import <CommonCrypto/CommonHMAC.h>
 #import <XCTest/XCTest.h>
 #import <Realm/Realm.h>
 
-#import "RLMRealm_Dynamic.h"
-#import "RLMRealm_Private.hpp"
-#import "RLMRealmConfiguration_Private.h"
-#import "RLMSyncManager_Private.hpp"
-#import "RLMSyncConfiguration_Private.h"
-#import "RLMUtil.hpp"
-#import "RLMApp_Private.hpp"
-#import "RLMChildProcessEnvironment.h"
-#import "RLMRealmUtil.hpp"
+#import "LEGACYRealm_Dynamic.h"
+#import "LEGACYRealm_Private.hpp"
+#import "LEGACYRealmConfiguration_Private.h"
+#import "LEGACYSyncManager_Private.hpp"
+#import "LEGACYSyncConfiguration_Private.h"
+#import "LEGACYUtil.hpp"
+#import "LEGACYApp_Private.hpp"
+#import "LEGACYChildProcessEnvironment.h"
+#import "LEGACYRealmUtil.hpp"
 
 #import <realm/object-store/sync/sync_manager.hpp>
 #import <realm/object-store/sync/sync_session.hpp>
@@ -41,34 +41,34 @@
 // Set this to 1 if you want the test ROS instance to log its debug messages to console.
 #define LOG_ROS_OUTPUT 0
 
-@interface RLMSyncManager ()
+@interface LEGACYSyncManager ()
 + (void)_setCustomBundleID:(NSString *)customBundleID;
-- (NSArray<RLMUser *> *)_allUsers;
+- (NSArray<LEGACYUser *> *)_allUsers;
 @end
 
-@interface RLMSyncTestCase ()
+@interface LEGACYSyncTestCase ()
 @property (nonatomic) NSTask *task;
 @end
 
-@interface RLMSyncSession ()
+@interface LEGACYSyncSession ()
 - (BOOL)waitForUploadCompletionOnQueue:(dispatch_queue_t)queue callback:(void(^)(NSError *))callback;
 - (BOOL)waitForDownloadCompletionOnQueue:(dispatch_queue_t)queue callback:(void(^)(NSError *))callback;
 @end
 
-@interface RLMUser ()
+@interface LEGACYUser ()
 - (std::shared_ptr<realm::SyncUser>)_syncUser;
 @end
 
-@interface TestNetworkTransport : RLMNetworkTransport
+@interface TestNetworkTransport : LEGACYNetworkTransport
 - (void)waitForCompletion;
 @end
 
 #pragma mark AsyncOpenConnectionTimeoutTransport
 
 @implementation AsyncOpenConnectionTimeoutTransport
-- (void)sendRequestToServer:(RLMRequest *)request completion:(RLMNetworkTransportCompletionBlock)completionBlock {
+- (void)sendRequestToServer:(LEGACYRequest *)request completion:(LEGACYNetworkTransportCompletionBlock)completionBlock {
     if ([request.url hasSuffix:@"location"]) {
-        RLMResponse *r = [RLMResponse new];
+        LEGACYResponse *r = [LEGACYResponse new];
         r.httpStatusCode = 200;
         r.body = @"{\"deployment_model\":\"GLOBAL\",\"location\":\"US-VA\",\"hostname\":\"http://localhost:5678\",\"ws_hostname\":\"ws://localhost:5678\"}";
         completionBlock(r);
@@ -86,10 +86,10 @@ static NSURL *syncDirectoryForChildProcess() {
     return [NSURL fileURLWithPath:path isDirectory:YES];
 }
 
-#pragma mark RLMSyncTestCase
+#pragma mark LEGACYSyncTestCase
 
-@implementation RLMSyncTestCase {
-    RLMApp *_app;
+@implementation LEGACYSyncTestCase {
+    LEGACYApp *_app;
 }
 
 - (NSArray *)defaultObjectTypes {
@@ -98,25 +98,25 @@ static NSURL *syncDirectoryForChildProcess() {
 
 #pragma mark - Helper methods
 
-- (RLMUser *)userForTest:(SEL)sel {
+- (LEGACYUser *)userForTest:(SEL)sel {
     return [self userForTest:sel app:self.app];
 }
 
-- (RLMUser *)userForTest:(SEL)sel app:(RLMApp *)app {
+- (LEGACYUser *)userForTest:(SEL)sel app:(LEGACYApp *)app {
     return [self logInUserForCredentials:[self basicCredentialsWithName:NSStringFromSelector(sel)
                                                                register:self.isParent app:app]
                                      app:app];
 }
 
-- (RLMUser *)anonymousUser {
-    return [self logInUserForCredentials:[RLMCredentials anonymousCredentials]];
+- (LEGACYUser *)anonymousUser {
+    return [self logInUserForCredentials:[LEGACYCredentials anonymousCredentials]];
 }
 
-- (RLMCredentials *)basicCredentialsWithName:(NSString *)name register:(BOOL)shouldRegister {
+- (LEGACYCredentials *)basicCredentialsWithName:(NSString *)name register:(BOOL)shouldRegister {
     return [self basicCredentialsWithName:name register:shouldRegister app:self.app];
 }
 
-- (RLMCredentials *)basicCredentialsWithName:(NSString *)name register:(BOOL)shouldRegister app:(RLMApp *)app {
+- (LEGACYCredentials *)basicCredentialsWithName:(NSString *)name register:(BOOL)shouldRegister app:(LEGACYApp *)app {
     if (shouldRegister) {
         XCTestExpectation *ex = [self expectationWithDescription:@""];
         [app.emailPasswordAuth registerUserWithEmail:name password:@"password" completion:^(NSError *error) {
@@ -125,74 +125,74 @@ static NSURL *syncDirectoryForChildProcess() {
         }];
         [self waitForExpectations:@[ex] timeout:20.0];
     }
-    return [RLMCredentials credentialsWithEmail:name password:@"password"];
+    return [LEGACYCredentials credentialsWithEmail:name password:@"password"];
 }
 
-- (RLMAppConfiguration*)defaultAppConfiguration {
-    auto config = [[RLMAppConfiguration alloc] initWithBaseURL:@"http://localhost:9090"
+- (LEGACYAppConfiguration*)defaultAppConfiguration {
+    auto config = [[LEGACYAppConfiguration alloc] initWithBaseURL:@"http://localhost:9090"
                                                      transport:[TestNetworkTransport new]
                                        defaultRequestTimeoutMS:60000];
     config.rootDirectory = self.clientDataRoot;
     return config;
 }
 
-- (void)addPersonsToRealm:(RLMRealm *)realm persons:(NSArray<Person *> *)persons {
+- (void)addPersonsToRealm:(LEGACYRealm *)realm persons:(NSArray<Person *> *)persons {
     [realm beginWriteTransaction];
     [realm addObjects:persons];
     [realm commitWriteTransaction];
 }
 
-- (RLMRealmConfiguration *)configuration {
-    RLMRealmConfiguration *configuration = [self configurationForUser:self.createUser];
+- (LEGACYRealmConfiguration *)configuration {
+    LEGACYRealmConfiguration *configuration = [self configurationForUser:self.createUser];
     configuration.objectClasses = self.defaultObjectTypes;
     return configuration;
 }
 
-- (RLMRealmConfiguration *)configurationForUser:(RLMUser *)user {
+- (LEGACYRealmConfiguration *)configurationForUser:(LEGACYUser *)user {
     return [user configurationWithPartitionValue:self.name];
 }
 
-- (RLMRealm *)openRealm {
+- (LEGACYRealm *)openRealm {
     return [self openRealmWithUser:self.createUser];
 }
 
-- (RLMRealm *)openRealmWithUser:(RLMUser *)user {
+- (LEGACYRealm *)openRealmWithUser:(LEGACYUser *)user {
     auto c = [self configurationForUser:user];
     c.objectClasses = self.defaultObjectTypes;
     return [self openRealmWithConfiguration:c];
 }
 
-- (RLMRealm *)openRealmForPartitionValue:(nullable id<RLMBSON>)partitionValue user:(RLMUser *)user {
+- (LEGACYRealm *)openRealmForPartitionValue:(nullable id<LEGACYBSON>)partitionValue user:(LEGACYUser *)user {
     auto c = [user configurationWithPartitionValue:partitionValue];
     c.objectClasses = self.defaultObjectTypes;
     return [self openRealmWithConfiguration:c];
 }
 
-- (RLMRealm *)openRealmForPartitionValue:(nullable id<RLMBSON>)partitionValue
-                                    user:(RLMUser *)user
-                         clientResetMode:(RLMClientResetMode)clientResetMode {
+- (LEGACYRealm *)openRealmForPartitionValue:(nullable id<LEGACYBSON>)partitionValue
+                                    user:(LEGACYUser *)user
+                         clientResetMode:(LEGACYClientResetMode)clientResetMode {
     auto c = [user configurationWithPartitionValue:partitionValue clientResetMode:clientResetMode];
     c.objectClasses = self.defaultObjectTypes;
     return [self openRealmWithConfiguration:c];
 }
 
-- (RLMRealm *)openRealmForPartitionValue:(nullable id<RLMBSON>)partitionValue
-                                    user:(RLMUser *)user
+- (LEGACYRealm *)openRealmForPartitionValue:(nullable id<LEGACYBSON>)partitionValue
+                                    user:(LEGACYUser *)user
                            encryptionKey:(nullable NSData *)encryptionKey
-                              stopPolicy:(RLMSyncStopPolicy)stopPolicy {
+                              stopPolicy:(LEGACYSyncStopPolicy)stopPolicy {
     return [self openRealmForPartitionValue:partitionValue
                                        user:user
-                            clientResetMode:RLMClientResetModeRecoverUnsyncedChanges
+                            clientResetMode:LEGACYClientResetModeRecoverUnsyncedChanges
                               encryptionKey:encryptionKey
                                  stopPolicy:stopPolicy];
 }
 
-- (RLMRealm *)openRealmForPartitionValue:(nullable id<RLMBSON>)partitionValue
-                                    user:(RLMUser *)user
-                         clientResetMode:(RLMClientResetMode)clientResetMode
+- (LEGACYRealm *)openRealmForPartitionValue:(nullable id<LEGACYBSON>)partitionValue
+                                    user:(LEGACYUser *)user
+                         clientResetMode:(LEGACYClientResetMode)clientResetMode
                            encryptionKey:(nullable NSData *)encryptionKey
-                              stopPolicy:(RLMSyncStopPolicy)stopPolicy {
-    RLMRealm *realm = [self immediatelyOpenRealmForPartitionValue:partitionValue
+                              stopPolicy:(LEGACYSyncStopPolicy)stopPolicy {
+    LEGACYRealm *realm = [self immediatelyOpenRealmForPartitionValue:partitionValue
                                                              user:user
                                                   clientResetMode:clientResetMode
                                                     encryptionKey:encryptionKey
@@ -201,18 +201,18 @@ static NSURL *syncDirectoryForChildProcess() {
     return realm;
 }
 
-- (RLMRealm *)openRealmWithConfiguration:(RLMRealmConfiguration *)configuration {
-    RLMRealm *realm = [RLMRealm realmWithConfiguration:configuration error:nullptr];
+- (LEGACYRealm *)openRealmWithConfiguration:(LEGACYRealmConfiguration *)configuration {
+    LEGACYRealm *realm = [LEGACYRealm realmWithConfiguration:configuration error:nullptr];
     [self waitForDownloadsForRealm:realm];
     return realm;
 }
 
-- (RLMRealm *)asyncOpenRealmWithConfiguration:(RLMRealmConfiguration *)config {
-    __block RLMRealm *r = nil;
+- (LEGACYRealm *)asyncOpenRealmWithConfiguration:(LEGACYRealmConfiguration *)config {
+    __block LEGACYRealm *r = nil;
     XCTestExpectation *ex = [self expectationWithDescription:@"Should asynchronously open a Realm"];
-    [RLMRealm asyncOpenWithConfiguration:config
+    [LEGACYRealm asyncOpenWithConfiguration:config
                            callbackQueue:dispatch_get_main_queue()
-                                callback:^(RLMRealm *realm, NSError *err) {
+                                callback:^(LEGACYRealm *realm, NSError *err) {
         XCTAssertNil(err);
         XCTAssertNotNil(realm);
         r = realm;
@@ -226,12 +226,12 @@ static NSURL *syncDirectoryForChildProcess() {
     return realm;
 }
 
-- (NSError *)asyncOpenErrorWithConfiguration:(RLMRealmConfiguration *)config {
+- (NSError *)asyncOpenErrorWithConfiguration:(LEGACYRealmConfiguration *)config {
     __block NSError *error = nil;
     XCTestExpectation *ex = [self expectationWithDescription:@"Should fail to asynchronously open a Realm"];
-    [RLMRealm asyncOpenWithConfiguration:config
+    [LEGACYRealm asyncOpenWithConfiguration:config
                            callbackQueue:dispatch_get_main_queue()
-                                callback:^(RLMRealm *r, NSError *err){
+                                callback:^(LEGACYRealm *r, NSError *err){
         XCTAssertNotNil(err);
         XCTAssertNil(r);
         error = err;
@@ -241,82 +241,82 @@ static NSURL *syncDirectoryForChildProcess() {
     return error;
 }
 
-- (RLMRealm *)immediatelyOpenRealmForPartitionValue:(NSString *)partitionValue user:(RLMUser *)user {
+- (LEGACYRealm *)immediatelyOpenRealmForPartitionValue:(NSString *)partitionValue user:(LEGACYUser *)user {
     return [self immediatelyOpenRealmForPartitionValue:partitionValue
                                                   user:user
-                                       clientResetMode:RLMClientResetModeRecoverUnsyncedChanges];
+                                       clientResetMode:LEGACYClientResetModeRecoverUnsyncedChanges];
 }
 
-- (RLMRealm *)immediatelyOpenRealmForPartitionValue:(NSString *)partitionValue
-                                               user:(RLMUser *)user
-                                    clientResetMode:(RLMClientResetMode)clientResetMode {
+- (LEGACYRealm *)immediatelyOpenRealmForPartitionValue:(NSString *)partitionValue
+                                               user:(LEGACYUser *)user
+                                    clientResetMode:(LEGACYClientResetMode)clientResetMode {
     return [self immediatelyOpenRealmForPartitionValue:partitionValue
                                                   user:user
                                        clientResetMode:clientResetMode
                                          encryptionKey:nil
-                                            stopPolicy:RLMSyncStopPolicyAfterChangesUploaded];
+                                            stopPolicy:LEGACYSyncStopPolicyAfterChangesUploaded];
 }
 
-- (RLMRealm *)immediatelyOpenRealmForPartitionValue:(NSString *)partitionValue
-                                               user:(RLMUser *)user
+- (LEGACYRealm *)immediatelyOpenRealmForPartitionValue:(NSString *)partitionValue
+                                               user:(LEGACYUser *)user
                                       encryptionKey:(NSData *)encryptionKey
-                                         stopPolicy:(RLMSyncStopPolicy)stopPolicy {
+                                         stopPolicy:(LEGACYSyncStopPolicy)stopPolicy {
     return [self immediatelyOpenRealmForPartitionValue:partitionValue
                                                   user:user
-                                       clientResetMode:RLMClientResetModeRecoverUnsyncedChanges
+                                       clientResetMode:LEGACYClientResetModeRecoverUnsyncedChanges
                                          encryptionKey:encryptionKey
-                                            stopPolicy:RLMSyncStopPolicyAfterChangesUploaded];
+                                            stopPolicy:LEGACYSyncStopPolicyAfterChangesUploaded];
 }
 
-- (RLMRealm *)immediatelyOpenRealmForPartitionValue:(NSString *)partitionValue
-                                               user:(RLMUser *)user
-                                    clientResetMode:(RLMClientResetMode)clientResetMode
+- (LEGACYRealm *)immediatelyOpenRealmForPartitionValue:(NSString *)partitionValue
+                                               user:(LEGACYUser *)user
+                                    clientResetMode:(LEGACYClientResetMode)clientResetMode
                                       encryptionKey:(NSData *)encryptionKey
-                                         stopPolicy:(RLMSyncStopPolicy)stopPolicy {
+                                         stopPolicy:(LEGACYSyncStopPolicy)stopPolicy {
     auto c = [user configurationWithPartitionValue:partitionValue clientResetMode:clientResetMode];
     c.encryptionKey = encryptionKey;
     c.objectClasses = self.defaultObjectTypes;
-    RLMSyncConfiguration *syncConfig = c.syncConfiguration;
+    LEGACYSyncConfiguration *syncConfig = c.syncConfiguration;
     syncConfig.stopPolicy = stopPolicy;
     c.syncConfiguration = syncConfig;
-    return [RLMRealm realmWithConfiguration:c error:nil];
+    return [LEGACYRealm realmWithConfiguration:c error:nil];
 }
 
-- (RLMUser *)createUser {
+- (LEGACYUser *)createUser {
     return [self createUserForApp:self.app];
 }
 
-- (RLMUser *)createUserForApp:(RLMApp *)app {
+- (LEGACYUser *)createUserForApp:(LEGACYApp *)app {
     NSString *name = [self.name stringByAppendingFormat:@" %@", NSUUID.UUID.UUIDString];
     return [self logInUserForCredentials:[self basicCredentialsWithName:name register:YES app:app] app:app];
 }
 
-- (RLMUser *)logInUserForCredentials:(RLMCredentials *)credentials {
+- (LEGACYUser *)logInUserForCredentials:(LEGACYCredentials *)credentials {
     return [self logInUserForCredentials:credentials app:self.app];
 }
 
-- (RLMUser *)logInUserForCredentials:(RLMCredentials *)credentials app:(RLMApp *)app {
-    __block RLMUser* user;
+- (LEGACYUser *)logInUserForCredentials:(LEGACYCredentials *)credentials app:(LEGACYApp *)app {
+    __block LEGACYUser* user;
     XCTestExpectation *expectation = [self expectationWithDescription:@""];
-    [app loginWithCredential:credentials completion:^(RLMUser *u, NSError *e) {
+    [app loginWithCredential:credentials completion:^(LEGACYUser *u, NSError *e) {
         XCTAssertNotNil(u);
         XCTAssertNil(e);
         user = u;
         [expectation fulfill];
     }];
     [self waitForExpectations:@[expectation] timeout:20.0];
-    XCTAssertTrue(user.state == RLMUserStateLoggedIn, @"User should have been valid, but wasn't");
+    XCTAssertTrue(user.state == LEGACYUserStateLoggedIn, @"User should have been valid, but wasn't");
     return user;
 }
 
-- (void)logOutUser:(RLMUser *)user {
+- (void)logOutUser:(LEGACYUser *)user {
     XCTestExpectation *expectation = [self expectationWithDescription:@""];
     [user logOutWithCompletion:^(NSError * error) {
         XCTAssertNil(error);
         [expectation fulfill];
     }];
     [self waitForExpectations:@[expectation] timeout:20.0];
-    XCTAssertTrue(user.state == RLMUserStateLoggedOut, @"User should have been logged out, but wasn't");
+    XCTAssertTrue(user.state == LEGACYUserStateLoggedOut, @"User should have been logged out, but wasn't");
 }
 
 - (NSString *)createJWTWithAppId:(NSString *)appId {
@@ -368,20 +368,20 @@ static NSURL *syncDirectoryForChildProcess() {
     return [NSString stringWithFormat:@"%@.%@", @(jwtPayload.c_str()), hmac];
 }
 
-- (RLMCredentials *)jwtCredentialWithAppId:(NSString *)appId {
-    return [RLMCredentials credentialsWithJWT:[self createJWTWithAppId:appId]];
+- (LEGACYCredentials *)jwtCredentialWithAppId:(NSString *)appId {
+    return [LEGACYCredentials credentialsWithJWT:[self createJWTWithAppId:appId]];
 }
 
-- (void)waitForDownloadsForRealm:(RLMRealm *)realm {
+- (void)waitForDownloadsForRealm:(LEGACYRealm *)realm {
     [self waitForDownloadsForRealm:realm error:nil];
 }
 
-- (void)waitForUploadsForRealm:(RLMRealm *)realm {
+- (void)waitForUploadsForRealm:(LEGACYRealm *)realm {
     [self waitForUploadsForRealm:realm error:nil];
 }
 
-- (void)waitForUploadsForRealm:(RLMRealm *)realm error:(NSError **)error {
-    RLMSyncSession *session = realm.syncSession;
+- (void)waitForUploadsForRealm:(LEGACYRealm *)realm error:(NSError **)error {
+    LEGACYSyncSession *session = realm.syncSession;
     NSAssert(session, @"Cannot call with invalid Realm");
     XCTestExpectation *ex = [self expectationWithDescription:@"Wait for upload completion"];
     __block NSError *completionError;
@@ -399,8 +399,8 @@ static NSURL *syncDirectoryForChildProcess() {
         *error = completionError;
 }
 
-- (void)waitForDownloadsForRealm:(RLMRealm *)realm error:(NSError **)error {
-    RLMSyncSession *session = realm.syncSession;
+- (void)waitForDownloadsForRealm:(LEGACYRealm *)realm error:(NSError **)error {
+    LEGACYSyncSession *session = realm.syncSession;
     NSAssert(session, @"Cannot call with invalid Realm");
     XCTestExpectation *ex = [self expectationWithDescription:@"Wait for download completion"];
     __block NSError *completionError;
@@ -420,24 +420,24 @@ static NSURL *syncDirectoryForChildProcess() {
     [realm refresh];
 }
 
-- (void)setInvalidTokensForUser:(RLMUser *)user {
+- (void)setInvalidTokensForUser:(LEGACYUser *)user {
     auto token = self.badAccessToken.UTF8String;
     user._syncUser->log_out();
     user._syncUser->log_in(token, token);
 }
 
-- (void)writeToPartition:(NSString *)partition block:(void (^)(RLMRealm *))block {
+- (void)writeToPartition:(NSString *)partition block:(void (^)(LEGACYRealm *))block {
     @autoreleasepool {
-        RLMUser *user = [self createUser];
+        LEGACYUser *user = [self createUser];
         auto c = [user configurationWithPartitionValue:partition];
         c.objectClasses = self.defaultObjectTypes;
         [self writeToConfiguration:c block:block];
     }
 }
 
-- (void)writeToConfiguration:(RLMRealmConfiguration *)config block:(void (^)(RLMRealm *))block {
+- (void)writeToConfiguration:(LEGACYRealmConfiguration *)config block:(void (^)(LEGACYRealm *))block {
     @autoreleasepool {
-        RLMRealm *realm = [RLMRealm realmWithConfiguration:config error:nullptr];
+        LEGACYRealm *realm = [LEGACYRealm realmWithConfiguration:config error:nullptr];
         [self waitForDownloadsForRealm:realm];
         [realm beginWriteTransaction];
         block(realm);
@@ -451,8 +451,8 @@ static NSURL *syncDirectoryForChildProcess() {
     // retry.
     int retryCount = 0;
     NSError *error;
-    while (![RLMRealm deleteFilesForConfiguration:config error:&error]) {
-        XCTAssertEqual(error.code, RLMErrorAlreadyOpen);
+    while (![LEGACYRealm deleteFilesForConfiguration:config error:&error]) {
+        XCTAssertEqual(error.code, LEGACYErrorAlreadyOpen);
         if (++retryCount > 1000) {
             XCTFail(@"Waiting for Realm to be closed timed out");
             break;
@@ -482,7 +482,7 @@ static NSURL *syncDirectoryForChildProcess() {
 - (void)setUp {
     [super setUp];
     self.continueAfterFailure = NO;
-    if (auto ids = NSProcessInfo.processInfo.environment[@"RLMParentAppIds"]) {
+    if (auto ids = NSProcessInfo.processInfo.environment[@"LEGACYParentAppIds"]) {
         _appIds = [ids componentsSeparatedByString:@","];   //take the one array for split the string
     }
     NSURL *clientDataRoot = self.clientDataRoot;
@@ -513,7 +513,7 @@ static bool s_opensApp;
     if (s_appId) {
         return s_appId;
     }
-    if (NSString *appId = NSProcessInfo.processInfo.environment[@"RLMParentAppId"]) {
+    if (NSString *appId = NSProcessInfo.processInfo.environment[@"LEGACYParentAppId"]) {
         return s_appId = appId;
     }
     NSError *error;
@@ -532,7 +532,7 @@ static bool s_opensApp;
                                                   persistent:true error:error];
 }
 
-- (RLMApp *)app {
+- (LEGACYApp *)app {
     if (!_app) {
         _app = [self appWithId:self.appId];
     }
@@ -545,10 +545,10 @@ static bool s_opensApp;
 }
 
 - (void)resetAppCache {
-    NSArray<RLMApp *> *apps = [RLMApp allApps];
+    NSArray<LEGACYApp *> *apps = [LEGACYApp allApps];
     NSMutableArray<XCTestExpectation *> *exs = [NSMutableArray new];
-    for (RLMApp *app : apps) @autoreleasepool {
-        [app.allUsers enumerateKeysAndObjectsUsingBlock:^(NSString *, RLMUser *user, BOOL *) {
+    for (LEGACYApp *app : apps) @autoreleasepool {
+        [app.allUsers enumerateKeysAndObjectsUsingBlock:^(NSString *, LEGACYUser *user, BOOL *) {
             XCTestExpectation *ex = [self expectationWithDescription:@"Wait for logout"];
             [exs addObject:ex];
             [user logOutWithCompletion:^(NSError *) {
@@ -569,13 +569,13 @@ static bool s_opensApp;
         [self waitForExpectations:exs timeout:60.0];
     }
 
-    for (RLMApp *app : apps) {
-        if (auto transport = RLMDynamicCast<TestNetworkTransport>(app.configuration.transport)) {
+    for (LEGACYApp *app : apps) {
+        if (auto transport = LEGACYDynamicCast<TestNetworkTransport>(app.configuration.transport)) {
             [transport waitForCompletion];
         }
         [app.syncManager resetForTesting];
     }
-    [RLMApp resetAppCache];
+    [LEGACYApp resetAppCache];
 }
 
 - (NSString *)badAccessToken {
@@ -588,7 +588,7 @@ static bool s_opensApp;
     "EnbmRwahvjWU1v9y1T1s3r2eozu93vMc3s";
 }
 
-- (void)cleanupRemoteDocuments:(RLMMongoCollection *)collection {
+- (void)cleanupRemoteDocuments:(LEGACYMongoCollection *)collection {
     XCTestExpectation *deleteManyExpectation = [self expectationWithDescription:@"should delete many documents"];
     [collection deleteManyDocumentsWhere:@{}
                               completion:^(NSInteger, NSError *error) {
@@ -600,7 +600,7 @@ static bool s_opensApp;
 
 - (NSURL *)clientDataRoot {
     if (self.isParent) {
-        return [NSURL fileURLWithPath:RLMDefaultDirectoryForBundleIdentifier(nil)];
+        return [NSURL fileURLWithPath:LEGACYDefaultDirectoryForBundleIdentifier(nil)];
     } else {
         return syncDirectoryForChildProcess();
     }
@@ -610,26 +610,26 @@ static bool s_opensApp;
     return [self childTaskWithAppIds:s_appId ? @[s_appId] : @[]];
 }
 
-- (RLMApp *)appWithId:(NSString *)appId {
+- (LEGACYApp *)appWithId:(NSString *)appId {
     auto config = self.defaultAppConfiguration;
     config.appId = appId;
-    RLMApp *app = [RLMApp appWithConfiguration:config];
-    RLMSyncManager *syncManager = app.syncManager;
+    LEGACYApp *app = [LEGACYApp appWithConfiguration:config];
+    LEGACYSyncManager *syncManager = app.syncManager;
     syncManager.userAgent = self.name;
-    RLMLogger.defaultLogger.level = RLMLogLevelWarn;
+    LEGACYLogger.defaultLogger.level = LEGACYLogLevelWarn;
     return app;
 }
 
-- (NSString *)partitionBsonType:(id<RLMBSON>)bson {
+- (NSString *)partitionBsonType:(id<LEGACYBSON>)bson {
     switch (bson.bsonType){
-        case RLMBSONTypeString:
+        case LEGACYBSONTypeString:
             return @"string";
-        case RLMBSONTypeUUID:
+        case LEGACYBSONTypeUUID:
             return @"uuid";
-        case RLMBSONTypeInt32:
-        case RLMBSONTypeInt64:
+        case LEGACYBSONTypeInt32:
+        case LEGACYBSONTypeInt64:
             return @"long";
-        case RLMBSONTypeObjectId:
+        case LEGACYBSONTypeObjectId:
             return @"objectId";
         default:
             return @"";
@@ -646,17 +646,17 @@ static bool s_opensApp;
                                              error:error];
 }
 
-- (void)populateData:(void (^)(RLMRealm *))block {
-    RLMRealm *realm = [self openRealm];
-    RLMRealmSubscribeToAll(realm);
+- (void)populateData:(void (^)(LEGACYRealm *))block {
+    LEGACYRealm *realm = [self openRealm];
+    LEGACYRealmSubscribeToAll(realm);
     [realm beginWriteTransaction];
     block(realm);
     [realm commitWriteTransaction];
     [self waitForUploadsForRealm:realm];
 }
 
-- (void)writeQueryAndCompleteForRealm:(RLMRealm *)realm block:(void (^)(RLMSyncSubscriptionSet *))block {
-    RLMSyncSubscriptionSet *subs = realm.subscriptions;
+- (void)writeQueryAndCompleteForRealm:(LEGACYRealm *)realm block:(void (^)(LEGACYSyncSubscriptionSet *))block {
+    LEGACYSyncSubscriptionSet *subs = realm.subscriptions;
     XCTAssertNotNil(subs);
 
     XCTestExpectation *ex = [self expectationWithDescription:@"state changes"];
@@ -682,10 +682,10 @@ static bool s_opensApp;
     }
     return self;
 }
-- (void)sendRequestToServer:(RLMRequest *)request
-                 completion:(RLMNetworkTransportCompletionBlock)completionBlock {
+- (void)sendRequestToServer:(LEGACYRequest *)request
+                 completion:(LEGACYNetworkTransportCompletionBlock)completionBlock {
     dispatch_group_enter(_group);
-    [super sendRequestToServer:request completion:^(RLMResponse *response) {
+    [super sendRequestToServer:request completion:^(LEGACYResponse *response) {
         completionBlock(response);
         dispatch_group_leave(_group);
     }];
@@ -696,15 +696,15 @@ static bool s_opensApp;
 }
 @end
 
-@implementation RLMUser (Test)
-- (RLMMongoCollection *)collectionForType:(Class)type app:(RLMApp *)app {
+@implementation LEGACYUser (Test)
+- (LEGACYMongoCollection *)collectionForType:(Class)type app:(LEGACYApp *)app {
     return [[[self mongoClientWithServiceName:@"mongodb1"]
              databaseWithName:@"test_data"]
             collectionWithName:[NSString stringWithFormat:@"%@ %@", [type className], app.appId]];
 }
 @end
 
-int64_t RLMGetClientFileIdent(RLMRealm *realm) {
+int64_t LEGACYGetClientFileIdent(LEGACYRealm *realm) {
     return realm::SyncSession::OnlyForTesting::get_file_ident(*realm->_realm->sync_session()).ident;
 }
 

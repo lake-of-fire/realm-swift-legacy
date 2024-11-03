@@ -16,12 +16,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 /// :nodoc:
-@interface RLMObjectBase : NSObject
+@interface LEGACYObjectBase : NSObject
 
 @property (nonatomic, readonly, getter = isInvalidated) BOOL invalidated;
 
@@ -37,4 +37,4 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

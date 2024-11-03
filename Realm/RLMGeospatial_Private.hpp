@@ -16,16 +16,16 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMGeospatial.h>
+#import <Realm/LEGACYGeospatial.h>
 
 namespace realm {
 class Geospatial;
 }
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@protocol RLMGeospatial_Private <NSObject>
+@protocol LEGACYGeospatial_Private <NSObject>
 - (realm::Geospatial)geoSpatial;
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

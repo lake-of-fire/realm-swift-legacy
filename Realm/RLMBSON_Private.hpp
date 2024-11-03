@@ -16,7 +16,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMBSON.h>
+#import <Realm/LEGACYBSON.h>
 #import <realm/util/optional.hpp>
 
 namespace realm::bson {
@@ -25,8 +25,8 @@ template <typename> class IndexedMap;
 using BsonDocument = IndexedMap<Bson>;
 }
 
-realm::bson::Bson RLMConvertRLMBSONToBson(id<RLMBSON> b);
-realm::bson::BsonDocument RLMConvertRLMBSONArrayToBsonDocument(NSArray<id<RLMBSON>> *array);
-id<RLMBSON> RLMConvertBsonToRLMBSON(const realm::bson::Bson& b);
-id<RLMBSON> RLMConvertBsonDocumentToRLMBSON(std::optional<realm::bson::BsonDocument> b);
-NSArray<id<RLMBSON>> *RLMConvertBsonDocumentToRLMBSONArray(std::optional<realm::bson::BsonDocument> b);
+realm::bson::Bson LEGACYConvertRLMBSONToBson(id<LEGACYBSON> b);
+realm::bson::BsonDocument LEGACYConvertRLMBSONArrayToBsonDocument(NSArray<id<LEGACYBSON>> *array);
+id<LEGACYBSON> LEGACYConvertBsonToRLMBSON(const realm::bson::Bson& b);
+id<LEGACYBSON> LEGACYConvertBsonDocumentToRLMBSON(std::optional<realm::bson::BsonDocument> b);
+NSArray<id<LEGACYBSON>> *LEGACYConvertBsonDocumentToRLMBSONArray(std::optional<realm::bson::BsonDocument> b);

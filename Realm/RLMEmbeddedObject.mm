@@ -16,13 +16,13 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMEmbeddedObject.h"
+#import "LEGACYEmbeddedObject.h"
 
-#import "RLMObject_Private.hpp"
-#import "RLMSchema_Private.h"
+#import "LEGACYObject_Private.hpp"
+#import "LEGACYSchema_Private.h"
 
-@implementation RLMEmbeddedObject
-// synthesized in RLMObjectBase but redeclared here for documentation purposes
+@implementation LEGACYEmbeddedObject
+// synthesized in LEGACYObjectBase but redeclared here for documentation purposes
 @dynamic invalidated, realm, objectSchema;
 
 #pragma mark - Designated Initializers
@@ -37,50 +37,50 @@
     if (!(self = [self init])) {
         return nil;
     }
-    RLMInitializeWithValue(self, value, RLMSchema.partialPrivateSharedSchema);
+    LEGACYInitializeWithValue(self, value, LEGACYSchema.partialPrivateSharedSchema);
     return self;
 }
 
 #pragma mark - Subscripting
 
 - (id)objectForKeyedSubscript:(NSString *)key {
-    return RLMObjectBaseObjectForKeyedSubscript(self, key);
+    return LEGACYObjectBaseObjectForKeyedSubscript(self, key);
 }
 
 - (void)setObject:(id)obj forKeyedSubscript:(NSString *)key {
-    RLMObjectBaseSetObjectForKeyedSubscript(self, key, obj);
+    LEGACYObjectBaseSetObjectForKeyedSubscript(self, key, obj);
 }
 
 #pragma mark - Other Instance Methods
 
-- (BOOL)isEqualToObject:(RLMObjectBase *)object {
-    return [object isKindOfClass:RLMObjectBase.class] && RLMObjectBaseAreEqual(self, object);
+- (BOOL)isEqualToObject:(LEGACYObjectBase *)object {
+    return [object isKindOfClass:LEGACYObjectBase.class] && LEGACYObjectBaseAreEqual(self, object);
 }
 
 - (instancetype)freeze {
-    return RLMObjectFreeze(self);
+    return LEGACYObjectFreeze(self);
 }
 
 - (instancetype)thaw {
-    return RLMObjectThaw(self);
+    return LEGACYObjectThaw(self);
 }
 
-- (RLMNotificationToken *)addNotificationBlock:(RLMObjectChangeBlock)block {
-    return RLMObjectAddNotificationBlock(self, block, nil, nil);
+- (LEGACYNotificationToken *)addNotificationBlock:(LEGACYObjectChangeBlock)block {
+    return LEGACYObjectAddNotificationBlock(self, block, nil, nil);
 }
 
-- (RLMNotificationToken *)addNotificationBlock:(RLMObjectChangeBlock)block queue:(dispatch_queue_t)queue {
-    return RLMObjectAddNotificationBlock(self, block, nil, queue);
+- (LEGACYNotificationToken *)addNotificationBlock:(LEGACYObjectChangeBlock)block queue:(dispatch_queue_t)queue {
+    return LEGACYObjectAddNotificationBlock(self, block, nil, queue);
 }
 
-- (RLMNotificationToken *)addNotificationBlock:(RLMObjectChangeBlock)block keyPaths:(NSArray<NSString *> *)keyPaths {
-    return RLMObjectAddNotificationBlock(self, block, keyPaths, nil);
+- (LEGACYNotificationToken *)addNotificationBlock:(LEGACYObjectChangeBlock)block keyPaths:(NSArray<NSString *> *)keyPaths {
+    return LEGACYObjectAddNotificationBlock(self, block, keyPaths, nil);
 }
 
-- (RLMNotificationToken *)addNotificationBlock:(RLMObjectChangeBlock)block
+- (LEGACYNotificationToken *)addNotificationBlock:(LEGACYObjectChangeBlock)block
                                       keyPaths:(NSArray<NSString *> *)keyPaths
                                          queue:(dispatch_queue_t)queue {
-    return RLMObjectAddNotificationBlock(self, block, keyPaths, queue);
+    return LEGACYObjectAddNotificationBlock(self, block, keyPaths, queue);
 }
 
 + (NSString *)className {

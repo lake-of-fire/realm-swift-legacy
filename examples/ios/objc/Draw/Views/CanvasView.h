@@ -23,7 +23,7 @@
 
 @interface CanvasView : UIView
 
-@property (nonatomic, strong) RLMResults *paths;
+@property (nonatomic, strong) LEGACYResults *paths;
 
 - (void)clearCanvas;
 

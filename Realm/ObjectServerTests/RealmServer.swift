@@ -514,7 +514,7 @@ public class RealmServer: NSObject {
                                    isDirectory: true).appendingPathComponent("realm-test-\(UUID().uuidString)")
 
     /// Whether or not this is a parent or child process.
-    private lazy var isParentProcess = (getenv("RLMProcessIsChild") == nil)
+    private lazy var isParentProcess = (getenv("LEGACYProcessIsChild") == nil)
 
     /// The current admin session
     private var session: AdminSession?
@@ -1212,7 +1212,7 @@ public class RealmServer: NSObject {
     public func triggerClientReset(_ appId: String, _ realm: RealmLegacy) throws {
         let session = try XCTUnwrap(session)
         let appServerId = try retrieveAppServerId(appId)
-        let ident = RLMGetClientFileIdent(ObjectiveCSupport.convert(object: realm))
+        let ident = LEGACYGetClientFileIdent(ObjectiveCSupport.convert(object: realm))
         XCTAssertNotEqual(ident, 0)
         _ = try session.privateApps[appServerId].sync.forceReset.put(["file_ident": ident]).get()
     }

@@ -18,7 +18,7 @@
 
 #import <Realm/Realm.h>
 
-@interface Tick : RLMObject
+@interface Tick : LEGACYObject
 
 @property (nonatomic, strong) NSString *tickID;
 

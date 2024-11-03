@@ -16,11 +16,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability)
 /// Conforming protocol for a Geo-shape.
-@protocol RLMGeospatial
+@protocol LEGACYGeospatial
 @end
 
 /**
@@ -30,7 +30,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability)
   * Longitude ranges between -180 and 180 degrees, inclusive.
   * Altitude cannot have negative values.
 
- Values outside this ranges will return nil when trying to create a `RLMGeospatialPoint`.
+ Values outside this ranges will return nil when trying to create a `LEGACYGeospatialPoint`.
 
  @note There is no dedicated type to store Geospatial points, instead points should be stored as
  [GeoJson-shaped](https://www.mongodb.com/docs/manual/reference/geojson/) 
@@ -41,12 +41,12 @@ RLM_HEADER_AUDIT_BEGIN(nullability)
  can be queried as though it contained a geographical location. The recommended approach is using an embedded object.
 
  @warning This structure cannot be persisted and can only be used to build other geospatial shapes
- such as (`RLMGeospatialBox`, `RLMGeospatialPolygon` and `RLMGeospatialCircle`).
+ such as (`LEGACYGeospatialBox`, `LEGACYGeospatialPolygon` and `LEGACYGeospatialCircle`).
 
  @warning Altitude is not used in any of the query calculations.
  */
-RLM_SWIFT_SENDABLE
-@interface RLMGeospatialPoint : NSObject
+LEGACY_SWIFT_SENDABLE
+@interface LEGACYGeospatialPoint : NSObject
 /// Latitude in degrees.
 @property (readonly) double latitude;
 /// Longitude in degrees.
@@ -55,7 +55,7 @@ RLM_SWIFT_SENDABLE
 @property (readonly) double altitude;
 
 /**
-Initialize a `RLMGeospatialPoint`, with the specific values for latitude and longitude.
+Initialize a `LEGACYGeospatialPoint`, with the specific values for latitude and longitude.
 
 Returns `nil` if the values of latitude and longitude are not within the ranges specified.
 
@@ -65,7 +65,7 @@ Returns `nil` if the values of latitude and longitude are not within the ranges 
 - (nullable instancetype)initWithLatitude:(double)latitude longitude:(double)longitude;
 
 /**
-Initialize a `RLMGeospatialPoint`, with the specific values for latitude and longitude.
+Initialize a `LEGACYGeospatialPoint`, with the specific values for latitude and longitude.
 
 Returns `nil` if the values of latitude and longitude are not within the ranges specified.
 
@@ -83,31 +83,31 @@ Returns `nil` if the values of latitude and longitude are not within the ranges 
 
  - warning: This class cannot be persisted and can only be use within a geospatial `geoWithin` query.
  */
-RLM_SWIFT_SENDABLE
-@interface RLMGeospatialBox : NSObject <RLMGeospatial>
+LEGACY_SWIFT_SENDABLE
+@interface LEGACYGeospatialBox : NSObject <LEGACYGeospatial>
 /// The bottom left corner of the rectangle.
-@property (readonly, strong) RLMGeospatialPoint *bottomLeft;
+@property (readonly, strong) LEGACYGeospatialPoint *bottomLeft;
 /// The top right corner of the rectangle.
-@property (readonly, strong) RLMGeospatialPoint *topRight;
+@property (readonly, strong) LEGACYGeospatialPoint *topRight;
 
 /**
- Initialize a `RLMGeospatialBox`, with values for bottom left corner and top right corner.
+ Initialize a `LEGACYGeospatialBox`, with values for bottom left corner and top right corner.
 
 @param bottomLeft The bottom left corner of the rectangle.
 @param topRight The top right corner of the rectangle.
  */
-- (instancetype)initWithBottomLeft:(RLMGeospatialPoint *)bottomLeft topRight:(RLMGeospatialPoint *)topRight;
+- (instancetype)initWithBottomLeft:(LEGACYGeospatialPoint *)bottomLeft topRight:(LEGACYGeospatialPoint *)topRight;
 @end
 
 /**
  A class that represents a polygon, that can be used in a geospatial `geoWithin`query.
 
- A `RLMGeospatialPolygon` describes a shape conformed of and outer `Polygon`, called `outerRing`,
+ A `LEGACYGeospatialPolygon` describes a shape conformed of and outer `Polygon`, called `outerRing`,
  and 0 or more inner `Polygon`s, called `holes`, which represents an unlimited number of internal holes
  inside the outer `Polygon`.
- A `Polygon` describes a shape conformed by at least three segments, where the last and the first `RLMGeospatialPoint`
+ A `Polygon` describes a shape conformed by at least three segments, where the last and the first `LEGACYGeospatialPoint`
  must be the same to indicate a closed polygon (meaning you need at least 4 points to define a polygon).
- Inner holes in a `RLMGeospatialPolygon` must  be entirely inside the outer ring
+ Inner holes in a `LEGACYGeospatialPolygon` must  be entirely inside the outer ring
 
  A `hole` has the following restrictions:
  - Holes may not cross, i.e. the boundary of a hole 
@@ -120,43 +120,43 @@ RLM_SWIFT_SENDABLE
 
  @warning This class cannot be persisted and can only be use within a geospatial `geoWithin` query.
  */
-RLM_SWIFT_SENDABLE
-@interface RLMGeospatialPolygon : NSObject <RLMGeospatial>
+LEGACY_SWIFT_SENDABLE
+@interface LEGACYGeospatialPolygon : NSObject <LEGACYGeospatial>
 /// The polygon's external (outer) ring.
-@property (readonly, strong) NSArray<RLMGeospatialPoint *> *outerRing;
+@property (readonly, strong) NSArray<LEGACYGeospatialPoint *> *outerRing;
 /// The holes (if any) in the polygon.
-@property (readonly, strong, nullable) NSArray<NSArray<RLMGeospatialPoint *> *> *holes;
+@property (readonly, strong, nullable) NSArray<NSArray<LEGACYGeospatialPoint *> *> *holes;
 
 /**
-Initialize a `RLMGeospatialPolygon`, with its outer rings and holes (if any).
+Initialize a `LEGACYGeospatialPolygon`, with its outer rings and holes (if any).
 
-Returns `nil` if the `RLMGeospatialPoints` representing a polygon (outer ring or holes), don't have at least 4 points.
-Returns `nil` if the first and the last `RLMGeospatialPoint` in a polygon are not the same.
+Returns `nil` if the `LEGACYGeospatialPoints` representing a polygon (outer ring or holes), don't have at least 4 points.
+Returns `nil` if the first and the last `LEGACYGeospatialPoint` in a polygon are not the same.
 
 @param outerRing The polygon's external (outer) ring.
  */
-- (nullable instancetype)initWithOuterRing:(NSArray<RLMGeospatialPoint *> *)outerRing;
+- (nullable instancetype)initWithOuterRing:(NSArray<LEGACYGeospatialPoint *> *)outerRing;
 
 /**
-Initialize a `RLMGeospatialPolygon`, with its outer rings and holes (if any).
+Initialize a `LEGACYGeospatialPolygon`, with its outer rings and holes (if any).
 
-Returns `nil` if the `RLMGeospatialPoints` representing a polygon (outer ring or holes), don't have at least 4 points.
-Returns `nil` if the first and the last `RLMGeospatialPoint` in a polygon are not the same.
+Returns `nil` if the `LEGACYGeospatialPoints` representing a polygon (outer ring or holes), don't have at least 4 points.
+Returns `nil` if the first and the last `LEGACYGeospatialPoint` in a polygon are not the same.
 
 @param outerRing The polygon's external (outer) ring.
 @param holes The holes (if any) in the polygon.
  */
-- (nullable instancetype)initWithOuterRing:(NSArray<RLMGeospatialPoint *> *)outerRing holes:(nullable NSArray<NSArray<RLMGeospatialPoint *> *> *)holes;
+- (nullable instancetype)initWithOuterRing:(NSArray<LEGACYGeospatialPoint *> *)outerRing holes:(nullable NSArray<NSArray<LEGACYGeospatialPoint *> *> *)holes;
 @end
 
 /**
  This structure is a helper to represent/convert a distance. It can be used in geospatial
- queries like those represented by a `RLMGeospatialCircle`
+ queries like those represented by a `LEGACYGeospatialCircle`
 
  - warning: This structure cannot be persisted and can only be used to build other geospatial shapes
  */
-RLM_SWIFT_SENDABLE
-@interface RLMDistance : NSObject
+LEGACY_SWIFT_SENDABLE
+@interface LEGACYDistance : NSObject
 /// The distance in radians.
 @property (readonly) double radians;
 
@@ -226,20 +226,20 @@ A class that represents a circle, that can be used in a geospatial `geoWithin`qu
 
 @warning This class cannot be persisted and can only be use within a geospatial `geoWithin` query.
 */
-RLM_SWIFT_SENDABLE
-@interface RLMGeospatialCircle : NSObject <RLMGeospatial>
+LEGACY_SWIFT_SENDABLE
+@interface LEGACYGeospatialCircle : NSObject <LEGACYGeospatial>
 /// Center of the circle.
-@property (readonly, strong) RLMGeospatialPoint *center;
+@property (readonly, strong) LEGACYGeospatialPoint *center;
 /// Radius of the circle.
 @property (readonly) double radians;
 
 /**
-Initialize a `RLMGeospatialCircle`, from its center and radius.
+Initialize a `LEGACYGeospatialCircle`, from its center and radius.
 
 @param center Center of the circle.
 @param radians Radius of the circle.
 */
-- (nullable instancetype)initWithCenter:(RLMGeospatialPoint *)center radiusInRadians:(double)radians;
+- (nullable instancetype)initWithCenter:(LEGACYGeospatialPoint *)center radiusInRadians:(double)radians;
 
 /**
 Initialize a `GeoCircle`, from its center and radius.
@@ -247,7 +247,7 @@ Initialize a `GeoCircle`, from its center and radius.
 @param center Center of the circle.
 @param radius Radius of the circle.
 */
-- (instancetype)initWithCenter:(RLMGeospatialPoint *)center radius:(RLMDistance *)radius;
+- (instancetype)initWithCenter:(LEGACYGeospatialPoint *)center radius:(LEGACYDistance *)radius;
 @end
 
-RLM_HEADER_AUDIT_END(nullability)
+LEGACY_HEADER_AUDIT_END(nullability)

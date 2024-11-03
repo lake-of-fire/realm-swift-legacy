@@ -25,8 +25,8 @@
 @property (nonatomic, weak) IBOutlet UISegmentedControl *sortOrderControl;
 @property (nonatomic, weak) IBOutlet UITextField *searchField;
 
-@property (nonatomic) RLMResults *results;
-@property (nonatomic) RLMNotificationToken *token;
+@property (nonatomic) LEGACYResults *results;
+@property (nonatomic) LEGACYNotificationToken *token;
 
 @end
 
@@ -40,7 +40,7 @@
     [super viewDidLoad];
 
     __weak typeof(self) weakSelf = self;
-    self.token = [[RLMRealm defaultRealm] addNotificationBlock:^(NSString * _Nonnull notification, RLMRealm * _Nonnull realm) {
+    self.token = [[LEGACYRealm defaultRealm] addNotificationBlock:^(NSString * _Nonnull notification, LEGACYRealm * _Nonnull realm) {
         [weakSelf reloadData];
     }];
 
@@ -55,7 +55,7 @@
             if (!jsonError) {
                 NSArray *items = repositories[@"items"];
 
-                RLMRealm *realm = [RLMRealm defaultRealm];
+                LEGACYRealm *realm = [LEGACYRealm defaultRealm];
                 [realm transactionWithBlock:^{
                     for (NSDictionary *item in items) {
                         Repository *repository = [Repository new];

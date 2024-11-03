@@ -16,63 +16,63 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMClassInfo.hpp"
-#import "RLMSectionedResults.h"
+#import "LEGACYClassInfo.hpp"
+#import "LEGACYSectionedResults.h"
 
 #import <realm/object-store/results.hpp>
 #import <realm/object-store/sectioned_results.hpp>
 
-@protocol RLMValue;
+@protocol LEGACYValue;
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-RLM_HIDDEN_BEGIN
+LEGACY_HIDDEN_BEGIN
 
-RLM_DIRECT_MEMBERS
-@interface RLMSectionedResultsChange ()
+LEGACY_DIRECT_MEMBERS
+@interface LEGACYSectionedResultsChange ()
 - (instancetype)initWithChanges:(realm::SectionedResultsChangeSet)indices;
 @end
 
-RLM_DIRECT_MEMBERS
-@interface RLMSectionedResultsEnumerator : NSObject
+LEGACY_DIRECT_MEMBERS
+@interface LEGACYSectionedResultsEnumerator : NSObject
 
 - (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state
                                     count:(NSUInteger)len;
 
-- (instancetype)initWithSectionedResults:(RLMSectionedResults *)sectionedResults;
-- (instancetype)initWithResultsSection:(RLMSection *)resultsSection;
+- (instancetype)initWithSectionedResults:(LEGACYSectionedResults *)sectionedResults;
+- (instancetype)initWithResultsSection:(LEGACYSection *)resultsSection;
 
 @end
 
-@interface RLMSectionedResults ()
+@interface LEGACYSectionedResults ()
 
-- (instancetype)initWithResults:(RLMResults *)results
-                       keyBlock:(RLMSectionedResultsKeyBlock)keyBlock;
+- (instancetype)initWithResults:(LEGACYResults *)results
+                       keyBlock:(LEGACYSectionedResultsKeyBlock)keyBlock;
 
-- (RLMSectionedResultsEnumerator *)fastEnumerator;
-- (RLMClassInfo *)objectInfo;
-- (RLMSectionedResults *)snapshot;
+- (LEGACYSectionedResultsEnumerator *)fastEnumerator;
+- (LEGACYClassInfo *)objectInfo;
+- (LEGACYSectionedResults *)snapshot;
 
-NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
+NSUInteger LEGACYFastEnumerate(NSFastEnumerationState *state,
                             NSUInteger len,
-                            RLMSectionedResults *collection);
+                            LEGACYSectionedResults *collection);
 
 @end
 
-@interface RLMSection ()
+@interface LEGACYSection ()
 
 - (instancetype)initWithResultsSection:(realm::ResultsSection&&)resultsSection
-                                parent:(RLMSectionedResults *)parent;
+                                parent:(LEGACYSectionedResults *)parent;
 
-- (RLMSectionedResultsEnumerator *)fastEnumerator;
-- (RLMClassInfo *)objectInfo;
+- (LEGACYSectionedResultsEnumerator *)fastEnumerator;
+- (LEGACYClassInfo *)objectInfo;
 
-NSUInteger RLMFastEnumerate(NSFastEnumerationState *state,
+NSUInteger LEGACYFastEnumerate(NSFastEnumerationState *state,
                             NSUInteger len,
-                            RLMSection *collection);
+                            LEGACYSection *collection);
 
 @end
 
-RLM_HIDDEN_END
+LEGACY_HIDDEN_END
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

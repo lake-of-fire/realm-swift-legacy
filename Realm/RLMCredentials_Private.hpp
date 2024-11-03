@@ -16,10 +16,10 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMCredentials.h"
+#import "LEGACYCredentials.h"
 
 #import <realm/object-store/sync/app_credentials.hpp>
 
-@interface RLMCredentials()
+@interface LEGACYCredentials()
 @property (nonatomic, direct) realm::app::AppCredentials& appCredentials;
 @end

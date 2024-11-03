@@ -16,32 +16,32 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMMongoDatabase.h>
+#import <Realm/LEGACYMongoDatabase.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@class RLMApp;
+@class LEGACYApp;
 
-/// The `RLMMongoClient` enables reading and writing on a MongoDB database via the Realm Cloud service.
+/// The `LEGACYMongoClient` enables reading and writing on a MongoDB database via the Realm Cloud service.
 ///
-/// It provides access to instances of `RLMMongoDatabase`, which in turn provide access to specific
-/// `RLMMongoCollection`s that hold your data.
+/// It provides access to instances of `LEGACYMongoDatabase`, which in turn provide access to specific
+/// `LEGACYMongoCollection`s that hold your data.
 ///
 /// - Note:
 /// Before you can read or write data, a user must log in.
 ///
 /// - SeeAlso:
-/// `RLMApp`, `RLMMongoDatabase`, `RLMMongoCollection`
-RLM_SWIFT_SENDABLE RLM_FINAL // immutable final class
-@interface RLMMongoClient : NSObject
+/// `LEGACYApp`, `LEGACYMongoDatabase`, `LEGACYMongoCollection`
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL // immutable final class
+@interface LEGACYMongoClient : NSObject
 
 /// The name of the client
 @property (nonatomic, readonly) NSString *name;
 
-/// Gets a `RLMMongoDatabase` instance for the given database name.
+/// Gets a `LEGACYMongoDatabase` instance for the given database name.
 /// @param name the name of the database to retrieve
-- (RLMMongoDatabase *)databaseWithName:(NSString *)name NS_SWIFT_NAME(database(named:));
+- (LEGACYMongoDatabase *)databaseWithName:(NSString *)name NS_SWIFT_NAME(database(named:));
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

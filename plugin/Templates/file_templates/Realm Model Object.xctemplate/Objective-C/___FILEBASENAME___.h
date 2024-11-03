@@ -8,10 +8,10 @@
 
 #import <Realm/Realm.h>
 
-@interface ___FILEBASENAMEASIDENTIFIER___ : RLMObject
+@interface ___FILEBASENAMEASIDENTIFIER___ : LEGACYObject
 <# Add properties here to define the model #>
 @end
 
 // This protocol enables typed collections. i.e.:
-// RLMArray<___FILEBASENAMEASIDENTIFIER___ *><___FILEBASENAMEASIDENTIFIER___>
-RLM_COLLECTION_TYPE(___FILEBASENAMEASIDENTIFIER___)
+// LEGACYArray<___FILEBASENAMEASIDENTIFIER___ *><___FILEBASENAMEASIDENTIFIER___>
+LEGACY_COLLECTION_TYPE(___FILEBASENAMEASIDENTIFIER___)

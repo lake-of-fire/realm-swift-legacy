@@ -16,14 +16,14 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMThreadSafeReference.h"
+#import "LEGACYThreadSafeReference.h"
 
 #import <realm/object-store/thread_safe_reference.hpp>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-RLM_HIDDEN
-@protocol RLMThreadConfined_Private <NSObject>
+LEGACY_HIDDEN
+@protocol LEGACYThreadConfined_Private <NSObject>
 
 // Constructs a new `ThreadSafeReference`
 - (realm::ThreadSafeReference)makeThreadSafeReference;
@@ -34,12 +34,12 @@ RLM_HIDDEN
 // Constructs an new instance of this type
 + (nullable instancetype)objectWithThreadSafeReference:(realm::ThreadSafeReference)reference
                                               metadata:(nullable id)metadata
-                                                 realm:(RLMRealm *)realm;
+                                                 realm:(LEGACYRealm *)realm;
 @end
 
-RLM_DIRECT_MEMBERS
-@interface RLMThreadSafeReference ()
-- (nullable id<RLMThreadConfined>)resolveReferenceInRealm:(RLMRealm *)realm;
+LEGACY_DIRECT_MEMBERS
+@interface LEGACYThreadSafeReference ()
+- (nullable id<LEGACYThreadConfined>)resolveReferenceInRealm:(LEGACYRealm *)realm;
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

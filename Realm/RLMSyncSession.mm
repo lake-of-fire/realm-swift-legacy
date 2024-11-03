@@ -16,39 +16,39 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSyncSession_Private.hpp"
+#import "LEGACYSyncSession_Private.hpp"
 
-#import "RLMApp.h"
-#import "RLMRealm_Private.hpp"
-#import "RLMError_Private.hpp"
-#import "RLMSyncConfiguration_Private.hpp"
-#import "RLMUser_Private.hpp"
-#import "RLMSyncManager_Private.hpp"
-#import "RLMSyncUtil_Private.hpp"
+#import "LEGACYApp.h"
+#import "LEGACYRealm_Private.hpp"
+#import "LEGACYError_Private.hpp"
+#import "LEGACYSyncConfiguration_Private.hpp"
+#import "LEGACYUser_Private.hpp"
+#import "LEGACYSyncManager_Private.hpp"
+#import "LEGACYSyncUtil_Private.hpp"
 
 #import <realm/object-store/sync/app.hpp>
 #import <realm/object-store/sync/sync_session.hpp>
 
 using namespace realm;
 
-@interface RLMSyncErrorActionToken () {
+@interface LEGACYSyncErrorActionToken () {
 @public
     std::string _originalPath;
     BOOL _isValid;
 }
 @end
 
-@interface RLMProgressNotificationToken() {
+@interface LEGACYProgressNotificationToken() {
     uint64_t _token;
     std::shared_ptr<SyncSession> _session;
 }
 @end
 
-@implementation RLMProgressNotificationToken
+@implementation LEGACYProgressNotificationToken
 
 - (void)suppressNextNotification {
     // No-op, but implemented in case this token is passed to
-    // `-[RLMRealm commitWriteTransactionWithoutNotifying:]`.
+    // `-[LEGACYRealm commitWriteTransactionWithoutNotifying:]`.
 }
 
 - (bool)invalidate {
@@ -76,23 +76,23 @@ using namespace realm;
 
 @end
 
-@interface RLMSyncSession ()
+@interface LEGACYSyncSession ()
 @property (class, nonatomic, readonly) dispatch_queue_t notificationsQueue;
-@property (atomic, readwrite) RLMSyncConnectionState connectionState;
+@property (atomic, readwrite) LEGACYSyncConnectionState connectionState;
 @end
 
-@implementation RLMSyncSession
+@implementation LEGACYSyncSession
 
 + (dispatch_queue_t)notificationsQueue {
     static auto queue = dispatch_queue_create("io.realm.sync.sessionsNotificationQueue", DISPATCH_QUEUE_SERIAL);
     return queue;
 }
 
-static RLMSyncConnectionState convertConnectionState(SyncSession::ConnectionState state) {
+static LEGACYSyncConnectionState convertConnectionState(SyncSession::ConnectionState state) {
     switch (state) {
-        case SyncSession::ConnectionState::Disconnected: return RLMSyncConnectionStateDisconnected;
-        case SyncSession::ConnectionState::Connecting:   return RLMSyncConnectionStateConnecting;
-        case SyncSession::ConnectionState::Connected:    return RLMSyncConnectionStateConnected;
+        case SyncSession::ConnectionState::Disconnected: return LEGACYSyncConnectionStateDisconnected;
+        case SyncSession::ConnectionState::Connecting:   return LEGACYSyncConnectionStateConnecting;
+        case SyncSession::ConnectionState::Connected:    return LEGACYSyncConnectionStateConnected;
     }
 }
 
@@ -100,7 +100,7 @@ static RLMSyncConnectionState convertConnectionState(SyncSession::ConnectionStat
     if (self = [super init]) {
         _session = session;
         _connectionState = convertConnectionState(session->connection_state());
-        // No need to save the token as RLMSyncSession always outlives the
+        // No need to save the token as LEGACYSyncSession always outlives the
         // underlying SyncSession
         session->register_connection_change_callback([=](auto, auto newState) {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -112,9 +112,9 @@ static RLMSyncConnectionState convertConnectionState(SyncSession::ConnectionStat
     return nil;
 }
 
-- (RLMSyncConfiguration *)configuration {
+- (LEGACYSyncConfiguration *)configuration {
     if (auto session = _session.lock()) {
-        return [[RLMSyncConfiguration alloc] initWithRawConfig:session->config() path:session->path()];
+        return [[LEGACYSyncConfiguration alloc] initWithRawConfig:session->config() path:session->path()];
     }
     return nil;
 }
@@ -128,24 +128,24 @@ static RLMSyncConnectionState convertConnectionState(SyncSession::ConnectionStat
     return nil;
 }
 
-- (RLMUser *)parentUser {
+- (LEGACYUser *)parentUser {
     if (auto session = _session.lock()) {
         if (auto app = session->user()->sync_manager()->app().lock()) {
-            auto rlmApp = [RLMApp appWithId:@(app->config().app_id.data())];
-            return [[RLMUser alloc] initWithUser:session->user() app:rlmApp];
+            auto rlmApp = [LEGACYApp appWithId:@(app->config().app_id.data())];
+            return [[LEGACYUser alloc] initWithUser:session->user() app:rlmApp];
         }
     }
     return nil;
 }
 
-- (RLMSyncSessionState)state {
+- (LEGACYSyncSessionState)state {
     if (auto session = _session.lock()) {
         if (session->state() == SyncSession::State::Inactive) {
-            return RLMSyncSessionStateInactive;
+            return LEGACYSyncSessionStateInactive;
         }
-        return RLMSyncSessionStateActive;
+        return LEGACYSyncSessionStateActive;
     }
-    return RLMSyncSessionStateInvalid;
+    return LEGACYSyncSessionStateInvalid;
 }
 
 - (void)suspend {
@@ -207,26 +207,26 @@ static util::UniqueFunction<void(Status)> wrapCompletion(dispatch_queue_t queue,
     return NO;
 }
 
-- (RLMProgressNotificationToken *)addProgressNotificationForDirection:(RLMSyncProgressDirection)direction
-                                                                 mode:(RLMSyncProgressMode)mode
-                                                                block:(RLMProgressNotificationBlock)block {
+- (LEGACYProgressNotificationToken *)addProgressNotificationForDirection:(LEGACYSyncProgressDirection)direction
+                                                                 mode:(LEGACYSyncProgressMode)mode
+                                                                block:(LEGACYProgressNotificationBlock)block {
     if (auto session = _session.lock()) {
-        dispatch_queue_t queue = RLMSyncSession.notificationsQueue;
-        auto notifier_direction = (direction == RLMSyncProgressDirectionUpload
+        dispatch_queue_t queue = LEGACYSyncSession.notificationsQueue;
+        auto notifier_direction = (direction == LEGACYSyncProgressDirectionUpload
                                    ? SyncSession::ProgressDirection::upload
                                    : SyncSession::ProgressDirection::download);
-        bool is_streaming = (mode == RLMSyncProgressModeReportIndefinitely);
+        bool is_streaming = (mode == LEGACYSyncProgressModeReportIndefinitely);
         uint64_t token = session->register_progress_notifier([=](uint64_t transferred, uint64_t transferrable) {
             dispatch_async(queue, ^{
                 block((NSUInteger)transferred, (NSUInteger)transferrable);
             });
         }, notifier_direction, is_streaming);
-        return [[RLMProgressNotificationToken alloc] initWithTokenValue:token session:session];
+        return [[LEGACYProgressNotificationToken alloc] initWithTokenValue:token session:session];
     }
     return nil;
 }
 
-+ (void)immediatelyHandleError:(RLMSyncErrorActionToken *)token syncManager:(RLMSyncManager *)syncManager {
++ (void)immediatelyHandleError:(LEGACYSyncErrorActionToken *)token syncManager:(LEGACYSyncManager *)syncManager {
     if (!token->_isValid) {
         return;
     }
@@ -235,20 +235,20 @@ static util::UniqueFunction<void(Status)> wrapCompletion(dispatch_queue_t queue,
     syncManager.syncManager->immediately_run_file_actions(token->_originalPath);
 }
 
-+ (nullable RLMSyncSession *)sessionForRealm:(RLMRealm *)realm {
++ (nullable LEGACYSyncSession *)sessionForRealm:(LEGACYRealm *)realm {
     auto& config = realm->_realm->config().sync_config;
     if (!config) {
         return nil;
     }
     if (auto session = config->user->session_for_on_disk_path(realm->_realm->config().path)) {
-        return [[RLMSyncSession alloc] initWithSyncSession:session];
+        return [[LEGACYSyncSession alloc] initWithSyncSession:session];
     }
     return nil;
 }
 
 - (NSString *)description {
     return [NSString stringWithFormat:
-            @"<RLMSyncSession: %p> {\n"
+            @"<LEGACYSyncSession: %p> {\n"
             "\tstate = %d;\n"
             "\tconnectionState = %d;\n"
             "\trealmURL = %@;\n"
@@ -265,7 +265,7 @@ static util::UniqueFunction<void(Status)> wrapCompletion(dispatch_queue_t queue,
 
 // MARK: - Error action token
 
-@implementation RLMSyncErrorActionToken
+@implementation LEGACYSyncErrorActionToken
 
 - (instancetype)initWithOriginalPath:(std::string)originalPath {
     if (self = [super init]) {

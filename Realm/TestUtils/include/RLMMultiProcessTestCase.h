@@ -16,11 +16,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMTestCase.h"
+#import "LEGACYTestCase.h"
 
-@class NSTask, RLMChildProcessEnvironment;
+@class NSTask, LEGACYChildProcessEnvironment;
 
-@interface RLMMultiProcessTestCase : RLMTestCase
+@interface LEGACYMultiProcessTestCase : LEGACYTestCase
 // if true, this is running the main test process
 @property (nonatomic, readonly) bool isParent;
 
@@ -28,15 +28,15 @@
 // returns the return code of the process
 - (int)runChildAndWait;
 - (int)runChildAndWaitWithAppIds:(NSArray *)appIds;
-- (int)runChildAndWaitWithEnvironment:(RLMChildProcessEnvironment *)environment;
+- (int)runChildAndWaitWithEnvironment:(LEGACYChildProcessEnvironment *)environment;
 
 - (NSTask *)childTask;
 - (NSTask *)childTaskWithAppIds:(NSArray *)appIds;
 
 @end
 
-#define RLMRunChildAndWait() \
+#define LEGACYRunChildAndWait() \
     XCTAssertEqual(0, [self runChildAndWait], @"Tests in child process failed")
 
-#define RLMRunChildAndWaitWithAppIds(...) \
+#define LEGACYRunChildAndWaitWithAppIds(...) \
     XCTAssertEqual(0, [self runChildAndWaitWithAppIds:@[__VA_ARGS__]], @"Tests in child process failed")

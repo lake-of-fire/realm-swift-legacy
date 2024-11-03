@@ -22,7 +22,7 @@ import RealmLegacy.Private
 extension Object: SchemaDiscoverable, _PersistableInsideOptional, _DefaultConstructible {
     public typealias PersistedType = Object
     public static var _rlmType: PropertyType { .object }
-    public static func _rlmPopulateProperty(_ prop: RLMProperty) {
+    public static func _rlmPopulateProperty(_ prop: LEGACYProperty) {
         if !prop.optional && !prop.collection {
             throwRealmException("Object property '\(prop.name)' must be marked as optional.")
         }
@@ -44,42 +44,42 @@ extension Object: SchemaDiscoverable, _PersistableInsideOptional, _DefaultConstr
 
     public static func _rlmGetPropertyOptional(_ obj: ObjectBase, _ key: UInt16) -> Self? {
 //        FIXME: gives Assertion failed: (LocalSelf && "no local self metadata"), function getLocalSelfMetadata, file /src/swift-source/swift/lib/IRGen/GenHeap.cpp, line 1686.
-//        return RLMGetSwiftPropertyObject(obj, key).map(dynamicBridgeCast)
-        if let value = RLMGetSwiftPropertyObject(obj, key) {
+//        return LEGACYGetSwiftPropertyObject(obj, key).map(dynamicBridgeCast)
+        if let value = LEGACYGetSwiftPropertyObject(obj, key) {
             return (value as! Self)
         }
         return nil
     }
 
     public static func _rlmSetProperty(_ obj: ObjectBase, _ key: UInt16, _ value: Object) {
-        RLMSetSwiftPropertyObject(obj, key, value)
+        LEGACYSetSwiftPropertyObject(obj, key, value)
     }
 }
 
 extension EmbeddedObject: SchemaDiscoverable, _PersistableInsideOptional, _DefaultConstructible {
     public typealias PersistedType = EmbeddedObject
     public static var _rlmType: PropertyType { .object }
-    public static func _rlmPopulateProperty(_ prop: RLMProperty) {
+    public static func _rlmPopulateProperty(_ prop: LEGACYProperty) {
         Object._rlmPopulateProperty(prop)
         prop.objectClassName = className()
     }
 
     public static func _rlmGetProperty(_ obj: ObjectBase, _ key: UInt16) -> Self {
-        if let value = RLMGetSwiftPropertyObject(obj, key) {
+        if let value = LEGACYGetSwiftPropertyObject(obj, key) {
             return value as! Self
         }
         return Self()
     }
 
     public static func _rlmGetPropertyOptional(_ obj: ObjectBase, _ key: UInt16) -> Self? {
-        if let value = RLMGetSwiftPropertyObject(obj, key) {
+        if let value = LEGACYGetSwiftPropertyObject(obj, key) {
             return (value as! Self)
         }
         return nil
     }
 
     public static func _rlmSetProperty(_ obj: ObjectBase, _ key: UInt16, _ value: EmbeddedObject) {
-        RLMSetSwiftPropertyObject(obj, key, value)
+        LEGACYSetSwiftPropertyObject(obj, key, value)
     }
 }
 
@@ -87,7 +87,7 @@ extension List: _RealmSchemaDiscoverable, SchemaDiscoverable where Element: _Rea
     public static var _rlmType: PropertyType { Element._rlmType }
     public static var _rlmOptional: Bool { Element._rlmOptional }
     public static var _rlmRequireObjc: Bool { false }
-    public static func _rlmPopulateProperty(_ prop: RLMProperty) {
+    public static func _rlmPopulateProperty(_ prop: LEGACYProperty) {
         prop.array = true
         prop.swiftAccessor = ListAccessor<Element>.self
         Element._rlmPopulateProperty(prop)
@@ -99,17 +99,17 @@ extension List: _HasPersistedType, _Persistable, _DefaultConstructible where Ele
     public static var _rlmRequiresCaching: Bool { true }
 
     public static func _rlmGetProperty(_ obj: ObjectBase, _ key: UInt16) -> Self {
-        return Self(collection: RLMGetSwiftPropertyArray(obj, key))
+        return Self(collection: LEGACYGetSwiftPropertyArray(obj, key))
     }
 
     public static func _rlmSetProperty(_ obj: ObjectBase, _ key: UInt16, _ value: List) {
-        let array = RLMGetSwiftPropertyArray(obj, key)
+        let array = LEGACYGetSwiftPropertyArray(obj, key)
         if array.isEqual(value.rlmArray) { return }
         array.removeAllObjects()
         array.addObjects(value.rlmArray)
     }
 
-    public static func _rlmSetAccessor(_ prop: RLMProperty) {
+    public static func _rlmSetAccessor(_ prop: LEGACYProperty) {
         prop.swiftAccessor = PersistedListAccessor<Element>.self
     }
 }
@@ -118,7 +118,7 @@ extension MutableSet: _RealmSchemaDiscoverable, SchemaDiscoverable where Element
     public static var _rlmType: PropertyType { Element._rlmType }
     public static var _rlmOptional: Bool { Element._rlmOptional }
     public static var _rlmRequireObjc: Bool { false }
-    public static func _rlmPopulateProperty(_ prop: RLMProperty) {
+    public static func _rlmPopulateProperty(_ prop: LEGACYProperty) {
         prop.set = true
         prop.swiftAccessor = SetAccessor<Element>.self
         Element._rlmPopulateProperty(prop)
@@ -130,17 +130,17 @@ extension MutableSet: _HasPersistedType, _Persistable, _DefaultConstructible whe
     public static var _rlmRequiresCaching: Bool { true }
 
     public static func _rlmGetProperty(_ obj: ObjectBase, _ key: UInt16) -> Self {
-        return Self(collection: RLMGetSwiftPropertySet(obj, key))
+        return Self(collection: LEGACYGetSwiftPropertySet(obj, key))
     }
 
     public static func _rlmSetProperty(_ obj: ObjectBase, _ key: UInt16, _ value: MutableSet) {
-        let set = RLMGetSwiftPropertySet(obj, key)
+        let set = LEGACYGetSwiftPropertySet(obj, key)
         if set.isEqual(value.rlmSet) { return }
         set.removeAllObjects()
         set.addObjects(value.rlmSet)
     }
 
-    public static func _rlmSetAccessor(_ prop: RLMProperty) {
+    public static func _rlmSetAccessor(_ prop: LEGACYProperty) {
         prop.swiftAccessor = PersistedSetAccessor<Element>.self
     }
 }
@@ -149,7 +149,7 @@ extension Map: _RealmSchemaDiscoverable, SchemaDiscoverable where Value: _RealmS
     public static var _rlmType: PropertyType { Value._rlmType }
     public static var _rlmOptional: Bool { Value._rlmOptional }
     public static var _rlmRequireObjc: Bool { false }
-    public static func _rlmPopulateProperty(_ prop: RLMProperty) {
+    public static func _rlmPopulateProperty(_ prop: LEGACYProperty) {
         prop.dictionary = true
         prop.swiftAccessor = MapAccessor<Key, Value>.self
         prop.dictionaryKeyType = Key._rlmType
@@ -162,17 +162,17 @@ extension Map: _HasPersistedType, _Persistable, _DefaultConstructible where Valu
     public static var _rlmRequiresCaching: Bool { true }
 
     public static func _rlmGetProperty(_ obj: ObjectBase, _ key: UInt16) -> Self {
-        return Self(objc: RLMGetSwiftPropertyMap(obj, key))
+        return Self(objc: LEGACYGetSwiftPropertyMap(obj, key))
     }
 
     public static func _rlmSetProperty(_ obj: ObjectBase, _ key: UInt16, _ value: Map) {
-        let map = RLMGetSwiftPropertyMap(obj, key)
+        let map = LEGACYGetSwiftPropertyMap(obj, key)
         if map.isEqual(value.rlmDictionary) { return }
         map.removeAllObjects()
         map.addEntries(fromDictionary: value.rlmDictionary)
     }
 
-    public static func _rlmSetAccessor(_ prop: RLMProperty) {
+    public static func _rlmSetAccessor(_ prop: LEGACYProperty) {
         prop.swiftAccessor = PersistedMapAccessor<Key, Value>.self
     }
 }
@@ -180,7 +180,7 @@ extension Map: _HasPersistedType, _Persistable, _DefaultConstructible where Valu
 extension LinkingObjects: SchemaDiscoverable {
     public static var _rlmType: PropertyType { .linkingObjects }
     public static var _rlmRequireObjc: Bool { false }
-    public static func _rlmPopulateProperty(_ prop: RLMProperty) {
+    public static func _rlmPopulateProperty(_ prop: LEGACYProperty) {
         prop.array = true
         prop.objectClassName = Element.className()
         prop.swiftAccessor = LinkingObjectsAccessor<Element>.self
@@ -188,7 +188,7 @@ extension LinkingObjects: SchemaDiscoverable {
             throwRealmException("LinkingObjects<\(prop.objectClassName!)> property '\(prop.name)' must set the origin property name with @Persisted(originProperty: \"name\").")
         }
     }
-    public func _rlmPopulateProperty(_ prop: RLMProperty) {
+    public func _rlmPopulateProperty(_ prop: LEGACYProperty) {
         prop.linkOriginPropertyName = self.propertyName
     }
 }
@@ -198,7 +198,7 @@ extension RealmOptional: SchemaDiscoverable, _RealmSchemaDiscoverable where Valu
     public static var _rlmType: PropertyType { Value._rlmType }
     public static var _rlmOptional: Bool { true }
     public static var _rlmRequireObjc: Bool { false }
-    public static func _rlmPopulateProperty(_ prop: RLMProperty) {
+    public static func _rlmPopulateProperty(_ prop: LEGACYProperty) {
         Value._rlmPopulateProperty(prop)
         prop.swiftAccessor = RealmOptionalAccessor<Value>.self
     }
@@ -211,15 +211,15 @@ extension LinkingObjects: _HasPersistedType, _Persistable where Element: _Persis
     }
 
     public static func _rlmGetProperty(_ obj: ObjectBase, _ key: UInt16) -> LinkingObjects {
-        let prop = RLMObjectBaseObjectSchema(obj)!.computedProperties[Int(key)]
-        return Self(propertyName: prop.name, handle: RLMLinkingObjectsHandle(object: obj, property: prop))
+        let prop = LEGACYObjectBaseObjectSchema(obj)!.computedProperties[Int(key)]
+        return Self(propertyName: prop.name, handle: LEGACYLinkingObjectsHandle(object: obj, property: prop))
     }
 
     public static func _rlmSetProperty(_ obj: ObjectBase, _ key: UInt16, _ value: LinkingObjects) {
         fatalError("LinkingObjects properties are read-only")
     }
 
-    public static func _rlmSetAccessor(_ prop: RLMProperty) {
+    public static func _rlmSetAccessor(_ prop: LEGACYProperty) {
         prop.swiftAccessor = PersistedLinkingObjectsAccessor<Element>.self
     }
 }
@@ -227,7 +227,7 @@ extension LinkingObjects: _HasPersistedType, _Persistable where Element: _Persis
 extension Optional: SchemaDiscoverable, _RealmSchemaDiscoverable where Wrapped: _RealmSchemaDiscoverable {
     public static var _rlmType: PropertyType { Wrapped._rlmType }
     public static var _rlmOptional: Bool { true }
-    public static func _rlmPopulateProperty(_ prop: RLMProperty) {
+    public static func _rlmPopulateProperty(_ prop: LEGACYProperty) {
         Wrapped._rlmPopulateProperty(prop)
     }
 }
@@ -247,10 +247,10 @@ extension Optional: _Persistable where Wrapped: _PersistableInsideOptional {
         if let value = value {
             Wrapped._rlmSetProperty(obj, key, value)
         } else {
-            RLMSetSwiftPropertyNil(obj, key)
+            LEGACYSetSwiftPropertyNil(obj, key)
         }
     }
-    public static func _rlmSetAccessor(_ prop: RLMProperty) {
+    public static func _rlmSetAccessor(_ prop: LEGACYProperty) {
         Wrapped._rlmSetAccessor(prop)
     }
 }
@@ -262,7 +262,7 @@ extension RealmProperty: _RealmSchemaDiscoverable, SchemaDiscoverable {
     public static var _rlmType: PropertyType { Value._rlmType }
     public static var _rlmOptional: Bool { Value._rlmOptional }
     public static var _rlmRequireObjc: Bool { false }
-    public static func _rlmPopulateProperty(_ prop: RLMProperty) {
+    public static func _rlmPopulateProperty(_ prop: LEGACYProperty) {
         Value._rlmPopulateProperty(prop)
         prop.swiftAccessor = RealmPropertyAccessor<Value>.self
     }
@@ -272,8 +272,8 @@ extension RawRepresentable where RawValue: _RealmSchemaDiscoverable {
     public static var _rlmType: PropertyType { RawValue._rlmType }
     public static var _rlmOptional: Bool { RawValue._rlmOptional }
     public static var _rlmRequireObjc: Bool { false }
-    public func _rlmPopulateProperty(_ prop: RLMProperty) { }
-    public static func _rlmPopulateProperty(_ prop: RLMProperty) {
+    public func _rlmPopulateProperty(_ prop: LEGACYProperty) { }
+    public static func _rlmPopulateProperty(_ prop: LEGACYProperty) {
         RawValue._rlmPopulateProperty(prop)
     }
 }
@@ -289,7 +289,7 @@ extension RawRepresentable where Self: _PersistableInsideOptional, RawValue: _Pe
     public static func _rlmSetProperty(_ obj: ObjectBase, _ key: PropertyKey, _ value: Self) {
         RawValue._rlmSetProperty(obj, key, value.rawValue)
     }
-    public static func _rlmSetAccessor(_ prop: RLMProperty) {
+    public static func _rlmSetAccessor(_ prop: LEGACYProperty) {
         if prop.optional {
             prop.swiftAccessor = BridgedPersistedPropertyAccessor<Optional<Self>>.self
         } else {

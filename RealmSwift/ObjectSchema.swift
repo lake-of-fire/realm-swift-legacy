@@ -31,7 +31,7 @@ import RealmLegacy.Private
 
     // MARK: Properties
 
-    internal let rlmObjectSchema: RLMObjectSchema
+    internal let rlmObjectSchema: LEGACYObjectSchema
 
     /**
      An array of `Property` instances representing the managed properties of a class described by the schema.
@@ -67,7 +67,7 @@ import RealmLegacy.Private
 
     // MARK: Initializers
 
-    internal init(_ rlmObjectSchema: RLMObjectSchema) {
+    internal init(_ rlmObjectSchema: LEGACYObjectSchema) {
         self.rlmObjectSchema = rlmObjectSchema
     }
 

@@ -16,25 +16,25 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMApp_Private.h>
+#import <Realm/LEGACYApp_Private.h>
 
 #import <realm/object-store/sync/app.hpp>
 
 #import <memory>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-RLM_DIRECT_MEMBERS
-@interface RLMAppConfiguration ()
+LEGACY_DIRECT_MEMBERS
+@interface LEGACYAppConfiguration ()
 - (const realm::app::App::Config&)config;
 - (const realm::SyncClientConfig&)clientConfig;
 @end
 
-RLM_DIRECT_MEMBERS
-@interface RLMApp ()
+LEGACY_DIRECT_MEMBERS
+@interface LEGACYApp ()
 - (std::shared_ptr<realm::app::App>)_realmApp;
 @end
 
 NSError *makeError(realm::app::AppError const& appError);
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

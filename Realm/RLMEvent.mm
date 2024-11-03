@@ -16,19 +16,19 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMEvent.h>
+#import <Realm/LEGACYEvent.h>
 
-#import "RLMError_Private.hpp"
-#import "RLMObjectSchema_Private.hpp"
-#import "RLMObjectStore.h"
-#import "RLMObject_Private.hpp"
-#import "RLMRealmConfiguration_Private.hpp"
-#import "RLMRealmUtil.hpp"
-#import "RLMRealm_Private.hpp"
-#import "RLMSyncConfiguration_Private.hpp"
-#import "RLMSyncManager_Private.hpp"
-#import "RLMUser_Private.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYError_Private.hpp"
+#import "LEGACYObjectSchema_Private.hpp"
+#import "LEGACYObjectStore.h"
+#import "LEGACYObject_Private.hpp"
+#import "LEGACYRealmConfiguration_Private.hpp"
+#import "LEGACYRealmUtil.hpp"
+#import "LEGACYRealm_Private.hpp"
+#import "LEGACYSyncConfiguration_Private.hpp"
+#import "LEGACYSyncManager_Private.hpp"
+#import "LEGACYUser_Private.hpp"
+#import "LEGACYUtil.hpp"
 
 #import <realm/object-store/audit.hpp>
 #import <realm/object-store/audit_serializer.hpp>
@@ -36,7 +36,7 @@
 
 using namespace realm;
 
-@interface RLMObjectBase ()
+@interface LEGACYObjectBase ()
 - (NSString *)customEventRepresentation;
 @end
 
@@ -59,18 +59,18 @@ util::UniqueFunction<void (std::exception_ptr)> wrapCompletion(void (^completion
                               @"ExceptionCallStackReturnAddresses": e.callStackReturnAddresses,
                               @"ExceptionCallStackSymbols": e.callStackSymbols,
                               @"ExceptionUserInfo": e.userInfo ?: NSNull.null};
-                completion([NSError errorWithDomain:RLMErrorDomain code:RLMErrorFail userInfo:info]);
+                completion([NSError errorWithDomain:LEGACYErrorDomain code:LEGACYErrorFail userInfo:info]);
             }
             catch (...) {
                 NSError *error;
-                RLMRealmTranslateException(&error);
+                LEGACYRealmTranslateException(&error);
                 completion(error);
             }
         }
     };
 }
 
-realm::AuditInterface *auditContext(RLMEventContext *context) {
+realm::AuditInterface *auditContext(LEGACYEventContext *context) {
     return reinterpret_cast<realm::AuditInterface *>(context);
 }
 
@@ -89,51 +89,51 @@ std::optional<std::string> nsStringToOptionalString(NSString *str) {
     }
 
     std::string ret;
-    RLMNSStringToStdString(ret, str);
+    LEGACYNSStringToStdString(ret, str);
     return ret;
 }
 } // anonymous namespace
 
-uint64_t RLMEventBeginScope(RLMEventContext *context, NSString *activity) {
+uint64_t LEGACYEventBeginScope(LEGACYEventContext *context, NSString *activity) {
     return auditContext(context)->begin_scope(activity.UTF8String);
 }
 
-void RLMEventCommitScope(RLMEventContext *context, uint64_t scope_id, RLMEventCompletion completion) {
+void LEGACYEventCommitScope(LEGACYEventContext *context, uint64_t scope_id, LEGACYEventCompletion completion) {
     auditContext(context)->end_scope(scope_id, wrapCompletion(completion));
 }
 
-void RLMEventCancelScope(RLMEventContext *context, uint64_t scope_id) {
+void LEGACYEventCancelScope(LEGACYEventContext *context, uint64_t scope_id) {
     auditContext(context)->cancel_scope(scope_id);
 }
 
-bool RLMEventIsActive(RLMEventContext *context, uint64_t scope_id) {
+bool LEGACYEventIsActive(LEGACYEventContext *context, uint64_t scope_id) {
     return auditContext(context)->is_scope_valid(scope_id);
 }
 
-void RLMEventRecordEvent(RLMEventContext *context, NSString *activity, NSString *event,
-                         NSString *data, RLMEventCompletion completion) {
+void LEGACYEventRecordEvent(LEGACYEventContext *context, NSString *activity, NSString *event,
+                         NSString *data, LEGACYEventCompletion completion) {
     auditContext(context)->record_event(activity.UTF8String, nsStringToOptionalString(event),
                                          nsStringToOptionalString(data), wrapCompletion(completion));
 }
 
-void RLMEventUpdateMetadata(RLMEventContext *context, NSDictionary<NSString *, NSString *> *newMetadata) {
+void LEGACYEventUpdateMetadata(LEGACYEventContext *context, NSDictionary<NSString *, NSString *> *newMetadata) {
     auditContext(context)->update_metadata(convertMetadata(newMetadata));
 }
 
-RLMEventContext *RLMEventGetContext(RLMRealm *realm) {
-    return reinterpret_cast<RLMEventContext *>(realm->_realm->audit_context());
+LEGACYEventContext *LEGACYEventGetContext(LEGACYRealm *realm) {
+    return reinterpret_cast<LEGACYEventContext *>(realm->_realm->audit_context());
 }
 
-class RLMEventSerializer : public realm::AuditObjectSerializer {
+class LEGACYEventSerializer : public realm::AuditObjectSerializer {
 public:
-    RLMEventSerializer(RLMRealmConfiguration *c) : _config(c.copy) {
+    LEGACYEventSerializer(LEGACYRealmConfiguration *c) : _config(c.copy) {
         auto& config = _config.configRef;
         config.cache = false;
         config.audit_config = nullptr;
         config.automatic_change_notifications = false;
     }
 
-    ~RLMEventSerializer() {
+    ~LEGACYEventSerializer() {
         scope_complete();
     }
 
@@ -153,7 +153,7 @@ public:
     void to_json(nlohmann::json& out, const Obj& obj) final {
         @autoreleasepool {
             auto tableKey = obj.get_table()->get_key();
-            RLMObjectBase *acc = getAccessor(tableKey);
+            LEGACYObjectBase *acc = getAccessor(tableKey);
             if (!acc) {
                 return AuditObjectSerializer::to_json(out, obj);
             }
@@ -165,37 +165,37 @@ public:
             }
 
             acc->_row = obj;
-            RLMInitializeSwiftAccessor(acc, false);
+            LEGACYInitializeSwiftAccessor(acc, false);
             NSString *customRepresentation = [acc customEventRepresentation];
             out = nlohmann::json::parse(customRepresentation.UTF8String);
         }
     }
 
 private:
-    RLMRealmConfiguration *_config;
-    RLMRealm *_realm;
-    std::unordered_map<uint32_t, RLMObjectBase *> _accessorMap;
+    LEGACYRealmConfiguration *_config;
+    LEGACYRealm *_realm;
+    std::unordered_map<uint32_t, LEGACYObjectBase *> _accessorMap;
 
-    RLMRealm *realm() {
+    LEGACYRealm *realm() {
         if (!_realm) {
-            _realm = [RLMRealm realmWithConfiguration:_config error:nil];
+            _realm = [LEGACYRealm realmWithConfiguration:_config error:nil];
         }
         return _realm;
     }
 
-    RLMObjectBase *getAccessor(TableKey tableKey) {
+    LEGACYObjectBase *getAccessor(TableKey tableKey) {
         auto it = _accessorMap.find(tableKey.value);
         if (it != _accessorMap.end()) {
             return it->second;
         }
 
-        RLMClassInfo *info = realm()->_info[tableKey];
+        LEGACYClassInfo *info = realm()->_info[tableKey];
         if (!info || !info->rlmObjectSchema.hasCustomEventSerialization) {
             _accessorMap.insert({tableKey.value, nil});
             return nil;
         }
 
-        RLMObjectBase *acc = [[info->rlmObjectSchema.accessorClass alloc] init];
+        LEGACYObjectBase *acc = [[info->rlmObjectSchema.accessorClass alloc] init];
         acc->_realm = realm();
         acc->_objectSchema = info->rlmObjectSchema;
         acc->_info = info;
@@ -204,15 +204,15 @@ private:
     }
 };
 
-@implementation RLMEventConfiguration
-- (std::shared_ptr<AuditConfig>)auditConfigWithRealmConfiguration:(RLMRealmConfiguration *)realmConfig {
+@implementation LEGACYEventConfiguration
+- (std::shared_ptr<AuditConfig>)auditConfigWithRealmConfiguration:(LEGACYRealmConfiguration *)realmConfig {
     auto config = std::make_shared<realm::AuditConfig>();
     config->audit_user = self.syncUser._syncUser;
     config->partition_value_prefix = self.partitionPrefix.UTF8String;
     config->metadata = convertMetadata(self.metadata);
-    config->serializer = std::make_shared<RLMEventSerializer>(realmConfig);
+    config->serializer = std::make_shared<LEGACYEventSerializer>(realmConfig);
     if (_logger) {
-        config->logger = RLMWrapLogFunction(_logger);
+        config->logger = LEGACYWrapLogFunction(_logger);
     }
     if (_errorHandler) {
         config->sync_error_handler = [eh = _errorHandler](realm::SyncError e) {

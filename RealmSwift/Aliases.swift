@@ -49,22 +49,22 @@ import RealmLegacy.Swift
  * `Object`
  * `Array`
 */
-public typealias PropertyType = RLMPropertyType
+public typealias PropertyType = LEGACYPropertyType
 
 /**
  An opaque token which is returned from methods which subscribe to changes to a RealmLegacy.
 
  - see: `Realm.observe(_:)`
  */
-public typealias NotificationToken = RLMNotificationToken
+public typealias NotificationToken = LEGACYNotificationToken
 
 /// :nodoc:
-public typealias ObjectBase = RLMObjectBase
+public typealias ObjectBase = LEGACYObjectBase
 extension ObjectBase {
     internal func _observe<T: ObjectBase>(keyPaths: [String]? = nil,
                                           on queue: DispatchQueue? = nil,
                                           _ block: @escaping (ObjectChange<T>) -> Void) -> NotificationToken {
-        return RLMObjectBaseAddNotificationBlock(self, keyPaths, queue) { object, names, oldValues, newValues, error in
+        return LEGACYObjectBaseAddNotificationBlock(self, keyPaths, queue) { object, names, oldValues, newValues, error in
             assert(error == nil)
             block(.init(object: object as? T, names: names, oldValues: oldValues, newValues: newValues))
         }
@@ -73,7 +73,7 @@ extension ObjectBase {
     internal func _observe<T: ObjectBase>(keyPaths: [String]? = nil,
                                           on queue: DispatchQueue? = nil,
                                           _ block: @escaping (T?) -> Void) -> NotificationToken {
-        return RLMObjectBaseAddNotificationBlock(self, keyPaths, queue) { object, _, _, _, _ in
+        return LEGACYObjectBaseAddNotificationBlock(self, keyPaths, queue) { object, _, _, _, _ in
             block(object as? T)
         }
     }
@@ -81,7 +81,7 @@ extension ObjectBase {
     internal func _observe(keyPaths: [String]? = nil,
                            on queue: DispatchQueue? = nil,
                            _ block: @escaping () -> Void) -> NotificationToken {
-        return RLMObjectBaseAddNotificationBlock(self, keyPaths, queue) { _, _, _, _, _ in
+        return LEGACYObjectBaseAddNotificationBlock(self, keyPaths, queue) { _, _, _, _, _ in
             block()
         }
     }
@@ -92,7 +92,7 @@ extension ObjectBase {
         keyPaths: [String]? = nil, on actor: isolated A,
         _ block: @Sendable @escaping (isolated A, ObjectChange<T>) -> Void
     ) async -> NotificationToken {
-        let token = RLMObjectNotificationToken()
+        let token = LEGACYObjectNotificationToken()
         token.observe(self, keyPaths: keyPaths) { object, names, oldValues, newValues, error in
             assert(error == nil)
             assumeOnActorExecutor(actor) { actor in

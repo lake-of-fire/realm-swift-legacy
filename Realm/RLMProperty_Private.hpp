@@ -16,16 +16,16 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMProperty_Private.h>
+#import <Realm/LEGACYProperty_Private.h>
 
 #import <realm/object-store/property.hpp>
 
-@class RLMSchema;
+@class LEGACYSchema;
 
-RLM_DIRECT_MEMBERS
-@interface RLMProperty ()
+LEGACY_DIRECT_MEMBERS
+@interface LEGACYProperty ()
 + (instancetype)propertyForObjectStoreProperty:(const realm::Property&)property;
-- (realm::Property)objectStoreCopy:(RLMSchema *)schema;
+- (realm::Property)objectStoreCopy:(LEGACYSchema *)schema;
 @end
 
 static inline bool isNullable(const realm::PropertyType& t) {

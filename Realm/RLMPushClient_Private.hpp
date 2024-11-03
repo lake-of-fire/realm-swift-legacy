@@ -16,13 +16,13 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMPushClient.h"
+#import "LEGACYPushClient.h"
 
 namespace realm::app {
 class PushClient;
 }
 
-RLM_DIRECT_MEMBERS
-@interface RLMPushClient ()
+LEGACY_DIRECT_MEMBERS
+@interface LEGACYPushClient ()
 - (instancetype)initWithPushClient:(realm::app::PushClient&&)pushClient;
 @end

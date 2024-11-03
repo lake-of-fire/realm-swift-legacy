@@ -18,13 +18,13 @@
 
 import RealmLegacy
 
-private func isSameCollection(_ lhs: RLMCollection, _ rhs: Any) -> Bool {
+private func isSameCollection(_ lhs: LEGACYCollection, _ rhs: Any) -> Bool {
     // Managed isEqual checks if they're backed by the same core field, so it does exactly what we need
     if lhs.realm != nil {
         return lhs.isEqual(rhs)
     }
     // For unmanaged we want to check if the backing collection is the same instance
-    if let rhs = rhs as? RLMSwiftCollectionBase {
+    if let rhs = rhs as? LEGACYSwiftCollectionBase {
         return lhs === rhs._rlmCollection
     }
     return lhs === rhs as AnyObject
@@ -36,15 +36,15 @@ internal protocol MutableRealmCollection {
     // Unmanaged collection properties need a reference to their parent object for
     // KVO to work because the mutation is done via the collection object but the
     // observation is on the parent.
-    func setParent(_ object: RLMObjectBase, _ property: RLMProperty)
+    func setParent(_ object: LEGACYObjectBase, _ property: LEGACYProperty)
 }
 
 extension List: MutableRealmCollection {
     func assign(_ value: Any) {
         guard !isSameCollection(_rlmCollection, value) else { return }
-        RLMAssignToCollection(_rlmCollection, value)
+        LEGACYAssignToCollection(_rlmCollection, value)
     }
-    func setParent(_ object: RLMObjectBase, _ property: RLMProperty) {
+    func setParent(_ object: LEGACYObjectBase, _ property: LEGACYProperty) {
         rlmArray.setParent(object, property: property)
     }
 }
@@ -52,9 +52,9 @@ extension List: MutableRealmCollection {
 extension MutableSet: MutableRealmCollection {
     func assign(_ value: Any) {
         guard !isSameCollection(_rlmCollection, value) else { return }
-        RLMAssignToCollection(_rlmCollection, value)
+        LEGACYAssignToCollection(_rlmCollection, value)
     }
-    func setParent(_ object: RLMObjectBase, _ property: RLMProperty) {
+    func setParent(_ object: LEGACYObjectBase, _ property: LEGACYProperty) {
         rlmSet.setParent(object, property: property)
     }
 }
@@ -64,7 +64,7 @@ extension Map: MutableRealmCollection {
         guard !isSameCollection(_rlmCollection, value) else { return }
         rlmDictionary.setDictionary(value)
     }
-    func setParent(_ object: RLMObjectBase, _ property: RLMProperty) {
+    func setParent(_ object: LEGACYObjectBase, _ property: LEGACYProperty) {
         rlmDictionary.setParent(object, property: property)
     }
 }

@@ -16,15 +16,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMCollection.h>
+#import <Realm/LEGACYCollection.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@interface RLMSwiftSupport : NSObject
+@interface LEGACYSwiftSupport : NSObject
 
 + (BOOL)isSwiftClassName:(NSString *)className;
 + (NSString *)demangleClassName:(NSString *)className;
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

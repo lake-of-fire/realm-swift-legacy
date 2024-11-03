@@ -153,7 +153,7 @@ extension AnyRealmValue: BuiltInObjcBridgeable {
         if let any = value as? Self {
             return any
         }
-        if let any = value as? RLMValue {
+        if let any = value as? LEGACYValue {
             return ObjectiveCSupport.convert(value: any)
         }
         return Self?.none // We need to explicitly say which .none we want here
@@ -168,13 +168,13 @@ extension AnyRealmValue: BuiltInObjcBridgeable {
 extension Map: BuiltInObjcBridgeable {
     public var _rlmObjcValue: Any { _rlmCollection }
     public static func _rlmFromObjc(_ value: Any) -> Self? {
-        (value as? RLMCollection).map(Self.init(collection:))
+        (value as? LEGACYCollection).map(Self.init(collection:))
     }
 }
 extension RealmCollectionImpl {
     public var _rlmObjcValue: Any { self.collection }
     public static func _rlmFromObjc(_ value: Any, insideOptional: Bool) -> Self? {
-        (value as? RLMCollection).map(Self.init(collection:))
+        (value as? LEGACYCollection).map(Self.init(collection:))
     }
 }
 
@@ -186,7 +186,7 @@ extension MutableSet: _ObjcBridgeable {}
 
 extension SectionedResults: BuiltInObjcBridgeable {
     public static func _rlmFromObjc(_ value: Any, insideOptional: Bool) -> Self? {
-        (value as? RLMSectionedResults<RLMValue, RLMValue>).map(Self.init(rlmSectionedResult:))
+        (value as? LEGACYSectionedResults<LEGACYValue, LEGACYValue>).map(Self.init(rlmSectionedResult:))
     }
     public var _rlmObjcValue: Any {
         self.collection
@@ -195,15 +195,15 @@ extension SectionedResults: BuiltInObjcBridgeable {
 
 extension ResultsSection: BuiltInObjcBridgeable {
     public static func _rlmFromObjc(_ value: Any, insideOptional: Bool) -> Self? {
-        (value as? RLMSection<RLMValue, RLMValue>).map(Self.init(rlmSectionedResult:))
+        (value as? LEGACYSection<LEGACYValue, LEGACYValue>).map(Self.init(rlmSectionedResult:))
     }
     public var _rlmObjcValue: Any {
         self.collection
     }
 }
 
-extension RLMSwiftCollectionBase: Equatable {
-    public static func == (lhs: RLMSwiftCollectionBase, rhs: RLMSwiftCollectionBase) -> Bool {
+extension LEGACYSwiftCollectionBase: Equatable {
+    public static func == (lhs: LEGACYSwiftCollectionBase, rhs: LEGACYSwiftCollectionBase) -> Bool {
         return lhs.isEqual(rhs)
     }
 }

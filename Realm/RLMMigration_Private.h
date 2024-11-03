@@ -16,25 +16,25 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMMigration.h>
-#import <Realm/RLMObjectBase.h>
-#import <Realm/RLMRealm.h>
+#import <Realm/LEGACYMigration.h>
+#import <Realm/LEGACYObjectBase.h>
+#import <Realm/LEGACYRealm.h>
 
 namespace realm {
     class Schema;
 }
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@interface RLMMigration ()
+@interface LEGACYMigration ()
 
-@property (nonatomic, strong) RLMRealm *oldRealm;
-@property (nonatomic, strong) RLMRealm *realm;
+@property (nonatomic, strong) LEGACYRealm *oldRealm;
+@property (nonatomic, strong) LEGACYRealm *realm;
 
-- (instancetype)initWithRealm:(RLMRealm *)realm oldRealm:(RLMRealm *)oldRealm schema:(realm::Schema &)schema;
+- (instancetype)initWithRealm:(LEGACYRealm *)realm oldRealm:(LEGACYRealm *)oldRealm schema:(realm::Schema &)schema;
 
-- (void)execute:(RLMMigrationBlock)block objectClass:(_Nullable Class)cls;
+- (void)execute:(LEGACYMigrationBlock)block objectClass:(_Nullable Class)cls;
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

@@ -16,32 +16,32 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
-#import <Realm/RLMDecimal128.h>
-#import <Realm/RLMObject.h>
-#import <Realm/RLMObjectBase.h>
-#import <Realm/RLMObjectId.h>
-#import <Realm/RLMProperty.h>
+#import <Realm/LEGACYConstants.h>
+#import <Realm/LEGACYDecimal128.h>
+#import <Realm/LEGACYObject.h>
+#import <Realm/LEGACYObjectBase.h>
+#import <Realm/LEGACYObjectId.h>
+#import <Realm/LEGACYProperty.h>
 
-#pragma mark RLMValue
+#pragma mark LEGACYValue
 
 /**
- RLMValue is a property type which represents a polymorphic Realm value. This is similar to the usage of
+ LEGACYValue is a property type which represents a polymorphic Realm value. This is similar to the usage of
  `AnyObject` / `Any` in Swift.
 ```
  // A property on `MyObject`
- @property (nonatomic) id<RLMValue> myAnyValue;
+ @property (nonatomic) id<LEGACYValue> myAnyValue;
 
  // A property on `AnotherObject`
- @property (nonatomic) id<RLMValue> myAnyValue;
+ @property (nonatomic) id<LEGACYValue> myAnyValue;
 
  MyObject *myObject = [MyObject createInRealm:realm withValue:@[]];
  myObject.myAnyValue = @1234; // underlying type is NSNumber.
  myObject.myAnyValue = @"hello"; // underlying type is NSString.
  AnotherObject *anotherObject = [AnotherObject createInRealm:realm withValue:@[]];
- myObject.myAnyValue = anotherObject; // underlying type is RLMObject.
+ myObject.myAnyValue = anotherObject; // underlying type is LEGACYObject.
 ```
- The following types conform to RLMValue:
+ The following types conform to LEGACYValue:
 
  `NSData`
  `NSDate`
@@ -49,49 +49,49 @@
  `NSNumber`
  `NSUUID`
  `NSString`
- `RLMObject
- `RLMObjectId`
- `RLMDecimal128`
+ `LEGACYObject
+ `LEGACYObjectId`
+ `LEGACYDecimal128`
  */
-@protocol RLMValue
+@protocol LEGACYValue
 
 /// Describes the type of property stored.
-@property (readonly) RLMPropertyType rlm_valueType;
+@property (readonly) LEGACYPropertyType rlm_valueType;
 
 @end
 
 /// :nodoc:
-@interface NSNull (RLMValue)<RLMValue>
+@interface NSNull (LEGACYValue)<LEGACYValue>
 @end
 
 /// :nodoc:
-@interface NSNumber (RLMValue)<RLMValue>
+@interface NSNumber (LEGACYValue)<LEGACYValue>
 @end
 
 /// :nodoc:
-@interface NSString (RLMValue)<RLMValue>
+@interface NSString (LEGACYValue)<LEGACYValue>
 @end
 
 /// :nodoc:
-@interface NSData (RLMValue)<RLMValue>
+@interface NSData (LEGACYValue)<LEGACYValue>
 @end
 
 /// :nodoc:
-@interface NSDate (RLMValue)<RLMValue>
+@interface NSDate (LEGACYValue)<LEGACYValue>
 @end
 
 /// :nodoc:
-@interface NSUUID (RLMValue)<RLMValue>
+@interface NSUUID (LEGACYValue)<LEGACYValue>
 @end
 
 /// :nodoc:
-@interface RLMDecimal128 (RLMValue)<RLMValue>
+@interface LEGACYDecimal128 (LEGACYValue)<LEGACYValue>
 @end
 
 /// :nodoc:
-@interface RLMObjectBase (RLMValue)<RLMValue>
+@interface LEGACYObjectBase (LEGACYValue)<LEGACYValue>
 @end
 
 /// :nodoc:
-@interface RLMObjectId (RLMValue)<RLMValue>
+@interface LEGACYObjectId (LEGACYValue)<LEGACYValue>
 @end

@@ -16,19 +16,19 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMMongoClient_Private.hpp"
+#import "LEGACYMongoClient_Private.hpp"
 
-#import "RLMMongoDatabase_Private.hpp"
-#import "RLMMongoCollection_Private.h"
-#import "RLMApp_Private.hpp"
+#import "LEGACYMongoDatabase_Private.hpp"
+#import "LEGACYMongoCollection_Private.h"
+#import "LEGACYApp_Private.hpp"
 
 #import <realm/object-store/sync/mongo_client.hpp>
 #import <realm/object-store/sync/mongo_database.hpp>
 #import <realm/util/optional.hpp>
 
-@implementation RLMMongoClient
+@implementation LEGACYMongoClient
 
-- (instancetype)initWithUser:(RLMUser *)user serviceName:(NSString *)serviceName {
+- (instancetype)initWithUser:(LEGACYUser *)user serviceName:(NSString *)serviceName {
     if (self = [super init]) {
         _user = user;
         _name = serviceName;
@@ -36,17 +36,17 @@
     return self;
 }
 
-- (RLMMongoDatabase *)databaseWithName:(NSString *)name {
-    return [[RLMMongoDatabase alloc] initWithUser:self.user
+- (LEGACYMongoDatabase *)databaseWithName:(NSString *)name {
+    return [[LEGACYMongoDatabase alloc] initWithUser:self.user
                                       serviceName:self.name
                                      databaseName:name];
 }
 
 @end
 
-@implementation RLMMongoDatabase
+@implementation LEGACYMongoDatabase
 
-- (instancetype)initWithUser:(RLMUser *)user
+- (instancetype)initWithUser:(LEGACYUser *)user
                  serviceName:(NSString *)serviceName
                 databaseName:(NSString *)databaseName {
     if (self = [super init]) {
@@ -57,8 +57,8 @@
     return self;
 }
 
-- (RLMMongoCollection *)collectionWithName:(NSString *)name {
-    return [[RLMMongoCollection alloc] initWithUser:self.user
+- (LEGACYMongoCollection *)collectionWithName:(NSString *)name {
+    return [[LEGACYMongoCollection alloc] initWithUser:self.user
                                        serviceName:self.serviceName
                                       databaseName:self.name
                                     collectionName:name];

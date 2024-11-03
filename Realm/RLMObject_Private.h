@@ -16,95 +16,95 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMObjectBase_Dynamic.h>
+#import <Realm/LEGACYObjectBase_Dynamic.h>
 
-#import <Realm/RLMRealm.h>
+#import <Realm/LEGACYRealm.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@class RLMProperty, RLMArray, RLMSchema;
-typedef NS_ENUM(int32_t, RLMPropertyType);
+@class LEGACYProperty, LEGACYArray, LEGACYSchema;
+typedef NS_ENUM(int32_t, LEGACYPropertyType);
 
-FOUNDATION_EXTERN void RLMInitializeWithValue(RLMObjectBase *, id, RLMSchema *);
+FOUNDATION_EXTERN void LEGACYInitializeWithValue(LEGACYObjectBase *, id, LEGACYSchema *);
 
-typedef void (^RLMObjectNotificationCallback)(RLMObjectBase *_Nullable object,
+typedef void (^LEGACYObjectNotificationCallback)(LEGACYObjectBase *_Nullable object,
                                               NSArray<NSString *> *_Nullable propertyNames,
                                               NSArray *_Nullable oldValues,
                                               NSArray *_Nullable newValues,
                                               NSError *_Nullable error);
 
-// RLMObject accessor and read/write realm
-@interface RLMObjectBase () {
+// LEGACYObject accessor and read/write realm
+@interface LEGACYObjectBase () {
 @public
-    RLMRealm *_realm;
-    __unsafe_unretained RLMObjectSchema *_objectSchema;
+    LEGACYRealm *_realm;
+    __unsafe_unretained LEGACYObjectSchema *_objectSchema;
 }
 
 // shared schema for this class
-+ (nullable RLMObjectSchema *)sharedSchema;
++ (nullable LEGACYObjectSchema *)sharedSchema;
 
-+ (nullable NSArray<RLMProperty *> *)_getProperties;
++ (nullable NSArray<LEGACYProperty *> *)_getProperties;
 + (bool)_realmIgnoreClass;
 
 // This enables to override the propertiesMapping in Swift, it is not to be used in Objective-C API.
 + (NSDictionary<NSString *, NSString *> *)propertiesMapping;
 @end
 
-@interface RLMDynamicObject : RLMObject
+@interface LEGACYDynamicObject : LEGACYObject
 
 @end
 
 // Calls valueForKey: and re-raises NSUndefinedKeyExceptions
-FOUNDATION_EXTERN id _Nullable RLMValidatedValueForProperty(id object, NSString *key, NSString *className);
+FOUNDATION_EXTERN id _Nullable LEGACYValidatedValueForProperty(id object, NSString *key, NSString *className);
 
 // Compare two RLObjectBases
-FOUNDATION_EXTERN BOOL RLMObjectBaseAreEqual(RLMObjectBase * _Nullable o1, RLMObjectBase * _Nullable o2);
+FOUNDATION_EXTERN BOOL LEGACYObjectBaseAreEqual(LEGACYObjectBase * _Nullable o1, LEGACYObjectBase * _Nullable o2);
 
-FOUNDATION_EXTERN RLMNotificationToken *RLMObjectBaseAddNotificationBlock(RLMObjectBase *obj,
+FOUNDATION_EXTERN LEGACYNotificationToken *LEGACYObjectBaseAddNotificationBlock(LEGACYObjectBase *obj,
                                                                           NSArray<NSString *> *_Nullable keyPaths,
                                                                           dispatch_queue_t _Nullable queue,
-                                                                          RLMObjectNotificationCallback block);
+                                                                          LEGACYObjectNotificationCallback block);
 
-RLMNotificationToken *RLMObjectAddNotificationBlock(RLMObjectBase *obj,
-                                                    RLMObjectChangeBlock block,
+LEGACYNotificationToken *LEGACYObjectAddNotificationBlock(LEGACYObjectBase *obj,
+                                                    LEGACYObjectChangeBlock block,
                                                     NSArray<NSString *> *_Nullable keyPaths,
                                                     dispatch_queue_t _Nullable queue);
 
-// Returns whether the class is a descendent of RLMObjectBase
-FOUNDATION_EXTERN BOOL RLMIsObjectOrSubclass(Class klass);
+// Returns whether the class is a descendent of LEGACYObjectBase
+FOUNDATION_EXTERN BOOL LEGACYIsObjectOrSubclass(Class klass);
 
-// Returns whether the class is an indirect descendant of RLMObjectBase
-FOUNDATION_EXTERN BOOL RLMIsObjectSubclass(Class klass);
+// Returns whether the class is an indirect descendant of LEGACYObjectBase
+FOUNDATION_EXTERN BOOL LEGACYIsObjectSubclass(Class klass);
 
-FOUNDATION_EXTERN const NSUInteger RLMDescriptionMaxDepth;
+FOUNDATION_EXTERN const NSUInteger LEGACYDescriptionMaxDepth;
 
-FOUNDATION_EXTERN id RLMObjectFreeze(RLMObjectBase *obj) NS_RETURNS_RETAINED;
+FOUNDATION_EXTERN id LEGACYObjectFreeze(LEGACYObjectBase *obj) NS_RETURNS_RETAINED;
 
-FOUNDATION_EXTERN id RLMObjectThaw(RLMObjectBase *obj);
+FOUNDATION_EXTERN id LEGACYObjectThaw(LEGACYObjectBase *obj);
 
 // Gets an object identifier suitable for use with Combine. This value may
 // change when an unmanaged object is added to the Realm.
-FOUNDATION_EXTERN uint64_t RLMObjectBaseGetCombineId(RLMObjectBase *);
+FOUNDATION_EXTERN uint64_t LEGACYObjectBaseGetCombineId(LEGACYObjectBase *);
 
 // An accessor object which is used to interact with Swift properties from obj-c
-@interface RLMManagedPropertyAccessor : NSObject
+@interface LEGACYManagedPropertyAccessor : NSObject
 // Perform any initialization required for KVO on a *unmanaged* object
-+ (void)observe:(RLMProperty *)property on:(RLMObjectBase *)parent;
++ (void)observe:(LEGACYProperty *)property on:(LEGACYObjectBase *)parent;
 // Initialize the given property on a *managed* object which previous was unmanaged
-+ (void)promote:(RLMProperty *)property on:(RLMObjectBase *)parent;
++ (void)promote:(LEGACYProperty *)property on:(LEGACYObjectBase *)parent;
 // Initialize the given property on a newly created *managed* object
-+ (void)initialize:(RLMProperty *)property on:(RLMObjectBase *)parent;
++ (void)initialize:(LEGACYProperty *)property on:(LEGACYObjectBase *)parent;
 // Read the value of the property, on either kind of object
-+ (id)get:(RLMProperty *)property on:(RLMObjectBase *)parent;
++ (id)get:(LEGACYProperty *)property on:(LEGACYObjectBase *)parent;
 // Set the property to the given value, on either kind of object
-+ (void)set:(RLMProperty *)property on:(RLMObjectBase *)parent to:(id)value;
++ (void)set:(LEGACYProperty *)property on:(LEGACYObjectBase *)parent to:(id)value;
 @end
 
-@interface RLMObjectNotificationToken : RLMNotificationToken
-- (void)observe:(RLMObjectBase *)obj
+@interface LEGACYObjectNotificationToken : LEGACYNotificationToken
+- (void)observe:(LEGACYObjectBase *)obj
        keyPaths:(nullable NSArray<NSString *> *)keyPaths
-          block:(RLMObjectNotificationCallback)block;
+          block:(LEGACYObjectNotificationCallback)block;
 - (void)registrationComplete:(void (^)(void))completion;
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

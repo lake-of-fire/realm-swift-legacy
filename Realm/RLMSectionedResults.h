@@ -16,19 +16,19 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMCollection.h>
+#import <Realm/LEGACYCollection.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@protocol RLMValue;
-@class RLMResults<RLMObjectType>;
+@protocol LEGACYValue;
+@class LEGACYResults<LEGACYObjectType>;
 
 /**
- A `RLMSectionedResultsChange` object encapsulates information about changes to sectioned
+ A `LEGACYSectionedResultsChange` object encapsulates information about changes to sectioned
  results that are reported by Realm notifications.
 
- `RLMSectionedResultsChange` is passed to the notification blocks registered with
- `-addNotificationBlock` on `RLMSectionedResults`, and reports what sections and rows in the
+ `LEGACYSectionedResultsChange` is passed to the notification blocks registered with
+ `-addNotificationBlock` on `LEGACYSectionedResults`, and reports what sections and rows in the
  collection changed since the last time the notification block was called.
 
  A complete example of updating a `UITableView` named `tv`:
@@ -41,9 +41,9 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
      [tv deleteSections:changes.sectionsToRemove withRowAnimation:UITableViewRowAnimationAutomatic];
      [tv endUpdates];
 
- All of the arrays in an `RLMSectionedResultsChange` are always sorted in ascending order.
+ All of the arrays in an `LEGACYSectionedResultsChange` are always sorted in ascending order.
  */
-@interface RLMSectionedResultsChange : NSObject
+@interface LEGACYSectionedResultsChange : NSObject
 /// The index paths of objects in the previous version of the collection which have
 /// been removed from this one.
 @property (nonatomic, readonly) NSArray<NSIndexPath *> *deletions;
@@ -64,8 +64,8 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 @end
 
 
-/// The `RLMSectionedResult` protocol defines properties and methods common to both `RLMSectionedResults and RLMSection`
-@protocol RLMSectionedResult <NSFastEnumeration, RLMThreadConfined>
+/// The `LEGACYSectionedResult` protocol defines properties and methods common to both `LEGACYSectionedResults and LEGACYSection`
+@protocol LEGACYSectionedResult <NSFastEnumeration, LEGACYThreadConfined>
 
 #pragma mark - Object Access
 
@@ -90,7 +90,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
           containing Realm is read-only.
  @warning Holding onto a frozen collection for an extended period while performing
           write transaction on the Realm may result in the Realm file growing
-          to large sizes. See `RLMRealmConfiguration.maximumNumberOfActiveVersions`
+          to large sizes. See `LEGACYRealmConfiguration.maximumNumberOfActiveVersions`
           for more information.
  */
 - (instancetype)freeze;
@@ -121,11 +121,11 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  For each call after that, it will contain information about
  which rows in the section were added, removed or modified. If a
  write transaction did not modify any objects in the section,
- the block is not called at all. See the `RLMSectionedResultsChange` documentation for
+ the block is not called at all. See the `LEGACYSectionedResultsChange` documentation for
  information on how the changes are reported and an example of updating a
  `UITableView`.
 
- At the time when the block is called, the `RLMSection` / `RLMSectionedResults` object will be fully
+ At the time when the block is called, the `LEGACYSection` / `LEGACYSectionedResults` object will be fully
  evaluated and up-to-date.
 
  Notifications are delivered via the standard run loop, and so can't be
@@ -138,9 +138,9 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  result, the initial notification will reflect the state of the Realm after
  the write transaction.
 
-    RLMResults<Dog *> *results = [Dog allObjects];
-    RLMSectionedResults<Dog *> *sectionedResults = [results sectionedResultsUsingKeyPath:@"age" ascending:YES];
-    self.token = [sectionedResults addNotificationBlock:^(RLMSectionedResults *sectionedResults, RLMSectionedResultsChange *changes) {
+    LEGACYResults<Dog *> *results = [Dog allObjects];
+    LEGACYSectionedResults<Dog *> *sectionedResults = [results sectionedResultsUsingKeyPath:@"age" ascending:YES];
+    self.token = [sectionedResults addNotificationBlock:^(LEGACYSectionedResults *sectionedResults, LEGACYSectionedResultsChange *changes) {
          // Only fired once for the example
          NSLog(@"sectionedResults.count: %zu", sectionedResults.count); // => 1
      }];
@@ -163,7 +163,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(id<RLMSectionedResult>, RLMSectionedResultsChange *))block __attribute__((warn_unused_result));
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(id<LEGACYSectionedResult>, LEGACYSectionedResultsChange *))block __attribute__((warn_unused_result));
 /**
  Registers a block to be called each time the collection changes.
 
@@ -175,11 +175,11 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  For each call after that, it will contain information about
  which rows in the section were added, removed or modified. If a
  write transaction did not modify any objects in the section,
- the block is not called at all. See the `RLMSectionedResultsChange` documentation for
+ the block is not called at all. See the `LEGACYSectionedResultsChange` documentation for
  information on how the changes are reported and an example of updating a
  `UITableView`.
 
- At the time when the block is called, the `RLMSection` / `RLMSectionedResults` object will be fully
+ At the time when the block is called, the `LEGACYSection` / `LEGACYSectionedResults` object will be fully
  evaluated and up-to-date.
 
  Notifications are delivered via the standard run loop, and so can't be
@@ -192,9 +192,9 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  result, the initial notification will reflect the state of the Realm after
  the write transaction.
 
-    RLMResults<Dog *> *results = [Dog allObjects];
-    RLMSectionedResults<Dog *> *sectionedResults = [results sectionedResultsUsingKeyPath:@"age" ascending:YES];
-    self.token = [sectionedResults addNotificationBlock:^(RLMSectionedResults *sectionedResults, RLMSectionedResultsChange *changes) {
+    LEGACYResults<Dog *> *results = [Dog allObjects];
+    LEGACYSectionedResults<Dog *> *sectionedResults = [results sectionedResultsUsingKeyPath:@"age" ascending:YES];
+    self.token = [sectionedResults addNotificationBlock:^(LEGACYSectionedResults *sectionedResults, LEGACYSectionedResultsChange *changes) {
          // Only fired once for the example
          NSLog(@"sectionedResults.count: %zu", sectionedResults.count); // => 1
      }];
@@ -218,7 +218,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(id<RLMSectionedResult>, RLMSectionedResultsChange *))block
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(id<LEGACYSectionedResult>, LEGACYSectionedResultsChange *))block
                                          queue:(dispatch_queue_t)queue __attribute__((warn_unused_result));
 /**
  Registers a block to be called each time the collection changes.
@@ -231,11 +231,11 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  For each call after that, it will contain information about
  which rows in the section were added, removed or modified. If a
  write transaction did not modify any objects in the section,
- the block is not called at all. See the `RLMSectionedResultsChange` documentation for
+ the block is not called at all. See the `LEGACYSectionedResultsChange` documentation for
  information on how the changes are reported and an example of updating a
  `UITableView`.
 
- At the time when the block is called, the `RLMSection` / `RLMSectionedResults` object will be fully
+ At the time when the block is called, the `LEGACYSection` / `LEGACYSectionedResults` object will be fully
  evaluated and up-to-date.
 
  Notifications are delivered via the standard run loop, and so can't be
@@ -248,9 +248,9 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  result, the initial notification will reflect the state of the Realm after
  the write transaction.
 
-    RLMResults<Dog *> *results = [Dog allObjects];
-    RLMSectionedResults<Dog *> *sectionedResults = [results sectionedResultsUsingKeyPath:@"age" ascending:YES];
-    self.token = [sectionedResults addNotificationBlock:^(RLMSectionedResults *sectionedResults, RLMSectionedResultsChange *changes) {
+    LEGACYResults<Dog *> *results = [Dog allObjects];
+    LEGACYSectionedResults<Dog *> *sectionedResults = [results sectionedResultsUsingKeyPath:@"age" ascending:YES];
+    self.token = [sectionedResults addNotificationBlock:^(LEGACYSectionedResults *sectionedResults, LEGACYSectionedResultsChange *changes) {
          // Only fired once for the example
          NSLog(@"sectionedResults.count: %zu", sectionedResults.count); // => 1
      }];
@@ -275,7 +275,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(id<RLMSectionedResult>, RLMSectionedResultsChange *))block
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(id<LEGACYSectionedResult>, LEGACYSectionedResultsChange *))block
                                       keyPaths:(NSArray<NSString *> *)keyPaths __attribute__((warn_unused_result));
 /**
  Registers a block to be called each time the collection changes.
@@ -288,11 +288,11 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  For each call after that, it will contain information about
  which rows in the section were added, removed or modified. If a
  write transaction did not modify any objects in the section,
- the block is not called at all. See the `RLMSectionedResultsChange` documentation for
+ the block is not called at all. See the `LEGACYSectionedResultsChange` documentation for
  information on how the changes are reported and an example of updating a
  `UITableView`.
 
- At the time when the block is called, the `RLMSection` / `RLMSectionedResults` object will be fully
+ At the time when the block is called, the `LEGACYSection` / `LEGACYSectionedResults` object will be fully
  evaluated and up-to-date.
 
  Notifications are delivered via the standard run loop, and so can't be
@@ -305,9 +305,9 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  result, the initial notification will reflect the state of the Realm after
  the write transaction.
 
-    RLMResults<Dog *> *results = [Dog allObjects];
-    RLMSectionedResults<Dog *> *sectionedResults = [results sectionedResultsUsingKeyPath:@"age" ascending:YES];
-    self.token = [sectionedResults addNotificationBlock:^(RLMSectionedResults *sectionedResults, RLMSectionedResultsChange *changes) {
+    LEGACYResults<Dog *> *results = [Dog allObjects];
+    LEGACYSectionedResults<Dog *> *sectionedResults = [results sectionedResultsUsingKeyPath:@"age" ascending:YES];
+    self.token = [sectionedResults addNotificationBlock:^(LEGACYSectionedResults *sectionedResults, LEGACYSectionedResultsChange *changes) {
          // Only fired once for the example
          NSLog(@"sectionedResults.count: %zu", sectionedResults.count); // => 1
      }];
@@ -338,22 +338,22 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(id<RLMSectionedResult>, RLMSectionedResultsChange *))block
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(id<LEGACYSectionedResult>, LEGACYSectionedResultsChange *))block
                                       keyPaths:(nullable NSArray<NSString *> *)keyPaths
                                          queue:(nullable dispatch_queue_t)queue __attribute__((warn_unused_result));
 
 @end
 
-/// An RLMSection contains the objects which belong to a specified section key.
-@interface RLMSection<RLMKeyType: id<RLMValue>, RLMObjectType> : NSObject<RLMSectionedResult>
+/// An LEGACYSection contains the objects which belong to a specified section key.
+@interface LEGACYSection<LEGACYKeyType: id<LEGACYValue>, LEGACYObjectType> : NSObject<LEGACYSectionedResult>
 /// The value that represents the key in this section.
-@property (nonatomic, readonly) RLMKeyType key;
+@property (nonatomic, readonly) LEGACYKeyType key;
 /// The count of objects in the section.
 @property (nonatomic, readonly) NSUInteger count;
 /// Returns the object for a given index in the section.
-- (RLMObjectType)objectAtIndexedSubscript:(NSUInteger)index;
+- (LEGACYObjectType)objectAtIndexedSubscript:(NSUInteger)index;
 /// Returns the object for a given index in the section.
-- (RLMObjectType)objectAtIndex:(NSUInteger)index;
+- (LEGACYObjectType)objectAtIndex:(NSUInteger)index;
 
 #pragma mark - Freeze
 
@@ -369,7 +369,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
           containing Realm is read-only.
  @warning Holding onto a frozen section for an extended period while performing
           write transaction on the Realm may result in the Realm file growing
-          to large sizes. See `RLMRealmConfiguration.maximumNumberOfActiveVersions`
+          to large sizes. See `LEGACYRealmConfiguration.maximumNumberOfActiveVersions`
           for more information.
  */
 - (instancetype)freeze;
@@ -400,11 +400,11 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  For each call after that, it will contain information about
  which rows in the section were added, removed or modified. If a
  write transaction did not modify any objects in the section,
- the block is not called at all. See the `RLMSectionedResultsChange` documentation for
+ the block is not called at all. See the `LEGACYSectionedResultsChange` documentation for
  information on how the changes are reported and an example of updating a
  `UITableView`.
 
- At the time when the block is called, the `RLMSection` object will be fully
+ At the time when the block is called, the `LEGACYSection` object will be fully
  evaluated and up-to-date.
 
  Notifications are delivered via the standard run loop, and so can't be
@@ -417,11 +417,11 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  result, the initial notification will reflect the state of the Realm after
  the write transaction.
 
-    RLMResults<Dog *> *results = [Dog allObjects];
-    RLMSectionedResults<Dog *> *sectionedResults = [results sectionedResultsUsingKeyPath:@"age" ascending:YES];
-    RLMSection<Dog *> *section = sectionedResults[0] // section with dogs aged '5' already exists.
+    LEGACYResults<Dog *> *results = [Dog allObjects];
+    LEGACYSectionedResults<Dog *> *sectionedResults = [results sectionedResultsUsingKeyPath:@"age" ascending:YES];
+    LEGACYSection<Dog *> *section = sectionedResults[0] // section with dogs aged '5' already exists.
 
-    self.token = [section addNotificationBlock:^(RLMSection *section, RLMSectionedResultsChange *changes) {
+    self.token = [section addNotificationBlock:^(LEGACYSection *section, LEGACYSectionedResultsChange *changes) {
          // Only fired once for the example
          NSLog(@"section.count: %zu", section.count); // => 2
      }];
@@ -444,7 +444,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMSection<RLMKeyType, RLMObjectType> *, RLMSectionedResultsChange *))block __attribute__((warn_unused_result));
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYSection<LEGACYKeyType, LEGACYObjectType> *, LEGACYSectionedResultsChange *))block __attribute__((warn_unused_result));
 /**
  Registers a block to be called each time the section changes.
 
@@ -456,11 +456,11 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  For each call after that, it will contain information about
  which rows in the section were added, removed or modified. If a
  write transaction did not modify any objects in the section,
- the block is not called at all. See the `RLMSectionedResultsChange` documentation for
+ the block is not called at all. See the `LEGACYSectionedResultsChange` documentation for
  information on how the changes are reported and an example of updating a
  `UITableView`.
 
- At the time when the block is called, the `RLMSection` object will be fully
+ At the time when the block is called, the `LEGACYSection` object will be fully
  evaluated and up-to-date.
 
  Notifications are delivered via the standard run loop, and so can't be
@@ -473,11 +473,11 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  result, the initial notification will reflect the state of the Realm after
  the write transaction.
 
-    RLMResults<Dog *> *results = [Dog allObjects];
-    RLMSectionedResults<Dog *> *sectionedResults = [results sectionedResultsUsingKeyPath:@"age" ascending:YES];
-    RLMSection<Dog *> *section = sectionedResults[0] // section with dogs aged '5' already exists.
+    LEGACYResults<Dog *> *results = [Dog allObjects];
+    LEGACYSectionedResults<Dog *> *sectionedResults = [results sectionedResultsUsingKeyPath:@"age" ascending:YES];
+    LEGACYSection<Dog *> *section = sectionedResults[0] // section with dogs aged '5' already exists.
 
-    self.token = [section addNotificationBlock:^(RLMSection *section, RLMSectionedResultsChange *changes) {
+    self.token = [section addNotificationBlock:^(LEGACYSection *section, LEGACYSectionedResultsChange *changes) {
          // Only fired once for the example
          NSLog(@"section.count: %zu", section.count); // => 2
      }];
@@ -501,7 +501,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMSection<RLMKeyType, RLMObjectType> *, RLMSectionedResultsChange *))block
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYSection<LEGACYKeyType, LEGACYObjectType> *, LEGACYSectionedResultsChange *))block
                                          queue:(dispatch_queue_t)queue __attribute__((warn_unused_result));
 /**
  Registers a block to be called each time the section changes.
@@ -514,11 +514,11 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  For each call after that, it will contain information about
  which rows in the section were added, removed or modified. If a
  write transaction did not modify any objects in the section,
- the block is not called at all. See the `RLMSectionedResultsChange` documentation for
+ the block is not called at all. See the `LEGACYSectionedResultsChange` documentation for
  information on how the changes are reported and an example of updating a
  `UITableView`.
 
- At the time when the block is called, the `RLMSection` object will be fully
+ At the time when the block is called, the `LEGACYSection` object will be fully
  evaluated and up-to-date.
 
  Notifications are delivered via the standard run loop, and so can't be
@@ -531,11 +531,11 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  result, the initial notification will reflect the state of the Realm after
  the write transaction.
 
-    RLMResults<Dog *> *results = [Dog allObjects];
-    RLMSectionedResults<Dog *> *sectionedResults = [results sectionedResultsUsingKeyPath:@"age" ascending:YES];
-    RLMSection<Dog *> *section = sectionedResults[0] // section with dogs aged '5' already exists.
+    LEGACYResults<Dog *> *results = [Dog allObjects];
+    LEGACYSectionedResults<Dog *> *sectionedResults = [results sectionedResultsUsingKeyPath:@"age" ascending:YES];
+    LEGACYSection<Dog *> *section = sectionedResults[0] // section with dogs aged '5' already exists.
 
-    self.token = [section addNotificationBlock:^(RLMSection *section, RLMSectionedResultsChange *changes) {
+    self.token = [section addNotificationBlock:^(LEGACYSection *section, LEGACYSectionedResultsChange *changes) {
          // Only fired once for the example
          NSLog(@"section.count: %zu", section.count); // => 2
      }];
@@ -565,7 +565,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMSection<RLMKeyType, RLMObjectType> *, RLMSectionedResultsChange *))block
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYSection<LEGACYKeyType, LEGACYObjectType> *, LEGACYSectionedResultsChange *))block
                                       keyPaths:(NSArray<NSString *> *)keyPaths __attribute__((warn_unused_result));
 /**
  Registers a block to be called each time the section changes.
@@ -578,11 +578,11 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  For each call after that, it will contain information about
  which rows in the section were added, removed or modified. If a
  write transaction did not modify any objects in the section,
- the block is not called at all. See the `RLMSectionedResultsChange` documentation for
+ the block is not called at all. See the `LEGACYSectionedResultsChange` documentation for
  information on how the changes are reported and an example of updating a
  `UITableView`.
 
- At the time when the block is called, the `RLMSection` object will be fully
+ At the time when the block is called, the `LEGACYSection` object will be fully
  evaluated and up-to-date.
 
  Notifications are delivered via the standard run loop, and so can't be
@@ -595,11 +595,11 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  result, the initial notification will reflect the state of the Realm after
  the write transaction.
 
-    RLMResults<Dog *> *results = [Dog allObjects];
-    RLMSectionedResults<Dog *> *sectionedResults = [results sectionedResultsUsingKeyPath:@"age" ascending:YES];
-    RLMSection<Dog *> *section = sectionedResults[0] // section with dogs aged '5' already exists.
+    LEGACYResults<Dog *> *results = [Dog allObjects];
+    LEGACYSectionedResults<Dog *> *sectionedResults = [results sectionedResultsUsingKeyPath:@"age" ascending:YES];
+    LEGACYSection<Dog *> *section = sectionedResults[0] // section with dogs aged '5' already exists.
 
-    self.token = [section addNotificationBlock:^(RLMSection *section, RLMSectionedResultsChange *changes) {
+    self.token = [section addNotificationBlock:^(LEGACYSection *section, LEGACYSectionedResultsChange *changes) {
          // Only fired once for the example
          NSLog(@"section.count: %zu", section.count); // => 2
      }];
@@ -630,21 +630,21 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMSection<RLMKeyType, RLMObjectType> *, RLMSectionedResultsChange *))block
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYSection<LEGACYKeyType, LEGACYObjectType> *, LEGACYSectionedResultsChange *))block
                                       keyPaths:(nullable NSArray<NSString *> *)keyPaths
                                          queue:(nullable dispatch_queue_t)queue __attribute__((warn_unused_result));
 @end
 
 /// A lazily evaluated collection that holds elements in sections determined by a section key.
-@interface RLMSectionedResults<RLMKeyType: id<RLMValue>, RLMObjectType: id<RLMValue>> : NSObject<RLMSectionedResult>
+@interface LEGACYSectionedResults<LEGACYKeyType: id<LEGACYValue>, LEGACYObjectType: id<LEGACYValue>> : NSObject<LEGACYSectionedResult>
 /// An array of all keys in the sectioned results collection.
-@property (nonatomic) NSArray<RLMKeyType> *allKeys;
+@property (nonatomic) NSArray<LEGACYKeyType> *allKeys;
 /// The total amount of sections in this collection.
 @property (nonatomic, readonly, assign) NSUInteger count;
 /// Returns the section at a given index.
-- (RLMSection<RLMKeyType, RLMObjectType> *)objectAtIndexedSubscript:(NSUInteger)index;
+- (LEGACYSection<LEGACYKeyType, LEGACYObjectType> *)objectAtIndexedSubscript:(NSUInteger)index;
 /// Returns the section at a given index.
-- (RLMSection<RLMKeyType, RLMObjectType> *)objectAtIndex:(NSUInteger)index;
+- (LEGACYSection<LEGACYKeyType, LEGACYObjectType> *)objectAtIndex:(NSUInteger)index;
 
 #pragma mark - Freeze
 
@@ -660,7 +660,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
           containing Realm is read-only.
  @warning Holding onto a frozen sectioned results collection for an extended period while performing
           write transaction on the Realm may result in the Realm file growing
-          to large sizes. See `RLMRealmConfiguration.maximumNumberOfActiveVersions`
+          to large sizes. See `LEGACYRealmConfiguration.maximumNumberOfActiveVersions`
           for more information.
  */
 - (instancetype)freeze;
@@ -691,11 +691,11 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  For each call after that, it will contain information about
  which rows in the section were added, removed or modified. If a
  write transaction did not modify any objects in the section,
- the block is not called at all. See the `RLMSectionedResultsChange` documentation for
+ the block is not called at all. See the `LEGACYSectionedResultsChange` documentation for
  information on how the changes are reported and an example of updating a
  `UITableView`.
 
- At the time when the block is called, the `RLMSectionedResults` object will be fully
+ At the time when the block is called, the `LEGACYSectionedResults` object will be fully
  evaluated and up-to-date.
 
  Notifications are delivered via the standard run loop, and so can't be
@@ -708,9 +708,9 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  result, the initial notification will reflect the state of the Realm after
  the write transaction.
 
-    RLMResults<Dog *> *results = [Dog allObjects];
-    RLMSectionedResults<Dog *> *sectionedResults = [results sectionedResultsUsingKeyPath:@"age" ascending:YES];
-    self.token = [sectionedResults addNotificationBlock:^(RLMSectionedResults *sectionedResults, RLMSectionedResultsChange *changes) {
+    LEGACYResults<Dog *> *results = [Dog allObjects];
+    LEGACYSectionedResults<Dog *> *sectionedResults = [results sectionedResultsUsingKeyPath:@"age" ascending:YES];
+    self.token = [sectionedResults addNotificationBlock:^(LEGACYSectionedResults *sectionedResults, LEGACYSectionedResultsChange *changes) {
          // Only fired once for the example
          NSLog(@"sectionedResults.count: %zu", sectionedResults.count); // => 1
      }];
@@ -733,7 +733,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMSectionedResults<RLMKeyType, RLMObjectType> *, RLMSectionedResultsChange *))block __attribute__((warn_unused_result));
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYSectionedResults<LEGACYKeyType, LEGACYObjectType> *, LEGACYSectionedResultsChange *))block __attribute__((warn_unused_result));
 /**
  Registers a block to be called each time the sectioned results collection changes.
 
@@ -745,11 +745,11 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  For each call after that, it will contain information about
  which rows in the section were added, removed or modified. If a
  write transaction did not modify any objects in the section,
- the block is not called at all. See the `RLMSectionedResultsChange` documentation for
+ the block is not called at all. See the `LEGACYSectionedResultsChange` documentation for
  information on how the changes are reported and an example of updating a
  `UITableView`.
 
- At the time when the block is called, the `RLMSectionedResults` object will be fully
+ At the time when the block is called, the `LEGACYSectionedResults` object will be fully
  evaluated and up-to-date.
 
  Notifications are delivered via the standard run loop, and so can't be
@@ -762,9 +762,9 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  result, the initial notification will reflect the state of the Realm after
  the write transaction.
 
-    RLMResults<Dog *> *results = [Dog allObjects];
-    RLMSectionedResults<Dog *> *sectionedResults = [results sectionedResultsUsingKeyPath:@"age" ascending:YES];
-    self.token = [sectionedResults addNotificationBlock:^(RLMSectionedResults *sectionedResults, RLMSectionedResultsChange *changes) {
+    LEGACYResults<Dog *> *results = [Dog allObjects];
+    LEGACYSectionedResults<Dog *> *sectionedResults = [results sectionedResultsUsingKeyPath:@"age" ascending:YES];
+    self.token = [sectionedResults addNotificationBlock:^(LEGACYSectionedResults *sectionedResults, LEGACYSectionedResultsChange *changes) {
          // Only fired once for the example
          NSLog(@"sectionedResults.count: %zu", sectionedResults.count); // => 1
      }];
@@ -788,7 +788,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMSectionedResults<RLMKeyType, RLMObjectType> *, RLMSectionedResultsChange *))block
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYSectionedResults<LEGACYKeyType, LEGACYObjectType> *, LEGACYSectionedResultsChange *))block
                                          queue:(dispatch_queue_t)queue __attribute__((warn_unused_result));
 /**
  Registers a block to be called each time the sectioned results collection changes.
@@ -801,11 +801,11 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  For each call after that, it will contain information about
  which rows in the section were added, removed or modified. If a
  write transaction did not modify any objects in the section,
- the block is not called at all. See the `RLMSectionedResultsChange` documentation for
+ the block is not called at all. See the `LEGACYSectionedResultsChange` documentation for
  information on how the changes are reported and an example of updating a
  `UITableView`.
 
- At the time when the block is called, the `RLMSectionedResults` object will be fully
+ At the time when the block is called, the `LEGACYSectionedResults` object will be fully
  evaluated and up-to-date.
 
  Notifications are delivered via the standard run loop, and so can't be
@@ -818,9 +818,9 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  result, the initial notification will reflect the state of the Realm after
  the write transaction.
 
-    RLMResults<Dog *> *results = [Dog allObjects];
-    RLMSectionedResults<Dog *> *sectionedResults = [results sectionedResultsUsingKeyPath:@"age" ascending:YES];
-    self.token = [sectionedResults addNotificationBlock:^(RLMSectionedResults *sectionedResults, RLMSectionedResultsChange *changes) {
+    LEGACYResults<Dog *> *results = [Dog allObjects];
+    LEGACYSectionedResults<Dog *> *sectionedResults = [results sectionedResultsUsingKeyPath:@"age" ascending:YES];
+    self.token = [sectionedResults addNotificationBlock:^(LEGACYSectionedResults *sectionedResults, LEGACYSectionedResultsChange *changes) {
          // Only fired once for the example
          NSLog(@"sectionedResults.count: %zu", sectionedResults.count); // => 1
      }];
@@ -850,7 +850,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMSectionedResults<RLMKeyType, RLMObjectType> *, RLMSectionedResultsChange *))block
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYSectionedResults<LEGACYKeyType, LEGACYObjectType> *, LEGACYSectionedResultsChange *))block
                                       keyPaths:(NSArray<NSString *> *)keyPaths __attribute__((warn_unused_result));
 /**
  Registers a block to be called each time the sectioned results collection changes.
@@ -863,11 +863,11 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  For each call after that, it will contain information about
  which rows in the section were added, removed or modified. If a
  write transaction did not modify any objects in the section,
- the block is not called at all. See the `RLMSectionedResultsChange` documentation for
+ the block is not called at all. See the `LEGACYSectionedResultsChange` documentation for
  information on how the changes are reported and an example of updating a
  `UITableView`.
 
- At the time when the block is called, the `RLMSectionedResults` object will be fully
+ At the time when the block is called, the `LEGACYSectionedResults` object will be fully
  evaluated and up-to-date.
 
  Notifications are delivered via the standard run loop, and so can't be
@@ -880,9 +880,9 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  result, the initial notification will reflect the state of the Realm after
  the write transaction.
 
-    RLMResults<Dog *> *results = [Dog allObjects];
-    RLMSectionedResults<Dog *> *sectionedResults = [results sectionedResultsUsingKeyPath:@"age" ascending:YES];
-    self.token = [sectionedResults addNotificationBlock:^(RLMSectionedResults *sectionedResults, RLMSectionedResultsChange *changes) {
+    LEGACYResults<Dog *> *results = [Dog allObjects];
+    LEGACYSectionedResults<Dog *> *sectionedResults = [results sectionedResultsUsingKeyPath:@"age" ascending:YES];
+    self.token = [sectionedResults addNotificationBlock:^(LEGACYSectionedResults *sectionedResults, LEGACYSectionedResultsChange *changes) {
          // Only fired once for the example
          NSLog(@"sectionedResults.count: %zu", sectionedResults.count); // => 1
      }];
@@ -913,9 +913,9 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMSectionedResults<RLMKeyType, RLMObjectType> *, RLMSectionedResultsChange *))block
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYSectionedResults<LEGACYKeyType, LEGACYObjectType> *, LEGACYSectionedResultsChange *))block
                                       keyPaths:(nullable NSArray<NSString *> *)keyPaths
                                          queue:(nullable dispatch_queue_t)queue __attribute__((warn_unused_result));
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

@@ -16,7 +16,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
 #ifdef __cplusplus
 #include <memory>
@@ -26,39 +26,39 @@ struct AuditConfig;
 }
 #endif
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@class RLMRealm, RLMUser, RLMRealmConfiguration;
-typedef RLM_CLOSED_ENUM(NSUInteger, RLMSyncLogLevel);
+@class LEGACYRealm, LEGACYUser, LEGACYRealmConfiguration;
+typedef LEGACY_CLOSED_ENUM(NSUInteger, LEGACYSyncLogLevel);
 
-struct RLMEventContext;
-typedef void (^RLMEventCompletion)(NSError *_Nullable);
+struct LEGACYEventContext;
+typedef void (^LEGACYEventCompletion)(NSError *_Nullable);
 
-FOUNDATION_EXTERN struct RLMEventContext *_Nullable RLMEventGetContext(RLMRealm *realm);
-FOUNDATION_EXTERN uint64_t RLMEventBeginScope(struct RLMEventContext *context, NSString *activity);
-FOUNDATION_EXTERN void RLMEventCommitScope(struct RLMEventContext *context, uint64_t scope_id,
-                                           RLMEventCompletion _Nullable completion);
-FOUNDATION_EXTERN void RLMEventCancelScope(struct RLMEventContext *context, uint64_t scope_id);
-FOUNDATION_EXTERN bool RLMEventIsActive(struct RLMEventContext *context, uint64_t scope_id);
-FOUNDATION_EXTERN void RLMEventRecordEvent(struct RLMEventContext *context, NSString *activity,
+FOUNDATION_EXTERN struct LEGACYEventContext *_Nullable LEGACYEventGetContext(LEGACYRealm *realm);
+FOUNDATION_EXTERN uint64_t LEGACYEventBeginScope(struct LEGACYEventContext *context, NSString *activity);
+FOUNDATION_EXTERN void LEGACYEventCommitScope(struct LEGACYEventContext *context, uint64_t scope_id,
+                                           LEGACYEventCompletion _Nullable completion);
+FOUNDATION_EXTERN void LEGACYEventCancelScope(struct LEGACYEventContext *context, uint64_t scope_id);
+FOUNDATION_EXTERN bool LEGACYEventIsActive(struct LEGACYEventContext *context, uint64_t scope_id);
+FOUNDATION_EXTERN void LEGACYEventRecordEvent(struct LEGACYEventContext *context, NSString *activity,
                                            NSString *_Nullable event, NSString *_Nullable data,
-                                           RLMEventCompletion _Nullable completion);
-FOUNDATION_EXTERN void RLMEventUpdateMetadata(struct RLMEventContext *context,
+                                           LEGACYEventCompletion _Nullable completion);
+FOUNDATION_EXTERN void LEGACYEventUpdateMetadata(struct LEGACYEventContext *context,
                                               NSDictionary<NSString *, NSString *> *newMetadata);
 
-@interface RLMEventConfiguration : NSObject
+@interface LEGACYEventConfiguration : NSObject
 @property (nonatomic) NSString *partitionPrefix;
-@property (nonatomic, nullable) RLMUser *syncUser;
+@property (nonatomic, nullable) LEGACYUser *syncUser;
 @property (nonatomic, nullable) NSDictionary<NSString *, NSString *> *metadata;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-@property (nonatomic, nullable) void (^logger)(RLMSyncLogLevel, NSString *);
+@property (nonatomic, nullable) void (^logger)(LEGACYSyncLogLevel, NSString *);
 #pragma clang diagnostic pop
-@property (nonatomic, nullable) RLM_SWIFT_SENDABLE void (^errorHandler)(NSError *);
+@property (nonatomic, nullable) LEGACY_SWIFT_SENDABLE void (^errorHandler)(NSError *);
 
 #ifdef __cplusplus
-- (std::shared_ptr<realm::AuditConfig>)auditConfigWithRealmConfiguration:(RLMRealmConfiguration *)realmConfig;
+- (std::shared_ptr<realm::AuditConfig>)auditConfigWithRealmConfiguration:(LEGACYRealmConfiguration *)realmConfig;
 #endif
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

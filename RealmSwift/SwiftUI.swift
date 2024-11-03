@@ -63,7 +63,7 @@ private func createBinding<T: ThreadConfined, V>(
 }
 
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-private func createCollectionBinding<T: ThreadConfined, V: RLMSwiftCollectionBase & ThreadConfined>(
+private func createCollectionBinding<T: ThreadConfined, V: LEGACYSwiftCollectionBase & ThreadConfined>(
     _ value: T,
     forKeyPath keyPath: ReferenceWritableKeyPath<T, V>) -> Binding<V> {
 
@@ -113,7 +113,7 @@ private func createEquatableBinding<T: ThreadConfined, V: Equatable>(
 // MARK: SwiftUIKVO
 
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@objc(RLMSwiftUIKVO) internal final class SwiftUIKVO: NSObject {
+@objc(LEGACYSwiftUIKVO) internal final class SwiftUIKVO: NSObject {
     /// Objects must have observers removed before being added to a realm.
     /// They are stored here so that if they are appended through the Bound Property
     /// system, they can be de-observed before hand.
@@ -225,7 +225,7 @@ private final class ObservableStoragePublisher<ObjectType>: Publisher where Obje
             subscriber.receive(subscription: ObservationSubscription(token: token))
         } else if let value = unwrappedValue, !value.isInvalidated {
             // else if the value is unmanaged
-            let schema = ObjectSchema(RLMObjectBaseObjectSchema(value)!)
+            let schema = ObjectSchema(LEGACYObjectBaseObjectSchema(value)!)
             let kvo = SwiftUIKVO(subscriber: subscriber)
 
             var keyPaths = [String]()
@@ -558,7 +558,7 @@ extension Projection: _ObservedResultsValue { }
                                         filter: NSPredicate? = nil,
                                         keyPaths: [String]? = nil,
                                         sortDescriptor: SortDescriptor? = nil) where ResultType: Projection<ObjectType>, ObjectType: ThreadConfined {
-        let results = Results<ResultType>(RLMResults<ResultType>.emptyDetached())
+        let results = Results<ResultType>(LEGACYResults<ResultType>.emptyDetached())
         self.storage = Storage(results, keyPaths)
         self.storage.configuration = configuration
         self.filter = filter
@@ -582,7 +582,7 @@ extension Projection: _ObservedResultsValue { }
                 filter: NSPredicate? = nil,
                 keyPaths: [String]? = nil,
                 sortDescriptor: SortDescriptor? = nil) where ResultType: Object {
-        self.storage = Storage(Results(RLMResults<ResultType>.emptyDetached()), keyPaths)
+        self.storage = Storage(Results(LEGACYResults<ResultType>.emptyDetached()), keyPaths)
         self.storage.configuration = configuration
         self.filter = filter
         self.sortDescriptor = sortDescriptor
@@ -605,7 +605,7 @@ extension Projection: _ObservedResultsValue { }
                 where: ((Query<ResultType>) -> Query<Bool>)? = nil,
                 keyPaths: [String]? = nil,
                 sortDescriptor: SortDescriptor? = nil) where ResultType: Object {
-        self.storage = Storage(Results(RLMResults<ResultType>.emptyDetached()), keyPaths)
+        self.storage = Storage(Results(LEGACYResults<ResultType>.emptyDetached()), keyPaths)
         self.storage.configuration = configuration
         self.where = `where`
         self.sortDescriptor = sortDescriptor
@@ -615,7 +615,7 @@ extension Projection: _ObservedResultsValue { }
                 keyPaths: [String]? = nil,
                 configuration: RealmLegacy.Configuration? = nil,
                 sortDescriptor: SortDescriptor? = nil) where ResultType: Object {
-        self.storage = Storage(Results(RLMResults<ResultType>.emptyDetached()), keyPaths)
+        self.storage = Storage(Results(LEGACYResults<ResultType>.emptyDetached()), keyPaths)
         self.storage.configuration = configuration
         self.sortDescriptor = sortDescriptor
     }
@@ -732,7 +732,7 @@ extension Projection: _ObservedResultsValue { }
                  keyPaths: [String]? = nil,
                  keyPathString: String? = nil,
                  configuration: RealmLegacy.Configuration? = nil) where ResultType: AnyObject {
-        let results = Results<ResultType>(RLMResults<ResultType>.emptyDetached())
+        let results = Results<ResultType>(LEGACYResults<ResultType>.emptyDetached())
         self.storage = Storage(results,
                                sectionBlock: sectionBlock,
                                sortDescriptors: sortDescriptors,
@@ -1022,7 +1022,7 @@ extension Projection: _ObservedResultsValue { }
         ///
         /// - Parameter keyPath  : A key path to a specific resulting value.
         /// - Returns: A new binding.
-        public subscript<Subject: RLMSwiftCollectionBase & ThreadConfined>(dynamicMember keyPath: ReferenceWritableKeyPath<ObjectType, Subject>) -> Binding<Subject> {
+        public subscript<Subject: LEGACYSwiftCollectionBase & ThreadConfined>(dynamicMember keyPath: ReferenceWritableKeyPath<ObjectType, Subject>) -> Binding<Subject> {
             createCollectionBinding(wrappedValue, forKeyPath: keyPath)
         }
     }
@@ -1090,7 +1090,7 @@ extension Binding where Value: ObjectBase & ThreadConfined {
         createBinding(wrappedValue, forKeyPath: member)
     }
     /// :nodoc:
-    public subscript<V>(dynamicMember member: ReferenceWritableKeyPath<Value, V>) -> Binding<V> where V: _Persistable & RLMSwiftCollectionBase & ThreadConfined {
+    public subscript<V>(dynamicMember member: ReferenceWritableKeyPath<Value, V>) -> Binding<V> where V: _Persistable & LEGACYSwiftCollectionBase & ThreadConfined {
         createCollectionBinding(wrappedValue, forKeyPath: member)
     }
     /// :nodoc:
@@ -1360,7 +1360,7 @@ extension ThreadConfined where Self: ProjectionObservable {
         createEquatableBinding(self, forKeyPath: keyPath)
     }
     /// :nodoc:
-    public func bind<V: _Persistable & RLMSwiftCollectionBase & ThreadConfined>(_ keyPath: ReferenceWritableKeyPath<Self, V>) -> Binding<V> {
+    public func bind<V: _Persistable & LEGACYSwiftCollectionBase & ThreadConfined>(_ keyPath: ReferenceWritableKeyPath<Self, V>) -> Binding<V> {
         createCollectionBinding(self, forKeyPath: keyPath)
     }
 }
@@ -1392,7 +1392,7 @@ extension ThreadConfined where Self: ObjectBase {
         createEquatableBinding(self, forKeyPath: keyPath)
     }
     /// :nodoc:
-    public func bind<V: _Persistable & RLMSwiftCollectionBase & ThreadConfined>(_ keyPath: ReferenceWritableKeyPath<Self, V>) -> Binding<V> {
+    public func bind<V: _Persistable & LEGACYSwiftCollectionBase & ThreadConfined>(_ keyPath: ReferenceWritableKeyPath<Self, V>) -> Binding<V> {
         createCollectionBinding(self, forKeyPath: keyPath)
     }
 }
@@ -1617,7 +1617,7 @@ private class ObservableAsyncOpenStorage: ObservableObject {
             app = App(id: appId)
         } else {
             // Check if there is a singular cached app
-            let cachedApps = RLMApp.allApps()
+            let cachedApps = LEGACYApp.allApps()
             if cachedApps.count > 1 {
                 throwRealmException("Cannot AsyncOpen the Realm because more than one appId was found. When using multiple Apps you must explicitly pass an appId to indicate which to use.")
             }

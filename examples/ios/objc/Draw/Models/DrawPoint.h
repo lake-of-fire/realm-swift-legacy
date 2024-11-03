@@ -19,7 +19,7 @@
 #import <UIKit/UIKit.h>
 #import <Realm/Realm.h>
 
-@interface DrawPoint : RLMObject
+@interface DrawPoint : LEGACYObject
 
 @property double x;
 @property double y;
@@ -28,4 +28,4 @@
 
 @end
 
-RLM_COLLECTION_TYPE(DrawPoint)
+LEGACY_COLLECTION_TYPE(DrawPoint)

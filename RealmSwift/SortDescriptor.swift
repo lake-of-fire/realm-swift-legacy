@@ -33,9 +33,9 @@ import RealmLegacy
     /// Whether this descriptor sorts in ascending or descending order.
     public let ascending: Bool
 
-    /// Converts the receiver to an `RLMSortDescriptor`.
-    internal var rlmSortDescriptorValue: RLMSortDescriptor {
-        return RLMSortDescriptor(keyPath: keyPath, ascending: ascending)
+    /// Converts the receiver to an `LEGACYSortDescriptor`.
+    internal var rlmSortDescriptorValue: LEGACYSortDescriptor {
+        return LEGACYSortDescriptor(keyPath: keyPath, ascending: ascending)
     }
 
     // MARK: Initializers

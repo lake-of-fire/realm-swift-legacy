@@ -16,12 +16,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSyncUtil_Private.hpp"
+#import "LEGACYSyncUtil_Private.hpp"
 
-#import "RLMUser_Private.hpp"
+#import "LEGACYUser_Private.hpp"
 
-NSString *const kRLMSyncPathOfRealmBackupCopyKey            = @"recovered_realm_location_path";
-NSString *const kRLMSyncErrorActionTokenKey                 = @"error_action_token";
+NSString *const kLEGACYSyncPathOfRealmBackupCopyKey            = @"recovered_realm_location_path";
+NSString *const kLEGACYSyncErrorActionTokenKey                 = @"error_action_token";
 
 #pragma mark - C++ APIs
 
@@ -29,21 +29,21 @@ using namespace realm;
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-static_assert((int)RLMClientResetModeDiscardLocal == (int)realm::ClientResyncMode::DiscardLocal);
+static_assert((int)LEGACYClientResetModeDiscardLocal == (int)realm::ClientResyncMode::DiscardLocal);
 #pragma clang diagnostic pop
-static_assert((int)RLMClientResetModeDiscardUnsyncedChanges == (int)realm::ClientResyncMode::DiscardLocal);
-static_assert((int)RLMClientResetModeRecoverUnsyncedChanges == (int)realm::ClientResyncMode::Recover);
-static_assert((int)RLMClientResetModeRecoverOrDiscardUnsyncedChanges == (int)realm::ClientResyncMode::RecoverOrDiscard);
-static_assert((int)RLMClientResetModeManual == (int)realm::ClientResyncMode::Manual);
+static_assert((int)LEGACYClientResetModeDiscardUnsyncedChanges == (int)realm::ClientResyncMode::DiscardLocal);
+static_assert((int)LEGACYClientResetModeRecoverUnsyncedChanges == (int)realm::ClientResyncMode::Recover);
+static_assert((int)LEGACYClientResetModeRecoverOrDiscardUnsyncedChanges == (int)realm::ClientResyncMode::RecoverOrDiscard);
+static_assert((int)LEGACYClientResetModeManual == (int)realm::ClientResyncMode::Manual);
 
-static_assert(int(RLMSyncStopPolicyImmediately) == int(SyncSessionStopPolicy::Immediately));
-static_assert(int(RLMSyncStopPolicyLiveIndefinitely) == int(SyncSessionStopPolicy::LiveIndefinitely));
-static_assert(int(RLMSyncStopPolicyAfterChangesUploaded) == int(SyncSessionStopPolicy::AfterChangesUploaded));
+static_assert(int(LEGACYSyncStopPolicyImmediately) == int(SyncSessionStopPolicy::Immediately));
+static_assert(int(LEGACYSyncStopPolicyLiveIndefinitely) == int(SyncSessionStopPolicy::LiveIndefinitely));
+static_assert(int(LEGACYSyncStopPolicyAfterChangesUploaded) == int(SyncSessionStopPolicy::AfterChangesUploaded));
 
-SyncSessionStopPolicy translateStopPolicy(RLMSyncStopPolicy stopPolicy) {
+SyncSessionStopPolicy translateStopPolicy(LEGACYSyncStopPolicy stopPolicy) {
     return static_cast<SyncSessionStopPolicy>(stopPolicy);
 }
 
-RLMSyncStopPolicy translateStopPolicy(SyncSessionStopPolicy stopPolicy) {
-    return static_cast<RLMSyncStopPolicy>(stopPolicy);
+LEGACYSyncStopPolicy translateStopPolicy(SyncSessionStopPolicy stopPolicy) {
+    return static_cast<LEGACYSyncStopPolicy>(stopPolicy);
 }

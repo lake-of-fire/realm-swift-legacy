@@ -16,14 +16,14 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMAsyncTask_Private.h"
+#import "LEGACYAsyncTask_Private.h"
 
-#import "RLMError_Private.hpp"
-#import "RLMRealm_Private.hpp"
-#import "RLMRealmConfiguration_Private.hpp"
-#import "RLMScheduler.h"
-#import "RLMSyncSubscription_Private.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYError_Private.hpp"
+#import "LEGACYRealm_Private.hpp"
+#import "LEGACYRealmConfiguration_Private.hpp"
+#import "LEGACYScheduler.h"
+#import "LEGACYSyncSubscription_Private.hpp"
+#import "LEGACYUtil.hpp"
 
 #import <realm/exceptions.hpp>
 #import <realm/object-store/sync/async_open_task.hpp>
@@ -32,7 +32,7 @@
 
 static dispatch_queue_t s_async_open_queue = dispatch_queue_create("io.realm.asyncOpenDispatchQueue",
                                                                    DISPATCH_QUEUE_CONCURRENT);
-void RLMSetAsyncOpenQueue(dispatch_queue_t queue) {
+void LEGACYSetAsyncOpenQueue(dispatch_queue_t queue) {
     s_async_open_queue = queue;
 }
 
@@ -42,21 +42,21 @@ static NSError *s_canceledError = [NSError errorWithDomain:NSPOSIXErrorDomain
 }];
 
 __attribute__((objc_direct_members))
-@implementation RLMAsyncOpenTask {
-    RLMUnfairMutex _mutex;
+@implementation LEGACYAsyncOpenTask {
+    LEGACYUnfairMutex _mutex;
     std::shared_ptr<realm::AsyncOpenTask> _task;
-    std::vector<RLMProgressNotificationBlock> _progressBlocks;
+    std::vector<LEGACYProgressNotificationBlock> _progressBlocks;
     bool _cancel;
 
-    RLMRealmConfiguration *_configuration;
-    RLMScheduler *_scheduler;
+    LEGACYRealmConfiguration *_configuration;
+    LEGACYScheduler *_scheduler;
     bool _waitForDownloadCompletion;
     void (^_completion)(NSError *);
 
-    RLMRealm *_backgroundRealm;
+    LEGACYRealm *_backgroundRealm;
 }
 
-- (void)addProgressNotificationOnQueue:(dispatch_queue_t)queue block:(RLMProgressNotificationBlock)block {
+- (void)addProgressNotificationOnQueue:(dispatch_queue_t)queue block:(LEGACYProgressNotificationBlock)block {
     auto wrappedBlock = ^(NSUInteger transferred_bytes, NSUInteger transferrable_bytes) {
         dispatch_async(queue, ^{
             @autoreleasepool {
@@ -74,7 +74,7 @@ __attribute__((objc_direct_members))
     }
 }
 
-- (void)addProgressNotificationBlock:(RLMProgressNotificationBlock)block {
+- (void)addProgressNotificationBlock:(LEGACYProgressNotificationBlock)block {
     [self addProgressNotificationOnQueue:dispatch_get_main_queue() block:block];
 }
 
@@ -93,8 +93,8 @@ __attribute__((objc_direct_members))
     }
 }
 
-- (instancetype)initWithConfiguration:(RLMRealmConfiguration *)configuration
-                           confinedTo:(RLMScheduler *)scheduler
+- (instancetype)initWithConfiguration:(LEGACYRealmConfiguration *)configuration
+                           confinedTo:(LEGACYScheduler *)scheduler
                              download:(bool)waitForDownloadCompletion {
     if (!(self = [super init])) {
         return self;
@@ -109,20 +109,20 @@ __attribute__((objc_direct_members))
     return self;
 }
 
-- (instancetype)initWithConfiguration:(RLMRealmConfiguration *)configuration
-                           confinedTo:(RLMScheduler *)confinement
+- (instancetype)initWithConfiguration:(LEGACYRealmConfiguration *)configuration
+                           confinedTo:(LEGACYScheduler *)confinement
                              download:(bool)waitForDownloadCompletion
-                           completion:(RLMAsyncOpenRealmCallback)completion {
+                           completion:(LEGACYAsyncOpenRealmCallback)completion {
     self = [self initWithConfiguration:configuration confinedTo:confinement
                               download:waitForDownloadCompletion];
     [self waitForOpen:completion];
     return self;
 }
 
-- (void)waitForOpen:(RLMAsyncOpenRealmCallback)completion {
+- (void)waitForOpen:(LEGACYAsyncOpenRealmCallback)completion {
     __weak auto weakSelf = self;
     [self waitWithCompletion:^(NSError *error) {
-        RLMRealm *realm;
+        LEGACYRealm *realm;
         if (auto self = weakSelf) {
             realm = self->_localRealm;
             self->_localRealm = nil;
@@ -152,11 +152,11 @@ __attribute__((objc_direct_members))
 // 2. Use Realm::get_synchronized_realm() to create the Realm file, run
 //    migrations and compactions, and download the latest data from the server.
 // 3. Dispatch back to queue
-// 4. Initialize a RLMRealm in the background queue to perform the SDK
+// 4. Initialize a LEGACYRealm in the background queue to perform the SDK
 //    initialization (e.g. creating managed accessor classes).
 // 5. Wait for initial flexible sync subscriptions to complete
 // 6. Dispatch to the final scheduler
-// 7. Open the final RLMRealm, release the previously opened background one,
+// 7. Open the final LEGACYRealm, release the previously opened background one,
 //    and then invoke the completion callback.
 //
 // Steps 2 and 5 are skipped for non-sync or non-flexible sync Realms, in which
@@ -206,7 +206,7 @@ __attribute__((objc_direct_members))
             });
         });
 #else
-        @throw RLMException(@"Realm was not built with sync enabled");
+        @throw LEGACYException(@"Realm was not built with sync enabled");
 #endif
     }
     else {
@@ -230,8 +230,8 @@ __attribute__((objc_direct_members))
     @autoreleasepool {
         // Holding onto the Realm so that opening the final Realm on the target
         // scheduler can hit the fast path
-        _backgroundRealm = [RLMRealm realmWithConfiguration:_configuration
-                                                 confinedTo:RLMScheduler.currentRunLoop error:&error];
+        _backgroundRealm = [LEGACYRealm realmWithConfiguration:_configuration
+                                                 confinedTo:LEGACYScheduler.currentRunLoop error:&error];
         if (error) {
             return [self reportError:error];
         }
@@ -242,7 +242,7 @@ __attribute__((objc_direct_members))
     // initial subscriptions to be ready
     if (_waitForDownloadCompletion && _backgroundRealm.isFlexibleSync) {
         auto subscriptions = _backgroundRealm.subscriptions;
-        if (subscriptions.state == RLMSyncSubscriptionStatePending) {
+        if (subscriptions.state == LEGACYSyncSubscriptionStatePending) {
             // FIXME: need cancellation for waiting for the subscription
             return [subscriptions waitForSynchronizationOnQueue:nil
                                                         timeout:0
@@ -281,7 +281,7 @@ __attribute__((objc_direct_members))
         NSError *error;
         auto completion = _completion;
         // It should not actually be possible for this to fail
-        _localRealm = [RLMRealm realmWithConfiguration:_configuration
+        _localRealm = [LEGACYRealm realmWithConfiguration:_configuration
                                             confinedTo:_scheduler
                                                  error:&error];
         [self releaseResources];
@@ -310,7 +310,7 @@ __attribute__((objc_direct_members))
     }
     catch (...) {
         NSError *error;
-        RLMRealmTranslateException(&error);
+        LEGACYRealmTranslateException(&error);
         [self reportError:error];
     }
 }
@@ -336,13 +336,13 @@ __attribute__((objc_direct_members))
 }
 @end
 
-@implementation RLMAsyncDownloadTask {
-    RLMUnfairMutex _mutex;
+@implementation LEGACYAsyncDownloadTask {
+    LEGACYUnfairMutex _mutex;
     std::shared_ptr<realm::SyncSession> _session;
     bool _started;
 }
 
-- (instancetype)initWithRealm:(RLMRealm *)realm {
+- (instancetype)initWithRealm:(LEGACYRealm *)realm {
     if (self = [super init]) {
         _session = realm->_realm->sync_session();
     }
@@ -373,8 +373,8 @@ __attribute__((objc_direct_members))
 @end
 
 __attribute__((objc_direct_members))
-@implementation RLMAsyncRefreshTask {
-    RLMUnfairMutex _mutex;
+@implementation LEGACYAsyncRefreshTask {
+    LEGACYUnfairMutex _mutex;
     void (^_completion)(bool);
     bool _complete;
     bool _didRefresh;
@@ -408,9 +408,9 @@ __attribute__((objc_direct_members))
     completion(didRefresh);
 }
 
-+ (RLMAsyncRefreshTask *)completedRefresh {
-    static RLMAsyncRefreshTask *shared = [] {
-        auto refresh = [[RLMAsyncRefreshTask alloc] init];
++ (LEGACYAsyncRefreshTask *)completedRefresh {
+    static LEGACYAsyncRefreshTask *shared = [] {
+        auto refresh = [[LEGACYAsyncRefreshTask alloc] init];
         refresh->_complete = true;
         refresh->_didRefresh = true;
         return refresh;
@@ -419,27 +419,27 @@ __attribute__((objc_direct_members))
 }
 @end
 
-@implementation RLMAsyncWriteTask {
+@implementation LEGACYAsyncWriteTask {
     // Mutex guards _realm and _completion
-    RLMUnfairMutex _mutex;
+    LEGACYUnfairMutex _mutex;
 
     // _realm is non-nil only while waiting for an async write to begin. It is
     // set to `nil` when it either completes or is cancelled.
-    RLMRealm *_realm;
+    LEGACYRealm *_realm;
     dispatch_block_t _completion;
 
-    RLMAsyncTransactionId _id;
+    LEGACYAsyncTransactionId _id;
 }
 
 // No locking needed for these two as they have to be called before the
 // cancellation handler is set up
-- (instancetype)initWithRealm:(RLMRealm *)realm {
+- (instancetype)initWithRealm:(LEGACYRealm *)realm {
     if (self = [super init]) {
         _realm = realm;
     }
     return self;
 }
-- (void)setTransactionId:(RLMAsyncTransactionId)transactionID {
+- (void)setTransactionId:(LEGACYAsyncTransactionId)transactionID {
     _id = transactionID;
 }
 
@@ -476,10 +476,10 @@ __attribute__((objc_direct_members))
 }
 @end
 
-@implementation RLMAsyncSubscriptionTask {
-    RLMUnfairMutex _mutex;
+@implementation LEGACYAsyncSubscriptionTask {
+    LEGACYUnfairMutex _mutex;
 
-    RLMSyncSubscriptionSet *_subscriptionSet;
+    LEGACYSyncSubscriptionSet *_subscriptionSet;
     dispatch_queue_t _queue;
     NSTimeInterval _timeout;
     void (^_completion)(NSError *);
@@ -487,7 +487,7 @@ __attribute__((objc_direct_members))
     dispatch_block_t _worker;
 }
 
-- (instancetype)initWithSubscriptionSet:(RLMSyncSubscriptionSet *)subscriptionSet
+- (instancetype)initWithSubscriptionSet:(LEGACYSyncSubscriptionSet *)subscriptionSet
                                   queue:(nullable dispatch_queue_t)queue
                                 timeout:(NSTimeInterval)timeout
                              completion:(void(^)(NSError *))completion {

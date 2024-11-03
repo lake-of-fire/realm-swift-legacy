@@ -19,9 +19,9 @@
 #import <Foundation/Foundation.h>
 #import <XCTest/XCTestCase.h>
 
-@class RLMUser;
+@class LEGACYUser;
 
-FOUNDATION_EXTERN void RLMAssertThrowsWithReasonMatchingSwift(XCTestCase *self,
+FOUNDATION_EXTERN void LEGACYAssertThrowsWithReasonMatchingSwift(XCTestCase *self,
                                                               __attribute__((noescape)) dispatch_block_t block,
                                                               NSString *regexString,
                                                               NSString *message,
@@ -30,15 +30,15 @@ FOUNDATION_EXTERN void RLMAssertThrowsWithReasonMatchingSwift(XCTestCase *self,
 
 // Return a fake sync user which can be used to create sync configurations
 // for tests which don't actually need to talk to the server
-FOUNDATION_EXTERN RLMUser *RLMDummyUser(void);
+FOUNDATION_EXTERN LEGACYUser *LEGACYDummyUser(void);
 
-@interface NSUUID (RLMUUIDCompareTests)
+@interface NSUUID (LEGACYUUIDCompareTests)
 - (NSComparisonResult)compare:(NSUUID *)other;
 @end
 
 // It appears to be impossible to check this from Swift so we need a helper function
-FOUNDATION_EXTERN bool RLMThreadSanitizerEnabled(void);
+FOUNDATION_EXTERN bool LEGACYThreadSanitizerEnabled(void);
 
-FOUNDATION_EXTERN bool RLMCanFork(void);
-FOUNDATION_EXTERN pid_t RLMFork(void);
+FOUNDATION_EXTERN bool LEGACYCanFork(void);
+FOUNDATION_EXTERN pid_t LEGACYFork(void);
 

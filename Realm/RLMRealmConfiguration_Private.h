@@ -16,37 +16,37 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMRealmConfiguration.h>
+#import <Realm/LEGACYRealmConfiguration.h>
 
-@class RLMSchema, RLMEventConfiguration;
+@class LEGACYSchema, LEGACYEventConfiguration;
 
-RLM_HEADER_AUDIT_BEGIN(nullability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability)
 
-@interface RLMRealmConfiguration ()
+@interface LEGACYRealmConfiguration ()
 
 @property (nonatomic, readwrite) bool cache;
 @property (nonatomic, readwrite) bool dynamic;
 @property (nonatomic, readwrite) bool disableFormatUpgrade;
-@property (nonatomic, copy, nullable) RLMSchema *customSchema;
+@property (nonatomic, copy, nullable) LEGACYSchema *customSchema;
 @property (nonatomic, copy) NSString *pathOnDisk;
-@property (nonatomic, retain, nullable) RLMEventConfiguration *eventConfiguration;
+@property (nonatomic, retain, nullable) LEGACYEventConfiguration *eventConfiguration;
 @property (nonatomic, nullable) Class migrationObjectClass;
 @property (nonatomic) bool disableAutomaticChangeNotifications;
 
 // Flexible Sync
-@property (nonatomic, readwrite, nullable) RLMFlexibleSyncInitialSubscriptionsBlock initialSubscriptions;
+@property (nonatomic, readwrite, nullable) LEGACYFlexibleSyncInitialSubscriptionsBlock initialSubscriptions;
 @property (nonatomic, readwrite) BOOL rerunOnOpen;
 
 // Get the default configuration without copying it
-+ (RLMRealmConfiguration *)rawDefaultConfiguration;
++ (LEGACYRealmConfiguration *)rawDefaultConfiguration;
 
 + (void)resetRealmConfigurationState;
 
-- (void)setCustomSchemaWithoutCopying:(nullable RLMSchema *)schema;
+- (void)setCustomSchemaWithoutCopying:(nullable LEGACYSchema *)schema;
 @end
 
 // Get a path in the platform-appropriate documents directory with the given filename
-FOUNDATION_EXTERN NSString *RLMRealmPathForFile(NSString *fileName);
-FOUNDATION_EXTERN NSString *RLMRealmPathForFileAndBundleIdentifier(NSString *fileName, NSString *mainBundleIdentifier);
+FOUNDATION_EXTERN NSString *LEGACYRealmPathForFile(NSString *fileName);
+FOUNDATION_EXTERN NSString *LEGACYRealmPathForFileAndBundleIdentifier(NSString *fileName, NSString *mainBundleIdentifier);
 
-RLM_HEADER_AUDIT_END(nullability)
+LEGACY_HEADER_AUDIT_END(nullability)

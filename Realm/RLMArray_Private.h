@@ -16,18 +16,18 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMArray.h>
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYArray.h>
+#import <Realm/LEGACYConstants.h>
 
-@class RLMObjectBase, RLMProperty;
+@class LEGACYObjectBase, LEGACYProperty;
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@interface RLMArray ()
+@interface LEGACYArray ()
 - (instancetype)initWithObjectClassName:(NSString *)objectClassName;
-- (instancetype)initWithObjectType:(RLMPropertyType)type optional:(BOOL)optional;
+- (instancetype)initWithObjectType:(LEGACYPropertyType)type optional:(BOOL)optional;
 - (NSString *)descriptionWithMaxDepth:(NSUInteger)depth;
-- (void)setParent:(RLMObjectBase *)parentObject property:(RLMProperty *)property;
+- (void)setParent:(LEGACYObjectBase *)parentObject property:(LEGACYProperty *)property;
 - (void)replaceAllObjectsWithObjects:(NSArray *)objects;
 // YES if the property is declared with old property syntax.
 @property (nonatomic, readonly) BOOL isLegacyProperty;
@@ -35,10 +35,10 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 @property (nonatomic, readonly) NSString *propertyKey;
 @end
 
-@interface RLMManagedArray : RLMArray
-- (instancetype)initWithParent:(RLMObjectBase *)parentObject property:(RLMProperty *)property;
+@interface LEGACYManagedArray : LEGACYArray
+- (instancetype)initWithParent:(LEGACYObjectBase *)parentObject property:(LEGACYProperty *)property;
 @end
 
-void RLMArrayValidateMatchingObjectType(RLMArray *array, id value);
+void LEGACYArrayValidateMatchingObjectType(LEGACYArray *array, id value);
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

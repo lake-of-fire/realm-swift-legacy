@@ -16,20 +16,20 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMObjectSchema_Private.h"
+#import "LEGACYObjectSchema_Private.h"
 
 #import <string>
 
 namespace realm {
     class ObjectSchema;
 }
-@class RLMSchema;
+@class LEGACYSchema;
 
-@interface RLMObjectSchema ()
+@interface LEGACYObjectSchema ()
 - (std::string const&)objectStoreName;
 
 // create realm::ObjectSchema copy
-- (realm::ObjectSchema)objectStoreCopy:(RLMSchema *)schema;
+- (realm::ObjectSchema)objectStoreCopy:(LEGACYSchema *)schema;
 
 // initialize with realm::ObjectSchema
 + (instancetype)objectSchemaForObjectStoreSchema:(realm::ObjectSchema const&)objectSchema;

@@ -16,31 +16,31 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMCollection.h>
+#import <Realm/LEGACYCollection.h>
 
-@class RLMObjectBase, RLMResults, RLMProperty, RLMLinkingObjects;
+@class LEGACYObjectBase, LEGACYResults, LEGACYProperty, LEGACYLinkingObjects;
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@interface RLMSwiftCollectionBase : NSProxy <NSFastEnumeration>
-@property (nonatomic, strong) id<RLMCollection> _rlmCollection;
+@interface LEGACYSwiftCollectionBase : NSProxy <NSFastEnumeration>
+@property (nonatomic, strong) id<LEGACYCollection> _rlmCollection;
 
 - (instancetype)init;
 + (Class)_backingCollectionType;
-- (instancetype)initWithCollection:(id<RLMCollection>)collection;
+- (instancetype)initWithCollection:(id<LEGACYCollection>)collection;
 
 - (nullable id)valueForKey:(NSString *)key;
 - (nullable id)valueForKeyPath:(NSString *)keyPath;
 - (BOOL)isEqual:(nullable id)object;
 @end
 
-@interface RLMLinkingObjectsHandle : NSObject
-- (instancetype)initWithObject:(RLMObjectBase *)object property:(RLMProperty *)property;
-- (instancetype)initWithLinkingObjects:(RLMResults *)linkingObjects;
+@interface LEGACYLinkingObjectsHandle : NSObject
+- (instancetype)initWithObject:(LEGACYObjectBase *)object property:(LEGACYProperty *)property;
+- (instancetype)initWithLinkingObjects:(LEGACYResults *)linkingObjects;
 
-@property (nonatomic, readonly) RLMLinkingObjects *results;
+@property (nonatomic, readonly) LEGACYLinkingObjects *results;
 @property (nonatomic, readonly) NSString *_propertyKey;
 @property (nonatomic, readonly) BOOL _isLegacyProperty;
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

@@ -16,9 +16,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMSyncManager.h>
+#import <Realm/LEGACYSyncManager.h>
 
-#import "RLMNetworkTransport.h"
+#import "LEGACYNetworkTransport.h"
 #import <realm/object-store/sync/sync_manager.hpp>
 
 namespace realm {
@@ -32,11 +32,11 @@ class Logger;
 }
 }
 
-@class RLMAppConfiguration, RLMUser, RLMSyncConfiguration;
+@class LEGACYAppConfiguration, LEGACYUser, LEGACYSyncConfiguration;
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@interface RLMSyncManager ()
+@interface LEGACYSyncManager ()
 - (std::weak_ptr<realm::app::App>)app;
 - (std::shared_ptr<realm::SyncManager>)syncManager;
 - (instancetype)initWithSyncManager:(std::shared_ptr<realm::SyncManager>)syncManager;
@@ -46,14 +46,14 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 - (void)populateConfig:(realm::SyncConfig&)config;
 @end
 
-RLM_DIRECT_MEMBERS
-@interface RLMSyncTimeoutOptions () {
+LEGACY_DIRECT_MEMBERS
+@interface LEGACYSyncTimeoutOptions () {
     @public
     realm::SyncClientTimeouts _options;
 }
 - (instancetype)initWithOptions:(realm::SyncClientTimeouts)options;
 @end
 
-std::shared_ptr<realm::util::Logger> RLMWrapLogFunction(RLMSyncLogFunction);
+std::shared_ptr<realm::util::Logger> LEGACYWrapLogFunction(LEGACYSyncLogFunction);
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

@@ -81,7 +81,7 @@ extension EmbeddedObject: _RealmCollectionValueInsideOptional {
      */
     public convenience init(value: Any) {
         self.init()
-        RLMInitializeWithValue(self, value, .partialPrivateShared())
+        LEGACYInitializeWithValue(self, value, .partialPrivateShared())
     }
 
 
@@ -89,7 +89,7 @@ extension EmbeddedObject: _RealmCollectionValueInsideOptional {
 
     /// The Realm which manages the object, or `nil` if the object is unmanaged.
     public var realm: RealmLegacy? {
-        if let rlmReam = RLMObjectBaseRealm(self) {
+        if let rlmReam = LEGACYObjectBaseRealm(self) {
             return RealmLegacy(rlmReam)
         }
         return nil
@@ -97,7 +97,7 @@ extension EmbeddedObject: _RealmCollectionValueInsideOptional {
 
     /// The object schema which lists the managed properties for the object.
     public var objectSchema: ObjectSchema {
-        return ObjectSchema(RLMObjectBaseObjectSchema(self)!)
+        return ObjectSchema(LEGACYObjectBaseObjectSchema(self)!)
     }
 
     /// Indicates if the object can no longer be accessed because it is now invalid.
@@ -114,7 +114,7 @@ extension EmbeddedObject: _RealmCollectionValueInsideOptional {
      It is not considered part of the public API.
      :nodoc:
      */
-    public override final class func _getProperties() -> [RLMProperty] {
+    public override final class func _getProperties() -> [LEGACYProperty] {
         return ObjectUtil.getSwiftProperties(self)
     }
 
@@ -167,7 +167,7 @@ extension EmbeddedObject: _RealmCollectionValueInsideOptional {
     /// Returns or sets the value of the property with the given name.
     @objc open subscript(key: String) -> Any? {
         get {
-            return RLMDynamicGetByName(self, key)
+            return LEGACYDynamicGetByName(self, key)
         }
         set {
             dynamicSet(object: self, key: key, value: newValue)
@@ -212,7 +212,7 @@ extension EmbeddedObject: _RealmCollectionValueInsideOptional {
      - parameter block: The block to call with information about changes to the object.
      - returns: A token which must be held for as long as you want updates to be delivered.
      */
-    public func observe<T: RLMObjectBase>(on queue: DispatchQueue? = nil,
+    public func observe<T: LEGACYObjectBase>(on queue: DispatchQueue? = nil,
                                           _ block: @escaping (ObjectChange<T>) -> Void) -> NotificationToken {
         return _observe(on: queue, block)
     }
@@ -321,8 +321,8 @@ extension EmbeddedObject: _RealmCollectionValueInsideOptional {
      :nodoc:
      */
     public func dynamicList(_ propertyName: String) -> List<DynamicObject> {
-        let list = RLMDynamicGetByName(self, propertyName) as! RLMSwiftCollectionBase
-        return List<DynamicObject>(collection: list._rlmCollection as! RLMArray<AnyObject>)
+        let list = LEGACYDynamicGetByName(self, propertyName) as! LEGACYSwiftCollectionBase
+        return List<DynamicObject>(collection: list._rlmCollection as! LEGACYArray<AnyObject>)
     }
 
     // MARK: Comparison
@@ -342,7 +342,7 @@ extension EmbeddedObject: _RealmCollectionValueInsideOptional {
      - parameter object: The object to compare the receiver to.
      */
     public func isSameObject(as object: EmbeddedObject?) -> Bool {
-        return RLMObjectBaseAreEqual(self, object)
+        return LEGACYObjectBaseAreEqual(self, object)
     }
 }
 

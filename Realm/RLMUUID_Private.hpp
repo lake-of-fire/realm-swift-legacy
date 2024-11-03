@@ -16,17 +16,17 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMProperty.h"
+#import "LEGACYProperty.h"
 
 namespace realm {
 class UUID;
 }
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@interface NSUUID (RLMUUIDSupport) <RLMUUID>
+@interface NSUUID (LEGACYUUIDSupport) <LEGACYUUID>
 - (instancetype)initWithRealmUUID:(realm::UUID)uuidValue;
 - (realm::UUID)rlm_uuidValue;
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

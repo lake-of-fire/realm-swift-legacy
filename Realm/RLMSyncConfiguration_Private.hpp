@@ -16,7 +16,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSyncConfiguration_Private.h"
+#import "LEGACYSyncConfiguration_Private.h"
 
 #import <memory>
 
@@ -27,17 +27,17 @@ struct SyncError;
 using SyncSessionErrorHandler = void(std::shared_ptr<SyncSession>, SyncError);
 }
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@interface RLMSyncConfiguration ()
+@interface LEGACYSyncConfiguration ()
 - (instancetype)initWithRawConfig:(realm::SyncConfig)config path:(std::string const&)path;
 - (realm::SyncConfig&)rawConfiguration;
 
-// Pass the RLMRealmConfiguration to it's sync configuration so client reset callbacks
+// Pass the LEGACYRealmConfiguration to it's sync configuration so client reset callbacks
 // can access schema, dynamic, and path properties.
-void RLMSetConfigInfoForClientResetCallbacks(realm::SyncConfig& syncConfig, RLMRealmConfiguration *config);
+void LEGACYSetConfigInfoForClientResetCallbacks(realm::SyncConfig& syncConfig, LEGACYRealmConfiguration *config);
 
 @property (nonatomic, direct) std::string path;
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

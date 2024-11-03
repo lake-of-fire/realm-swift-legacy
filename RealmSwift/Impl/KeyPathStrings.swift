@@ -68,8 +68,8 @@ private func name<T: KeypathRecorder>(for keyPath: PartialKeyPath<T>) -> String 
         names.add(propertyInfo.key)
     }
 
-    if let storage = value as? RLMSwiftValueStorage {
-        names.add(RLMSwiftValueStorageGetPropertyName(storage))
+    if let storage = value as? LEGACYSwiftValueStorage {
+        names.add(LEGACYSwiftValueStorageGetPropertyName(storage))
     }
     return names.componentsJoined(by: ".")
 }
@@ -110,7 +110,7 @@ extension ObjectBase: KeypathRecorder {
     internal static func keyPathRecorder(with lastAccessedNames: NSMutableArray) -> Self {
         let obj = Self()
         obj.lastAccessedNames = lastAccessedNames
-        let objectSchema = ObjectSchema(RLMObjectBaseObjectSchema(obj)!)
+        let objectSchema = ObjectSchema(LEGACYObjectBaseObjectSchema(obj)!)
         (objectSchema.rlmObjectSchema.properties + objectSchema.rlmObjectSchema.computedProperties)
             .map { (prop: $0, accessor: $0.swiftAccessor) }
             .forEach { $0.accessor?.observe($0.prop, on: obj) }
@@ -122,7 +122,7 @@ extension Projection: KeypathRecorder {
     internal static func keyPathRecorder(with lastAccessedNames: NSMutableArray) -> Self {
         let obj = Self(projecting: PersistedType())
         obj.rootObject.lastAccessedNames = lastAccessedNames
-        let objectSchema = ObjectSchema(RLMObjectBaseObjectSchema(obj.rootObject)!)
+        let objectSchema = ObjectSchema(LEGACYObjectBaseObjectSchema(obj.rootObject)!)
         (objectSchema.rlmObjectSchema.properties + objectSchema.rlmObjectSchema.computedProperties)
             .map { (prop: $0, accessor: $0.swiftAccessor) }
             .forEach { $0.accessor?.observe($0.prop, on: obj.rootObject) }

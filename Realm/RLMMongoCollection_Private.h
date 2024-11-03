@@ -16,22 +16,22 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMMongoCollection.h>
+#import <Realm/LEGACYMongoCollection.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability)
 
-@class RLMUser;
+@class LEGACYUser;
 
-@interface RLMMongoCollection ()
-- (instancetype)initWithUser:(RLMUser *)user
+@interface LEGACYMongoCollection ()
+- (instancetype)initWithUser:(LEGACYUser *)user
                  serviceName:(NSString *)serviceName
                 databaseName:(NSString *)databaseName
               collectionName:(NSString *)collectionName;
 
-- (RLMChangeStream *)watchWithMatchFilter:(nullable id<RLMBSON>)matchFilter
-                                 idFilter:(nullable id<RLMBSON>)idFilter
-                                 delegate:(id<RLMChangeEventDelegate>)delegate
+- (LEGACYChangeStream *)watchWithMatchFilter:(nullable id<LEGACYBSON>)matchFilter
+                                 idFilter:(nullable id<LEGACYBSON>)idFilter
+                                 delegate:(id<LEGACYChangeEventDelegate>)delegate
                                 scheduler:(void (^)(dispatch_block_t))scheduler;
 @end
 
-RLM_HEADER_AUDIT_END(nullability)
+LEGACY_HEADER_AUDIT_END(nullability)

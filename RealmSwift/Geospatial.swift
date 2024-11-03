@@ -59,14 +59,14 @@ import RealmLegacy
  - warning: This structure cannot be persisted and can only be used to build other geospatial shapes
    such as (`GeoBox`, `GeoPolygon` and `GeoCircle`).
  */
-public typealias GeoPoint = RLMGeospatialPoint
+public typealias GeoPoint = LEGACYGeospatialPoint
 
 /**
  A class that represents a rectangle, that can be used in a geospatial `geoWithin`query.
 
  - warning: This class cannot be persisted and can only be use within a geospatial `geoWithin` query.
  */
-public typealias GeoBox = RLMGeospatialBox
+public typealias GeoBox = LEGACYGeospatialBox
 
 public extension GeoBox {
     /// Initialize a `GeoBox`, with values for bottom left corner and top right corner.
@@ -104,7 +104,7 @@ public extension GeoBox {
 
  - warning: Altitude is not used in any of the query calculations.
  */
-public typealias GeoPolygon = RLMGeospatialPolygon
+public typealias GeoPolygon = LEGACYGeospatialPolygon
 
 public extension GeoPolygon {
     /// Initialize a `GeoPolygon`, with values for bottom left corner and top right corner.
@@ -142,14 +142,14 @@ public extension GeoPolygon {
 
  - warning: This structure cannot be persisted and can only be used to build other geospatial shapes
  */
-public typealias Distance = RLMDistance
+public typealias Distance = LEGACYDistance
 
 /**
  A class that represents a circle, that can be used in a geospatial `geoWithin`query.
 
  - warning: This class cannot be persisted and can only be use within a geospatial `geoWithin` query.
  */
-public typealias GeoCircle = RLMGeospatialCircle
+public typealias GeoCircle = LEGACYGeospatialCircle
 
 public extension GeoCircle {
     /// Initialize a `GeoCircle`, from its center and radius in radians.

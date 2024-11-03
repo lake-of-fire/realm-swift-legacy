@@ -27,7 +27,7 @@
 
 @implementation AppDelegate
 
-static RLMApp *app;
+static LEGACYApp *app;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -38,15 +38,15 @@ static RLMApp *app;
     self.window.rootViewController = [[UIViewController alloc] init];
 
 
-    app = [RLMApp appWithId:@"realm-draw"];
+    app = [LEGACYApp appWithId:@"realm-draw"];
 
     // Setup Error Handler
-    [app syncManager].errorHandler = ^(NSError *error, RLMSyncSession *session) {
+    [app syncManager].errorHandler = ^(NSError *error, LEGACYSyncSession *session) {
         NSLog(@"A global error has occurred! %@", error);
     };
 
     if (app.currentUser) {
-        RLMRealmConfiguration.defaultConfiguration = [app.currentUser configurationWithPartitionValue:@"foo"];
+        LEGACYRealmConfiguration.defaultConfiguration = [app.currentUser configurationWithPartitionValue:@"foo"];
         self.window.rootViewController.view = [DrawView new];
     }
     else {
@@ -65,12 +65,12 @@ static RLMApp *app;
 
     // Creating a debug credential since this demo is just using the generated access token
     // produced when running the Realm Object Server via the `start-object-server.command`
-    RLMCredentials *credential = [RLMCredentials credentialsWithEmail:@"demo@realm.io"
+    LEGACYCredentials *credential = [LEGACYCredentials credentialsWithEmail:@"demo@realm.io"
                                                              password:@"password"];
 
     // Log the user in (async, the Realm will start syncing once the user is logged in automatically)
     [app loginWithCredential:credential
-                  completion:^(RLMUser *user, NSError *error) {
+                  completion:^(LEGACYUser *user, NSError *error) {
         if (error) {
             self.activityIndicatorView.hidden = YES;
             UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Login Failed" message:error.localizedDescription preferredStyle:UIAlertControllerStyleAlert];
@@ -81,7 +81,7 @@ static RLMApp *app;
             [self.window.rootViewController presentViewController:alertController animated:YES completion:nil];
         }
         else { // Logged in setup the default Realm
-            RLMRealmConfiguration.defaultConfiguration = [app.currentUser configurationWithPartitionValue:@"foo"];
+            LEGACYRealmConfiguration.defaultConfiguration = [app.currentUser configurationWithPartitionValue:@"foo"];
 
             self.window.rootViewController.view = [DrawView new];
         }

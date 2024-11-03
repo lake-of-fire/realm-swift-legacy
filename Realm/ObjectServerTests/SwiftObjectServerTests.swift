@@ -40,7 +40,7 @@ func assertAppError(_ error: AppError, _ code: AppError.Code, _ message: String,
 func assertSyncError(_ error: Error, _ code: SyncError.Code, _ message: String,
                      line: UInt = #line, file: StaticString = #file) {
     let e = error as NSError
-    XCTAssertEqual(e.domain, RLMSyncErrorDomain, file: file, line: line)
+    XCTAssertEqual(e.domain, LEGACYSyncErrorDomain, file: file, line: line)
     XCTAssertEqual(e.code, code.rawValue, file: file, line: line)
     XCTAssertEqual(e.localizedDescription, message, file: file, line: line)
 }
@@ -378,7 +378,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
 
         tokenDownload!.invalidate()
         tokenUpload!.invalidate()
-        RLMSyncSession.notificationsQueue().sync { }
+        LEGACYSyncSession.notificationsQueue().sync { }
 
         XCTAssertGreaterThan(downloadCount.wrappedValue, 1)
         XCTAssertGreaterThan(uploadCount.wrappedValue, 1)
@@ -430,10 +430,10 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
             }
             return 0
         }
-        XCTAssertFalse(RLMHasCachedRealmForPath(pathOnDisk))
+        XCTAssertFalse(LEGACYHasCachedRealmForPath(pathOnDisk))
         waitForExpectations(timeout: 10.0, handler: nil)
         XCTAssertGreaterThan(fileSize(path: pathOnDisk), 0)
-        XCTAssertFalse(RLMHasCachedRealmForPath(pathOnDisk))
+        XCTAssertFalse(LEGACYHasCachedRealmForPath(pathOnDisk))
     }
 
     func testDownloadRealmToCustomPath() throws {
@@ -460,10 +460,10 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
             }
             return 0
         }
-        XCTAssertFalse(RLMHasCachedRealmForPath(pathOnDisk))
+        XCTAssertFalse(LEGACYHasCachedRealmForPath(pathOnDisk))
         waitForExpectations(timeout: 10.0, handler: nil)
         XCTAssertGreaterThan(fileSize(path: pathOnDisk), 0)
-        XCTAssertFalse(RLMHasCachedRealmForPath(pathOnDisk))
+        XCTAssertFalse(LEGACYHasCachedRealmForPath(pathOnDisk))
     }
 
     func testCancelDownloadRealm() throws {
@@ -472,7 +472,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
         // Use a serial queue for asyncOpen to ensure that the first one adds
         // the completion block before the second one cancels it
         let queue = DispatchQueue(label: "io.realm.asyncOpen")
-        RLMSetAsyncOpenQueue(queue)
+        LEGACYSetAsyncOpenQueue(queue)
 
         let ex = expectation(description: "async open")
         ex.expectedFulfillmentCount = 2
@@ -510,7 +510,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
         waitForExpectations(timeout: 10.0, handler: nil)
     }
 
-    func config(baseURL: String, transport: RLMNetworkTransport, syncTimeouts: SyncTimeoutOptions? = nil) throws -> RealmLegacy.Configuration {
+    func config(baseURL: String, transport: LEGACYNetworkTransport, syncTimeouts: SyncTimeoutOptions? = nil) throws -> RealmLegacy.Configuration {
         let appId = try RealmServer.shared.createApp(types: [])
         let appConfig = AppConfiguration(baseURL: baseURL, transport: transport, syncTimeouts: syncTimeouts)
         let app = App(id: appId, configuration: appConfig)
@@ -568,7 +568,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
         proxy.stop()
     }
 
-    class LocationOverrideTransport: RLMNetworkTransport {
+    class LocationOverrideTransport: LEGACYNetworkTransport {
         let hostname: String
         let wsHostname: String
         init(hostname: String = "http://localhost:9090", wsHostname: String = "ws://invalid.com:9090") {
@@ -576,9 +576,9 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
             self.wsHostname = wsHostname
         }
 
-        override func sendRequest(toServer request: RLMRequest, completion: @escaping RLMNetworkTransportCompletionBlock) {
+        override func sendRequest(toServer request: LEGACYRequest, completion: @escaping LEGACYNetworkTransportCompletionBlock) {
             if request.url.hasSuffix("location") {
-                let response = RLMResponse()
+                let response = LEGACYResponse()
                 response.httpStatusCode = 200
                 response.body = "{\"deployment_model\":\"GLOBAL\",\"location\":\"US-VA\",\"hostname\":\"\(hostname)\",\"ws_hostname\":\"\(wsHostname)\"}"
                 completion(response)
@@ -604,31 +604,31 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
 
     func testAppCredentialSupport() {
         XCTAssertEqual(ObjectiveCSupport.convert(object: Credentials.facebook(accessToken: "accessToken")),
-                       RLMCredentials(facebookToken: "accessToken"))
+                       LEGACYCredentials(facebookToken: "accessToken"))
 
         XCTAssertEqual(ObjectiveCSupport.convert(object: Credentials.google(serverAuthCode: "serverAuthCode")),
-                       RLMCredentials(googleAuthCode: "serverAuthCode"))
+                       LEGACYCredentials(googleAuthCode: "serverAuthCode"))
 
         XCTAssertEqual(ObjectiveCSupport.convert(object: Credentials.apple(idToken: "idToken")),
-                       RLMCredentials(appleToken: "idToken"))
+                       LEGACYCredentials(appleToken: "idToken"))
 
         XCTAssertEqual(ObjectiveCSupport.convert(object: Credentials.emailPassword(email: "email", password: "password")),
-                       RLMCredentials(email: "email", password: "password"))
+                       LEGACYCredentials(email: "email", password: "password"))
 
         XCTAssertEqual(ObjectiveCSupport.convert(object: Credentials.jwt(token: "token")),
-                       RLMCredentials(jwt: "token"))
+                       LEGACYCredentials(jwt: "token"))
 
         XCTAssertEqual(ObjectiveCSupport.convert(object: Credentials.function(payload: ["dog": ["name": "fido"]])),
-                       RLMCredentials(functionPayload: ["dog": ["name" as NSString: "fido" as NSString] as NSDictionary]))
+                       LEGACYCredentials(functionPayload: ["dog": ["name" as NSString: "fido" as NSString] as NSDictionary]))
 
         XCTAssertEqual(ObjectiveCSupport.convert(object: Credentials.userAPIKey("key")),
-                       RLMCredentials(userAPIKey: "key"))
+                       LEGACYCredentials(userAPIKey: "key"))
 
         XCTAssertEqual(ObjectiveCSupport.convert(object: Credentials.serverAPIKey("key")),
-                       RLMCredentials(serverAPIKey: "key"))
+                       LEGACYCredentials(serverAPIKey: "key"))
 
         XCTAssertEqual(ObjectiveCSupport.convert(object: Credentials.anonymous),
-                       RLMCredentials.anonymous())
+                       LEGACYCredentials.anonymous())
     }
 
     // MARK: - Authentication
@@ -686,7 +686,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
     }
 
     private func realmURLForFile(_ fileName: String) -> URL {
-        let testDir = RLMRealmPathForFile("mongodb-realm")
+        let testDir = LEGACYRealmPathForFile("mongodb-realm")
         let directory = URL(fileURLWithPath: testDir, isDirectory: true)
         return directory.appendingPathComponent(fileName, isDirectory: false)
     }
@@ -930,7 +930,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
 
     func testSeedFilePathOpenLocalToSync() throws {
         var config = RealmLegacy.Configuration()
-        config.fileURL = RLMTestRealmURL()
+        config.fileURL = LEGACYTestRealmURL()
         config.objectTypes = [SwiftHugeSyncObject.self]
         let realm = try RealmLegacy(configuration: config)
         try realm.write {
@@ -939,7 +939,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
             }
         }
 
-        let seedURL = RLMTestRealmURL().deletingLastPathComponent().appendingPathComponent("seed.realm")
+        let seedURL = LEGACYTestRealmURL().deletingLastPathComponent().appendingPathComponent("seed.realm")
         let user = createUser()
         var destinationConfig = user.configuration(partitionValue: name)
         destinationConfig.fileURL = seedURL
@@ -977,9 +977,9 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
         // user2 creates a configuration that will use user1's realm as a seed
         var destinationConfig = try configuration()
         let originalFilePath = destinationConfig.fileURL
-        destinationConfig.seedFilePath = RLMTestRealmURL()
+        destinationConfig.seedFilePath = LEGACYTestRealmURL()
         destinationConfig.objectTypes = [SwiftHugeSyncObject.self]
-        destinationConfig.fileURL = RLMTestRealmURL()
+        destinationConfig.fileURL = LEGACYTestRealmURL()
 
         try realm.writeCopy(configuration: destinationConfig)
 
@@ -998,7 +998,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
     }
 
     func testSeedFilePathOpenSyncToLocal() throws {
-        let seedURL = RLMTestRealmURL().deletingLastPathComponent().appendingPathComponent("seed.realm")
+        let seedURL = LEGACYTestRealmURL().deletingLastPathComponent().appendingPathComponent("seed.realm")
         let user1 = try logInUser(for: basicCredentials())
         var syncConfig = user1.configuration(partitionValue: name)
         syncConfig.objectTypes = [SwiftHugeSyncObject.self]
@@ -1019,7 +1019,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
 
         var localConfig = RealmLegacy.Configuration()
         localConfig.seedFilePath = seedURL
-        localConfig.fileURL = RLMDefaultRealmURL()
+        localConfig.fileURL = LEGACYDefaultRealmURL()
         localConfig.objectTypes = [SwiftHugeSyncObject.self]
         localConfig.schemaVersion = 1
 
@@ -1050,7 +1050,7 @@ class SwiftObjectServerTests: SwiftSyncTestCase {
         // user2 creates a configuration that will use user1's realm as a seed
         var destinationConfig = try configuration()
         destinationConfig.objectTypes = [SwiftHugeSyncObject.self]
-        destinationConfig.fileURL = RLMTestRealmURL()
+        destinationConfig.fileURL = LEGACYTestRealmURL()
         try syncedRealm.writeCopy(configuration: destinationConfig)
 
         // Open the realm and immediately check data

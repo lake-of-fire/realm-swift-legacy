@@ -16,15 +16,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMEmailPasswordAuth.h"
+#import "LEGACYEmailPasswordAuth.h"
 
-#import "RLMApp_Private.hpp"
-#import "RLMBSON_Private.hpp"
-#import "RLMProviderClient_Private.hpp"
+#import "LEGACYApp_Private.hpp"
+#import "LEGACYBSON_Private.hpp"
+#import "LEGACYProviderClient_Private.hpp"
 
 #import <realm/object-store/sync/app.hpp>
 
-@implementation RLMEmailPasswordAuth
+@implementation LEGACYEmailPasswordAuth
 
 - (realm::app::App::UsernamePasswordProviderClient)client {
     return self.app._realmApp->provider_client<realm::app::App::UsernamePasswordProviderClient>();
@@ -32,47 +32,47 @@
 
 - (void)registerUserWithEmail:(NSString *)email
                      password:(NSString *)password
-                   completion:(RLMEmailPasswordAuthOptionalErrorBlock)completion {
-    self.client.register_email(email.UTF8String, password.UTF8String, RLMWrapCompletion(completion));
+                   completion:(LEGACYEmailPasswordAuthOptionalErrorBlock)completion {
+    self.client.register_email(email.UTF8String, password.UTF8String, LEGACYWrapCompletion(completion));
 }
 
 - (void)confirmUser:(NSString *)token
             tokenId:(NSString *)tokenId
-         completion:(RLMEmailPasswordAuthOptionalErrorBlock)completion {
-    self.client.confirm_user(token.UTF8String, tokenId.UTF8String, RLMWrapCompletion(completion));
+         completion:(LEGACYEmailPasswordAuthOptionalErrorBlock)completion {
+    self.client.confirm_user(token.UTF8String, tokenId.UTF8String, LEGACYWrapCompletion(completion));
 }
 
 - (void)retryCustomConfirmation:(NSString *)email
-                     completion:(RLMEmailPasswordAuthOptionalErrorBlock)completion {
-    self.client.retry_custom_confirmation(email.UTF8String, RLMWrapCompletion(completion));
+                     completion:(LEGACYEmailPasswordAuthOptionalErrorBlock)completion {
+    self.client.retry_custom_confirmation(email.UTF8String, LEGACYWrapCompletion(completion));
 }
 
 - (void)resendConfirmationEmail:(NSString *)email
-                     completion:(RLMEmailPasswordAuthOptionalErrorBlock)completion {
-    self.client.resend_confirmation_email(email.UTF8String, RLMWrapCompletion(completion));
+                     completion:(LEGACYEmailPasswordAuthOptionalErrorBlock)completion {
+    self.client.resend_confirmation_email(email.UTF8String, LEGACYWrapCompletion(completion));
 }
 
 - (void)sendResetPasswordEmail:(NSString *)email
-                    completion:(RLMEmailPasswordAuthOptionalErrorBlock)completion {
-    self.client.send_reset_password_email(email.UTF8String, RLMWrapCompletion(completion));
+                    completion:(LEGACYEmailPasswordAuthOptionalErrorBlock)completion {
+    self.client.send_reset_password_email(email.UTF8String, LEGACYWrapCompletion(completion));
 }
 
 - (void)resetPasswordTo:(NSString *)password
                   token:(NSString *)token
                 tokenId:(NSString *)tokenId
-             completion:(RLMEmailPasswordAuthOptionalErrorBlock)completion {
+             completion:(LEGACYEmailPasswordAuthOptionalErrorBlock)completion {
     self.client.reset_password(password.UTF8String, token.UTF8String, tokenId.UTF8String,
-                               RLMWrapCompletion(completion));
+                               LEGACYWrapCompletion(completion));
 }
 
 - (void)callResetPasswordFunction:(NSString *)email
                          password:(NSString *)password
-                             args:(NSArray<id<RLMBSON>> *)args
-                       completion:(RLMEmailPasswordAuthOptionalErrorBlock)completion {
+                             args:(NSArray<id<LEGACYBSON>> *)args
+                       completion:(LEGACYEmailPasswordAuthOptionalErrorBlock)completion {
     self.client.call_reset_password_function(email.UTF8String,
                                              password.UTF8String,
-                                             static_cast<realm::bson::BsonArray>(RLMConvertRLMBSONToBson(args)),
-                                             RLMWrapCompletion(completion));
+                                             static_cast<realm::bson::BsonArray>(LEGACYConvertRLMBSONToBson(args)),
+                                             LEGACYWrapCompletion(completion));
 }
 
 @end

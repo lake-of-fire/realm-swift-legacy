@@ -22,7 +22,7 @@ import RealmLegacy.Private
 
 /// :nodoc:
 public protocol _MapKey: Hashable, _ObjcBridgeable {
-    static var _rlmType: RLMPropertyType { get }
+    static var _rlmType: LEGACYPropertyType { get }
 }
 extension String: _MapKey { }
 
@@ -42,7 +42,7 @@ extension String: _MapKey { }
  
  A Map can be filtered and sorted with the same predicates as `Results<Value>`.
 */
-public final class Map<Key: _MapKey, Value: RealmCollectionValue>: RLMSwiftCollectionBase {
+public final class Map<Key: _MapKey, Value: RealmCollectionValue>: LEGACYSwiftCollectionBase {
 
     // MARK: Properties
 
@@ -74,10 +74,10 @@ public final class Map<Key: _MapKey, Value: RealmCollectionValue>: RLMSwiftColle
         super.init()
     }
     /// :nodoc:
-    public override init(collection: RLMCollection) {
+    public override init(collection: LEGACYCollection) {
         super.init(collection: collection)
     }
-    internal init(objc rlmDictionary: RLMDictionary<AnyObject, AnyObject>) {
+    internal init(objc rlmDictionary: LEGACYDictionary<AnyObject, AnyObject>) {
         super.init(collection: rlmDictionary)
     }
 
@@ -511,7 +511,7 @@ public final class Map<Key: _MapKey, Value: RealmCollectionValue>: RLMSwiftColle
                         _ block: @escaping (RealmMapChange<Map>) -> Void)
     -> NotificationToken {
         var col: Map?
-        let wrapped = { (collection: RLMDictionary<AnyObject, AnyObject>?, change: RLMDictionaryChange?, error: Error?) in
+        let wrapped = { (collection: LEGACYDictionary<AnyObject, AnyObject>?, change: LEGACYDictionaryChange?, error: Error?) in
             if col == nil, let collection = collection {
                 col = collection === self._rlmCollection ? self : Self(objc: collection)
             }
@@ -727,7 +727,7 @@ public final class Map<Key: _MapKey, Value: RealmCollectionValue>: RLMSwiftColle
      - warning: This method may only be called on a managed `Map`.
      - warning: Holding onto a frozen `Map` for an extended period while performing
                 write transaction on the Realm may result in the Realm file growing
-                to large sizes. See `RLMRealmConfiguration.maximumNumberOfActiveVersions`
+                to large sizes. See `LEGACYRealmConfiguration.maximumNumberOfActiveVersions`
                 for more information.
      */
     public func freeze() -> Map {
@@ -744,34 +744,34 @@ public final class Map<Key: _MapKey, Value: RealmCollectionValue>: RLMSwiftColle
         return Map(objc: rlmDictionary.thaw())
     }
 
-    @objc class func _unmanagedCollection() -> RLMDictionary<AnyObject, AnyObject> {
+    @objc class func _unmanagedCollection() -> LEGACYDictionary<AnyObject, AnyObject> {
         if let type = Value.self as? HasClassName.Type ?? Value.PersistedType.self as? HasClassName.Type {
-            return RLMDictionary(objectClassName: type.className(), keyType: Key._rlmType)
+            return LEGACYDictionary(objectClassName: type.className(), keyType: Key._rlmType)
         }
         if let type = Value.self as? _RealmSchemaDiscoverable.Type {
-            return RLMDictionary(objectType: type._rlmType, optional: type._rlmOptional, keyType: Key._rlmType)
+            return LEGACYDictionary(objectType: type._rlmType, optional: type._rlmOptional, keyType: Key._rlmType)
         }
         fatalError("Collections of projections must be used with @Projected.")
     }
 
     /// :nodoc:
     @objc public override class func _backingCollectionType() -> AnyClass {
-        return RLMManagedDictionary.self
+        return LEGACYManagedDictionary.self
     }
 
     /**
      Returns a human-readable description of the objects contained in the Map.
      */
     @objc public override var description: String {
-        return descriptionWithMaxDepth(RLMDescriptionMaxDepth)
+        return descriptionWithMaxDepth(LEGACYDescriptionMaxDepth)
     }
 
     @objc private func descriptionWithMaxDepth(_ depth: UInt) -> String {
-        return RLMDictionaryDescriptionWithMaxDepth("Map", rlmDictionary, depth)
+        return LEGACYDictionaryDescriptionWithMaxDepth("Map", rlmDictionary, depth)
     }
 
-    internal var rlmDictionary: RLMDictionary<AnyObject, AnyObject> {
-        _rlmCollection as! RLMDictionary
+    internal var rlmDictionary: LEGACYDictionary<AnyObject, AnyObject> {
+        _rlmCollection as! LEGACYDictionary
     }
 
     private func objcKey(from swiftKey: Key) -> AnyObject {
@@ -804,9 +804,9 @@ extension Map: Encodable where Key: Encodable, Value: Encodable {
 
 extension Map: Sequence {
     // NEXT-MAJOR: change this to KeyValueSequence
-    /// Returns a `RLMMapIterator` that yields successive elements in the `Map`.
-    public func makeIterator() -> RLMMapIterator<SingleMapEntry<Key, Value>> {
-        return RLMMapIterator(collection: rlmDictionary)
+    /// Returns a `LEGACYMapIterator` that yields successive elements in the `Map`.
+    public func makeIterator() -> LEGACYMapIterator<SingleMapEntry<Key, Value>> {
+        return LEGACYMapIterator(collection: rlmDictionary)
     }
 }
 
@@ -818,8 +818,8 @@ extension Map {
             self.map = map
         }
 
-        public func makeIterator() -> RLMKeyValueIterator<Key, Value> {
-            return RLMKeyValueIterator<Key, Value>(collection: map.rlmDictionary)
+        public func makeIterator() -> LEGACYKeyValueIterator<Key, Value> {
+            return LEGACYKeyValueIterator<Key, Value>(collection: map.rlmDictionary)
         }
     }
 
@@ -862,7 +862,7 @@ extension Map {
      */
     case error(Error)
 
-    static func fromObjc(value: Collection?, change: RLMDictionaryChange?, error: Error?) -> RealmMapChange {
+    static func fromObjc(value: Collection?, change: LEGACYDictionaryChange?, error: Error?) -> RealmMapChange {
         if let error = error {
             return .error(error)
         }

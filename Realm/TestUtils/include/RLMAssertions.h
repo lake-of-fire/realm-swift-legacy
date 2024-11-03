@@ -19,57 +19,57 @@
 #import <XCTest/XCTest.h>
 
 #if !TARGET_OS_IOS || __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_14_0
-#define RLMConstantInt "NSConstantIntegerNumber"
-#define RLMConstantDouble "NSConstantDoubleNumber"
-#define RLMConstantFloat "NSConstantFloatNumber"
-#define RLMConstantString "__NSCFConstantString"
+#define LEGACYConstantInt "NSConstantIntegerNumber"
+#define LEGACYConstantDouble "NSConstantDoubleNumber"
+#define LEGACYConstantFloat "NSConstantFloatNumber"
+#define LEGACYConstantString "__NSCFConstantString"
 #else
-#define RLMConstantInt "__NSCFNumber"
-#define RLMConstantDouble "__NSCFNumber"
-#define RLMConstantFloat "__NSCFNumber"
-#define RLMConstantString "__NSCFConstantString"
+#define LEGACYConstantInt "__NSCFNumber"
+#define LEGACYConstantDouble "__NSCFNumber"
+#define LEGACYConstantFloat "__NSCFNumber"
+#define LEGACYConstantString "__NSCFConstantString"
 #endif
 
 FOUNDATION_EXTERN
-void RLMAssertThrowsWithReasonMatchingSwift(XCTestCase *self,
+void LEGACYAssertThrowsWithReasonMatchingSwift(XCTestCase *self,
                                             __attribute__((noescape)) dispatch_block_t block,
                                             NSString *regexString, NSString *message,
                                             NSString *fileName, NSUInteger lineNumber);
 
 FOUNDATION_EXTERN
-void RLMAssertThrowsWithName(XCTestCase *self, __attribute__((noescape)) dispatch_block_t block,
+void LEGACYAssertThrowsWithName(XCTestCase *self, __attribute__((noescape)) dispatch_block_t block,
                              NSString *name, NSString *message, NSString *fileName,
                              NSUInteger lineNumber);
 
 
 FOUNDATION_EXTERN
-void RLMAssertThrowsWithReasonMatching(XCTestCase *self,
+void LEGACYAssertThrowsWithReasonMatching(XCTestCase *self,
                                        __attribute__((noescape)) dispatch_block_t block,
                                        NSString *regexString, NSString *message,
                                        NSString *fileName, NSUInteger lineNumber);
 
 FOUNDATION_EXTERN
-void RLMAssertMatches(XCTestCase *self, __attribute__((noescape)) NSString *(^block)(void),
+void LEGACYAssertMatches(XCTestCase *self, __attribute__((noescape)) NSString *(^block)(void),
                       NSString *regexString, NSString *message, NSString *fileName,
                       NSUInteger lineNumber);
 
 FOUNDATION_EXTERN
-void RLMAssertThrowsWithReason(XCTestCase *self,
+void LEGACYAssertThrowsWithReason(XCTestCase *self,
                                __attribute__((noescape)) dispatch_block_t block,
                                NSString *regexString, NSString *message,
                                NSString *fileName, NSUInteger lineNumber);
 
 FOUNDATION_EXTERN
-void RLMAssertExceptionReason(XCTestCase *self,
+void LEGACYAssertExceptionReason(XCTestCase *self,
                               NSException *exception, NSString *expected, NSString *expression,
                               NSString *fileName, NSUInteger lineNumber);
 
-FOUNDATION_EXTERN bool RLMHasCachedRealmForPath(NSString *path);
+FOUNDATION_EXTERN bool LEGACYHasCachedRealmForPath(NSString *path);
 
-#define RLMAssertThrows(expression, ...) \
-    RLMPrimitiveAssertThrows(self, expression,  __VA_ARGS__)
+#define LEGACYAssertThrows(expression, ...) \
+    LEGACYPrimitiveAssertThrows(self, expression,  __VA_ARGS__)
 
-#define RLMPrimitiveAssertThrows(self, expression, format...) \
+#define LEGACYPrimitiveAssertThrows(self, expression, format...) \
 ({ \
     NSException *caughtException = nil; \
     @try { \
@@ -84,10 +84,10 @@ FOUNDATION_EXTERN bool RLMHasCachedRealmForPath(NSString *path);
     caughtException; \
 })
 
-#define RLMAssertMatches(expression, regex, ...) \
-    RLMPrimitiveAssertMatches(self, expression, regex,  __VA_ARGS__)
+#define LEGACYAssertMatches(expression, regex, ...) \
+    LEGACYPrimitiveAssertMatches(self, expression, regex,  __VA_ARGS__)
 
-#define RLMPrimitiveAssertMatches(self, expression, regexString, format...) \
+#define LEGACYPrimitiveAssertMatches(self, expression, regexString, format...) \
 ({ \
     NSString *string = (expression); \
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:regexString options:(NSRegularExpressionOptions)0 error:nil]; \
@@ -96,36 +96,36 @@ FOUNDATION_EXTERN bool RLMHasCachedRealmForPath(NSString *path);
     } \
 })
 
-#define RLMAssertThrowsWithReasonMatching(expression, regex, ...) \
+#define LEGACYAssertThrowsWithReasonMatching(expression, regex, ...) \
 ({ \
-    NSException *exception = RLMAssertThrows(expression, __VA_ARGS__); \
+    NSException *exception = LEGACYAssertThrows(expression, __VA_ARGS__); \
     if (exception) { \
-        RLMAssertMatches(exception.reason, regex, __VA_ARGS__); \
+        LEGACYAssertMatches(exception.reason, regex, __VA_ARGS__); \
     } \
     exception; \
 })
 
-#define RLMAssertThrowsWithReason(expression, expected) \
+#define LEGACYAssertThrowsWithReason(expression, expected) \
 ({ \
-    NSException *exception = RLMAssertThrows(expression); \
-    RLMAssertExceptionReason(self, exception, expected, @#expression, @"" __FILE__, __LINE__); \
+    NSException *exception = LEGACYAssertThrows(expression); \
+    LEGACYAssertExceptionReason(self, exception, expected, @#expression, @"" __FILE__, __LINE__); \
     exception; \
 })
 
-#define RLMAssertThrowsWithCodeMatching(expression, expectedCode, ...) \
+#define LEGACYAssertThrowsWithCodeMatching(expression, expectedCode, ...) \
 ({ \
-    NSException *exception = RLMAssertThrows(expression, __VA_ARGS__); \
+    NSException *exception = LEGACYAssertThrows(expression, __VA_ARGS__); \
     XCTAssertEqual([exception.userInfo[NSUnderlyingErrorKey] code], expectedCode, __VA_ARGS__); \
 })
 
-#define RLMValidateError(error, errDomain, errCode, msg) do {                                           \
+#define LEGACYValidateError(error, errDomain, errCode, msg) do {                                           \
     XCTAssertNotNil(error);                                                                             \
     XCTAssertEqual(error.domain, errDomain);                                                            \
     XCTAssertEqual(error.code, errCode);                                                                \
     XCTAssertEqualObjects(error.localizedDescription, msg);                                             \
 } while (0)
 
-#define RLMValidateErrorContains(error, errDomain, errCode, msg) do {                                   \
+#define LEGACYValidateErrorContains(error, errDomain, errCode, msg) do {                                   \
     XCTAssertNotNil(error);                                                                             \
     XCTAssertEqual(error.domain, errDomain);                                                            \
     XCTAssertEqual(error.code, errCode);                                                                \
@@ -133,33 +133,33 @@ FOUNDATION_EXTERN bool RLMHasCachedRealmForPath(NSString *path);
               @"'%@' should contain '%@'", error.localizedDescription, msg);                            \
 } while (0)
 
-#define RLMValidateRealmError(macroError, errCode, msg, path) do {                                      \
+#define LEGACYValidateRealmError(macroError, errCode, msg, path) do {                                      \
     NSError *error2 = (NSError *)macroError;                                                            \
-    RLMValidateError(error2, RLMErrorDomain, errCode, ([NSString stringWithFormat:msg, path]));         \
+    LEGACYValidateError(error2, LEGACYErrorDomain, errCode, ([NSString stringWithFormat:msg, path]));         \
     XCTAssertEqualObjects(error2.userInfo[NSFilePathErrorKey], path);                                   \
 } while (0)
 
-#define RLMValidateRealmErrorContains(macroError, errCode, msg, path) do {                              \
+#define LEGACYValidateRealmErrorContains(macroError, errCode, msg, path) do {                              \
     NSError *error2 = (NSError *)macroError;                                                            \
-    RLMValidateErrorContains(error2, RLMErrorDomain, errCode, ([NSString stringWithFormat:msg, path])); \
+    LEGACYValidateErrorContains(error2, LEGACYErrorDomain, errCode, ([NSString stringWithFormat:msg, path])); \
     XCTAssertEqualObjects(error2.userInfo[NSFilePathErrorKey], path);                                   \
 } while (0)
 
-#define RLMAssertRealmException(expr, errCode, msg, path) do {                                          \
-    NSException* exception = RLMAssertThrows(expr);                                                     \
-    XCTAssertEqual(exception.name, RLMExceptionName);                                                   \
+#define LEGACYAssertRealmException(expr, errCode, msg, path) do {                                          \
+    NSException* exception = LEGACYAssertThrows(expr);                                                     \
+    XCTAssertEqual(exception.name, LEGACYExceptionName);                                                   \
     NSString* reason = [NSString stringWithFormat:msg, path];                                           \
     XCTAssertEqualObjects(exception.reason, reason);                                                    \
-    RLMValidateRealmError(exception.userInfo[NSUnderlyingErrorKey], errCode, msg, path);                \
+    LEGACYValidateRealmError(exception.userInfo[NSUnderlyingErrorKey], errCode, msg, path);                \
 } while (0)
 
-#define RLMAssertRealmExceptionContains(expr, errCode, msg, path) do {                                  \
-    NSException* exception = RLMAssertThrows(expr);                                                     \
-    XCTAssertEqual(exception.name, RLMExceptionName);                                                   \
+#define LEGACYAssertRealmExceptionContains(expr, errCode, msg, path) do {                                  \
+    NSException* exception = LEGACYAssertThrows(expr);                                                     \
+    XCTAssertEqual(exception.name, LEGACYExceptionName);                                                   \
     NSString* reason = [NSString stringWithFormat:msg, path];                                           \
     XCTAssert([exception.reason containsString:reason],                                                 \
               @"'%@' should contain '%@'", exception.reason, reason);                                   \
-    RLMValidateRealmErrorContains(exception.userInfo[NSUnderlyingErrorKey], errCode, msg, path);        \
+    LEGACYValidateRealmErrorContains(exception.userInfo[NSUnderlyingErrorKey], errCode, msg, path);        \
 } while (0)
 
 // XCTest assertions wrap each assertion in a try/catch to provide nice

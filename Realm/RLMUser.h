@@ -16,46 +16,46 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
-#import <Realm/RLMCredentials.h>
-#import <Realm/RLMRealmConfiguration.h>
-#import <Realm/RLMSyncConfiguration.h>
+#import <Realm/LEGACYConstants.h>
+#import <Realm/LEGACYCredentials.h>
+#import <Realm/LEGACYRealmConfiguration.h>
+#import <Realm/LEGACYSyncConfiguration.h>
 
-@class RLMUser, RLMSyncSession, RLMRealm, RLMUserIdentity, RLMAPIKeyAuth, RLMMongoClient, RLMMongoDatabase, RLMMongoCollection, RLMUserProfile;
-@protocol RLMBSON;
+@class LEGACYUser, LEGACYSyncSession, LEGACYRealm, LEGACYUserIdentity, LEGACYAPIKeyAuth, LEGACYMongoClient, LEGACYMongoDatabase, LEGACYMongoCollection, LEGACYUserProfile;
+@protocol LEGACYBSON;
 
 /**
  The state of the user object.
  */
-typedef NS_ENUM(NSUInteger, RLMUserState) {
+typedef NS_ENUM(NSUInteger, LEGACYUserState) {
     /// The user is logged out. Call `logInWithCredentials:...` with valid credentials to log the user back in.
-    RLMUserStateLoggedOut,
+    LEGACYUserStateLoggedOut,
     /// The user is logged in, and any Realms associated with it are syncing with Atlas App Services.
-    RLMUserStateLoggedIn,
+    LEGACYUserStateLoggedIn,
     /// The user has been removed, and cannot be used.
-    RLMUserStateRemoved
+    LEGACYUserStateRemoved
 };
 
 /// A block type used to report an error related to a specific user.
-RLM_SWIFT_SENDABLE
-typedef void(^RLMOptionalUserBlock)(RLMUser * _Nullable, NSError * _Nullable);
+LEGACY_SWIFT_SENDABLE
+typedef void(^LEGACYOptionalUserBlock)(LEGACYUser * _Nullable, NSError * _Nullable);
 
 /// A block type used to report an error on a network request from the user.
-RLM_SWIFT_SENDABLE
-typedef void(^RLMUserOptionalErrorBlock)(NSError * _Nullable);
+LEGACY_SWIFT_SENDABLE
+typedef void(^LEGACYUserOptionalErrorBlock)(NSError * _Nullable);
 
 /// A block which returns a dictionary should there be any custom data set for a user
-RLM_SWIFT_SENDABLE
-typedef void(^RLMUserCustomDataBlock)(NSDictionary * _Nullable, NSError * _Nullable);
+LEGACY_SWIFT_SENDABLE
+typedef void(^LEGACYUserCustomDataBlock)(NSDictionary * _Nullable, NSError * _Nullable);
 
 /// A block type for returning from function calls.
-RLM_SWIFT_SENDABLE
-typedef void(^RLMCallFunctionCompletionBlock)(id<RLMBSON> _Nullable, NSError * _Nullable);
+LEGACY_SWIFT_SENDABLE
+typedef void(^LEGACYCallFunctionCompletionBlock)(id<LEGACYBSON> _Nullable, NSError * _Nullable);
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 /**
- A `RLMUser` instance represents a single Realm App user account.
+ A `LEGACYUser` instance represents a single Realm App user account.
 
  A user may have one or more credentials associated with it. These credentials
  uniquely identify the user to the authentication provider, and are used to sign
@@ -64,17 +64,17 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  Note that user objects are only vended out via SDK APIs, and cannot be directly
  initialized. User objects can be accessed from any thread.
  */
-RLM_SWIFT_SENDABLE RLM_FINAL // internally thread-safe
-@interface RLMUser : NSObject
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL // internally thread-safe
+@interface LEGACYUser : NSObject
 
 /**
  The unique Atlas App Services string identifying this user.
- Note this is different from an identity: A user may have multiple identities but has a single identifier. See RLMUserIdentity.
+ Note this is different from an identity: A user may have multiple identities but has a single identifier. See LEGACYUserIdentity.
  */
 @property (nonatomic, readonly) NSString *identifier NS_SWIFT_NAME(id);
 
 /// Returns an array of identities currently linked to a user.
-@property (nonatomic, readonly) NSArray<RLMUserIdentity *> *identities;
+@property (nonatomic, readonly) NSArray<LEGACYUserIdentity *> *identities;
 
 /**
  The user's refresh token used to access App Services.
@@ -102,7 +102,7 @@ RLM_SWIFT_SENDABLE RLM_FINAL // internally thread-safe
 /**
  The current state of the user.
  */
-@property (nonatomic, readonly) RLMUserState state;
+@property (nonatomic, readonly) LEGACYUserState state;
 
 /**
  Indicates if the user is logged in or not. Returns true if the access token and refresh token are not empty.
@@ -114,53 +114,53 @@ RLM_SWIFT_SENDABLE RLM_FINAL // internally thread-safe
 /**
  Create a partition-based sync configuration instance for the given partition value.
 
- @param partitionValue The `RLMBSON` value the Realm is partitioned on.
+ @param partitionValue The `LEGACYBSON` value the Realm is partitioned on.
  @return A default configuration object with the sync configuration set to use the given partition value.
  */
-- (RLMRealmConfiguration *)configurationWithPartitionValue:(nullable id<RLMBSON>)partitionValue NS_REFINED_FOR_SWIFT;
+- (LEGACYRealmConfiguration *)configurationWithPartitionValue:(nullable id<LEGACYBSON>)partitionValue NS_REFINED_FOR_SWIFT;
 
 /**
  Create a partition-based sync configuration instance for the given partition value.
 
- @param partitionValue The `RLMBSON` value the Realm is partitioned on.
+ @param partitionValue The `LEGACYBSON` value the Realm is partitioned on.
  @param clientResetMode Determines file recovery behavior in the event of a client reset.
                         See: https://docs.mongodb.com/realm/sync/error-handling/client-resets/
  
  @return A configuration object with the sync configuration set to use the given partition value.
  */
-- (RLMRealmConfiguration *)configurationWithPartitionValue:(nullable id<RLMBSON>)partitionValue
-                                           clientResetMode:(RLMClientResetMode)clientResetMode NS_REFINED_FOR_SWIFT;
+- (LEGACYRealmConfiguration *)configurationWithPartitionValue:(nullable id<LEGACYBSON>)partitionValue
+                                           clientResetMode:(LEGACYClientResetMode)clientResetMode NS_REFINED_FOR_SWIFT;
 
 /**
  Create a partition-based sync configuration instance for the given partition value.
 
- @param partitionValue The `RLMBSON` value the Realm is partitioned on.
+ @param partitionValue The `LEGACYBSON` value the Realm is partitioned on.
  @param clientResetMode Determines file recovery behavior in the event of a client reset.
                         See: https://docs.mongodb.com/realm/sync/error-handling/client-resets/
- @param beforeResetBlock A callback which notifies prior to a client reset occurring. See: `RLMClientResetBeforeBlock`
- @param afterResetBlock A callback which notifies after a client reset has occurred. See: `RLMClientResetAfterBlock`
+ @param beforeResetBlock A callback which notifies prior to a client reset occurring. See: `LEGACYClientResetBeforeBlock`
+ @param afterResetBlock A callback which notifies after a client reset has occurred. See: `LEGACYClientResetAfterBlock`
  
  @return A configuration object with the sync configuration set to use the given partition value.
  */
-- (RLMRealmConfiguration *)configurationWithPartitionValue:(nullable id<RLMBSON>)partitionValue
-                                           clientResetMode:(RLMClientResetMode)clientResetMode
-                                         notifyBeforeReset:(nullable RLMClientResetBeforeBlock)beforeResetBlock
-                                          notifyAfterReset:(nullable RLMClientResetAfterBlock)afterResetBlock NS_REFINED_FOR_SWIFT;
+- (LEGACYRealmConfiguration *)configurationWithPartitionValue:(nullable id<LEGACYBSON>)partitionValue
+                                           clientResetMode:(LEGACYClientResetMode)clientResetMode
+                                         notifyBeforeReset:(nullable LEGACYClientResetBeforeBlock)beforeResetBlock
+                                          notifyAfterReset:(nullable LEGACYClientResetAfterBlock)afterResetBlock NS_REFINED_FOR_SWIFT;
 
 /**
  Create a partition-based sync configuration instance for the given partition value.
 
- @param partitionValue The `RLMBSON` value the Realm is partitioned on.
+ @param partitionValue The `LEGACYBSON` value the Realm is partitioned on.
  @param clientResetMode Determines file recovery behavior in the event of a client reset.
                         See: https://docs.mongodb.com/realm/sync/error-handling/client-resets/
  @param manualClientResetHandler An error reporting block that is invoked during a client reset.
-                                @See ``RLMSyncErrorReportingBlock`` and ``RLMClientResetInfo``
+                                @See ``LEGACYSyncErrorReportingBlock`` and ``LEGACYClientResetInfo``
  
  @return A configuration object with the sync configuration set to use the given partition value.
  */
-- (RLMRealmConfiguration *)configurationWithPartitionValue:(nullable id<RLMBSON>)partitionValue
-                                           clientResetMode:(RLMClientResetMode)clientResetMode
-                                  manualClientResetHandler:(nullable RLMSyncErrorReportingBlock)manualClientResetHandler NS_REFINED_FOR_SWIFT;
+- (LEGACYRealmConfiguration *)configurationWithPartitionValue:(nullable id<LEGACYBSON>)partitionValue
+                                           clientResetMode:(LEGACYClientResetMode)clientResetMode
+                                  manualClientResetHandler:(nullable LEGACYSyncErrorReportingBlock)manualClientResetHandler NS_REFINED_FOR_SWIFT;
 
 /**
  Create a flexible sync configuration instance, which can be used to open a Realm that
@@ -170,9 +170,9 @@ RLM_SWIFT_SENDABLE RLM_FINAL // internally thread-safe
  In order for an application to contain both partition-based and flexible sync realms, more than one
  server-side Device Sync App must be used.
 
- @return A ``RLMRealmConfiguration`` instance with a flexible sync configuration.
+ @return A ``LEGACYRealmConfiguration`` instance with a flexible sync configuration.
  */
-- (RLMRealmConfiguration *)flexibleSyncConfiguration NS_REFINED_FOR_SWIFT;
+- (LEGACYRealmConfiguration *)flexibleSyncConfiguration NS_REFINED_FOR_SWIFT;
 
 /**
  Create a flexible sync configuration instance, which can be used to open a Realm that
@@ -184,14 +184,14 @@ RLM_SWIFT_SENDABLE RLM_FINAL // internally thread-safe
  
  @param clientResetMode Determines file recovery behavior in the event of a client reset.
                         See: https://docs.mongodb.com/realm/sync/error-handling/client-resets/
- @param beforeResetBlock A callback which notifies prior to a client reset occurring. See: `RLMClientResetBeforeBlock`
- @param afterResetBlock A callback which notifies after a client reset has occurred. See: `RLMClientResetAfterBlock`
+ @param beforeResetBlock A callback which notifies prior to a client reset occurring. See: `LEGACYClientResetBeforeBlock`
+ @param afterResetBlock A callback which notifies after a client reset has occurred. See: `LEGACYClientResetAfterBlock`
  
- @return A `RLMRealmConfiguration` instance with a flexible sync configuration.
+ @return A `LEGACYRealmConfiguration` instance with a flexible sync configuration.
  */
-- (RLMRealmConfiguration *)flexibleSyncConfigurationWithClientResetMode:(RLMClientResetMode)clientResetMode
-                                                      notifyBeforeReset:(nullable RLMClientResetBeforeBlock)beforeResetBlock
-                                                       notifyAfterReset:(nullable RLMClientResetAfterBlock)afterResetBlock NS_REFINED_FOR_SWIFT;
+- (LEGACYRealmConfiguration *)flexibleSyncConfigurationWithClientResetMode:(LEGACYClientResetMode)clientResetMode
+                                                      notifyBeforeReset:(nullable LEGACYClientResetBeforeBlock)beforeResetBlock
+                                                       notifyAfterReset:(nullable LEGACYClientResetAfterBlock)afterResetBlock NS_REFINED_FOR_SWIFT;
 /**
  Create a flexible sync configuration instance, which can be used to open a Realm that
  supports flexible sync.
@@ -203,12 +203,12 @@ RLM_SWIFT_SENDABLE RLM_FINAL // internally thread-safe
  @param clientResetMode Determines file recovery behavior in the event of a client reset.
                         See: https://docs.mongodb.com/realm/sync/error-handling/client-resets/
  @param manualClientResetHandler An error reporting block that is invoked during a client reset.
-                                @See `RLMSyncErrorReportingBlock` and `RLMClientResetInfo`
+                                @See `LEGACYSyncErrorReportingBlock` and `LEGACYClientResetInfo`
 
- @return A `RLMRealmConfiguration` instance with a flexible sync configuration.
+ @return A `LEGACYRealmConfiguration` instance with a flexible sync configuration.
  */
-- (RLMRealmConfiguration *)flexibleSyncConfigurationWithClientResetMode:(RLMClientResetMode)clientResetMode
-                                               manualClientResetHandler:(nullable RLMSyncErrorReportingBlock)manualClientResetHandler NS_REFINED_FOR_SWIFT;
+- (LEGACYRealmConfiguration *)flexibleSyncConfigurationWithClientResetMode:(LEGACYClientResetMode)clientResetMode
+                                               manualClientResetHandler:(nullable LEGACYSyncErrorReportingBlock)manualClientResetHandler NS_REFINED_FOR_SWIFT;
 
 /**
  Create a flexible sync configuration instance, which can be used to open a Realm that
@@ -225,9 +225,9 @@ RLM_SWIFT_SENDABLE RLM_FINAL // internally thread-safe
                     This can be used to re-run dynamic time ranges and other queries that require a
                     re-computation of a static variable.
 
- @return A `RLMRealmConfiguration` instance with a flexible sync configuration.
+ @return A `LEGACYRealmConfiguration` instance with a flexible sync configuration.
  */
-- (RLMRealmConfiguration *)flexibleSyncConfigurationWithInitialSubscriptions:(RLMFlexibleSyncInitialSubscriptionsBlock)initialSubscriptions
+- (LEGACYRealmConfiguration *)flexibleSyncConfigurationWithInitialSubscriptions:(LEGACYFlexibleSyncInitialSubscriptionsBlock)initialSubscriptions
                                                                  rerunOnOpen:(BOOL)rerunOnOpen NS_REFINED_FOR_SWIFT;
 /**
  Create a flexible sync configuration instance, which can be used to open a Realm that
@@ -245,16 +245,16 @@ RLM_SWIFT_SENDABLE RLM_FINAL // internally thread-safe
                     re-computation of a static variable.
  @param clientResetMode Determines file recovery behavior in the event of a client reset.
                         See: https://docs.mongodb.com/realm/sync/error-handling/client-resets/
- @param beforeResetBlock A callback which notifies prior to a client reset occurring. See: `RLMClientResetBeforeBlock`
- @param afterResetBlock A callback which notifies after a client reset has occurred. See: `RLMClientResetAfterBlock`
+ @param beforeResetBlock A callback which notifies prior to a client reset occurring. See: `LEGACYClientResetBeforeBlock`
+ @param afterResetBlock A callback which notifies after a client reset has occurred. See: `LEGACYClientResetAfterBlock`
 
- @return A `RLMRealmConfiguration` instance with a flexible sync configuration.
+ @return A `LEGACYRealmConfiguration` instance with a flexible sync configuration.
  */
-- (RLMRealmConfiguration *)flexibleSyncConfigurationWithInitialSubscriptions:(RLMFlexibleSyncInitialSubscriptionsBlock)initialSubscriptions
+- (LEGACYRealmConfiguration *)flexibleSyncConfigurationWithInitialSubscriptions:(LEGACYFlexibleSyncInitialSubscriptionsBlock)initialSubscriptions
                                                                  rerunOnOpen:(BOOL)rerunOnOpen
-                                                             clientResetMode:(RLMClientResetMode)clientResetMode
-                                                           notifyBeforeReset:(nullable RLMClientResetBeforeBlock)beforeResetBlock
-                                                            notifyAfterReset:(nullable RLMClientResetAfterBlock)afterResetBlock NS_REFINED_FOR_SWIFT;
+                                                             clientResetMode:(LEGACYClientResetMode)clientResetMode
+                                                           notifyBeforeReset:(nullable LEGACYClientResetBeforeBlock)beforeResetBlock
+                                                            notifyAfterReset:(nullable LEGACYClientResetAfterBlock)afterResetBlock NS_REFINED_FOR_SWIFT;
 
 /**
  Create a flexible sync configuration instance, which can be used to open a Realm that
@@ -273,14 +273,14 @@ RLM_SWIFT_SENDABLE RLM_FINAL // internally thread-safe
  @param clientResetMode Determines file recovery behavior in the event of a client reset.
                         See: https://docs.mongodb.com/realm/sync/error-handling/client-resets/
  @param manualClientResetHandler An error reporting block that is invoked during a client reset.
-                                @See `RLMSyncErrorReportingBlock` and `RLMClientResetInfo`
+                                @See `LEGACYSyncErrorReportingBlock` and `LEGACYClientResetInfo`
 
- @return A `RLMRealmConfiguration` instance with a flexible sync configuration.
+ @return A `LEGACYRealmConfiguration` instance with a flexible sync configuration.
  */
-- (RLMRealmConfiguration *)flexibleSyncConfigurationWithInitialSubscriptions:(RLMFlexibleSyncInitialSubscriptionsBlock)initialSubscriptions
+- (LEGACYRealmConfiguration *)flexibleSyncConfigurationWithInitialSubscriptions:(LEGACYFlexibleSyncInitialSubscriptionsBlock)initialSubscriptions
                                                                  rerunOnOpen:(BOOL)rerunOnOpen
-                                                             clientResetMode:(RLMClientResetMode)clientResetMode
-                                                    manualClientResetHandler:(nullable RLMSyncErrorReportingBlock)manualClientResetHandler NS_REFINED_FOR_SWIFT;
+                                                             clientResetMode:(LEGACYClientResetMode)clientResetMode
+                                                    manualClientResetHandler:(nullable LEGACYSyncErrorReportingBlock)manualClientResetHandler NS_REFINED_FOR_SWIFT;
 
 #pragma mark - Sessions
 
@@ -288,10 +288,10 @@ RLM_SWIFT_SENDABLE RLM_FINAL // internally thread-safe
  Retrieve a valid session object belonging to this user for a given URL, or `nil`
  if no such object exists.
  */
-- (nullable RLMSyncSession *)sessionForPartitionValue:(id<RLMBSON>)partitionValue;
+- (nullable LEGACYSyncSession *)sessionForPartitionValue:(id<LEGACYBSON>)partitionValue;
 
 /// Retrieve all the valid sessions belonging to this user.
-@property (nonatomic, readonly) NSArray<RLMSyncSession *> *allSessions;
+@property (nonatomic, readonly) NSArray<LEGACYSyncSession *> *allSessions;
 
 #pragma mark - Custom Data
 
@@ -304,25 +304,25 @@ RLM_SWIFT_SENDABLE RLM_FINAL // internally thread-safe
 /**
  The profile of the user.
  */
-@property (nonatomic, readonly) RLMUserProfile *profile;
+@property (nonatomic, readonly) LEGACYUserProfile *profile;
 
 /**
  Refresh a user's custom data. This will, in effect, refresh the user's auth session.
  */
-- (void)refreshCustomDataWithCompletion:(RLMUserCustomDataBlock)completion;
+- (void)refreshCustomDataWithCompletion:(LEGACYUserCustomDataBlock)completion;
 
 /**
  Links the currently authenticated user with a new identity, where the identity is defined by the credential
- specified as a parameter. This will only be successful if this `RLMUser` is the currently authenticated
+ specified as a parameter. This will only be successful if this `LEGACYUser` is the currently authenticated
  with the client from which it was created. On success a new user will be returned with the new linked credentials.
 
- @param credentials The `RLMCredentials` used to link the user to a new identity.
+ @param credentials The `LEGACYCredentials` used to link the user to a new identity.
  @param completion The completion handler to call when the linking is complete.
                    If the operation is  successful, the result will contain a new
-                   `RLMUser` object representing the currently logged in user.
+                   `LEGACYUser` object representing the currently logged in user.
 */
-- (void)linkUserWithCredentials:(RLMCredentials *)credentials
-                     completion:(RLMOptionalUserBlock)completion NS_REFINED_FOR_SWIFT;
+- (void)linkUserWithCredentials:(LEGACYCredentials *)credentials
+                     completion:(LEGACYOptionalUserBlock)completion NS_REFINED_FOR_SWIFT;
 
 /**
  Removes the user
@@ -332,7 +332,7 @@ RLM_SWIFT_SENDABLE RLM_FINAL // internally thread-safe
 
  @param completion A callback invoked on completion
 */
-- (void)removeWithCompletion:(RLMUserOptionalErrorBlock)completion;
+- (void)removeWithCompletion:(LEGACYUserOptionalErrorBlock)completion;
 
 /**
  Permanently deletes this user from your Atlas App Services app.
@@ -342,7 +342,7 @@ RLM_SWIFT_SENDABLE RLM_FINAL // internally thread-safe
 
  @param completion A callback invoked on completion
 */
-- (void)deleteWithCompletion:(RLMUserOptionalErrorBlock)completion;
+- (void)deleteWithCompletion:(LEGACYUserOptionalErrorBlock)completion;
 
 /**
  Logs out the current user
@@ -352,7 +352,7 @@ RLM_SWIFT_SENDABLE RLM_FINAL // internally thread-safe
 
  @param completion A callback invoked on completion
 */
-- (void)logOutWithCompletion:(RLMUserOptionalErrorBlock)completion;
+- (void)logOutWithCompletion:(LEGACYUserOptionalErrorBlock)completion;
 
 /**
   A client for the user API key authentication provider which
@@ -360,11 +360,11 @@ RLM_SWIFT_SENDABLE RLM_FINAL // internally thread-safe
 
   This client should only be used by an authenticated user.
 */
-@property (nonatomic, readonly) RLMAPIKeyAuth *apiKeysAuth;
+@property (nonatomic, readonly) LEGACYAPIKeyAuth *apiKeysAuth;
 
 /// A client for interacting with a remote MongoDB instance
 /// @param serviceName The name of the MongoDB service
-- (RLMMongoClient *)mongoClientWithServiceName:(NSString *)serviceName NS_REFINED_FOR_SWIFT;
+- (LEGACYMongoClient *)mongoClientWithServiceName:(NSString *)serviceName NS_REFINED_FOR_SWIFT;
 
 /**
  Calls the Atlas App Services function with the provided name and arguments.
@@ -375,13 +375,13 @@ RLM_SWIFT_SENDABLE RLM_FINAL // internally thread-safe
  This handler is executed on a non-main global `DispatchQueue`.
 */
 - (void)callFunctionNamed:(NSString *)name
-                arguments:(NSArray<id<RLMBSON>> *)arguments
-          completionBlock:(RLMCallFunctionCompletionBlock)completion NS_REFINED_FOR_SWIFT;
+                arguments:(NSArray<id<LEGACYBSON>> *)arguments
+          completionBlock:(LEGACYCallFunctionCompletionBlock)completion NS_REFINED_FOR_SWIFT;
 
 /// :nodoc:
-- (instancetype)init __attribute__((unavailable("RLMUser cannot be created directly")));
+- (instancetype)init __attribute__((unavailable("LEGACYUser cannot be created directly")));
 /// :nodoc:
-+ (instancetype)new __attribute__((unavailable("RLMUser cannot be created directly")));
++ (instancetype)new __attribute__((unavailable("LEGACYUser cannot be created directly")));
 
 @end
 
@@ -390,10 +390,10 @@ RLM_SWIFT_SENDABLE RLM_FINAL // internally thread-safe
 /**
  An identity of a user. A user can have multiple identities, usually associated with multiple providers.
  Note this is different from a user's unique identifier string.
- @seeAlso `RLMUser.identifier`
+ @seeAlso `LEGACYUser.identifier`
  */
-RLM_SWIFT_SENDABLE RLM_FINAL // immutable final class
-@interface RLMUserIdentity : NSObject
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL // immutable final class
+@interface LEGACYUserIdentity : NSObject
 
 /**
  The associated provider type
@@ -401,12 +401,12 @@ RLM_SWIFT_SENDABLE RLM_FINAL // immutable final class
 @property (nonatomic, readonly) NSString *providerType;
 
 /**
- The string which identifies the RLMUserIdentity
+ The string which identifies the LEGACYUserIdentity
  */
 @property (nonatomic, readonly) NSString *identifier;
 
 /**
- Initialize an RLMUserIdentity for the given identifier and provider type.
+ Initialize an LEGACYUserIdentity for the given identifier and provider type.
  @param providerType the associated provider type
  @param identifier the identifier of the identity
  */
@@ -418,8 +418,8 @@ RLM_SWIFT_SENDABLE RLM_FINAL // immutable final class
 /**
  A profile for a given User.
  */
-RLM_SWIFT_SENDABLE RLM_FINAL // immutable final class
-@interface RLMUserProfile : NSObject
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL // immutable final class
+@interface LEGACYUserProfile : NSObject
 
 /// The full name of the user.
 @property (nonatomic, readonly, nullable) NSString *name;
@@ -444,4 +444,4 @@ RLM_SWIFT_SENDABLE RLM_FINAL // immutable final class
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

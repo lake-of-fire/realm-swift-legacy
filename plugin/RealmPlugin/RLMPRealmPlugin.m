@@ -16,18 +16,18 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMPRealmPlugin.h"
+#import "LEGACYPRealmPlugin.h"
 
-#import "RLMPSimulatorManager.h"
+#import "LEGACYPSimulatorManager.h"
 
-static RLMPRealmPlugin *sharedPlugin;
+static LEGACYPRealmPlugin *sharedPlugin;
 
 static NSString *const RootDeviceSimulatorPath = @"Library/Developer/CoreSimulator/Devices";
 static NSString *const DeviceSimulatorApplicationPath = @"data/Containers/Data/Application";
 
-static NSString *const RLMPErrorDomain = @"io.Realm.error";
+static NSString *const LEGACYPErrorDomain = @"io.Realm.error";
 
-static NSArray * RLMPGlobFilesAtDirectoryURLWithPredicate(NSFileManager *fileManager, NSURL *directoryURL, NSPredicate *filteredPredicate, BOOL (^handler)(NSURL *URL, NSError *error))
+static NSArray * LEGACYPGlobFilesAtDirectoryURLWithPredicate(NSFileManager *fileManager, NSURL *directoryURL, NSPredicate *filteredPredicate, BOOL (^handler)(NSURL *URL, NSError *error))
 {
     NSDirectoryEnumerator *directoryEnumerator = [fileManager enumeratorAtURL:directoryURL
                                             includingPropertiesForKeys:@[NSURLNameKey, NSURLIsDirectoryKey]
@@ -50,14 +50,14 @@ static NSArray * RLMPGlobFilesAtDirectoryURLWithPredicate(NSFileManager *fileMan
     return [fileURLs filteredArrayUsingPredicate:filteredPredicate];
 }
 
-@interface RLMPRealmPlugin()
+@interface LEGACYPRealmPlugin()
 
 @property (nonatomic, strong) NSBundle *bundle;
 @property (nonatomic, strong) NSURL *browserUrl;
 
 @end
 
-@implementation RLMPRealmPlugin
+@implementation LEGACYPRealmPlugin
 
 + (void)pluginDidLoad:(NSBundle *)plugin
 {
@@ -114,7 +114,7 @@ static NSArray * RLMPGlobFilesAtDirectoryURLWithPredicate(NSFileManager *fileMan
         NSString *title = @"Please install the Realm Browser";
         NSString *message = @"You need to install the Realm Browser in order to use it from this plugin. Please visit realm.io for more information.";
         
-        NSError *error = [NSError errorWithDomain:RLMPErrorDomain
+        NSError *error = [NSError errorWithDomain:LEGACYPErrorDomain
                                              code:-1
                                          userInfo:@{ NSLocalizedDescriptionKey : title,
                                                      NSLocalizedRecoverySuggestionErrorKey : message }];
@@ -123,7 +123,7 @@ static NSArray * RLMPGlobFilesAtDirectoryURLWithPredicate(NSFileManager *fileMan
     }
     
     // Find Device UUID
-    NSString *bootedSimulatorUUID = [RLMPSimulatorManager bootedSimulatorUUID];
+    NSString *bootedSimulatorUUID = [LEGACYPSimulatorManager bootedSimulatorUUID];
     
     // Find Realm File URL
     NSArray *realmFileURLs = [self realmFilesURLWithDeviceUUID:bootedSimulatorUUID];
@@ -132,7 +132,7 @@ static NSArray * RLMPGlobFilesAtDirectoryURLWithPredicate(NSFileManager *fileMan
         NSString *title = @"Unable to find Realm file";
         NSString *message = @"You must launch iOS Simulator with app that uses Realm";
         
-        NSError *error = [NSError errorWithDomain:RLMPErrorDomain
+        NSError *error = [NSError errorWithDomain:LEGACYPErrorDomain
                                              code:-1
                                          userInfo:@{ NSLocalizedDescriptionKey : title,
                                                      NSLocalizedRecoverySuggestionErrorKey : message }];
@@ -183,7 +183,7 @@ static NSArray * RLMPGlobFilesAtDirectoryURLWithPredicate(NSFileManager *fileMan
     [fullPath appendFormat:@"%@/%@/%@", RootDeviceSimulatorPath, deviceUUID, DeviceSimulatorApplicationPath];
     NSURL *bootedDeviceDirectoryURL = [homeURL URLByAppendingPathComponent:fullPath];
     
-    NSArray* fileURLs = RLMPGlobFilesAtDirectoryURLWithPredicate(fileManager, bootedDeviceDirectoryURL, [NSPredicate predicateWithFormat:@"pathExtension == 'realm'"], ^BOOL(NSURL *URL, NSError *error) {
+    NSArray* fileURLs = LEGACYPGlobFilesAtDirectoryURLWithPredicate(fileManager, bootedDeviceDirectoryURL, [NSPredicate predicateWithFormat:@"pathExtension == 'realm'"], ^BOOL(NSURL *URL, NSError *error) {
         if (error) {
             NSLog(@"%@", error);
             return NO;

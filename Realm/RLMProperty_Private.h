@@ -16,72 +16,72 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMProperty.h>
+#import <Realm/LEGACYProperty.h>
 
 #import <objc/runtime.h>
 
-@class RLMObjectBase;
+@class LEGACYObjectBase;
 
-RLM_HEADER_AUDIT_BEGIN(nullability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability)
 
-BOOL RLMPropertyTypeIsComputed(RLMPropertyType propertyType);
-FOUNDATION_EXTERN void RLMValidateSwiftPropertyName(NSString *name);
+BOOL LEGACYPropertyTypeIsComputed(LEGACYPropertyType propertyType);
+FOUNDATION_EXTERN void LEGACYValidateSwiftPropertyName(NSString *name);
 
 // Translate an rlmtype to a string representation
-static inline NSString *RLMTypeToString(RLMPropertyType type) {
+static inline NSString *LEGACYTypeToString(LEGACYPropertyType type) {
     switch (type) {
-        case RLMPropertyTypeString:
+        case LEGACYPropertyTypeString:
             return @"string";
-        case RLMPropertyTypeInt:
+        case LEGACYPropertyTypeInt:
             return @"int";
-        case RLMPropertyTypeBool:
+        case LEGACYPropertyTypeBool:
             return @"bool";
-        case RLMPropertyTypeDate:
+        case LEGACYPropertyTypeDate:
             return @"date";
-        case RLMPropertyTypeData:
+        case LEGACYPropertyTypeData:
             return @"data";
-        case RLMPropertyTypeDouble:
+        case LEGACYPropertyTypeDouble:
             return @"double";
-        case RLMPropertyTypeFloat:
+        case LEGACYPropertyTypeFloat:
             return @"float";
-        case RLMPropertyTypeAny:
+        case LEGACYPropertyTypeAny:
             return @"mixed";
-        case RLMPropertyTypeObject:
+        case LEGACYPropertyTypeObject:
             return @"object";
-        case RLMPropertyTypeLinkingObjects:
+        case LEGACYPropertyTypeLinkingObjects:
             return @"linking objects";
-        case RLMPropertyTypeDecimal128:
+        case LEGACYPropertyTypeDecimal128:
             return @"decimal128";
-        case RLMPropertyTypeObjectId:
+        case LEGACYPropertyTypeObjectId:
             return @"object id";
-        case RLMPropertyTypeUUID:
+        case LEGACYPropertyTypeUUID:
             return @"uuid";
     }
     return @"Unknown";
 }
 
 // private property interface
-@interface RLMProperty () {
+@interface LEGACYProperty () {
 @public
-    RLMPropertyType _type;
+    LEGACYPropertyType _type;
 }
 
 - (instancetype)initWithName:(NSString *)name
                      indexed:(BOOL)indexed
-      linkPropertyDescriptor:(nullable RLMPropertyDescriptor *)linkPropertyDescriptor
+      linkPropertyDescriptor:(nullable LEGACYPropertyDescriptor *)linkPropertyDescriptor
                     property:(objc_property_t)property;
 
 - (instancetype)initSwiftPropertyWithName:(NSString *)name
                                   indexed:(BOOL)indexed
-                   linkPropertyDescriptor:(nullable RLMPropertyDescriptor *)linkPropertyDescriptor
+                   linkPropertyDescriptor:(nullable LEGACYPropertyDescriptor *)linkPropertyDescriptor
                                  property:(objc_property_t)property
-                                 instance:(RLMObjectBase *)objectInstance;
+                                 instance:(LEGACYObjectBase *)objectInstance;
 
 - (void)updateAccessors;
 
 // private setters
 @property (nonatomic, readwrite) NSString *name;
-@property (nonatomic, readwrite, assign) RLMPropertyType type;
+@property (nonatomic, readwrite, assign) LEGACYPropertyType type;
 @property (nonatomic, readwrite) BOOL indexed;
 @property (nonatomic, readwrite) BOOL optional;
 @property (nonatomic, readwrite) BOOL array;
@@ -97,7 +97,7 @@ static inline NSString *RLMTypeToString(RLMPropertyType type) {
 @property (nonatomic, assign) BOOL isLegacy;
 @property (nonatomic, assign) ptrdiff_t swiftIvar;
 @property (nonatomic, assign, nullable) Class swiftAccessor;
-@property (nonatomic, readwrite, assign) RLMPropertyType dictionaryKeyType;
+@property (nonatomic, readwrite, assign) LEGACYPropertyType dictionaryKeyType;
 @property (nonatomic, readwrite) BOOL customMappingIsOptional;
 
 // getter and setter names
@@ -106,18 +106,18 @@ static inline NSString *RLMTypeToString(RLMPropertyType type) {
 @property (nonatomic, nullable) SEL getterSel;
 @property (nonatomic, nullable) SEL setterSel;
 
-- (RLMProperty *)copyWithNewName:(NSString *)name;
+- (LEGACYProperty *)copyWithNewName:(NSString *)name;
 - (NSString *)typeName;
 
 @end
 
-@interface RLMProperty (Dynamic)
+@interface LEGACYProperty (Dynamic)
 /**
  This method is useful only in specialized circumstances, for example, in conjunction with
- +[RLMObjectSchema initWithClassName:objectClass:properties:]. If you are simply building an
+ +[LEGACYObjectSchema initWithClassName:objectClass:properties:]. If you are simply building an
  app on Realm, it is not recommended to use this method.
 
- Initialize an RLMProperty
+ Initialize an LEGACYProperty
 
  @warning This method is useful only in specialized circumstances.
 
@@ -126,14 +126,14 @@ static inline NSString *RLMTypeToString(RLMPropertyType type) {
  @param objectClassName The object type used for Object and Array types.
  @param linkOriginPropertyName The property name of the origin of a link. Used for linking objects properties.
 
- @return    An initialized instance of RLMProperty.
+ @return    An initialized instance of LEGACYProperty.
  */
 - (instancetype)initWithName:(NSString *)name
-                        type:(RLMPropertyType)type
+                        type:(LEGACYPropertyType)type
              objectClassName:(nullable NSString *)objectClassName
       linkOriginPropertyName:(nullable NSString *)linkOriginPropertyName
                      indexed:(BOOL)indexed
                     optional:(BOOL)optional;
 @end
 
-RLM_HEADER_AUDIT_END(nullability)
+LEGACY_HEADER_AUDIT_END(nullability)

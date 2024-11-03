@@ -16,10 +16,10 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMUser+ObjectServerTests.h"
+#import "LEGACYUser+ObjectServerTests.h"
 
-#import "RLMSyncSession_Private.hpp"
-#import "RLMRealmUtil.hpp"
+#import "LEGACYSyncSession_Private.hpp"
+#import "LEGACYRealmUtil.hpp"
 
 #import <realm/object-store/sync/sync_session.hpp>
 #import <realm/sync/client_base.hpp>
@@ -27,10 +27,10 @@
 
 using namespace realm;
 
-@implementation RLMUser (ObjectServerTests)
+@implementation LEGACYUser (ObjectServerTests)
 
 - (void)simulateClientResetErrorForSession:(NSString *)partitionValue {
-    RLMSyncSession *session = [self sessionForPartitionValue:partitionValue];
+    LEGACYSyncSession *session = [self sessionForPartitionValue:partitionValue];
     NSAssert(session, @"Cannot call with invalid URL");
 
     std::shared_ptr<SyncSession> raw_session = session->_session.lock();

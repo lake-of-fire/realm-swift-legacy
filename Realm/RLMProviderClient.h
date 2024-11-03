@@ -16,25 +16,25 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@class RLMApp;
+@class LEGACYApp;
 
 /// Base provider client interface.
-RLM_SWIFT_SENDABLE
-@interface RLMProviderClient : NSObject
+LEGACY_SWIFT_SENDABLE
+@interface LEGACYProviderClient : NSObject
 
 /// The app associated with this provider client.
-@property (nonatomic, strong, readonly) RLMApp *app;
+@property (nonatomic, strong, readonly) LEGACYApp *app;
 
 /**
  Initialize a provider client with a given app.
  @param app The app for this provider client.
  */
-- (instancetype)initWithApp:(RLMApp *)app;
+- (instancetype)initWithApp:(LEGACYApp *)app;
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

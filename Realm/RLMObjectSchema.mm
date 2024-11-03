@@ -16,33 +16,33 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMObjectSchema_Private.hpp"
+#import "LEGACYObjectSchema_Private.hpp"
 
-#import "RLMEmbeddedObject.h"
-#import "RLMObject_Private.h"
-#import "RLMProperty_Private.hpp"
-#import "RLMRealm_Dynamic.h"
-#import "RLMRealm_Private.hpp"
-#import "RLMSchema_Private.h"
-#import "RLMSwiftCollectionBase.h"
-#import "RLMSwiftSupport.h"
-#import "RLMUtil.hpp"
+#import "LEGACYEmbeddedObject.h"
+#import "LEGACYObject_Private.h"
+#import "LEGACYProperty_Private.hpp"
+#import "LEGACYRealm_Dynamic.h"
+#import "LEGACYRealm_Private.hpp"
+#import "LEGACYSchema_Private.h"
+#import "LEGACYSwiftCollectionBase.h"
+#import "LEGACYSwiftSupport.h"
+#import "LEGACYUtil.hpp"
 
 #import <realm/object-store/object_schema.hpp>
 #import <realm/object-store/object_store.hpp>
 
 using namespace realm;
 
-@protocol RLMCustomEventRepresentable
+@protocol LEGACYCustomEventRepresentable
 @end
 
 // private properties
-@interface RLMObjectSchema ()
-@property (nonatomic, readwrite) NSDictionary<id, RLMProperty *> *allPropertiesByName;
+@interface LEGACYObjectSchema ()
+@property (nonatomic, readwrite) NSDictionary<id, LEGACYProperty *> *allPropertiesByName;
 @property (nonatomic, readwrite) NSString *className;
 @end
 
-@implementation RLMObjectSchema {
+@implementation LEGACYObjectSchema {
     std::string _objectStoreName;
 }
 
@@ -57,7 +57,7 @@ using namespace realm;
 }
 
 // return properties by name
-- (RLMProperty *)objectForKeyedSubscript:(__unsafe_unretained NSString *const)key {
+- (LEGACYProperty *)objectForKeyedSubscript:(__unsafe_unretained NSString *const)key {
     return _allPropertiesByName[key];
 }
 
@@ -76,27 +76,27 @@ using namespace realm;
     _primaryKeyProperty = nil;
     NSMutableDictionary *map = [NSMutableDictionary dictionaryWithCapacity:_properties.count + _computedProperties.count];
     NSUInteger index = 0;
-    for (RLMProperty *prop in _properties) {
+    for (LEGACYProperty *prop in _properties) {
         prop.index = index++;
         map[prop.name] = prop;
         if (prop.isPrimary) {
             if (_primaryKeyProperty) {
-                @throw RLMException(@"Properties '%@' and '%@' are both marked as the primary key of '%@'",
+                @throw LEGACYException(@"Properties '%@' and '%@' are both marked as the primary key of '%@'",
                                     prop.name, _primaryKeyProperty.name, _className);
             }
             _primaryKeyProperty = prop;
         }
     }
     index = 0;
-    for (RLMProperty *prop in _computedProperties) {
+    for (LEGACYProperty *prop in _computedProperties) {
         prop.index = index++;
         map[prop.name] = prop;
     }
     _allPropertiesByName = map;
 
-    if (RLMIsSwiftObjectClass(_accessorClass)) {
+    if (LEGACYIsSwiftObjectClass(_accessorClass)) {
         NSMutableArray *genericProperties = [NSMutableArray new];
-        for (RLMProperty *prop in _properties) {
+        for (LEGACYProperty *prop in _properties) {
             if (prop.swiftAccessor) {
                 [genericProperties addObject:prop];
             }
@@ -114,7 +114,7 @@ using namespace realm;
 }
 
 
-- (void)setPrimaryKeyProperty:(RLMProperty *)primaryKeyProperty {
+- (void)setPrimaryKeyProperty:(LEGACYProperty *)primaryKeyProperty {
     _primaryKeyProperty.isPrimary = NO;
     primaryKeyProperty.isPrimary = YES;
     _primaryKeyProperty = primaryKeyProperty;
@@ -122,23 +122,23 @@ using namespace realm;
 }
 
 + (instancetype)schemaForObjectClass:(Class)objectClass {
-    RLMObjectSchema *schema = [RLMObjectSchema new];
+    LEGACYObjectSchema *schema = [LEGACYObjectSchema new];
 
     // determine classname from objectclass as className method has not yet been updated
     NSString *className = NSStringFromClass(objectClass);
-    bool hasSwiftName = [RLMSwiftSupport isSwiftClassName:className];
+    bool hasSwiftName = [LEGACYSwiftSupport isSwiftClassName:className];
     if (hasSwiftName) {
-        className = [RLMSwiftSupport demangleClassName:className];
+        className = [LEGACYSwiftSupport demangleClassName:className];
     }
 
-    bool isSwift = hasSwiftName || RLMIsSwiftObjectClass(objectClass);
+    bool isSwift = hasSwiftName || LEGACYIsSwiftObjectClass(objectClass);
 
     schema.className = className;
     schema.objectClass = objectClass;
     schema.accessorClass = objectClass;
     schema.unmanagedClass = objectClass;
     schema.isSwiftClass = isSwift;
-    schema.hasCustomEventSerialization = [objectClass conformsToProtocol:@protocol(RLMCustomEventRepresentable)];
+    schema.hasCustomEventSerialization = [objectClass conformsToProtocol:@protocol(LEGACYCustomEventRepresentable)];
 
     bool isEmbedded = [(id)objectClass isEmbedded];
     bool isAsymmetric = [(id)objectClass isAsymmetric];
@@ -146,23 +146,23 @@ using namespace realm;
     schema.isEmbedded = isEmbedded;
     schema.isAsymmetric = isAsymmetric;
 
-    // create array of RLMProperties, inserting properties of superclasses first
+    // create array of LEGACYProperties, inserting properties of superclasses first
     Class cls = objectClass;
     Class superClass = class_getSuperclass(cls);
     NSArray *allProperties = @[];
-    while (superClass && superClass != RLMObjectBase.class) {
-        allProperties = [[RLMObjectSchema propertiesForClass:cls isSwift:isSwift]
+    while (superClass && superClass != LEGACYObjectBase.class) {
+        allProperties = [[LEGACYObjectSchema propertiesForClass:cls isSwift:isSwift]
                          arrayByAddingObjectsFromArray:allProperties];
         cls = superClass;
         superClass = class_getSuperclass(superClass);
     }
-    NSArray *persistedProperties = [allProperties filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(RLMProperty *property, NSDictionary *) {
-        return !RLMPropertyTypeIsComputed(property.type);
+    NSArray *persistedProperties = [allProperties filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(LEGACYProperty *property, NSDictionary *) {
+        return !LEGACYPropertyTypeIsComputed(property.type);
     }]];
     schema.properties = persistedProperties;
 
-    NSArray *computedProperties = [allProperties filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(RLMProperty *property, NSDictionary *) {
-        return RLMPropertyTypeIsComputed(property.type);
+    NSArray *computedProperties = [allProperties filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(LEGACYProperty *property, NSDictionary *) {
+        return LEGACYPropertyTypeIsComputed(property.type);
     }]];
     schema.computedProperties = computedProperties;
 
@@ -174,14 +174,14 @@ using namespace realm;
         }]].allObjects;
 
         if (duplicatePropertyNames.count == 1) {
-            @throw RLMException(@"Property '%@' is declared multiple times in the class hierarchy of '%@'", duplicatePropertyNames.firstObject, className);
+            @throw LEGACYException(@"Property '%@' is declared multiple times in the class hierarchy of '%@'", duplicatePropertyNames.firstObject, className);
         } else {
-            @throw RLMException(@"Object '%@' has properties that are declared multiple times in its class hierarchy: '%@'", className, [duplicatePropertyNames componentsJoinedByString:@"', '"]);
+            @throw LEGACYException(@"Object '%@' has properties that are declared multiple times in its class hierarchy: '%@'", className, [duplicatePropertyNames componentsJoinedByString:@"', '"]);
         }
     }
 
     if (NSString *primaryKey = [objectClass primaryKey]) {
-        for (RLMProperty *prop in schema.properties) {
+        for (LEGACYProperty *prop in schema.properties) {
             if ([primaryKey isEqualToString:prop.name]) {
                 prop.indexed = YES;
                 schema.primaryKeyProperty = prop;
@@ -190,22 +190,22 @@ using namespace realm;
         }
 
         if (!schema.primaryKeyProperty) {
-            @throw RLMException(@"Primary key property '%@' does not exist on object '%@'", primaryKey, className);
+            @throw LEGACYException(@"Primary key property '%@' does not exist on object '%@'", primaryKey, className);
         }
-        if (schema.primaryKeyProperty.type != RLMPropertyTypeInt &&
-            schema.primaryKeyProperty.type != RLMPropertyTypeString &&
-            schema.primaryKeyProperty.type != RLMPropertyTypeObjectId &&
-            schema.primaryKeyProperty.type != RLMPropertyTypeUUID) {
-            @throw RLMException(@"Property '%@' cannot be made the primary key of '%@' because it is not a 'string', 'int', 'objectId', or 'uuid' property.",
+        if (schema.primaryKeyProperty.type != LEGACYPropertyTypeInt &&
+            schema.primaryKeyProperty.type != LEGACYPropertyTypeString &&
+            schema.primaryKeyProperty.type != LEGACYPropertyTypeObjectId &&
+            schema.primaryKeyProperty.type != LEGACYPropertyTypeUUID) {
+            @throw LEGACYException(@"Property '%@' cannot be made the primary key of '%@' because it is not a 'string', 'int', 'objectId', or 'uuid' property.",
                                 primaryKey, className);
         }
     }
 
-    for (RLMProperty *prop in schema.properties) {
-        if (prop.optional && prop.collection && !prop.dictionary && (prop.type == RLMPropertyTypeObject || prop.type == RLMPropertyTypeLinkingObjects)) {
+    for (LEGACYProperty *prop in schema.properties) {
+        if (prop.optional && prop.collection && !prop.dictionary && (prop.type == LEGACYPropertyTypeObject || prop.type == LEGACYPropertyTypeLinkingObjects)) {
             // FIXME: message is awkward
-            @throw RLMException(@"Property '%@.%@' cannot be made optional because optional '%@' properties are not supported.",
-                                className, prop.name, RLMTypeToString(prop.type));
+            @throw LEGACYException(@"Property '%@.%@' cannot be made optional because optional '%@' properties are not supported.",
+                                className, prop.name, LEGACYTypeToString(prop.type));
         }
     }
 
@@ -213,17 +213,17 @@ using namespace realm;
         && schema.isSwiftClass
         && schema.properties.count == 0
         && schema.computedProperties.count == 0) {
-        @throw RLMException(@"No properties are defined for '%@'. Did you remember to mark them with '@objc' or '@Persisted' in your model?", schema.className);
+        @throw LEGACYException(@"No properties are defined for '%@'. Did you remember to mark them with '@objc' or '@Persisted' in your model?", schema.className);
     }
     return schema;
 }
 
 + (NSArray *)propertiesForClass:(Class)objectClass isSwift:(bool)isSwiftClass {
-    if (NSArray<RLMProperty *> *props = [objectClass _getProperties]) {
+    if (NSArray<LEGACYProperty *> *props = [objectClass _getProperties]) {
         return props;
     }
 
-    // For Swift subclasses of RLMObject we need an instance of the object when parsing properties
+    // For Swift subclasses of LEGACYObject we need an instance of the object when parsing properties
     id swiftObjectInstance = isSwiftClass ? [[objectClass alloc] init] : nil;
 
     NSArray *ignoredProperties = [objectClass ignoredProperties];
@@ -232,7 +232,7 @@ using namespace realm;
 
     unsigned int count;
     std::unique_ptr<objc_property_t[], decltype(&free)> props(class_copyPropertyList(objectClass, &count), &free);
-    NSMutableArray<RLMProperty *> *propArray = [NSMutableArray arrayWithCapacity:count];
+    NSMutableArray<LEGACYProperty *> *propArray = [NSMutableArray arrayWithCapacity:count];
     NSSet *indexed = [[NSSet alloc] initWithArray:[objectClass indexedProperties]];
     for (unsigned int i = 0; i < count; i++) {
         NSString *propertyName = @(property_getName(props[i]));
@@ -240,16 +240,16 @@ using namespace realm;
             continue;
         }
 
-        RLMProperty *prop = nil;
+        LEGACYProperty *prop = nil;
         if (isSwiftClass) {
-            prop = [[RLMProperty alloc] initSwiftPropertyWithName:propertyName
+            prop = [[LEGACYProperty alloc] initSwiftPropertyWithName:propertyName
                                                           indexed:[indexed containsObject:propertyName]
                                            linkPropertyDescriptor:linkingObjectsProperties[propertyName]
                                                          property:props[i]
                                                          instance:swiftObjectInstance];
         }
         else {
-            prop = [[RLMProperty alloc] initWithName:propertyName
+            prop = [[LEGACYProperty alloc] initWithName:propertyName
                                              indexed:[indexed containsObject:propertyName]
                               linkPropertyDescriptor:linkingObjectsProperties[propertyName]
                                             property:props[i]];
@@ -264,22 +264,22 @@ using namespace realm;
     }
 
     if (auto requiredProperties = [objectClass requiredProperties]) {
-        for (RLMProperty *property in propArray) {
+        for (LEGACYProperty *property in propArray) {
             bool required = [requiredProperties containsObject:property.name];
-            if (required && property.type == RLMPropertyTypeObject && (!property.collection || property.dictionary)) {
-                @throw RLMException(@"Object properties cannot be made required, "
+            if (required && property.type == LEGACYPropertyTypeObject && (!property.collection || property.dictionary)) {
+                @throw LEGACYException(@"Object properties cannot be made required, "
                                     "but '+[%@ requiredProperties]' included '%@'", objectClass, property.name);
             }
             property.optional &= !required;
         }
     }
 
-    for (RLMProperty *property in propArray) {
-        if (!property.optional && property.type == RLMPropertyTypeObject && !property.collection) {
-            @throw RLMException(@"The `%@.%@` property must be marked as being optional.",
+    for (LEGACYProperty *property in propArray) {
+        if (!property.optional && property.type == LEGACYPropertyTypeObject && !property.collection) {
+            @throw LEGACYException(@"The `%@.%@` property must be marked as being optional.",
                                 [objectClass className], property.name);
         }
-        if (property.type == RLMPropertyTypeAny) {
+        if (property.type == LEGACYPropertyTypeAny) {
             property.optional = NO;
         }
     }
@@ -288,7 +288,7 @@ using namespace realm;
 }
 
 - (id)copyWithZone:(NSZone *)zone {
-    RLMObjectSchema *schema = [[RLMObjectSchema allocWithZone:zone] init];
+    LEGACYObjectSchema *schema = [[LEGACYObjectSchema allocWithZone:zone] init];
     schema->_objectClass = _objectClass;
     schema->_className = _className;
     schema->_objectClass = _objectClass;
@@ -303,7 +303,7 @@ using namespace realm;
     return schema;
 }
 
-- (BOOL)isEqualToObjectSchema:(RLMObjectSchema *)objectSchema {
+- (BOOL)isEqualToObjectSchema:(LEGACYObjectSchema *)objectSchema {
     if (objectSchema.properties.count != _properties.count) {
         return NO;
     }
@@ -320,10 +320,10 @@ using namespace realm;
 
 - (NSString *)description {
     NSMutableString *propertiesString = [NSMutableString string];
-    for (RLMProperty *property in self.properties) {
+    for (LEGACYProperty *property in self.properties) {
         [propertiesString appendFormat:@"\t%@\n", [property.description stringByReplacingOccurrencesOfString:@"\n" withString:@"\n\t"]];
     }
-    for (RLMProperty *property in self.computedProperties) {
+    for (LEGACYProperty *property in self.computedProperties) {
         [propertiesString appendFormat:@"\t%@\n", [property.description stringByReplacingOccurrencesOfString:@"\n" withString:@"\n\t"]];
     }
     return [NSString stringWithFormat:@"%@ %@{\n%@}",
@@ -341,33 +341,33 @@ using namespace realm;
     return _objectStoreName;
 }
 
-- (realm::ObjectSchema)objectStoreCopy:(RLMSchema *)schema {
+- (realm::ObjectSchema)objectStoreCopy:(LEGACYSchema *)schema {
     using Type = ObjectSchema::ObjectType;
     ObjectSchema objectSchema;
     objectSchema.name = self.objectStoreName;
     objectSchema.primary_key = _primaryKeyProperty ? _primaryKeyProperty.columnName.UTF8String : "";
     objectSchema.table_type = _isAsymmetric ? Type::TopLevelAsymmetric : _isEmbedded ? Type::Embedded : Type::TopLevel;
-    for (RLMProperty *prop in _properties) {
+    for (LEGACYProperty *prop in _properties) {
         Property p = [prop objectStoreCopy:schema];
         p.is_primary = (prop == _primaryKeyProperty);
         objectSchema.persisted_properties.push_back(std::move(p));
     }
-    for (RLMProperty *prop in _computedProperties) {
+    for (LEGACYProperty *prop in _computedProperties) {
         objectSchema.computed_properties.push_back([prop objectStoreCopy:schema]);
     }
     return objectSchema;
 }
 
 + (instancetype)objectSchemaForObjectStoreSchema:(realm::ObjectSchema const&)objectSchema {
-    RLMObjectSchema *schema = [RLMObjectSchema new];
+    LEGACYObjectSchema *schema = [LEGACYObjectSchema new];
     schema.className = @(objectSchema.name.c_str());
     schema.isEmbedded = objectSchema.table_type == ObjectSchema::ObjectType::Embedded;
     schema.isAsymmetric = objectSchema.table_type == ObjectSchema::ObjectType::TopLevelAsymmetric;
 
-    // create array of RLMProperties
+    // create array of LEGACYProperties
     NSMutableArray *properties = [NSMutableArray arrayWithCapacity:objectSchema.persisted_properties.size()];
     for (const Property &prop : objectSchema.persisted_properties) {
-        RLMProperty *property = [RLMProperty propertyForObjectStoreProperty:prop];
+        LEGACYProperty *property = [LEGACYProperty propertyForObjectStoreProperty:prop];
         property.isPrimary = (prop.name == objectSchema.primary_key);
         [properties addObject:property];
     }
@@ -375,7 +375,7 @@ using namespace realm;
 
     NSMutableArray *computedProperties = [NSMutableArray arrayWithCapacity:objectSchema.computed_properties.size()];
     for (const Property &prop : objectSchema.computed_properties) {
-        [computedProperties addObject:[RLMProperty propertyForObjectStoreProperty:prop]];
+        [computedProperties addObject:[LEGACYProperty propertyForObjectStoreProperty:prop]];
     }
     schema.computedProperties = computedProperties;
 
@@ -384,14 +384,14 @@ using namespace realm;
         NSString *primaryKeyString = [NSString stringWithUTF8String:objectSchema.primary_key.c_str()];
         schema.primaryKeyProperty = schema[primaryKeyString];
         if (!schema.primaryKeyProperty) {
-            @throw RLMException(@"No property matching primary key '%@'", primaryKeyString);
+            @throw LEGACYException(@"No property matching primary key '%@'", primaryKeyString);
         }
     }
 
-    // for dynamic schema use vanilla RLMDynamicObject accessor classes
-    schema.objectClass = RLMObject.class;
-    schema.accessorClass = RLMDynamicObject.class;
-    schema.unmanagedClass = RLMObject.class;
+    // for dynamic schema use vanilla LEGACYDynamicObject accessor classes
+    schema.objectClass = LEGACYObject.class;
+    schema.accessorClass = LEGACYDynamicObject.class;
+    schema.unmanagedClass = LEGACYObject.class;
 
     return schema;
 }

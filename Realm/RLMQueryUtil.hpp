@@ -26,14 +26,14 @@ namespace realm {
     class SortDescriptor;
 }
 
-@class RLMObjectSchema, RLMProperty, RLMSchema, RLMSortDescriptor;
-class RLMClassInfo;
+@class LEGACYObjectSchema, LEGACYProperty, LEGACYSchema, LEGACYSortDescriptor;
+class LEGACYClassInfo;
 
-extern NSString * const RLMPropertiesComparisonTypeMismatchException;
-extern NSString * const RLMUnsupportedTypesFoundInPropertyComparisonException;
+extern NSString * const LEGACYPropertiesComparisonTypeMismatchException;
+extern NSString * const LEGACYUnsupportedTypesFoundInPropertyComparisonException;
 
-realm::Query RLMPredicateToQuery(NSPredicate *predicate, RLMObjectSchema *objectSchema,
-                                 RLMSchema *schema, realm::Group &group);
+realm::Query LEGACYPredicateToQuery(NSPredicate *predicate, LEGACYObjectSchema *objectSchema,
+                                 LEGACYSchema *schema, realm::Group &group);
 
 // return property - throw for invalid column name
-RLMProperty *RLMValidatedProperty(RLMObjectSchema *objectSchema, NSString *columnName);
+LEGACYProperty *LEGACYValidatedProperty(LEGACYObjectSchema *objectSchema, NSString *columnName);

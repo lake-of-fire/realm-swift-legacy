@@ -16,28 +16,28 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMUser_Private.h"
+#import "LEGACYUser_Private.h"
 
-#import "RLMSyncConfiguration.h"
+#import "LEGACYSyncConfiguration.h"
 
 #import <realm/object-store/sync/sync_user.hpp>
 #import <realm/sync/config.hpp>
 
-@class RLMSyncConfiguration, RLMApp;
+@class LEGACYSyncConfiguration, LEGACYApp;
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@interface RLMUser ()
-- (instancetype)initWithUser:(std::shared_ptr<realm::SyncUser>)user app:(RLMApp *)app;
+@interface LEGACYUser ()
+- (instancetype)initWithUser:(std::shared_ptr<realm::SyncUser>)user app:(LEGACYApp *)app;
 - (std::string)pathForPartitionValue:(std::string const&)partitionValue;
 - (std::string)pathForFlexibleSync;
 - (std::shared_ptr<realm::SyncUser>)_syncUser;
-@property (weak, readonly) RLMApp *app;
+@property (weak, readonly) LEGACYApp *app;
 
 @end
 
-@interface RLMUserProfile ()
+@interface LEGACYUserProfile ()
 - (instancetype)initWithUserProfile:(realm::SyncUserProfile)userProfile;
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

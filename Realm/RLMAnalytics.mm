@@ -54,16 +54,16 @@
 // - The XCode version.
 // - Some info about the features been used when opening the realm for the first time.
 
-#import "RLMAnalytics.hpp"
+#import "LEGACYAnalytics.hpp"
 
 #import <Foundation/Foundation.h>
 
 #if TARGET_IPHONE_SIMULATOR || TARGET_OS_MAC || (TARGET_OS_WATCH && TARGET_OS_SIMULATOR) || (TARGET_OS_TV && TARGET_OS_SIMULATOR)
-#import "RLMObjectSchema_Private.h"
-#import "RLMRealmConfiguration_Private.h"
-#import "RLMSchema_Private.h"
-#import "RLMSyncConfiguration.h"
-#import "RLMUtil.hpp"
+#import "LEGACYObjectSchema_Private.h"
+#import "LEGACYRealmConfiguration_Private.h"
+#import "LEGACYSchema_Private.h"
+#import "LEGACYSyncConfiguration.h"
+#import "LEGACYUtil.hpp"
 
 #import <array>
 #import <sys/socket.h>
@@ -74,11 +74,11 @@
 #import <CommonCrypto/CommonDigest.h>
 
 #ifndef REALM_COCOA_VERSION
-#import "RLMVersion.h"
+#import "LEGACYVersion.h"
 #endif
 
 // Wrapper for sysctl() that handles the memory management stuff
-static auto RLMSysCtl(int *mib, u_int mibSize, size_t *bufferSize) {
+static auto LEGACYSysCtl(int *mib, u_int mibSize, size_t *bufferSize) {
     std::unique_ptr<void, decltype(&free)> buffer(nullptr, &free);
 
     int ret = sysctl(mib, mibSize, nullptr, bufferSize, nullptr, 0);
@@ -101,7 +101,7 @@ static auto RLMSysCtl(int *mib, u_int mibSize, size_t *bufferSize) {
 
 // Get the version of OS X we're running on (even in the simulator this gives
 // the OS X version and not the simulated iOS version)
-static NSString *RLMHostOSVersion() {
+static NSString *LEGACYHostOSVersion() {
     size_t size;
     sysctlbyname("kern.osproductversion", NULL, &size, NULL, 0);
     char *model = (char*)malloc(size);
@@ -111,7 +111,7 @@ static NSString *RLMHostOSVersion() {
     return deviceModel;
 }
 
-static NSString *RLMTargetArch() {
+static NSString *LEGACYTargetArch() {
     NSString *targetArchitecture;
 #if TARGET_CPU_X86_64
     targetArchitecture = @"x86_64";
@@ -122,7 +122,7 @@ static NSString *RLMTargetArch() {
 }
 
 // Hash the data in the given buffer and convert it to a hex-format string
-NSString *RLMHashBase16Data(const void *bytes, size_t length) {
+NSString *LEGACYHashBase16Data(const void *bytes, size_t length) {
     unsigned char buffer[CC_SHA256_DIGEST_LENGTH];
     CC_SHA256(bytes, static_cast<CC_LONG>(length), buffer);
 
@@ -146,7 +146,7 @@ static std::optional<std::array<unsigned char, 6>> getMacAddress(int id) {
 
     std::array<int, 6> mib = {{CTL_NET, PF_ROUTE, 0, AF_LINK, NET_RT_IFLIST, index}};
     size_t bufferSize;
-    auto buffer = RLMSysCtl(&mib[0], mib.size(), &bufferSize);
+    auto buffer = LEGACYSysCtl(&mib[0], mib.size(), &bufferSize);
     if (!buffer) {
         return std::nullopt;
     }
@@ -172,16 +172,16 @@ static std::optional<std::array<unsigned char, 6>> getMacAddress(int id) {
 
 // Returns the hash of the MAC address of the first network adaptor since the
 // vendorIdentifier isn't constant between iOS simulators.
-static NSString *RLMMACAddress() {
+static NSString *LEGACYMACAddress() {
      for (int i = 0; i < 9; ++i) {
          if (auto mac = getMacAddress(i)) {
-             return RLMHashBase16Data(&(*mac)[0], 6);
+             return LEGACYHashBase16Data(&(*mac)[0], 6);
          }
      }
      return @"unknown";
  }
 
-static NSString *RLMBuilderId() {
+static NSString *LEGACYBuilderId() {
 #ifdef REALM_IOPLATFORMUUID
     NSString *saltedId = [@"Realm is great" stringByAppendingString:REALM_IOPLATFORMUUID];
     NSData *data = [saltedId dataUsingEncoding:NSUTF8StringEncoding];
@@ -197,7 +197,7 @@ static NSString *RLMBuilderId() {
 #endif
 }
 
-static NSDictionary *RLMBaseMetrics() {
+static NSDictionary *LEGACYBaseMetrics() {
     static NSString *kUnknownString = @"unknown";
     NSBundle *appBundle = NSBundle.mainBundle;
     NSString *hashedBundleID = appBundle.bundleIdentifier;
@@ -217,16 +217,16 @@ static NSDictionary *RLMBaseMetrics() {
     // information (e.g. the name of an unannounced product)
     if (hashedBundleID) {
         NSData *data = [hashedBundleID dataUsingEncoding:NSUTF8StringEncoding];
-        hashedBundleID = RLMHashBase16Data(data.bytes, data.length);
+        hashedBundleID = LEGACYHashBase16Data(data.bytes, data.length);
     }
 
     Class swiftDecimal128 = NSClassFromString(@"RealmSwiftDecimal128");
     BOOL isSwift = swiftDecimal128 != nil;
 
-    NSString *hashedDistinctId = RLMMACAddress();
+    NSString *hashedDistinctId = LEGACYMACAddress();
     // We use the IOPlatformUUID if is available (Cocoapods, SPM),
     // in case we cannot obtain it (Pre-built binaries) we use the hashed mac address.
-    NSString *hashedBuilderId = RLMBuilderId() ?: hashedDistinctId;
+    NSString *hashedBuilderId = LEGACYBuilderId() ?: hashedDistinctId;
 
     NSDictionary *info = appBundle.infoDictionary;
 
@@ -266,7 +266,7 @@ static NSDictionary *RLMBaseMetrics() {
 #else
         @"Target OS Type": @"macos",
 #endif
-        @"Target CPU Arch": RLMTargetArch() ?: kUnknownString,
+        @"Target CPU Arch": LEGACYTargetArch() ?: kUnknownString,
 
         // Framework
 #if TARGET_OS_MACCATALYST
@@ -276,7 +276,7 @@ static NSDictionary *RLMBaseMetrics() {
         // Host Info
         // Host OS version being built on
         @"Host OS Type": @"macos",
-        @"Host OS Version": RLMHostOSVersion() ?: kUnknownString,
+        @"Host OS Version": LEGACYHostOSVersion() ?: kUnknownString,
 
         // Installation method
 #ifdef SWIFT_PACKAGE
@@ -299,7 +299,7 @@ static NSDictionary *RLMBaseMetrics() {
 }
 
 // This will only be executed once but depending on the number of objects, could take sometime
-static NSDictionary *RLMSchemaMetrics(RLMSchema *schema) {
+static NSDictionary *LEGACYSchemaMetrics(LEGACYSchema *schema) {
     NSMutableDictionary *featuresDictionary = [@{@"Embedded_Object": @0,
                                                  @"Asymmetric_Object": @0,
                                                  @"Object_Link": @0,
@@ -313,7 +313,7 @@ static NSDictionary *RLMSchemaMetrics(RLMSchema *schema) {
                                                  @"Backlink": @0,
                                                } mutableCopy];
 
-    for (RLMObjectSchema *objectSchema in schema.objectSchema) {
+    for (LEGACYObjectSchema *objectSchema in schema.objectSchema) {
         if (objectSchema.isEmbedded) {
             featuresDictionary[@"Embedded_Object"] = @1;
         }
@@ -321,9 +321,9 @@ static NSDictionary *RLMSchemaMetrics(RLMSchema *schema) {
             featuresDictionary[@"Asymmetric_Object"] = @1;
         }
 
-        for (RLMProperty *property in objectSchema.properties) {
+        for (LEGACYProperty *property in objectSchema.properties) {
             if (property.array) {
-                if (property.type == RLMPropertyTypeObject) {
+                if (property.type == LEGACYPropertyTypeObject) {
                     featuresDictionary[@"Object_List"] = @1;
                 } else {
                     featuresDictionary[@"Primitive_List"] = @1;
@@ -331,7 +331,7 @@ static NSDictionary *RLMSchemaMetrics(RLMSchema *schema) {
                 continue;
             }
             if (property.set) {
-                if (property.type == RLMPropertyTypeObject) {
+                if (property.type == LEGACYPropertyTypeObject) {
                     featuresDictionary[@"Object_Set"] = @1;
                 } else {
                     featuresDictionary[@"Primitive_Set"] = @1;
@@ -339,7 +339,7 @@ static NSDictionary *RLMSchemaMetrics(RLMSchema *schema) {
                 continue;
             }
             if (property.dictionary) {
-                if (property.type == RLMPropertyTypeObject) {
+                if (property.type == LEGACYPropertyTypeObject) {
                     featuresDictionary[@"Object_Dictionary"] = @1;
                 } else {
                     featuresDictionary[@"Primitive_Dictionary"] = @1;
@@ -348,13 +348,13 @@ static NSDictionary *RLMSchemaMetrics(RLMSchema *schema) {
             }
 
             switch (property.type) {
-               case RLMPropertyTypeAny:
+               case LEGACYPropertyTypeAny:
                     featuresDictionary[@"Mixed"] = @1;
                   break;
-               case RLMPropertyTypeObject:
+               case LEGACYPropertyTypeObject:
                     featuresDictionary[@"Object_Link"] = @1;
                   break;
-                case RLMPropertyTypeLinkingObjects:
+                case LEGACYPropertyTypeLinkingObjects:
                     featuresDictionary[@"Backlink"] = @1;
                    break;
                default:
@@ -365,8 +365,8 @@ static NSDictionary *RLMSchemaMetrics(RLMSchema *schema) {
     return featuresDictionary;
 }
 
-static NSDictionary *RLMConfigurationMetrics(RLMRealmConfiguration *configuration) {
-    RLMSyncConfiguration *syncConfiguration = configuration.syncConfiguration;
+static NSDictionary *LEGACYConfigurationMetrics(LEGACYRealmConfiguration *configuration) {
+    LEGACYSyncConfiguration *syncConfiguration = configuration.syncConfiguration;
     bool isSync = syncConfiguration != nil;
     bool isPBSSync = syncConfiguration.partitionValue != nil;
     bool isFlexibleSync = (isSync && !isPBSSync);
@@ -382,10 +382,10 @@ static NSDictionary *RLMConfigurationMetrics(RLMRealmConfiguration *configuratio
         @"Pbs_Sync": isPBSSync ? @1 : @0,
 
         // Client Reset
-        @"CR_Recover_Discard": (isSync && resetMode == RLMClientResetModeRecoverOrDiscardUnsyncedChanges) ? @1 : @0,
-        @"CR_Recover": (isSync && resetMode == RLMClientResetModeRecoverUnsyncedChanges) ? @1 : @0,
-        @"CR_Discard": (isSync && resetMode == RLMClientResetModeDiscardUnsyncedChanges) ? @1 : @0,
-        @"CR_Manual": (isSync && resetMode == RLMClientResetModeManual) ? @1 : @0,
+        @"CR_Recover_Discard": (isSync && resetMode == LEGACYClientResetModeRecoverOrDiscardUnsyncedChanges) ? @1 : @0,
+        @"CR_Recover": (isSync && resetMode == LEGACYClientResetModeRecoverUnsyncedChanges) ? @1 : @0,
+        @"CR_Discard": (isSync && resetMode == LEGACYClientResetModeDiscardUnsyncedChanges) ? @1 : @0,
+        @"CR_Manual": (isSync && resetMode == LEGACYClientResetModeManual) ? @1 : @0,
 
         // Configuration
         @"Compact_On_Launch": isCompactOnLaunch ? @1 : @0,
@@ -393,16 +393,16 @@ static NSDictionary *RLMConfigurationMetrics(RLMRealmConfiguration *configuratio
     };
 }
 
-void RLMSendAnalytics(RLMRealmConfiguration *configuration, RLMSchema *schema) {
-    if (getenv("REALM_DISABLE_ANALYTICS") || !RLMIsDebuggerAttached() || RLMIsRunningInPlayground()) {
+void LEGACYSendAnalytics(LEGACYRealmConfiguration *configuration, LEGACYSchema *schema) {
+    if (getenv("REALM_DISABLE_ANALYTICS") || !LEGACYIsDebuggerAttached() || LEGACYIsRunningInPlayground()) {
         return;
     }
 
     id config = [configuration copy];
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        NSDictionary *baseMetrics = RLMBaseMetrics();
-        NSDictionary *schemaMetrics = RLMSchemaMetrics(schema);
-        NSDictionary *configurationMetrics = RLMConfigurationMetrics(config);
+        NSDictionary *baseMetrics = LEGACYBaseMetrics();
+        NSDictionary *schemaMetrics = LEGACYSchemaMetrics(schema);
+        NSDictionary *configurationMetrics = LEGACYConfigurationMetrics(config);
 
         NSMutableDictionary *metrics = [[NSMutableDictionary alloc] init];
         [metrics addEntriesFromDictionary:baseMetrics];
@@ -422,6 +422,6 @@ void RLMSendAnalytics(RLMRealmConfiguration *configuration, RLMSchema *schema) {
 
 #else
 
-void RLMSendAnalytics() {}
+void LEGACYSendAnalytics() {}
 
 #endif

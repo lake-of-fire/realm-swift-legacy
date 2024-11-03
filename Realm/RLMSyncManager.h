@@ -16,76 +16,76 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-@class RLMSyncSession, RLMSyncTimeoutOptions, RLMAppConfiguration;
+@class LEGACYSyncSession, LEGACYSyncTimeoutOptions, LEGACYAppConfiguration;
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 // NEXT-MAJOR: This enum needs to be removed when access to the logger is removed
 // from the sync manager. 
 /// An enum representing different levels of sync-related logging that can be configured.
-typedef RLM_CLOSED_ENUM(NSUInteger, RLMSyncLogLevel) {
+typedef LEGACY_CLOSED_ENUM(NSUInteger, LEGACYSyncLogLevel) {
     /// Nothing will ever be logged.
-    RLMSyncLogLevelOff,
+    LEGACYSyncLogLevelOff,
     /// Only fatal errors will be logged.
-    RLMSyncLogLevelFatal,
+    LEGACYSyncLogLevelFatal,
     /// Only errors will be logged.
-    RLMSyncLogLevelError,
+    LEGACYSyncLogLevelError,
     /// Warnings and errors will be logged.
-    RLMSyncLogLevelWarn,
+    LEGACYSyncLogLevelWarn,
     /// Information about sync events will be logged. Fewer events will be logged in order to avoid overhead.
-    RLMSyncLogLevelInfo,
-    /// Information about sync events will be logged. More events will be logged than with `RLMSyncLogLevelInfo`.
-    RLMSyncLogLevelDetail,
+    LEGACYSyncLogLevelInfo,
+    /// Information about sync events will be logged. More events will be logged than with `LEGACYSyncLogLevelInfo`.
+    LEGACYSyncLogLevelDetail,
     /// Log information that can aid in debugging.
     ///
     /// - warning: Will incur a measurable performance impact.
-    RLMSyncLogLevelDebug,
-    /// Log information that can aid in debugging. More events will be logged than with `RLMSyncLogLevelDebug`.
+    LEGACYSyncLogLevelDebug,
+    /// Log information that can aid in debugging. More events will be logged than with `LEGACYSyncLogLevelDebug`.
     ///
     /// - warning: Will incur a measurable performance impact.
-    RLMSyncLogLevelTrace,
-    /// Log information that can aid in debugging. More events will be logged than with `RLMSyncLogLevelTrace`.
+    LEGACYSyncLogLevelTrace,
+    /// Log information that can aid in debugging. More events will be logged than with `LEGACYSyncLogLevelTrace`.
     ///
     /// - warning: Will incur a measurable performance impact.
-    RLMSyncLogLevelAll
+    LEGACYSyncLogLevelAll
 };
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-/// A log callback function which can be set on RLMSyncManager.
+/// A log callback function which can be set on LEGACYSyncManager.
 ///
 /// The log function may be called from multiple threads simultaneously, and is
 /// responsible for performing its own synchronization if any is required.
-RLM_SWIFT_SENDABLE // invoked on a background thread
-typedef void (^RLMSyncLogFunction)(RLMSyncLogLevel level, NSString *message);
+LEGACY_SWIFT_SENDABLE // invoked on a background thread
+typedef void (^LEGACYSyncLogFunction)(LEGACYSyncLogLevel level, NSString *message);
 #pragma clang diagnostic pop
 
 /// A block type representing a block which can be used to report a sync-related error to the application. If the error
 /// pertains to a specific session, that session will also be passed into the block.
-RLM_SWIFT_SENDABLE // invoked on a background thread
-typedef void(^RLMSyncErrorReportingBlock)(NSError *, RLMSyncSession * _Nullable);
+LEGACY_SWIFT_SENDABLE // invoked on a background thread
+typedef void(^LEGACYSyncErrorReportingBlock)(NSError *, LEGACYSyncSession * _Nullable);
 
 /**
  A manager which serves as a central point for sync-related configuration.
  */
-RLM_SWIFT_SENDABLE RLM_FINAL // is internally thread-safe
-@interface RLMSyncManager : NSObject
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL // is internally thread-safe
+@interface LEGACYSyncManager : NSObject
 
 /**
  A block which can optionally be set to report sync-related errors to your application.
 
- Any error reported through this block will be of the `RLMSyncError` type, and marked
- with the `RLMSyncErrorDomain` domain.
+ Any error reported through this block will be of the `LEGACYSyncError` type, and marked
+ with the `LEGACYSyncErrorDomain` domain.
 
  Errors reported through this mechanism are fatal, with several exceptions. Please consult
- `RLMSyncError` for information about the types of errors that can be reported through
+ `LEGACYSyncError` for information about the types of errors that can be reported through
  the block, and for for suggestions on handling recoverable error codes.
 
- @see `RLMSyncError`
+ @see `LEGACYSyncError`
  */
-@property (nullable, atomic, copy) RLMSyncErrorReportingBlock errorHandler;
+@property (nullable, atomic, copy) LEGACYSyncErrorReportingBlock errorHandler;
 
 /// :nodoc:
 @property (nonatomic, copy) NSString *appID
@@ -103,7 +103,7 @@ __attribute__((deprecated("This property is not used for anything")));
 
 /**
  The logging threshold which newly opened synced Realms will use. Defaults to
- `RLMSyncLogLevelInfo`.
+ `LEGACYSyncLogLevelInfo`.
 
  By default logging strings are output to Apple System Logger. Set `logger` to
  perform custom logging logic instead.
@@ -111,8 +111,8 @@ __attribute__((deprecated("This property is not used for anything")));
  @warning This property must be set before any synced Realms are opened. Setting it after
           opening any synced Realm will do nothing.
  */
-@property (atomic) RLMSyncLogLevel logLevel
-__attribute__((deprecated("Use `RLMLogger.default.level`/`Logger.shared.level` to set/get the default logger threshold level.")));
+@property (atomic) LEGACYSyncLogLevel logLevel
+__attribute__((deprecated("Use `LEGACYLogger.default.level`/`Logger.shared.level` to set/get the default logger threshold level.")));
 
 /**
  The function which will be invoked whenever the sync client has a log message.
@@ -122,8 +122,8 @@ __attribute__((deprecated("Use `RLMLogger.default.level`/`Logger.shared.level` t
  @warning This property must be set before any synced Realms are opened. Setting
           it after opening any synced Realm will do nothing.
  */
-@property (atomic, nullable) RLMSyncLogFunction logger
-__attribute__((deprecated("Use `RLMLogger.default`/`Logger.shared` to set/get the default logger.")));
+@property (atomic, nullable) LEGACYSyncLogFunction logger
+__attribute__((deprecated("Use `LEGACYLogger.default`/`Logger.shared` to set/get the default logger.")));
 
 /**
  The name of the HTTP header to send authorization data in when making requests to Atlas App Services which has
@@ -147,20 +147,20 @@ __attribute__((deprecated("Use `RLMLogger.default`/`Logger.shared` to set/get th
  @warning This property must be set before any synced Realms are opened. Setting
  it after opening any synced Realm will do nothing.
  */
-@property (nullable, atomic, copy) RLMSyncTimeoutOptions *timeoutOptions;
+@property (nullable, atomic, copy) LEGACYSyncTimeoutOptions *timeoutOptions;
 
 /// :nodoc:
-- (instancetype)init __attribute__((unavailable("RLMSyncManager cannot be created directly")));
+- (instancetype)init __attribute__((unavailable("LEGACYSyncManager cannot be created directly")));
 
 /// :nodoc:
-+ (instancetype)new __attribute__((unavailable("RLMSyncManager cannot be created directly")));
++ (instancetype)new __attribute__((unavailable("LEGACYSyncManager cannot be created directly")));
 
 @end
 
 /**
   Options for configuring timeouts and intervals in the sync client.
  */
-@interface RLMSyncTimeoutOptions : NSObject
+@interface LEGACYSyncTimeoutOptions : NSObject
 /// The maximum number of milliseconds to allow for a connection to
 /// become fully established. This includes the time to resolve the
 /// network address, the TCP connect operation, the SSL handshake, and
@@ -220,4 +220,4 @@ __attribute__((deprecated("Use `RLMLogger.default`/`Logger.shared` to set/get th
 @property (nonatomic) NSUInteger fastReconnectLimit;
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

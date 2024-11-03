@@ -19,7 +19,7 @@
 #import <UIKit/UIKit.h>
 #import <Realm/Realm.h>
 
-@interface MyModel : RLMObject
+@interface MyModel : LEGACYObject
 @property (nonatomic) int value;
 @end
 @implementation MyModel
@@ -31,7 +31,7 @@
 
 @implementation AppDelegate
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    RLMRealm *realm = [RLMRealm defaultRealm];
+    LEGACYRealm *realm = [LEGACYRealm defaultRealm];
     return YES;
 }
 @end

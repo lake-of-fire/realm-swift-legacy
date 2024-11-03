@@ -16,69 +16,69 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-@protocol RLMValue;
+@protocol LEGACYValue;
 
 #pragma mark - Error Domains
 
-/** Error code is a value from the RLMError enum. */
-extern NSString *const RLMErrorDomain;
+/** Error code is a value from the LEGACYError enum. */
+extern NSString *const LEGACYErrorDomain;
 
 /** An error domain identifying non-specific system errors. */
-extern NSString *const RLMUnknownSystemErrorDomain;
+extern NSString *const LEGACYUnknownSystemErrorDomain;
 
 /**
  The error domain string for all SDK errors related to errors reported
  by the synchronization manager error handler, as well as general sync
  errors that don't fall into any of the other categories.
  */
-extern NSString *const RLMSyncErrorDomain;
+extern NSString *const LEGACYSyncErrorDomain;
 
 /**
  The error domain string for all SDK errors related to the authentication
  endpoint.
  */
-extern NSString *const RLMSyncAuthErrorDomain;
+extern NSString *const LEGACYSyncAuthErrorDomain;
 
 /**
 The error domain string for all SDK errors related to the Atlas App Services
 endpoint.
 */
-extern NSString *const RLMAppErrorDomain;
+extern NSString *const LEGACYAppErrorDomain;
 
-#pragma mark - RLMError
+#pragma mark - LEGACYError
 
 /// A user info key containing the error code. This is provided for backwards
 /// compatibility only and should not be used.
-extern NSString *const RLMErrorCodeKey __attribute((deprecated("use -[NSError code]")));
+extern NSString *const LEGACYErrorCodeKey __attribute((deprecated("use -[NSError code]")));
 
 /// A user info key containing the name of the error code. This is for
 /// debugging purposes only and should not be relied on.
-extern NSString *const RLMErrorCodeNameKey;
+extern NSString *const LEGACYErrorCodeNameKey;
 
 /// A user info key present in sync errors which originate from the server,
 /// containing the URL of the server-side logs associated with the error.
-extern NSString * const RLMServerLogURLKey;
+extern NSString * const LEGACYServerLogURLKey;
 
-/// A user info key containing a HTTP status code. Some ``RLMAppError`` codes
-/// include this, most notably ``RLMAppErrorHttpRequestFailed``.
-extern NSString * const RLMHTTPStatusCodeKey;
+/// A user info key containing a HTTP status code. Some ``LEGACYAppError`` codes
+/// include this, most notably ``LEGACYAppErrorHttpRequestFailed``.
+extern NSString * const LEGACYHTTPStatusCodeKey;
 
-/// A user info key containing a `RLMCompensatingWriteInfo` which includes
+/// A user info key containing a `LEGACYCompensatingWriteInfo` which includes
 /// further details about what was reverted by the server.
-extern NSString *const RLMCompensatingWriteInfoKey;
+extern NSString *const LEGACYCompensatingWriteInfoKey;
 
 /**
- `RLMError` is an enumeration representing all recoverable errors. It is
- associated with the Realm error domain specified in `RLMErrorDomain`.
+ `LEGACYError` is an enumeration representing all recoverable errors. It is
+ associated with the Realm error domain specified in `LEGACYErrorDomain`.
  */
-typedef RLM_ERROR_ENUM(NSInteger, RLMError, RLMErrorDomain) {
+typedef LEGACY_ERROR_ENUM(NSInteger, LEGACYError, LEGACYErrorDomain) {
     /** Denotes a general error that occurred when trying to open a Realm. */
-    RLMErrorFail                  = 1,
+    LEGACYErrorFail                  = 1,
 
     /** Denotes a file I/O error that occurred when trying to open a Realm. */
-    RLMErrorFileAccess            = 2,
+    LEGACYErrorFileAccess            = 2,
 
     /**
      Denotes a file permission error that occurred when trying to open a Realm.
@@ -86,13 +86,13 @@ typedef RLM_ERROR_ENUM(NSInteger, RLMError, RLMErrorDomain) {
      This error can occur if the user does not have permission to open or create
      the specified file in the specified access mode when opening a Realm.
      */
-    RLMErrorFilePermissionDenied  = 3,
+    LEGACYErrorFilePermissionDenied  = 3,
 
     /**
      Denotes an error where a file was to be written to disk, but another
      file with the same name already exists.
      */
-    RLMErrorFileExists            = 4,
+    LEGACYErrorFileExists            = 4,
 
     /**
      Denotes an error that occurs if a file could not be found.
@@ -101,14 +101,14 @@ typedef RLM_ERROR_ENUM(NSInteger, RLMError, RLMErrorDomain) {
      trying to open a Realm as read-only, or if the directory part of the
      specified path was not found when trying to write a copy.
      */
-    RLMErrorFileNotFound          = 5,
+    LEGACYErrorFileNotFound          = 5,
 
     /**
      Denotes an error that occurs if a file format upgrade is required to open
      the file, but upgrades were explicitly disabled or the file is being open
      in read-only mode.
      */
-    RLMErrorFileFormatUpgradeRequired = 6,
+    LEGACYErrorFileFormatUpgradeRequired = 6,
 
     /**
      Denotes an error that occurs if the database file is currently open in
@@ -119,31 +119,31 @@ typedef RLM_ERROR_ENUM(NSInteger, RLMError, RLMErrorDomain) {
      (32-bit) iOS Simulator and the Realm Studio application. In this case,
      please use the 64-bit version of the iOS Simulator.
      */
-    RLMErrorIncompatibleLockFile  = 8,
+    LEGACYErrorIncompatibleLockFile  = 8,
 
     /**
      Denotes an error that occurs when there is insufficient available address
      space to mmap the Realm file.
      */
-    RLMErrorAddressSpaceExhausted = 9,
+    LEGACYErrorAddressSpaceExhausted = 9,
 
     /**
     Denotes an error that occurs if there is a schema version mismatch and a
     migration is required.
     */
-    RLMErrorSchemaMismatch = 10,
+    LEGACYErrorSchemaMismatch = 10,
 
     /**
      Denotes an error where an operation was requested which cannot be
      performed on an open file.
      */
-    RLMErrorAlreadyOpen = 12,
+    LEGACYErrorAlreadyOpen = 12,
 
     /// Denotes an error where an input value was invalid.
-    RLMErrorInvalidInput = 13,
+    LEGACYErrorInvalidInput = 13,
 
     /// Denotes an error where a write failed due to insufficient disk space.
-    RLMErrorOutOfDiskSpace = 14,
+    LEGACYErrorOutOfDiskSpace = 14,
 
     /**
      Denotes an error where a Realm file could not be opened because another
@@ -151,7 +151,7 @@ typedef RLM_ERROR_ENUM(NSInteger, RLMError, RLMErrorDomain) {
      sharing. For example, this can result from opening the backing file for an
      in-memory Realm in non-in-memory mode.
      */
-    RLMErrorIncompatibleSession = 15,
+    LEGACYErrorIncompatibleSession = 15,
 
     /**
      Denotes an error that occurs if the file is a valid Realm file, but has a
@@ -160,19 +160,19 @@ typedef RLM_ERROR_ENUM(NSInteger, RLMError, RLMErrorDomain) {
      may also mean that it is from a pre-1.0 version of Realm (or for
      synchronized files, pre-10.0).
      */
-    RLMErrorUnsupportedFileFormatVersion = 16,
+    LEGACYErrorUnsupportedFileFormatVersion = 16,
 
     /**
      Denotes an error that occurs if a synchronized Realm is opened in more
      than one process at once.
      */
-    RLMErrorMultipleSyncAgents = 17,
+    LEGACYErrorMultipleSyncAgents = 17,
 
     /// A subscription was rejected by the server.
-    RLMErrorSubscriptionFailed = 18,
+    LEGACYErrorSubscriptionFailed = 18,
 
     /// A file operation failed in a way which does not have a more specific error code.
-    RLMErrorFileOperationFailed = 19,
+    LEGACYErrorFileOperationFailed = 19,
 
     /**
      Denotes an error that occurs if the file being opened is not a valid Realm
@@ -183,14 +183,14 @@ typedef RLM_ERROR_ENUM(NSInteger, RLMError, RLMErrorDomain) {
      4. The Realm file isn't encrypted but an encryption key was given.
      5. The file on disk has become corrupted.
      */
-    RLMErrorInvalidDatabase = 20,
+    LEGACYErrorInvalidDatabase = 20,
 
     /**
      Denotes an error that occurs if a Realm is opened in the wrong history
      mode. Typically this means that either a local Realm is being opened as a
      synchronized Realm or vice versa.
      */
-    RLMErrorIncompatibleHistories = 21,
+    LEGACYErrorIncompatibleHistories = 21,
 
     /**
      Denotes an error that occurs if objects were written to a flexible sync
@@ -198,33 +198,33 @@ typedef RLM_ERROR_ENUM(NSInteger, RLMError, RLMErrorDomain) {
      created in flexible sync Realms must match at least one active
      subscription or the server will reject the write.
      */
-    RLMErrorNoSubscriptionForWrite = 22,
+    LEGACYErrorNoSubscriptionForWrite = 22,
 };
 
-#pragma mark - RLMSyncError
+#pragma mark - LEGACYSyncError
 
-/// A user info key for use with `RLMSyncErrorClientResetError`.
-extern NSString *const kRLMSyncPathOfRealmBackupCopyKey;
+/// A user info key for use with `LEGACYSyncErrorClientResetError`.
+extern NSString *const kLEGACYSyncPathOfRealmBackupCopyKey;
 
 /// A user info key for use with certain error types.
-extern NSString *const kRLMSyncErrorActionTokenKey;
+extern NSString *const kLEGACYSyncErrorActionTokenKey;
 
 /**
  An error related to a problem that might be reported by the synchronization manager
  error handler, or a callback on a sync-related API that performs asynchronous work.
  */
-typedef RLM_ERROR_ENUM(NSInteger, RLMSyncError, RLMSyncErrorDomain) {
+typedef LEGACY_ERROR_ENUM(NSInteger, LEGACYSyncError, LEGACYSyncErrorDomain) {
     /// An error that indicates a problem with the session (a specific Realm opened for sync).
-    RLMSyncErrorClientSessionError      = 4,
+    LEGACYSyncErrorClientSessionError      = 4,
 
     /// An error that indicates a problem with a specific user.
-    RLMSyncErrorClientUserError         = 5,
+    LEGACYSyncErrorClientUserError         = 5,
 
     /**
      An error that indicates an internal, unrecoverable problem
      with the underlying synchronization engine.
      */
-    RLMSyncErrorClientInternalError     = 6,
+    LEGACYSyncErrorClientInternalError     = 6,
 
     /**
      An error that indicates the Realm needs to be reset.
@@ -247,26 +247,26 @@ typedef RLM_ERROR_ENUM(NSInteger, RLMSyncError, RLMSyncErrorDomain) {
      The client reset process can be initiated in one of two ways.
 
      The `userInfo` dictionary contains an opaque token object under the key
-     `kRLMSyncErrorActionTokenKey`. This token can be passed into
-     `+[RLMSyncSession immediatelyHandleError:]` in order to immediately perform the client
+     `kLEGACYSyncErrorActionTokenKey`. This token can be passed into
+     `+[LEGACYSyncSession immediatelyHandleError:]` in order to immediately perform the client
      reset process. This should only be done after your app closes and invalidates every
      instance of the offending Realm on all threads (note that autorelease pools may make this
      difficult to guarantee).
 
-     If `+[RLMSyncSession immediatelyHandleError:]` is not called, the client reset process
+     If `+[LEGACYSyncSession immediatelyHandleError:]` is not called, the client reset process
      will be automatically carried out the next time the app is launched and the
-     `RLMSyncManager` is accessed.
+     `LEGACYSyncManager` is accessed.
 
-     The value for the `kRLMSyncPathOfRealmBackupCopyKey` key in the `userInfo` dictionary
+     The value for the `kLEGACYSyncPathOfRealmBackupCopyKey` key in the `userInfo` dictionary
      describes the path of the recovered copy of the Realm. This copy will not actually be
      created until the client reset process is initiated.
 
      @see `-[NSError rlmSync_errorActionToken]`, `-[NSError rlmSync_clientResetBackedUpRealmPath]`
      */
-    RLMSyncErrorClientResetError        = 7,
+    LEGACYSyncErrorClientResetError        = 7,
 
     /// :nodoc:
-    RLMSyncErrorUnderlyingAuthError     = 8,
+    LEGACYSyncErrorUnderlyingAuthError     = 8,
 
     /**
      An error that indicates the user does not have permission to perform an operation
@@ -281,8 +281,8 @@ typedef RLM_ERROR_ENUM(NSInteger, RLMSyncError, RLMSyncErrorDomain) {
      local copy will be deleted the next time the application starts.
 
      The `userInfo` dictionary contains an opaque token object under the key
-     `kRLMSyncErrorActionTokenKey`. This token can be passed into
-     `+[RLMSyncSession immediatelyHandleError:]` in order to immediately delete the local
+     `kLEGACYSyncErrorActionTokenKey`. This token can be passed into
+     `+[LEGACYSyncSession immediatelyHandleError:]` in order to immediately delete the local
      copy. This should only be done after your app closes and invalidates every instance
      of the offending Realm on all threads (note that autorelease pools may make this
      difficult to guarantee).
@@ -292,12 +292,12 @@ typedef RLM_ERROR_ENUM(NSInteger, RLMSyncError, RLMSyncErrorDomain) {
 
      @see `-[NSError rlmSync_errorActionToken]`
      */
-    RLMSyncErrorPermissionDeniedError   = 9,
+    LEGACYSyncErrorPermissionDeniedError   = 9,
 
     /**
      An error that indicates that the server has rejected the requested flexible sync subscriptions.
      */
-    RLMSyncErrorInvalidFlexibleSyncSubscriptions = 10,
+    LEGACYSyncErrorInvalidFlexibleSyncSubscriptions = 10,
 
     /**
      An error that indicates that the server has reverted a write made by this
@@ -307,7 +307,7 @@ typedef RLM_ERROR_ENUM(NSInteger, RLMSyncError, RLMSyncErrorDomain) {
 
      This error is informational and does not require any explicit handling.
      */
-    RLMSyncErrorWriteRejected = 11,
+    LEGACYSyncErrorWriteRejected = 11,
 
     /**
      A connection error without a more specific error code occurred.
@@ -315,7 +315,7 @@ typedef RLM_ERROR_ENUM(NSInteger, RLMSyncError, RLMSyncErrorDomain) {
      Realm internally handles retrying connections with appropriate backoffs,
      so connection errors are normally logged and not reported to the error
      handler. The exception is if
-     ``RLMSyncConfiguration.cancelAsyncOpenOnNonFatalErrors`` is set to `true`,
+     ``LEGACYSyncConfiguration.cancelAsyncOpenOnNonFatalErrors`` is set to `true`,
      in which case async opens will be canceled on connection failures and the
      error will be reported to the completion handler.
 
@@ -323,99 +323,99 @@ typedef RLM_ERROR_ENUM(NSInteger, RLMSyncError, RLMSyncErrorDomain) {
      (errorDomain: NSPosixErrorDomain, error: ETIMEDOUT)
      and not as one of these error codes.
      */
-    RLMSyncErrorConnectionFailed = 12,
+    LEGACYSyncErrorConnectionFailed = 12,
 
     /**
      Connecting to the server failed due to a TLS issue such as an invalid certificate.
      */
-    RLMSyncErrorTLSHandshakeFailed = 13,
+    LEGACYSyncErrorTLSHandshakeFailed = 13,
 };
 
-#pragma mark - RLMSyncAuthError
+#pragma mark - LEGACYSyncAuthError
 
 // NEXT-MAJOR: This was a ROS thing and should have been removed in v10
 /// :nodoc:
-typedef RLM_ERROR_ENUM(NSInteger, RLMSyncAuthError, RLMSyncAuthErrorDomain) {
-    RLMSyncAuthErrorBadResponse                     = 1,
-    RLMSyncAuthErrorBadRemoteRealmPath              = 2,
-    RLMSyncAuthErrorHTTPStatusCodeError             = 3,
-    RLMSyncAuthErrorClientSessionError              = 4,
-    RLMSyncAuthErrorInvalidParameters               = 601,
-    RLMSyncAuthErrorMissingPath                     = 602,
-    RLMSyncAuthErrorInvalidCredential               = 611,
-    RLMSyncAuthErrorUserDoesNotExist                = 612,
-    RLMSyncAuthErrorUserAlreadyExists               = 613,
-    RLMSyncAuthErrorAccessDeniedOrInvalidPath       = 614,
-    RLMSyncAuthErrorInvalidAccessToken              = 615,
-    RLMSyncAuthErrorFileCannotBeShared              = 703,
+typedef LEGACY_ERROR_ENUM(NSInteger, LEGACYSyncAuthError, LEGACYSyncAuthErrorDomain) {
+    LEGACYSyncAuthErrorBadResponse                     = 1,
+    LEGACYSyncAuthErrorBadRemoteRealmPath              = 2,
+    LEGACYSyncAuthErrorHTTPStatusCodeError             = 3,
+    LEGACYSyncAuthErrorClientSessionError              = 4,
+    LEGACYSyncAuthErrorInvalidParameters               = 601,
+    LEGACYSyncAuthErrorMissingPath                     = 602,
+    LEGACYSyncAuthErrorInvalidCredential               = 611,
+    LEGACYSyncAuthErrorUserDoesNotExist                = 612,
+    LEGACYSyncAuthErrorUserAlreadyExists               = 613,
+    LEGACYSyncAuthErrorAccessDeniedOrInvalidPath       = 614,
+    LEGACYSyncAuthErrorInvalidAccessToken              = 615,
+    LEGACYSyncAuthErrorFileCannotBeShared              = 703,
 } __attribute__((deprecated("Errors of this type are no longer reported")));
 
-#pragma mark - RLMSyncAppError
+#pragma mark - LEGACYSyncAppError
 
 /// An error which occurred when making a request to Atlas App Services.
-typedef RLM_ERROR_ENUM(NSInteger, RLMAppError, RLMAppErrorDomain) {
+typedef LEGACY_ERROR_ENUM(NSInteger, LEGACYAppError, LEGACYAppErrorDomain) {
     /// An unknown error has occurred
-    RLMAppErrorUnknown = -1,
+    LEGACYAppErrorUnknown = -1,
 
     /// A HTTP request completed with an error status code. The failing status
-    /// code can be found in the ``RLMHTTPStatusCodeKey`` key of the userInfo
+    /// code can be found in the ``LEGACYHTTPStatusCodeKey`` key of the userInfo
     /// dictionary.
-    RLMAppErrorHttpRequestFailed = 1,
+    LEGACYAppErrorHttpRequestFailed = 1,
 
     /// A user's session is in an invalid state. Logging out and back in may rectify this.
-    RLMAppErrorInvalidSession,
+    LEGACYAppErrorInvalidSession,
     /// A request sent to the server was malformed in some way.
-    RLMAppErrorBadRequest,
+    LEGACYAppErrorBadRequest,
     /// A request was made using a nonexistent user.
-    RLMAppErrorUserNotFound,
+    LEGACYAppErrorUserNotFound,
     /// A request was made against an App using a User which does not belong to that App.
-    RLMAppErrorUserAppDomainMismatch,
+    LEGACYAppErrorUserAppDomainMismatch,
     /// The auth provider has limited the domain names which can be used for email addresses, and the given one is not allowed.
-    RLMAppErrorDomainNotAllowed,
+    LEGACYAppErrorDomainNotAllowed,
     /// The request body size exceeded a server-configured limit.
-    RLMAppErrorReadSizeLimitExceeded,
+    LEGACYAppErrorReadSizeLimitExceeded,
     /// A request had an invalid parameter.
-    RLMAppErrorInvalidParameter,
+    LEGACYAppErrorInvalidParameter,
     /// A request was missing a required parameter.
-    RLMAppErrorMissingParameter,
+    LEGACYAppErrorMissingParameter,
     /// Executing the requested server function failed with an error.
-    RLMAppErrorFunctionExecutionError,
+    LEGACYAppErrorFunctionExecutionError,
     /// The server encountered an internal error.
-    RLMAppErrorInternalServerError,
+    LEGACYAppErrorInternalServerError,
     /// Authentication failed due to the request auth provider not existing.
-    RLMAppErrorAuthProviderNotFound,
+    LEGACYAppErrorAuthProviderNotFound,
     /// The requested value does not exist.
-    RLMAppErrorValueNotFound,
+    LEGACYAppErrorValueNotFound,
     /// The value being created already exists.
-    RLMAppErrorValueAlreadyExists,
+    LEGACYAppErrorValueAlreadyExists,
     /// A value with the same name as the value being created already exists.
-    RLMAppErrorValueDuplicateName,
+    LEGACYAppErrorValueDuplicateName,
     /// The called server function does not exist.
-    RLMAppErrorFunctionNotFound,
+    LEGACYAppErrorFunctionNotFound,
     /// The called server function has a syntax error.
-    RLMAppErrorFunctionSyntaxError,
+    LEGACYAppErrorFunctionSyntaxError,
     /// The called server function is invalid in some way.
-    RLMAppErrorFunctionInvalid,
+    LEGACYAppErrorFunctionInvalid,
     /// Registering an API key with the auth provider failed due to it already existing.
-    RLMAppErrorAPIKeyAlreadyExists,
+    LEGACYAppErrorAPIKeyAlreadyExists,
     /// The operation failed due to exceeding the server-configured time limit.
-    RLMAppErrorExecutionTimeLimitExceeded,
+    LEGACYAppErrorExecutionTimeLimitExceeded,
     /// The body of the called function does not define a callable thing.
-    RLMAppErrorNotCallable,
+    LEGACYAppErrorNotCallable,
     /// Email confirmation failed for a user because the user has already confirmed their email.
-    RLMAppErrorUserAlreadyConfirmed,
+    LEGACYAppErrorUserAlreadyConfirmed,
     /// The user cannot be used because it has been disabled.
-    RLMAppErrorUserDisabled,
+    LEGACYAppErrorUserDisabled,
     /// An auth error occurred which does not have a more specific error code.
-    RLMAppErrorAuthError,
+    LEGACYAppErrorAuthError,
     /// Account registration failed due to the user name already being taken.
-    RLMAppErrorAccountNameInUse,
+    LEGACYAppErrorAccountNameInUse,
     /// A login request failed due to an invalid password.
-    RLMAppErrorInvalidPassword,
+    LEGACYAppErrorInvalidPassword,
     /// Operation failed due to server-side maintenance.
-    RLMAppErrorMaintenanceInProgress,
+    LEGACYAppErrorMaintenanceInProgress,
     /// Operation failed due to an error reported by MongoDB.
-    RLMAppErrorMongoDBError,
+    LEGACYAppErrorMongoDBError,
 };
 
 /// Extended information about a write which was rejected by the server.
@@ -423,20 +423,20 @@ typedef RLM_ERROR_ENUM(NSInteger, RLMAppError, RLMAppErrorDomain) {
 /// The server will sometimes reject writes made by the client for reasons such
 /// as permissions, additional server-side validation failing, or because the
 /// object didn't match any flexible sync subscriptions. When this happens, a
-/// ``RLMSyncErrorWriteRejected`` error is reported which contains an array of
-/// `RLMCompensatingWriteInfo` objects in the ``RLMCompensatingWriteInfoKey``
+/// ``LEGACYSyncErrorWriteRejected`` error is reported which contains an array of
+/// `LEGACYCompensatingWriteInfo` objects in the ``LEGACYCompensatingWriteInfoKey``
 /// userInfo key with information about what writes were rejected and why.
 ///
 /// This information is intended for debugging and logging purposes only. The
 /// `reason` strings are generated by the server and are not guaranteed to be
 /// stable, so attempting to programmatically do anything with them will break
 /// without warning.
-RLM_SWIFT_SENDABLE RLM_FINAL
-@interface RLMCompensatingWriteInfo : NSObject
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL
+@interface LEGACYCompensatingWriteInfo : NSObject
 /// The class name of the object being written to.
 @property (nonatomic, readonly) NSString *objectType;
 /// The primary key of the object being written to.
-@property (nonatomic, readonly) id<RLMValue> primaryKey NS_REFINED_FOR_SWIFT;
+@property (nonatomic, readonly) id<LEGACYValue> primaryKey NS_REFINED_FOR_SWIFT;
 /// A human-readable string describing why the write was rejected.
 @property (nonatomic, readonly) NSString *reason;
 @end

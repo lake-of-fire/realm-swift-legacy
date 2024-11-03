@@ -25,7 +25,7 @@
 
 @property (nonatomic, strong) UIButton *button;
 @property (nonatomic, strong) Tick *tick;
-@property (nonatomic, strong) RLMNotificationToken *notificationToken;
+@property (nonatomic, strong) LEGACYNotificationToken *notificationToken;
 
 @end
 
@@ -34,16 +34,16 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.preferredContentSize = CGSizeMake(0, 200.0);
-    RLMRealmConfiguration *configuration = [RLMRealmConfiguration defaultConfiguration];
+    LEGACYRealmConfiguration *configuration = [LEGACYRealmConfiguration defaultConfiguration];
     configuration.fileURL = [[[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:@"group.io.realm.examples.extension"] URLByAppendingPathComponent:@"extension.realm"];
-    [RLMRealmConfiguration setDefaultConfiguration:configuration];
+    [LEGACYRealmConfiguration setDefaultConfiguration:configuration];
     self.tick = [Tick allObjects].firstObject;
     if (!self.tick) {
-        [[RLMRealm defaultRealm] transactionWithBlock:^{
+        [[LEGACYRealm defaultRealm] transactionWithBlock:^{
             self.tick = [Tick createInDefaultRealmWithValue:@[@"", @0]];
         }];
     }
-    self.notificationToken = [self.tick.realm addNotificationBlock:^(NSString *notification, RLMRealm *realm) {
+    self.notificationToken = [self.tick.realm addNotificationBlock:^(NSString *notification, LEGACYRealm *realm) {
         // Occasionally, respond immediately to the notification by triggering a new notification.
         if (self.tick.count % 19 == 0) {
             [self tock];
@@ -76,7 +76,7 @@
 }
 
 - (void)tock {
-    [[RLMRealm defaultRealm] transactionWithBlock:^{
+    [[LEGACYRealm defaultRealm] transactionWithBlock:^{
         self.tick.count++;
     }];
 }

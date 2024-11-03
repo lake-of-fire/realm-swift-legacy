@@ -16,14 +16,14 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMAsymmetricObject.h"
+#import "LEGACYAsymmetricObject.h"
 
-#import "RLMObject_Private.hpp"
-#import "RLMObjectStore.h"
-#import "RLMSchema_Private.h"
+#import "LEGACYObject_Private.hpp"
+#import "LEGACYObjectStore.h"
+#import "LEGACYSchema_Private.h"
 
-@implementation RLMAsymmetricObject
-// synthesized in RLMObjectBase but redeclared here for documentation purposes
+@implementation LEGACYAsymmetricObject
+// synthesized in LEGACYObjectBase but redeclared here for documentation purposes
 @dynamic objectSchema;
 
 #pragma mark - Designated Initializers
@@ -38,25 +38,25 @@
     if (!(self = [self init])) {
         return nil;
     }
-    RLMInitializeWithValue(self, value, RLMSchema.partialPrivateSharedSchema);
+    LEGACYInitializeWithValue(self, value, LEGACYSchema.partialPrivateSharedSchema);
     return self;
 }
 
 #pragma mark - Class-based Object Creation
 
-+ (instancetype)createInRealm:(RLMRealm *)realm withValue:(id)value {
-    RLMCreateAsymmetricObjectInRealm(realm, [self className], value);
++ (instancetype)createInRealm:(LEGACYRealm *)realm withValue:(id)value {
+    LEGACYCreateAsymmetricObjectInRealm(realm, [self className], value);
     return nil;
 }
 
 #pragma mark - Subscripting
 
 - (id)objectForKeyedSubscript:(NSString *)key {
-    return RLMObjectBaseObjectForKeyedSubscript(self, key);
+    return LEGACYObjectBaseObjectForKeyedSubscript(self, key);
 }
 
 - (void)setObject:(id)obj forKeyedSubscript:(NSString *)key {
-    RLMObjectBaseSetObjectForKeyedSubscript(self, key, obj);
+    LEGACYObjectBaseSetObjectForKeyedSubscript(self, key, obj);
 }
 
 #pragma mark - Other Instance Methods

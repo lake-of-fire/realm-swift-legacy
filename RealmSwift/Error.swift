@@ -33,7 +33,7 @@ extension RealmLegacy {
      }
      ```
     */
-    public typealias Error = RLMError
+    public typealias Error = LEGACYError
 }
 
 extension RealmLegacy.Error {

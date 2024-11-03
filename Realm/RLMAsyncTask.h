@@ -16,10 +16,10 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
-#import <Realm/RLMSyncSession.h>
+#import <Realm/LEGACYConstants.h>
+#import <Realm/LEGACYSyncSession.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 /**
  A task object which can be used to observe or cancel an async open.
@@ -29,10 +29,10 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  This task object can be used to observe the state of the download or to cancel
  it. This should be used instead of trying to observe the download via the sync
  session as the sync session itself is created asynchronously, and may not exist
- yet when -[RLMRealm asyncOpenWithConfiguration:completion:] returns.
+ yet when -[LEGACYRealm asyncOpenWithConfiguration:completion:] returns.
  */
-RLM_SWIFT_SENDABLE RLM_FINAL // is internally thread-safe
-@interface RLMAsyncOpenTask : NSObject
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL // is internally thread-safe
+@interface LEGACYAsyncOpenTask : NSObject
 /**
  Register a progress notification block.
 
@@ -41,7 +41,7 @@ RLM_SWIFT_SENDABLE RLM_FINAL // is internally thread-safe
  or the completion callback is called. Progress notifications are delivered on
  the main queue.
  */
-- (void)addProgressNotificationBlock:(RLMProgressNotificationBlock)block;
+- (void)addProgressNotificationBlock:(LEGACYProgressNotificationBlock)block;
 
 /**
  Register a progress notification block which is called on the given queue.
@@ -52,7 +52,7 @@ RLM_SWIFT_SENDABLE RLM_FINAL // is internally thread-safe
  the supplied queue.
  */
 - (void)addProgressNotificationOnQueue:(dispatch_queue_t)queue
-                                 block:(RLMProgressNotificationBlock)block;
+                                 block:(LEGACYProgressNotificationBlock)block;
 
 /**
  Cancel the asynchronous open.
@@ -64,4 +64,4 @@ RLM_SWIFT_SENDABLE RLM_FINAL // is internally thread-safe
 - (void)cancel;
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

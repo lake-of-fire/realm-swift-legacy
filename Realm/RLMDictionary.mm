@@ -16,22 +16,22 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMDictionary_Private.hpp"
-#import "RLMObject_Private.h"
-#import "RLMObjectSchema.h"
-#import "RLMProperty_Private.h"
-#import "RLMQueryUtil.hpp"
-#import "RLMSchema_Private.h"
-#import "RLMThreadSafeReference_Private.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYDictionary_Private.hpp"
+#import "LEGACYObject_Private.h"
+#import "LEGACYObjectSchema.h"
+#import "LEGACYProperty_Private.h"
+#import "LEGACYQueryUtil.hpp"
+#import "LEGACYSchema_Private.h"
+#import "LEGACYThreadSafeReference_Private.hpp"
+#import "LEGACYUtil.hpp"
 
-@interface RLMDictionary () <RLMThreadConfined_Private>
+@interface LEGACYDictionary () <LEGACYThreadConfined_Private>
 @end
 
-@implementation NSString (RLMDictionaryKey)
+@implementation NSString (LEGACYDictionaryKey)
 @end
 
-@implementation RLMDictionary {
+@implementation LEGACYDictionary {
 @public
     // Backing dictionary when this instance is unmanaged
     NSMutableDictionary *_backingCollection;
@@ -40,22 +40,22 @@
 #pragma mark Initializers
 
 - (instancetype)initWithObjectClassName:(__unsafe_unretained NSString *const)objectClassName
-                                keyType:(RLMPropertyType)keyType {
+                                keyType:(LEGACYPropertyType)keyType {
     REALM_ASSERT([objectClassName length] > 0);
-    REALM_ASSERT(RLMValidateKeyType(keyType));
+    REALM_ASSERT(LEGACYValidateKeyType(keyType));
     self = [super init];
     if (self) {
         _objectClassName = objectClassName;
-        _type = RLMPropertyTypeObject;
+        _type = LEGACYPropertyTypeObject;
         _keyType = keyType;
         _optional = YES;
     }
     return self;
 }
 
-- (instancetype)initWithObjectType:(RLMPropertyType)type optional:(BOOL)optional keyType:(RLMPropertyType)keyType {
-    REALM_ASSERT(RLMValidateKeyType(keyType));
-    REALM_ASSERT(type != RLMPropertyTypeObject);
+- (instancetype)initWithObjectType:(LEGACYPropertyType)type optional:(BOOL)optional keyType:(LEGACYPropertyType)keyType {
+    REALM_ASSERT(LEGACYValidateKeyType(keyType));
+    REALM_ASSERT(type != LEGACYPropertyTypeObject);
     self = [super init];
     if (self) {
         _type = type;
@@ -65,74 +65,74 @@
     return self;
 }
 
-- (void)setParent:(RLMObjectBase *)parentObject property:(RLMProperty *)property {
+- (void)setParent:(LEGACYObjectBase *)parentObject property:(LEGACYProperty *)property {
     _parentObject = parentObject;
     _key = property.name;
     _isLegacyProperty = property.isLegacy;
 }
 
-static bool RLMValidateKeyType(RLMPropertyType keyType) {
+static bool LEGACYValidateKeyType(LEGACYPropertyType keyType) {
     switch (keyType) {
-        case RLMPropertyTypeString:
+        case LEGACYPropertyTypeString:
             return true;
         default:
             return false;
     }
 }
 
-id RLMDictionaryKey(__unsafe_unretained RLMDictionary *const dictionary,
+id LEGACYDictionaryKey(__unsafe_unretained LEGACYDictionary *const dictionary,
                     __unsafe_unretained id const key) {
     if (!key) {
-        @throw RLMException(@"Invalid nil key for dictionary expecting key of type '%@'.",
-                            dictionary->_objectClassName ?: RLMTypeToString(dictionary.keyType));
+        @throw LEGACYException(@"Invalid nil key for dictionary expecting key of type '%@'.",
+                            dictionary->_objectClassName ?: LEGACYTypeToString(dictionary.keyType));
     }
-    id validated = RLMValidateValue(key, dictionary.keyType, false, false, nil);
+    id validated = LEGACYValidateValue(key, dictionary.keyType, false, false, nil);
     if (!validated) {
-        @throw RLMException(@"Invalid key '%@' of type '%@' for expected type '%@'.",
-                            key, [key class], RLMTypeToString(dictionary.keyType));
+        @throw LEGACYException(@"Invalid key '%@' of type '%@' for expected type '%@'.",
+                            key, [key class], LEGACYTypeToString(dictionary.keyType));
     }
     return validated;
 }
 
-id RLMDictionaryValue(__unsafe_unretained RLMDictionary *const dictionary,
+id LEGACYDictionaryValue(__unsafe_unretained LEGACYDictionary *const dictionary,
                       __unsafe_unretained id const value) {
     if (!value) {
         return value;
     }
-    if (dictionary->_type != RLMPropertyTypeObject) {
-        id validated = RLMValidateValue(value, dictionary->_type, dictionary->_optional, false, nil);
+    if (dictionary->_type != LEGACYPropertyTypeObject) {
+        id validated = LEGACYValidateValue(value, dictionary->_type, dictionary->_optional, false, nil);
         if (!validated) {
-            @throw RLMException(@"Invalid value '%@' of type '%@' for expected type '%@%s'.",
-                                value, [value class], RLMTypeToString(dictionary->_type),
+            @throw LEGACYException(@"Invalid value '%@' of type '%@' for expected type '%@%s'.",
+                                value, [value class], LEGACYTypeToString(dictionary->_type),
                                 dictionary->_optional ? "?" : "");
         }
         return validated;
     }
 
-    if (auto valueObject = RLMDynamicCast<RLMObjectBase>(value)) {
+    if (auto valueObject = LEGACYDynamicCast<LEGACYObjectBase>(value)) {
         if (!valueObject->_objectSchema) {
-            @throw RLMException(@"Object cannot be inserted unless the schema is initialized. "
-                                "This can happen if you try to insert objects into a RLMDictionary / Map from a default value or from an overridden unmanaged initializer (`init()`) or if the key is uninitialized.");
+            @throw LEGACYException(@"Object cannot be inserted unless the schema is initialized. "
+                                "This can happen if you try to insert objects into a LEGACYDictionary / Map from a default value or from an overridden unmanaged initializer (`init()`) or if the key is uninitialized.");
         }
         if (![dictionary->_objectClassName isEqualToString:valueObject->_objectSchema.className]) {
-            @throw RLMException(@"Value of type '%@' does not match RLMDictionary value type '%@'.",
+            @throw LEGACYException(@"Value of type '%@' does not match LEGACYDictionary value type '%@'.",
                                 valueObject->_objectSchema.className, dictionary->_objectClassName);
         }
     }
     else if (![value isKindOfClass:NSNull.class]) {
-        @throw RLMException(@"Value of type '%@' does not match RLMDictionary value type '%@'.",
+        @throw LEGACYException(@"Value of type '%@' does not match LEGACYDictionary value type '%@'.",
                             [value className], dictionary->_objectClassName);
     }
 
     return value;
 }
 
-static void changeDictionary(__unsafe_unretained RLMDictionary *const dictionary,
+static void changeDictionary(__unsafe_unretained LEGACYDictionary *const dictionary,
                              dispatch_block_t f) {
     if (!dictionary->_backingCollection) {
         dictionary->_backingCollection = [NSMutableDictionary new];
     }
-    if (RLMObjectBase *parent = dictionary->_parentObject) {
+    if (LEGACYObjectBase *parent = dictionary->_parentObject) {
         [parent willChangeValueForKey:dictionary->_key];
         f();
         [parent didChangeValueForKey:dictionary->_key];
@@ -148,29 +148,29 @@ static void changeDictionary(__unsafe_unretained RLMDictionary *const dictionary
 // http://www.openradar.me/radar?id=6135653276319744
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmismatched-parameter-types"
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMDictionary *, RLMDictionaryChange *, NSError *))block {
-    return RLMAddNotificationBlock(self, block, nil, nil);
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYDictionary *, LEGACYDictionaryChange *, NSError *))block {
+    return LEGACYAddNotificationBlock(self, block, nil, nil);
 }
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMDictionary *, RLMDictionaryChange *, NSError *))block
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYDictionary *, LEGACYDictionaryChange *, NSError *))block
                                          queue:(dispatch_queue_t)queue {
-    return RLMAddNotificationBlock(self, block, nil, queue);
+    return LEGACYAddNotificationBlock(self, block, nil, queue);
 }
 
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMDictionary *, RLMDictionaryChange *, NSError *))block
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYDictionary *, LEGACYDictionaryChange *, NSError *))block
                                       keyPaths:(nullable NSArray<NSString *> *)keyPaths
                                          queue:(dispatch_queue_t)queue {
-    return RLMAddNotificationBlock(self, block, keyPaths, queue);
+    return LEGACYAddNotificationBlock(self, block, keyPaths, queue);
 }
 
-- (RLMNotificationToken *)addNotificationBlock:(void (^)(RLMDictionary *, RLMDictionaryChange *, NSError *))block
+- (LEGACYNotificationToken *)addNotificationBlock:(void (^)(LEGACYDictionary *, LEGACYDictionaryChange *, NSError *))block
                                       keyPaths:(nullable NSArray<NSString *> *)keyPaths {
-    return RLMAddNotificationBlock(self, block, keyPaths, nil);
+    return LEGACYAddNotificationBlock(self, block, keyPaths, nil);
 }
 #pragma clang diagnostic pop
 
-#pragma mark - Unmanaged RLMDictionary implementation
+#pragma mark - Unmanaged LEGACYDictionary implementation
 
-- (RLMRealm *)realm {
+- (LEGACYRealm *)realm {
     return nil;
 }
 
@@ -210,14 +210,14 @@ static void changeDictionary(__unsafe_unretained RLMDictionary *const dictionary
         return [self removeAllObjects];
     }
     if (![dictionary respondsToSelector:@selector(enumerateKeysAndObjectsUsingBlock:)]) {
-        @throw RLMException(@"Cannot set dictionary to object of class '%@'", [dictionary className]);
+        @throw LEGACYException(@"Cannot set dictionary to object of class '%@'", [dictionary className]);
     }
 
     changeDictionary(self, ^{
         [_backingCollection removeAllObjects];
         [dictionary enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *) {
-            [_backingCollection setObject:RLMDictionaryValue(self, value)
-                                   forKey:RLMDictionaryKey(self, key)];
+            [_backingCollection setObject:LEGACYDictionaryValue(self, value)
+                                   forKey:LEGACYDictionaryKey(self, key)];
         }];
     });
 }
@@ -233,8 +233,8 @@ static void changeDictionary(__unsafe_unretained RLMDictionary *const dictionary
 
 - (void)setObject:(id)obj forKey:(id)key {
     changeDictionary(self, ^{
-        [_backingCollection setObject:RLMDictionaryValue(self, obj)
-                               forKey:RLMDictionaryKey(self, key)];
+        [_backingCollection setObject:LEGACYDictionaryValue(self, obj)
+                               forKey:LEGACYDictionaryKey(self, key)];
     });
 }
 
@@ -261,7 +261,7 @@ static void changeDictionary(__unsafe_unretained RLMDictionary *const dictionary
 }
 
 - (nullable id)valueForKey:(nonnull NSString *)key {
-    if ([key isEqualToString:RLMInvalidatedKey]) {
+    if ([key isEqualToString:LEGACYInvalidatedKey]) {
         return @NO; // Unmanaged dictionaries are never invalidated
     }
     if (!_backingCollection) {
@@ -292,12 +292,12 @@ static void changeDictionary(__unsafe_unretained RLMDictionary *const dictionary
         return;
     }
     if (![otherDictionary respondsToSelector:@selector(enumerateKeysAndObjectsUsingBlock:)]) {
-        @throw RLMException(@"Cannot add entries from object of class '%@'", [otherDictionary className]);
+        @throw LEGACYException(@"Cannot add entries from object of class '%@'", [otherDictionary className]);
     }
 
     changeDictionary(self, ^{
         [otherDictionary enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *) {
-            _backingCollection[RLMDictionaryKey(self, key)] = RLMDictionaryValue(self, value);
+            _backingCollection[LEGACYDictionaryKey(self, key)] = LEGACYDictionaryValue(self, value);
         }];
     });
 }
@@ -305,25 +305,25 @@ static void changeDictionary(__unsafe_unretained RLMDictionary *const dictionary
 - (NSUInteger)countByEnumeratingWithState:(nonnull NSFastEnumerationState *)state
                                   objects:(__unsafe_unretained id  _Nullable * _Nonnull)buffer
                                     count:(NSUInteger)len {
-    return RLMUnmanagedFastEnumerate(_backingCollection.allKeys, state);
+    return LEGACYUnmanagedFastEnumerate(_backingCollection.allKeys, state);
 }
 
 #pragma mark - Aggregate operations
 
-- (RLMPropertyType)typeForProperty:(NSString *)propertyName {
+- (LEGACYPropertyType)typeForProperty:(NSString *)propertyName {
     if ([propertyName isEqualToString:@"self"]) {
         return _type;
     }
 
-    RLMObjectSchema *objectSchema;
+    LEGACYObjectSchema *objectSchema;
     if (_backingCollection.count) {
         objectSchema = [_backingCollection.allValues[0] objectSchema];
     }
     else {
-        objectSchema = [RLMSchema.partialPrivateSharedSchema schemaForClassName:_objectClassName];
+        objectSchema = [LEGACYSchema.partialPrivateSharedSchema schemaForClassName:_objectClassName];
     }
 
-    return RLMValidatedProperty(objectSchema, propertyName).type;
+    return LEGACYValidatedProperty(objectSchema, propertyName).type;
 }
 
 - (id)aggregateProperty:(NSString *)key operation:(NSString *)op method:(SEL)sel {
@@ -331,11 +331,11 @@ static void changeDictionary(__unsafe_unretained RLMDictionary *const dictionary
     // nested key paths as well, limiting functionality gives consistency
     // between unmanaged and managed arrays.
     if ([key rangeOfString:@"."].location != NSNotFound) {
-        @throw RLMException(@"Nested key paths are not supported yet for KVC collection operators.");
+        @throw LEGACYException(@"Nested key paths are not supported yet for KVC collection operators.");
     }
 
     if ([op isEqualToString:@"@distinctUnionOfObjects"]) {
-        @throw RLMException(@"this class does not implement the distinctUnionOfObjects");
+        @throw LEGACYException(@"this class does not implement the distinctUnionOfObjects");
     }
 
     bool allowDate = false;
@@ -351,16 +351,16 @@ static void changeDictionary(__unsafe_unretained RLMDictionary *const dictionary
         return [_backingCollection valueForKeyPath:[op stringByAppendingPathExtension:key]];
     }
 
-    RLMPropertyType type = [self typeForProperty:key];
+    LEGACYPropertyType type = [self typeForProperty:key];
     if (!canAggregate(type, allowDate)) {
         NSString *method = sel ? NSStringFromSelector(sel) : op;
-        if (_type == RLMPropertyTypeObject) {
-            @throw RLMException(@"%@: is not supported for %@ property '%@.%@'",
-                                method, RLMTypeToString(type), _objectClassName, key);
+        if (_type == LEGACYPropertyTypeObject) {
+            @throw LEGACYException(@"%@: is not supported for %@ property '%@.%@'",
+                                method, LEGACYTypeToString(type), _objectClassName, key);
         }
         else {
-            @throw RLMException(@"%@ is not supported for %@%s dictionary",
-                                method, RLMTypeToString(_type), _optional ? "?" : "");
+            @throw LEGACYException(@"%@ is not supported for %@%s dictionary",
+                                method, LEGACYTypeToString(_type), _optional ? "?" : "");
         }
     }
 
@@ -395,20 +395,20 @@ static void changeDictionary(__unsafe_unretained RLMDictionary *const dictionary
     return [self aggregateProperty:property operation:@"@avg" method:_cmd];
 }
 
-- (nonnull RLMResults *)objectsWhere:(nonnull NSString *)predicateFormat, ... {
+- (nonnull LEGACYResults *)objectsWhere:(nonnull NSString *)predicateFormat, ... {
     va_list args;
     va_start(args, predicateFormat);
-    RLMResults *results = [self objectsWhere:predicateFormat args:args];
+    LEGACYResults *results = [self objectsWhere:predicateFormat args:args];
     va_end(args);
     return results;
 }
 
-- (nonnull RLMResults *)objectsWhere:(nonnull NSString *)predicateFormat args:(va_list)args {
+- (nonnull LEGACYResults *)objectsWhere:(nonnull NSString *)predicateFormat args:(va_list)args {
     return [self objectsWithPredicate:[NSPredicate predicateWithFormat:predicateFormat arguments:args]];
 }
 
 - (BOOL)isEqual:(id)object {
-    if (auto dictionary = RLMDynamicCast<RLMDictionary>(object)) {
+    if (auto dictionary = LEGACYDynamicCast<LEGACYDictionary>(object)) {
         return !dictionary.realm
         && ((_backingCollection.count == 0 && dictionary->_backingCollection.count == 0)
             || [_backingCollection isEqual:dictionary->_backingCollection]);
@@ -418,7 +418,7 @@ static void changeDictionary(__unsafe_unretained RLMDictionary *const dictionary
 
 - (void)addObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath
             options:(NSKeyValueObservingOptions)options context:(void *)context {
-    RLMDictionaryValidateObservationKey(keyPath, self);
+    LEGACYDictionaryValidateObservationKey(keyPath, self);
     [super addObserver:observer forKeyPath:keyPath options:options context:context];
 }
 
@@ -428,56 +428,56 @@ static void changeDictionary(__unsafe_unretained RLMDictionary *const dictionary
     return _key;
 }
 
-#pragma mark - Methods unsupported on unmanaged RLMDictionary instances
+#pragma mark - Methods unsupported on unmanaged LEGACYDictionary instances
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
 
-- (nonnull RLMResults *)objectsWithPredicate:(nonnull NSPredicate *)predicate {
-    @throw RLMException(@"This method may only be called on RLMDictionary instances retrieved from an RLMRealm");
+- (nonnull LEGACYResults *)objectsWithPredicate:(nonnull NSPredicate *)predicate {
+    @throw LEGACYException(@"This method may only be called on LEGACYDictionary instances retrieved from an LEGACYRealm");
 }
 
-- (RLMResults *)sortedResultsUsingDescriptors:(nonnull NSArray<RLMSortDescriptor *> *)properties {
-    @throw RLMException(@"This method may only be called on RLMDictionary instances retrieved from an RLMRealm");
+- (LEGACYResults *)sortedResultsUsingDescriptors:(nonnull NSArray<LEGACYSortDescriptor *> *)properties {
+    @throw LEGACYException(@"This method may only be called on LEGACYDictionary instances retrieved from an LEGACYRealm");
 }
 
-- (RLMResults *)sortedResultsUsingKeyPath:(nonnull NSString *)keyPath ascending:(BOOL)ascending {
-    @throw RLMException(@"This method may only be called on RLMDictionary instances retrieved from an RLMRealm");
+- (LEGACYResults *)sortedResultsUsingKeyPath:(nonnull NSString *)keyPath ascending:(BOOL)ascending {
+    @throw LEGACYException(@"This method may only be called on LEGACYDictionary instances retrieved from an LEGACYRealm");
 }
 
-- (RLMResults *)distinctResultsUsingKeyPaths:(NSArray<NSString *> *)keyPaths {
-    @throw RLMException(@"This method may only be called on RLMDictionary instances retrieved from an RLMRealm");
+- (LEGACYResults *)distinctResultsUsingKeyPaths:(NSArray<NSString *> *)keyPaths {
+    @throw LEGACYException(@"This method may only be called on LEGACYDictionary instances retrieved from an LEGACYRealm");
 }
 
 - (instancetype)freeze {
-    @throw RLMException(@"This method may only be called on RLMDictionary instances retrieved from an RLMRealm");
+    @throw LEGACYException(@"This method may only be called on LEGACYDictionary instances retrieved from an LEGACYRealm");
 }
 
 - (instancetype)thaw {
-    @throw RLMException(@"This method may only be called on RLMDictionary instances retrieved from an RLMRealm");
+    @throw LEGACYException(@"This method may only be called on LEGACYDictionary instances retrieved from an LEGACYRealm");
 }
 
 - (NSUInteger)indexOfObject:(id)value {
-    @throw RLMException(@"This method is not available on RLMDictionary.");
+    @throw LEGACYException(@"This method is not available on LEGACYDictionary.");
 }
 
 - (id)objectAtIndex:(NSUInteger)index {
-    @throw RLMException(@"This method is not available on RLMDictionary.");
+    @throw LEGACYException(@"This method is not available on LEGACYDictionary.");
 }
 
 - (nullable NSArray *)objectsAtIndexes:(nonnull NSIndexSet *)indexes {
-    @throw RLMException(@"This method is not available on RLMDictionary.");
+    @throw LEGACYException(@"This method is not available on LEGACYDictionary.");
 }
 
-- (RLMSectionedResults *)sectionedResultsSortedUsingKeyPath:(NSString *)keyPath
+- (LEGACYSectionedResults *)sectionedResultsSortedUsingKeyPath:(NSString *)keyPath
                                                   ascending:(BOOL)ascending
-                                                   keyBlock:(RLMSectionedResultsKeyBlock)keyBlock {
-    @throw RLMException(@"This method is not available on RLMDictionary.");
+                                                   keyBlock:(LEGACYSectionedResultsKeyBlock)keyBlock {
+    @throw LEGACYException(@"This method is not available on LEGACYDictionary.");
 }
 
-- (RLMSectionedResults *)sectionedResultsUsingSortDescriptors:(NSArray<RLMSortDescriptor *> *)sortDescriptors
-                                                     keyBlock:(RLMSectionedResultsKeyBlock)keyBlock {
-    @throw RLMException(@"This method is not available on RLMDictionary.");
+- (LEGACYSectionedResults *)sectionedResultsUsingSortDescriptors:(NSArray<LEGACYSortDescriptor *> *)sortDescriptors
+                                                     keyBlock:(LEGACYSectionedResultsKeyBlock)keyBlock {
+    @throw LEGACYException(@"This method is not available on LEGACYDictionary.");
 }
 
 #pragma clang diagnostic pop // unused parameter warning
@@ -485,31 +485,31 @@ static void changeDictionary(__unsafe_unretained RLMDictionary *const dictionary
 #pragma mark - Thread Confined Protocol Conformance
 
 - (realm::ThreadSafeReference)makeThreadSafeReference {
-    REALM_TERMINATE("Unexpected handover of unmanaged `RLMDictionary`");
+    REALM_TERMINATE("Unexpected handover of unmanaged `LEGACYDictionary`");
 }
 
 - (id)objectiveCMetadata {
-    REALM_TERMINATE("Unexpected handover of unmanaged `RLMDictionary`");
+    REALM_TERMINATE("Unexpected handover of unmanaged `LEGACYDictionary`");
 }
 
 + (instancetype)objectWithThreadSafeReference:(realm::ThreadSafeReference)reference
                                      metadata:(id)metadata
-                                        realm:(RLMRealm *)realm {
-    REALM_TERMINATE("Unexpected handover of unmanaged `RLMDictionary`");
+                                        realm:(LEGACYRealm *)realm {
+    REALM_TERMINATE("Unexpected handover of unmanaged `LEGACYDictionary`");
 }
 
 #pragma mark - Superclass Overrides
 
 - (NSString *)description {
-    return [self descriptionWithMaxDepth:RLMDescriptionMaxDepth];
+    return [self descriptionWithMaxDepth:LEGACYDescriptionMaxDepth];
 }
 
 - (NSString *)descriptionWithMaxDepth:(NSUInteger)depth {
-    return RLMDictionaryDescriptionWithMaxDepth(@"RLMDictionary", self, depth);
+    return LEGACYDictionaryDescriptionWithMaxDepth(@"LEGACYDictionary", self, depth);
 }
 
-NSString *RLMDictionaryDescriptionWithMaxDepth(NSString *name,
-                                               RLMDictionary *dictionary,
+NSString *LEGACYDictionaryDescriptionWithMaxDepth(NSString *name,
+                                               LEGACYDictionary *dictionary,
                                                NSUInteger depth) {
     if (depth == 0) {
         return @"<Maximum depth exceeded>";
@@ -517,8 +517,8 @@ NSString *RLMDictionaryDescriptionWithMaxDepth(NSString *name,
 
     const NSUInteger maxObjects = 100;
     auto str = [NSMutableString stringWithFormat:@"%@<%@, %@> <%p> (\n", name,
-                RLMTypeToString([dictionary keyType]),
-                [dictionary objectClassName] ?: RLMTypeToString([dictionary type]),
+                LEGACYTypeToString([dictionary keyType]),
+                [dictionary objectClassName] ?: LEGACYTypeToString([dictionary type]),
                 (void *)dictionary];
     size_t index = 0, skipped = 0;
     for (id key in dictionary) {

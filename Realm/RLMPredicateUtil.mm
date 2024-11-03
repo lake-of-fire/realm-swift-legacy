@@ -15,7 +15,7 @@
 // limitations under the License.
 //
 
-#import "RLMPredicateUtil.hpp"
+#import "LEGACYPredicateUtil.hpp"
 
 #include <realm/util/assert.hpp>
 

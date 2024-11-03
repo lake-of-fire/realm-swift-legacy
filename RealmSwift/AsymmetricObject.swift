@@ -62,7 +62,7 @@ extension AsymmetricObject {
      */
     public convenience init(value: Any) {
         self.init()
-        RLMInitializeWithValue(self, value, .partialPrivateShared())
+        LEGACYInitializeWithValue(self, value, .partialPrivateShared())
     }
 
 
@@ -70,7 +70,7 @@ extension AsymmetricObject {
 
     /// The object schema which lists the managed properties for the object.
     public var objectSchema: ObjectSchema {
-        return ObjectSchema(RLMObjectBaseObjectSchema(self)!)
+        return ObjectSchema(LEGACYObjectBaseObjectSchema(self)!)
     }
 
     /// A human-readable description of the object.
@@ -81,7 +81,7 @@ extension AsymmetricObject {
      It is not considered part of the public API.
      :nodoc:
      */
-    public override final class func _getProperties() -> [RLMProperty] {
+    public override final class func _getProperties() -> [LEGACYProperty] {
         return ObjectUtil.getSwiftProperties(self)
     }
 
@@ -123,7 +123,7 @@ extension AsymmetricObject {
     /// Returns or sets the value of the property with the given name.
     @objc open subscript(key: String) -> Any? {
         get {
-            return RLMDynamicGetByName(self, key)
+            return LEGACYDynamicGetByName(self, key)
         }
         set {
             dynamicSet(object: self, key: key, value: newValue)

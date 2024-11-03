@@ -16,11 +16,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMRealmConfiguration_Private.h"
+#import "LEGACYRealmConfiguration_Private.h"
 
 #import <realm/object-store/shared_realm.hpp>
 
-@interface RLMRealmConfiguration ()
+@interface LEGACYRealmConfiguration ()
 - (realm::Realm::Config)config;
 - (realm::Realm::Config&)configRef;
 - (std::string const&)path;
@@ -29,4 +29,4 @@
 - (void)updateSchemaMode;
 @end
 
-void RLMDeferredAuditConfigInit(realm::AuditConfig& auditConfig, RLMRealmConfiguration *realmConfig);
+void LEGACYDeferredAuditConfigInit(realm::AuditConfig& auditConfig, LEGACYRealmConfiguration *realmConfig);

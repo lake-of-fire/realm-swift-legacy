@@ -30,7 +30,7 @@ import RealmLegacy
 @frozen public struct Property: CustomStringConvertible {
     // MARK: Properties
 
-    internal let rlmProperty: RLMProperty
+    internal let rlmProperty: LEGACYProperty
 
     /// The name of the property.
     public var name: String { return rlmProperty.name }
@@ -66,7 +66,7 @@ import RealmLegacy
 
     // MARK: Initializers
 
-    internal init(_ rlmProperty: RLMProperty) {
+    internal init(_ rlmProperty: LEGACYProperty) {
         self.rlmProperty = rlmProperty
     }
 }

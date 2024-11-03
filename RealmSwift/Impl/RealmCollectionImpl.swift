@@ -27,9 +27,9 @@ import RealmLegacy
 // The functions don't need to be documented here because Xcode/DocC inherit
 // the documentation from the RealmCollection protocol definition, and jazzy
 // excludes this file entirely.
-internal protocol RealmCollectionImpl: RealmCollection where Index == Int, SubSequence == Slice<Self>, Iterator == RLMIterator<Element> {
-    var collection: RLMCollection { get }
-    init(collection: RLMCollection)
+internal protocol RealmCollectionImpl: RealmCollection where Index == Int, SubSequence == Slice<Self>, Iterator == LEGACYIterator<Element> {
+    var collection: LEGACYCollection { get }
+    init(collection: LEGACYCollection)
 }
 extension RealmCollectionImpl {
     public var realm: RealmLegacy? { collection.realm.map(RealmLegacy.init) }
@@ -111,7 +111,7 @@ extension RealmCollectionImpl {
         // wrapper for the obj-c type, which we'll construct the first time the
         // callback is called.
         var col: Self?
-        func wrapped(collection: RLMCollection?, change: RLMCollectionChange?, error: Error?) {
+        func wrapped(collection: LEGACYCollection?, change: LEGACYCollectionChange?, error: Error?) {
             if col == nil, let collection = collection {
                 col = self.collection === collection ? self : Self(collection: collection)
             }
@@ -153,7 +153,7 @@ extension RealmCollectionImpl {
             throwRealmException("There must be at least one SortDescriptor when using SectionedResults.")
         }
         let sectionedResults = collection.sectionedResults(using: sortDescriptors.map(ObjectiveCSupport.convert)) { value in
-            return keyBlock(Element._rlmFromObjc(value)!)._rlmObjcValue as? RLMValue
+            return keyBlock(Element._rlmFromObjc(value)!)._rlmObjcValue as? LEGACYValue
         }
 
         return SectionedResults(rlmSectionedResult: sectionedResults)
@@ -205,8 +205,8 @@ internal func with<A: Actor, Value: ThreadConfined, Return: Sendable>(
         if Task.isCancelled {
             return nil
         }
-        let scheduler = RLMScheduler.actor(actor, invoke: actor.invoke, verify: actor.verifier())
-        let realm = RealmLegacy(try! RLMRealm(configuration: config.wrappedValue, confinedTo: scheduler))
+        let scheduler = LEGACYScheduler.actor(actor, invoke: actor.invoke, verify: actor.verifier())
+        let realm = RealmLegacy(try! LEGACYRealm(configuration: config.wrappedValue, confinedTo: scheduler))
         guard let value = tsr.resolve(in: realm) else {
             return nil
         }

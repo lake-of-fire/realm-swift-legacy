@@ -16,78 +16,78 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
-@protocol RLMBSON;
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
+@protocol LEGACYBSON;
 
 /// A token representing an identity provider's credentials.
-typedef NSString *RLMCredentialsToken;
+typedef NSString *LEGACYCredentialsToken;
 
 /// A type representing the unique identifier of an Atlas App Services identity provider.
-typedef NSString *RLMIdentityProvider NS_EXTENSIBLE_STRING_ENUM;
+typedef NSString *LEGACYIdentityProvider NS_EXTENSIBLE_STRING_ENUM;
 
 /// The username/password identity provider. User accounts are handled by Atlas App Services directly without the
 /// involvement of a third-party identity provider.
-extern RLMIdentityProvider const RLMIdentityProviderUsernamePassword;
+extern LEGACYIdentityProvider const LEGACYIdentityProviderUsernamePassword;
 
 /// A Facebook account as an identity provider.
-extern RLMIdentityProvider const RLMIdentityProviderFacebook;
+extern LEGACYIdentityProvider const LEGACYIdentityProviderFacebook;
 
 /// A Google account as an identity provider.
-extern RLMIdentityProvider const RLMIdentityProviderGoogle;
+extern LEGACYIdentityProvider const LEGACYIdentityProviderGoogle;
 
 /// An Apple account as an identity provider.
-extern RLMIdentityProvider const RLMIdentityProviderApple;
+extern LEGACYIdentityProvider const LEGACYIdentityProviderApple;
 
 /// A JSON Web Token as an identity provider.
-extern RLMIdentityProvider const RLMIdentityProviderJWT;
+extern LEGACYIdentityProvider const LEGACYIdentityProviderJWT;
 
 /// An Anonymous account as an identity provider.
-extern RLMIdentityProvider const RLMIdentityProviderAnonymous;
+extern LEGACYIdentityProvider const LEGACYIdentityProviderAnonymous;
 
 /// An Realm Cloud function as an identity provider.
-extern RLMIdentityProvider const RLMIdentityProviderFunction;
+extern LEGACYIdentityProvider const LEGACYIdentityProviderFunction;
 
 /// A user api key as an identity provider.
-extern RLMIdentityProvider const RLMIdentityProviderUserAPIKey;
+extern LEGACYIdentityProvider const LEGACYIdentityProviderUserAPIKey;
 
 /// A server api key as an identity provider.
-extern RLMIdentityProvider const RLMIdentityProviderServerAPIKey;
+extern LEGACYIdentityProvider const LEGACYIdentityProviderServerAPIKey;
 
 /**
  Opaque credentials representing a specific Realm App user.
  */
-RLM_SWIFT_SENDABLE RLM_FINAL // immutable final class
-@interface RLMCredentials : NSObject
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL // immutable final class
+@interface LEGACYCredentials : NSObject
 
 /// The name of the identity provider which generated the credentials token.
-@property (nonatomic, readonly) RLMIdentityProvider provider;
+@property (nonatomic, readonly) LEGACYIdentityProvider provider;
 
 /**
  Construct and return credentials from a Facebook account token.
  */
-+ (instancetype)credentialsWithFacebookToken:(RLMCredentialsToken)token;
++ (instancetype)credentialsWithFacebookToken:(LEGACYCredentialsToken)token;
 
 /**
  Construct and return credentials from a Google account token.
  */
-+ (instancetype)credentialsWithGoogleAuthCode:(RLMCredentialsToken)token;
++ (instancetype)credentialsWithGoogleAuthCode:(LEGACYCredentialsToken)token;
 
 /**
  Construct and return credentials from a Google id token.
  */
-+ (instancetype)credentialsWithGoogleIdToken:(RLMCredentialsToken)token;
++ (instancetype)credentialsWithGoogleIdToken:(LEGACYCredentialsToken)token;
 
 /**
  Construct and return credentials from an Apple account token.
  */
-+ (instancetype)credentialsWithAppleToken:(RLMCredentialsToken)token;
++ (instancetype)credentialsWithAppleToken:(LEGACYCredentialsToken)token;
 
 /**
  Construct and return credentials for an Atlas App Services function using a mongodb document as a json payload.
 */
-+ (instancetype)credentialsWithFunctionPayload:(NSDictionary<NSString *, id<RLMBSON>> *)payload;
++ (instancetype)credentialsWithFunctionPayload:(NSDictionary<NSString *, id<LEGACYBSON>> *)payload;
 
 /**
  Construct and return credentials from a user api key.
@@ -116,11 +116,11 @@ RLM_SWIFT_SENDABLE RLM_FINAL // immutable final class
 + (instancetype)anonymousCredentials;
 
 /// :nodoc:
-- (instancetype)init __attribute__((unavailable("RLMAppCredentials cannot be created directly")));
+- (instancetype)init __attribute__((unavailable("LEGACYAppCredentials cannot be created directly")));
 
 /// :nodoc:
-+ (instancetype)new __attribute__((unavailable("RLMAppCredentials cannot be created directly")));
++ (instancetype)new __attribute__((unavailable("LEGACYAppCredentials cannot be created directly")));
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

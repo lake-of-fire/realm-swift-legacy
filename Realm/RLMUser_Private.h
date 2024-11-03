@@ -16,25 +16,25 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMUser.h>
+#import <Realm/LEGACYUser.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 /// Observer block for user notifications.
-typedef void(^RLMUserNotificationBlock)(RLMUser *);
+typedef void(^LEGACYUserNotificationBlock)(LEGACYUser *);
 
 /// Token that identifies an observer. Unsubscribes when deconstructed to
 /// avoid dangling observers, therefore this must be retained to hold
 /// onto a subscription.
-@interface RLMUserSubscriptionToken : NSObject
+@interface LEGACYUserSubscriptionToken : NSObject
 - (void)unsubscribe;
 @end
 
-@interface RLMUser ()
-/// Subscribe to notifications for this RLMUser.
-- (RLMUserSubscriptionToken *)subscribe:(RLMUserNotificationBlock)block;
+@interface LEGACYUser ()
+/// Subscribe to notifications for this LEGACYUser.
+- (LEGACYUserSubscriptionToken *)subscribe:(LEGACYUserNotificationBlock)block;
 
 - (void)logOut;
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

@@ -16,12 +16,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMMultiProcessTestCase.h"
-#import "RLMChildProcessEnvironment.h"
+#import "LEGACYMultiProcessTestCase.h"
+#import "LEGACYChildProcessEnvironment.h"
 
 #include <mach-o/dyld.h>
 
-@interface RLMMultiProcessTestCase ()
+@interface LEGACYMultiProcessTestCase ()
 @property (nonatomic) bool isParent;
 @property (nonatomic, strong) NSString *testName;
 
@@ -29,14 +29,14 @@
 @property (nonatomic, strong) NSString *testsPath;
 @end
 
-@interface RLMMultiProcessTestCase (Sync)
+@interface LEGACYMultiProcessTestCase (Sync)
 - (NSString *)appId;
 @end
 
-@implementation RLMMultiProcessTestCase
+@implementation LEGACYMultiProcessTestCase
 // Override all of the methods for creating a XCTestCase object to capture the current test name
 + (id)testCaseWithInvocation:(NSInvocation *)invocation {
-    RLMMultiProcessTestCase *testCase = [super testCaseWithInvocation:invocation];
+    LEGACYMultiProcessTestCase *testCase = [super testCaseWithInvocation:invocation];
     testCase.testName = NSStringFromSelector(invocation.selector);
     return testCase;
 }
@@ -50,7 +50,7 @@
 }
 
 + (id)testCaseWithSelector:(SEL)selector {
-    RLMMultiProcessTestCase *testCase = [super testCaseWithSelector:selector];
+    LEGACYMultiProcessTestCase *testCase = [super testCaseWithSelector:selector];
     testCase.testName = NSStringFromSelector(selector);
     return testCase;
 }
@@ -68,17 +68,17 @@
 }
 
 - (void)setUp {
-    self.isParent = !getenv("RLMProcessIsChild");
+    self.isParent = !getenv("LEGACYProcessIsChild");
     self.xctestPath = [self locateXCTest];
     self.testsPath = [NSBundle bundleForClass:[self class]].bundlePath;
 
     if (!self.isParent) {
         // For multi-process tests, the child's concept of a default path needs to match the parent.
-        // RLMRealmConfiguration isn't aware of this, but our test's RLMDefaultRealmURL helper does.
+        // LEGACYRealmConfiguration isn't aware of this, but our test's LEGACYDefaultRealmURL helper does.
         // Use it to reset the default configuration's path so it matches the parent.
-        RLMRealmConfiguration *configuration = [RLMRealmConfiguration defaultConfiguration];
-        configuration.fileURL = RLMDefaultRealmURL();
-        [RLMRealmConfiguration setDefaultConfiguration:configuration];
+        LEGACYRealmConfiguration *configuration = [LEGACYRealmConfiguration defaultConfiguration];
+        configuration.fileURL = LEGACYDefaultRealmURL();
+        [LEGACYRealmConfiguration setDefaultConfiguration:configuration];
     }
 
     [super setUp];
@@ -116,11 +116,11 @@
 }
 
 #if !TARGET_OS_IPHONE && !TARGET_IPHONE_SIMULATOR
-- (NSTask *)childTaskWithEnvironment:(RLMChildProcessEnvironment *)environment {
+- (NSTask *)childTaskWithEnvironment:(LEGACYChildProcessEnvironment *)environment {
     NSString *testName = [NSString stringWithFormat:@"%@/%@", self.className, self.testName];
     NSMutableDictionary *env = [NSProcessInfo.processInfo.environment mutableCopy];
-    env[@"RLMProcessIsChild"] = @"true";
-    env[@"RLMParentProcessBundleID"] = [NSBundle mainBundle].bundleIdentifier;
+    env[@"LEGACYProcessIsChild"] = @"true";
+    env[@"LEGACYParentProcessBundleID"] = [NSBundle mainBundle].bundleIdentifier;
     [env addEntriesFromDictionary:[environment dictionaryValue]];
 
     // If we're running with address sanitizer or thread sanitizer we need to
@@ -149,7 +149,7 @@
 }
 
 - (NSTask *)childTaskWithAppIds:(NSArray *)appIds {
-    return [self childTaskWithEnvironment:[[RLMChildProcessEnvironment new] initWithAppIds:appIds
+    return [self childTaskWithEnvironment:[[LEGACYChildProcessEnvironment new] initWithAppIds:appIds
                                                                                      email:nil
                                                                                   password:nil
                                                                                  identifer:0]];
@@ -183,7 +183,7 @@
     return pipe;
 }
 
-- (int)runChildAndWaitWithEnvironment:(RLMChildProcessEnvironment *)environment {
+- (int)runChildAndWaitWithEnvironment:(LEGACYChildProcessEnvironment *)environment {
     NSTask *task = [self childTaskWithEnvironment:environment];
     task.standardError = self.filterPipe;
     [task launch];
@@ -192,7 +192,7 @@
 }
 
 - (int)runChildAndWaitWithAppIds:(NSArray *)appIds {
-    return [self runChildAndWaitWithEnvironment:[[RLMChildProcessEnvironment new] initWithAppIds:appIds email:nil password:nil identifer:0]];
+    return [self runChildAndWaitWithEnvironment:[[LEGACYChildProcessEnvironment new] initWithAppIds:appIds email:nil password:nil identifer:0]];
 }
 
 - (int)runChildAndWait {
@@ -219,7 +219,7 @@
     return 1;
 }
 
-- (int)runChildAndWaitWithEnvironment:(RLMChildProcessEnvironment *)environment {
+- (int)runChildAndWaitWithEnvironment:(LEGACYChildProcessEnvironment *)environment {
     return 1;
 }
 #endif

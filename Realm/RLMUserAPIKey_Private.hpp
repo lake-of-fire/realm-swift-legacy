@@ -16,11 +16,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMUserAPIKey.h>
+#import <Realm/LEGACYUserAPIKey.h>
 
 #import <realm/object-store/sync/app.hpp>
 
-@interface RLMUserAPIKey ()
+@interface LEGACYUserAPIKey ()
 - (realm::app::App::UserAPIKey)_apiKey;
 - (instancetype)initWithUserAPIKey:(realm::app::App::UserAPIKey)userAPIKey;
 @end

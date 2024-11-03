@@ -16,32 +16,32 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@class RLMApp, RLMUser;
+@class LEGACYApp, LEGACYUser;
 
 /// A block type used to report an error
-RLM_SWIFT_SENDABLE // invoked on a backgroun thread
-typedef void(^RLMOptionalErrorBlock)(NSError * _Nullable);
+LEGACY_SWIFT_SENDABLE // invoked on a backgroun thread
+typedef void(^LEGACYOptionalErrorBlock)(NSError * _Nullable);
 
 /// A client which can be used to register devices with the server to receive push notificatons
-RLM_SWIFT_SENDABLE RLM_FINAL // immutable final class
-@interface RLMPushClient : NSObject
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL // immutable final class
+@interface LEGACYPushClient : NSObject
 
 /// The push notification service name the device will be registered with on the server
 @property (nonatomic, readonly, nonnull) NSString *serviceName;
 
 /// Request to register device token to the server
 - (void)registerDeviceWithToken:(NSString *)token
-                           user:(RLMUser *)user
-                     completion:(RLMOptionalErrorBlock)completion NS_SWIFT_NAME(registerDevice(token:user:completion:));
+                           user:(LEGACYUser *)user
+                     completion:(LEGACYOptionalErrorBlock)completion NS_SWIFT_NAME(registerDevice(token:user:completion:));
 
 /// Request to deregister a device for a user
-- (void)deregisterDeviceForUser:(RLMUser *)user
-                     completion:(RLMOptionalErrorBlock)completion NS_SWIFT_NAME(deregisterDevice(user:completion:));
+- (void)deregisterDeviceForUser:(LEGACYUser *)user
+                     completion:(LEGACYOptionalErrorBlock)completion NS_SWIFT_NAME(deregisterDevice(user:completion:));
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

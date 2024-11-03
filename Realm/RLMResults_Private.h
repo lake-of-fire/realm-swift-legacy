@@ -16,26 +16,26 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMResults.h>
+#import <Realm/LEGACYResults.h>
 
-#import "RLMRealm_Private.h"
+#import "LEGACYRealm_Private.h"
 
-@class RLMObjectSchema;
+@class LEGACYObjectSchema;
 
-RLM_HEADER_AUDIT_BEGIN(nullability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability)
 
-@interface RLMResults ()
+@interface LEGACYResults ()
 @property (nonatomic, readonly, getter=isAttached) BOOL attached;
 
 + (instancetype)emptyDetachedResults;
-- (RLMResults *)snapshot;
+- (LEGACYResults *)snapshot;
 
 - (void)subscribeWithName:(NSString *_Nullable)name
-              waitForSync:(RLMWaitForSyncMode)waitForSyncMode
-               confinedTo:(RLMScheduler *)confinement
+              waitForSync:(LEGACYWaitForSyncMode)waitForSyncMode
+               confinedTo:(LEGACYScheduler *)confinement
                   timeout:(NSTimeInterval)timeout
-               completion:(RLMResultsCompletionBlock)completion;
+               completion:(LEGACYResultsCompletionBlock)completion;
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability)
+LEGACY_HEADER_AUDIT_END(nullability)

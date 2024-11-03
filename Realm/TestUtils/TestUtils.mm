@@ -17,15 +17,15 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #import "TestUtils.h"
-#import "RLMAssertions.h"
+#import "LEGACYAssertions.h"
 
 #import <Realm/Realm.h>
-#import <Realm/RLMSchema_Private.h>
+#import <Realm/LEGACYSchema_Private.h>
 
-#import "RLMApp_Private.hpp"
-#import "RLMRealmUtil.hpp"
-#import "RLMSyncConfiguration_Private.hpp"
-#import "RLMSyncManager_Private.hpp"
+#import "LEGACYApp_Private.hpp"
+#import "LEGACYRealmUtil.hpp"
+#import "LEGACYSyncConfiguration_Private.hpp"
+#import "LEGACYSyncManager_Private.hpp"
 
 #import <realm/object-store/impl/apple/keychain_helper.hpp>
 #import <realm/object-store/sync/impl/sync_file.hpp>
@@ -46,7 +46,7 @@ static void recordFailure(XCTestCase *self, NSString *message, NSString *fileNam
     [self recordIssue:issue];
 }
 
-void RLMAssertThrowsWithReasonMatchingSwift(XCTestCase *self,
+void LEGACYAssertThrowsWithReasonMatchingSwift(XCTestCase *self,
                                             __attribute__((noescape)) dispatch_block_t block,
                                             NSString *regexString, NSString *message,
                                             NSString *fileName, NSUInteger lineNumber) {
@@ -87,7 +87,7 @@ static void assertThrows(XCTestCase *self, dispatch_block_t block, NSString *mes
     }
 }
 
-void (RLMAssertThrowsWithName)(XCTestCase *self, __attribute__((noescape)) dispatch_block_t block,
+void (LEGACYAssertThrowsWithName)(XCTestCase *self, __attribute__((noescape)) dispatch_block_t block,
                                NSString *name, NSString *message, NSString *fileName, NSUInteger lineNumber) {
     assertThrows(self, block, message, fileName, lineNumber, ^NSString *(NSException *e) {
         if ([name isEqualToString:e.name]) {
@@ -98,7 +98,7 @@ void (RLMAssertThrowsWithName)(XCTestCase *self, __attribute__((noescape)) dispa
     });
 }
 
-void (RLMAssertThrowsWithReason)(XCTestCase *self, __attribute__((noescape)) dispatch_block_t block,
+void (LEGACYAssertThrowsWithReason)(XCTestCase *self, __attribute__((noescape)) dispatch_block_t block,
                                  NSString *expected, NSString *message, NSString *fileName, NSUInteger lineNumber) {
     assertThrows(self, block, message, fileName, lineNumber, ^NSString *(NSException *e) {
         if ([e.reason rangeOfString:expected].location != NSNotFound) {
@@ -109,7 +109,7 @@ void (RLMAssertThrowsWithReason)(XCTestCase *self, __attribute__((noescape)) dis
     });
 }
 
-void (RLMAssertThrowsWithReasonMatching)(XCTestCase *self, __attribute__((noescape)) dispatch_block_t block,
+void (LEGACYAssertThrowsWithReasonMatching)(XCTestCase *self, __attribute__((noescape)) dispatch_block_t block,
                                          NSString *regexString, NSString *message,
                                          NSString *fileName, NSUInteger lineNumber) {
     auto regex = [NSRegularExpression regularExpressionWithPattern:regexString
@@ -124,7 +124,7 @@ void (RLMAssertThrowsWithReasonMatching)(XCTestCase *self, __attribute__((noesca
 }
 
 
-void (RLMAssertMatches)(XCTestCase *self, __attribute__((noescape)) NSString *(^block)(),
+void (LEGACYAssertMatches)(XCTestCase *self, __attribute__((noescape)) NSString *(^block)(),
                         NSString *regexString, NSString *message, NSString *fileName, NSUInteger lineNumber) {
     NSString *result = block();
     NSError *err;
@@ -140,7 +140,7 @@ void (RLMAssertMatches)(XCTestCase *self, __attribute__((noescape)) NSString *(^
     }
 }
 
-void (RLMAssertExceptionReason)(XCTestCase *self,
+void (LEGACYAssertExceptionReason)(XCTestCase *self,
                                 NSException *exception, NSString *expected, NSString *expression,
                                 NSString *fileName, NSUInteger lineNumber) {
     if (!exception) {
@@ -161,8 +161,8 @@ void (RLMAssertExceptionReason)(XCTestCase *self,
     [self recordIssue:issue];
 }
 
-bool RLMHasCachedRealmForPath(NSString *path) {
-    return RLMGetAnyCachedRealmForPath(path.UTF8String);
+bool LEGACYHasCachedRealmForPath(NSString *path) {
+    return LEGACYGetAnyCachedRealmForPath(path.UTF8String);
 }
 
 static std::string serialize(id obj) {
@@ -192,20 +192,20 @@ static std::string fakeJWT() {
 }
 
 // A network transport which doesn't actually do anything
-@interface NoOpTransport : NSObject <RLMNetworkTransport>
+@interface NoOpTransport : NSObject <LEGACYNetworkTransport>
 @end
 @implementation NoOpTransport
-- (void)sendRequestToServer:(RLMRequest *)request
-                 completion:(RLMNetworkTransportCompletionBlock)completionBlock {
+- (void)sendRequestToServer:(LEGACYRequest *)request
+                 completion:(LEGACYNetworkTransportCompletionBlock)completionBlock {
 }
-- (NSURLSession *)doStreamRequest:(RLMRequest *)request
-                  eventSubscriber:(id<RLMEventDelegate>)subscriber {
+- (NSURLSession *)doStreamRequest:(LEGACYRequest *)request
+                  eventSubscriber:(id<LEGACYEventDelegate>)subscriber {
     return nil;
 }
 @end
 
-RLMUser *RLMDummyUser() {
-    RLMAppConfiguration *config = [[RLMAppConfiguration alloc] init];
+LEGACYUser *LEGACYDummyUser() {
+    LEGACYAppConfiguration *config = [[LEGACYAppConfiguration alloc] init];
     config.appId = @"dummy";
     config.encryptMetadata = false;
     config.transport = [NoOpTransport new];
@@ -222,7 +222,7 @@ RLMUser *RLMDummyUser() {
     }
 
     // Creating an app reads the fake cached user
-    RLMApp *app = [RLMApp appWithConfiguration:config];
+    LEGACYApp *app = [LEGACYApp appWithConfiguration:config];
     return app.allUsers.allValues.firstObject;
 }
 
@@ -231,14 +231,14 @@ RLMUser *RLMDummyUser() {
 // built-in one yet.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wobjc-protocol-method-implementation"
-@implementation NSUUID (RLMUUIDCompareTests)
+@implementation NSUUID (LEGACYUUIDCompareTests)
 - (NSComparisonResult)compare:(NSUUID *)other {
     return [[self UUIDString] compare:other.UUIDString];
 }
 @end
 #pragma clang diagnostic pop
 
-bool RLMThreadSanitizerEnabled() {
+bool LEGACYThreadSanitizerEnabled() {
 #if __has_feature(thread_sanitizer)
     return true;
 #else
@@ -247,17 +247,17 @@ bool RLMThreadSanitizerEnabled() {
 }
 
 #if !REALM_TVOS && !REALM_WATCHOS && !REALM_APPLE_DEVICE
-bool RLMCanFork() {
+bool LEGACYCanFork() {
     return true;
 }
-pid_t RLMFork() {
+pid_t LEGACYFork() {
     return fork();
 }
 #else
-bool RLMCanFork() {
+bool LEGACYCanFork() {
     return false;
 }
-pid_t RLMFork() {
+pid_t LEGACYFork() {
     abort();
 }
 #endif

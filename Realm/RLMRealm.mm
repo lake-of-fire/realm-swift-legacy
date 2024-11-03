@@ -16,33 +16,33 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMRealm_Private.hpp"
+#import "LEGACYRealm_Private.hpp"
 
-#import "RLMAnalytics.hpp"
-#import "RLMAsyncTask_Private.h"
-#import "RLMArray_Private.hpp"
-#import "RLMDictionary_Private.hpp"
-#import "RLMError_Private.hpp"
-#import "RLMLogger.h"
-#import "RLMMigration_Private.h"
-#import "RLMObject_Private.h"
-#import "RLMObject_Private.hpp"
-#import "RLMObjectSchema_Private.hpp"
-#import "RLMObjectStore.h"
-#import "RLMObservation.hpp"
-#import "RLMProperty.h"
-#import "RLMProperty_Private.h"
-#import "RLMQueryUtil.hpp"
-#import "RLMRealmConfiguration_Private.hpp"
-#import "RLMRealmUtil.hpp"
-#import "RLMScheduler.h"
-#import "RLMSchema_Private.hpp"
-#import "RLMSyncConfiguration.h"
-#import "RLMSyncConfiguration_Private.hpp"
-#import "RLMSet_Private.hpp"
-#import "RLMThreadSafeReference_Private.hpp"
-#import "RLMUpdateChecker.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYAnalytics.hpp"
+#import "LEGACYAsyncTask_Private.h"
+#import "LEGACYArray_Private.hpp"
+#import "LEGACYDictionary_Private.hpp"
+#import "LEGACYError_Private.hpp"
+#import "LEGACYLogger.h"
+#import "LEGACYMigration_Private.h"
+#import "LEGACYObject_Private.h"
+#import "LEGACYObject_Private.hpp"
+#import "LEGACYObjectSchema_Private.hpp"
+#import "LEGACYObjectStore.h"
+#import "LEGACYObservation.hpp"
+#import "LEGACYProperty.h"
+#import "LEGACYProperty_Private.h"
+#import "LEGACYQueryUtil.hpp"
+#import "LEGACYRealmConfiguration_Private.hpp"
+#import "LEGACYRealmUtil.hpp"
+#import "LEGACYScheduler.h"
+#import "LEGACYSchema_Private.hpp"
+#import "LEGACYSyncConfiguration.h"
+#import "LEGACYSyncConfiguration_Private.hpp"
+#import "LEGACYSet_Private.hpp"
+#import "LEGACYThreadSafeReference_Private.hpp"
+#import "LEGACYUpdateChecker.hpp"
+#import "LEGACYUtil.hpp"
 
 #import <realm/disable_sync_to_disk.hpp>
 #import <realm/object-store/impl/realm_coordinator.hpp>
@@ -54,10 +54,10 @@
 #import <realm/version.hpp>
 
 #if REALM_ENABLE_SYNC
-#import "RLMSyncManager_Private.hpp"
-#import "RLMSyncSession_Private.hpp"
-#import "RLMSyncUtil_Private.hpp"
-#import "RLMSyncSubscription_Private.hpp"
+#import "LEGACYSyncManager_Private.hpp"
+#import "LEGACYSyncSession_Private.hpp"
+#import "LEGACYSyncUtil_Private.hpp"
+#import "LEGACYSyncSubscription_Private.hpp"
 
 #import <realm/object-store/sync/sync_session.hpp>
 #endif
@@ -65,30 +65,30 @@
 using namespace realm;
 using util::File;
 
-@interface RLMRealmNotificationToken : RLMNotificationToken
-@property (nonatomic, strong) RLMRealm *realm;
-@property (nonatomic, copy) RLMNotificationBlock block;
+@interface LEGACYRealmNotificationToken : LEGACYNotificationToken
+@property (nonatomic, strong) LEGACYRealm *realm;
+@property (nonatomic, copy) LEGACYNotificationBlock block;
 @end
 
-@interface RLMRealm ()
-@property (nonatomic, strong) NSHashTable<RLMRealmNotificationToken *> *notificationHandlers;
-- (void)sendNotifications:(RLMNotification)notification;
+@interface LEGACYRealm ()
+@property (nonatomic, strong) NSHashTable<LEGACYRealmNotificationToken *> *notificationHandlers;
+- (void)sendNotifications:(LEGACYNotification)notification;
 @end
 
-void RLMDisableSyncToDisk() {
+void LEGACYDisableSyncToDisk() {
     realm::disable_sync_to_disk();
 }
 
 static std::atomic<bool> s_set_skip_backup_attribute{true};
-void RLMSetSkipBackupAttribute(bool value) {
+void LEGACYSetSkipBackupAttribute(bool value) {
     s_set_skip_backup_attribute = value;
 }
 
-static void RLMAddSkipBackupAttributeToItemAtPath(std::string_view path) {
+static void LEGACYAddSkipBackupAttributeToItemAtPath(std::string_view path) {
     [[NSURL fileURLWithPath:@(path.data())] setResourceValue:@YES forKey:NSURLIsExcludedFromBackupKey error:nil];
 }
 
-void RLMWaitForRealmToClose(NSString *path) {
+void LEGACYWaitForRealmToClose(NSString *path) {
     NSString *lockfilePath = [path stringByAppendingString:@".lock"];
     if (![NSFileManager.defaultManager fileExistsAtPath:lockfilePath]) {
         return;
@@ -101,12 +101,12 @@ void RLMWaitForRealmToClose(NSString *path) {
     }
 }
 
-BOOL RLMIsRealmCachedAtPath(NSString *path) {
-    return RLMGetAnyCachedRealmForPath([path cStringUsingEncoding:NSUTF8StringEncoding]) != nil;
+BOOL LEGACYIsRealmCachedAtPath(NSString *path) {
+    return LEGACYGetAnyCachedRealmForPath([path cStringUsingEncoding:NSUTF8StringEncoding]) != nil;
 }
 
-RLM_HIDDEN
-@implementation RLMRealmNotificationToken
+LEGACY_HIDDEN
+@implementation LEGACYRealmNotificationToken
 - (bool)invalidate {
     if (_realm) {
         [_realm verifyThread];
@@ -128,16 +128,16 @@ RLM_HIDDEN
     // store or do fancy things to handle transaction coalescing because it's
     // called synchronously by the obj-c code and not by the object store.
     auto notificationBlock = _block;
-    _block = ^(RLMNotification, RLMRealm *) {
+    _block = ^(LEGACYNotification, LEGACYRealm *) {
         _block = notificationBlock;
     };
 }
 
 - (void)dealloc {
     if (_realm || _block) {
-        NSLog(@"RLMNotificationToken released without unregistering a notification. You must hold "
-              @"on to the RLMNotificationToken returned from addNotificationBlock and call "
-              @"-[RLMNotificationToken invalidate] when you no longer wish to receive RLMRealm notifications.");
+        NSLog(@"LEGACYNotificationToken released without unregistering a notification. You must hold "
+              @"on to the LEGACYNotificationToken returned from addNotificationBlock and call "
+              @"-[LEGACYNotificationToken invalidate] when you no longer wish to receive LEGACYRealm notifications.");
     }
 }
 @end
@@ -147,40 +147,40 @@ static bool shouldForciblyDisableEncryption() {
     return disableEncryption;
 }
 
-NSData *RLMRealmValidatedEncryptionKey(NSData *key) {
+NSData *LEGACYRealmValidatedEncryptionKey(NSData *key) {
     if (shouldForciblyDisableEncryption()) {
         return nil;
     }
 
     if (key && key.length != 64) {
-        @throw RLMException(@"Encryption key must be exactly 64 bytes long");
+        @throw LEGACYException(@"Encryption key must be exactly 64 bytes long");
     }
 
     return key;
 }
 
-REALM_NOINLINE void RLMRealmTranslateException(NSError **error) {
+REALM_NOINLINE void LEGACYRealmTranslateException(NSError **error) {
     try {
         throw;
     }
     catch (FileAccessError const& ex) {
-        RLMSetErrorOrThrow(makeError(ex), error);
+        LEGACYSetErrorOrThrow(makeError(ex), error);
     }
     catch (Exception const& ex) {
-        RLMSetErrorOrThrow(makeError(ex), error);
+        LEGACYSetErrorOrThrow(makeError(ex), error);
     }
     catch (std::system_error const& ex) {
-        RLMSetErrorOrThrow(makeError(ex), error);
+        LEGACYSetErrorOrThrow(makeError(ex), error);
     }
     catch (std::exception const& ex) {
-        RLMSetErrorOrThrow(makeError(ex), error);
+        LEGACYSetErrorOrThrow(makeError(ex), error);
     }
 }
 
 namespace {
 // ARC tries to eliminate calls to autorelease when the value is then immediately
 // returned, but this results in significantly different semantics between debug
-// and release builds for RLMRealm, so force it to always autorelease.
+// and release builds for LEGACYRealm, so force it to always autorelease.
 // NEXT-MAJOR: we should switch to NS_RETURNS_RETAINED, which did not exist yet
 // when we wrote this but is the correct thing.
 id autorelease(__unsafe_unretained id value) {
@@ -188,34 +188,34 @@ id autorelease(__unsafe_unretained id value) {
     return value ? (__bridge id)CFAutorelease((__bridge_retained CFTypeRef)value) : nil;
 }
 
-RLMRealm *getCachedRealm(RLMRealmConfiguration *configuration, RLMScheduler *options) NS_RETURNS_RETAINED {
+LEGACYRealm *getCachedRealm(LEGACYRealmConfiguration *configuration, LEGACYScheduler *options) NS_RETURNS_RETAINED {
     auto& config = configuration.configRef;
     if (!configuration.cache && !configuration.dynamic) {
         return nil;
     }
 
-    RLMRealm *realm = RLMGetCachedRealm(configuration, options);
+    LEGACYRealm *realm = LEGACYGetCachedRealm(configuration, options);
     if (!realm) {
         return nil;
     }
 
     auto const& oldConfig = realm->_realm->config();
     if ((oldConfig.read_only() || oldConfig.immutable()) != configuration.readOnly) {
-        @throw RLMException(@"Realm at path '%@' already opened with different read permissions", configuration.fileURL.path);
+        @throw LEGACYException(@"Realm at path '%@' already opened with different read permissions", configuration.fileURL.path);
     }
     if (oldConfig.in_memory != config.in_memory) {
-        @throw RLMException(@"Realm at path '%@' already opened with different inMemory settings", configuration.fileURL.path);
+        @throw LEGACYException(@"Realm at path '%@' already opened with different inMemory settings", configuration.fileURL.path);
     }
     if (realm.dynamic != configuration.dynamic) {
-        @throw RLMException(@"Realm at path '%@' already opened with different dynamic settings", configuration.fileURL.path);
+        @throw LEGACYException(@"Realm at path '%@' already opened with different dynamic settings", configuration.fileURL.path);
     }
     if (oldConfig.encryption_key != config.encryption_key) {
-        @throw RLMException(@"Realm at path '%@' already opened with different encryption key", configuration.fileURL.path);
+        @throw LEGACYException(@"Realm at path '%@' already opened with different encryption key", configuration.fileURL.path);
     }
     return autorelease(realm);
 }
 
-bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
+bool copySeedFile(LEGACYRealmConfiguration *configuration, NSError **error) {
     if (!configuration.seedFilePath) {
         return false;
     }
@@ -228,7 +228,7 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
                                                                   error:&copyError];
         });
         if (!didCopySeed && copyError != nil && copyError.code != NSFileWriteFileExistsError) {
-            RLMSetErrorOrThrow(copyError, error);
+            LEGACYSetErrorOrThrow(copyError, error);
             return true;
         }
     }
@@ -236,19 +236,19 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
 }
 } // anonymous namespace
 
-@implementation RLMRealm {
+@implementation LEGACYRealm {
     std::mutex _collectionEnumeratorMutex;
-    NSHashTable<RLMFastEnumerator *> *_collectionEnumerators;
+    NSHashTable<LEGACYFastEnumerator *> *_collectionEnumerators;
     bool _sendingNotifications;
 }
 
 + (void)initialize {
     // In cases where we are not using a synced Realm, we initialise the default logger
     // before opening any realm.
-    [RLMLogger class];
+    [LEGACYLogger class];
 }
 
-+ (void)runFirstCheckForConfiguration:(RLMRealmConfiguration *)configuration schema:(RLMSchema *)schema {
++ (void)runFirstCheckForConfiguration:(LEGACYRealmConfiguration *)configuration schema:(LEGACYSchema *)schema {
     static bool initialized;
     if (initialized) {
         return;
@@ -256,8 +256,8 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
     initialized = true;
 
     // Run Analytics on the very first any Realm open.
-    RLMSendAnalytics(configuration, schema);
-    RLMCheckForUpdates();
+    LEGACYSendAnalytics(configuration, schema);
+    LEGACYCheckForUpdates();
 }
 
 - (instancetype)initPrivate {
@@ -274,7 +274,7 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
         _realm->verify_thread();
     }
     catch (std::exception const& e) {
-        @throw RLMException(e);
+        @throw LEGACYException(e);
     }
 }
 
@@ -295,70 +295,70 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
         _realm->set_auto_refresh(autorefresh);
     }
     catch (std::exception const& e) {
-        @throw RLMException(e);
+        @throw LEGACYException(e);
     }
 }
 
 + (instancetype)defaultRealm {
-    return [RLMRealm realmWithConfiguration:[RLMRealmConfiguration rawDefaultConfiguration] error:nil];
+    return [LEGACYRealm realmWithConfiguration:[LEGACYRealmConfiguration rawDefaultConfiguration] error:nil];
 }
 
 + (instancetype)defaultRealmForQueue:(dispatch_queue_t)queue {
-    return [RLMRealm realmWithConfiguration:[RLMRealmConfiguration rawDefaultConfiguration]
+    return [LEGACYRealm realmWithConfiguration:[LEGACYRealmConfiguration rawDefaultConfiguration]
                                       queue:queue error:nil];
 }
 
 + (instancetype)realmWithURL:(NSURL *)fileURL {
-    RLMRealmConfiguration *configuration = [RLMRealmConfiguration defaultConfiguration];
+    LEGACYRealmConfiguration *configuration = [LEGACYRealmConfiguration defaultConfiguration];
     configuration.fileURL = fileURL;
-    return [RLMRealm realmWithConfiguration:configuration error:nil];
+    return [LEGACYRealm realmWithConfiguration:configuration error:nil];
 }
 
-+ (RLMAsyncOpenTask *)asyncOpenWithConfiguration:(RLMRealmConfiguration *)configuration
++ (LEGACYAsyncOpenTask *)asyncOpenWithConfiguration:(LEGACYRealmConfiguration *)configuration
                                    callbackQueue:(dispatch_queue_t)callbackQueue
-                                        callback:(RLMAsyncOpenRealmCallback)callback {
-    return [[RLMAsyncOpenTask alloc] initWithConfiguration:configuration
-                                                confinedTo:[RLMScheduler dispatchQueue:callbackQueue]
+                                        callback:(LEGACYAsyncOpenRealmCallback)callback {
+    return [[LEGACYAsyncOpenTask alloc] initWithConfiguration:configuration
+                                                confinedTo:[LEGACYScheduler dispatchQueue:callbackQueue]
                                                   download:true completion:callback];
 }
 
 + (instancetype)realmWithSharedRealm:(SharedRealm)sharedRealm
-                              schema:(RLMSchema *)schema
+                              schema:(LEGACYSchema *)schema
                              dynamic:(bool)dynamic {
-    RLMRealm *realm = [[RLMRealm alloc] initPrivate];
+    LEGACYRealm *realm = [[LEGACYRealm alloc] initPrivate];
     realm->_realm = sharedRealm;
     realm->_dynamic = dynamic;
     realm->_schema = schema;
     if (!dynamic) {
         realm->_realm->set_schema_subset(schema.objectStoreCopy);
     }
-    realm->_info = RLMSchemaInfo(realm);
+    realm->_info = LEGACYSchemaInfo(realm);
     return autorelease(realm);
 }
 
 + (instancetype)realmWithSharedRealm:(std::shared_ptr<Realm>)osRealm
-                              schema:(RLMSchema *)schema
+                              schema:(LEGACYSchema *)schema
                              dynamic:(bool)dynamic
                               freeze:(bool)freeze {
-    RLMRealm *realm = [[RLMRealm alloc] initPrivate];
+    LEGACYRealm *realm = [[LEGACYRealm alloc] initPrivate];
     realm->_realm = osRealm;
     realm->_dynamic = dynamic;
 
     if (dynamic) {
-        realm->_schema = schema ?: [RLMSchema dynamicSchemaFromObjectStoreSchema:osRealm->schema()];
+        realm->_schema = schema ?: [LEGACYSchema dynamicSchemaFromObjectStoreSchema:osRealm->schema()];
     }
     else @autoreleasepool {
-        if (auto cachedRealm = RLMGetAnyCachedRealmForPath(osRealm->config().path)) {
+        if (auto cachedRealm = LEGACYGetAnyCachedRealmForPath(osRealm->config().path)) {
             realm->_realm->set_schema_subset(cachedRealm->_realm->schema());
             realm->_schema = cachedRealm.schema;
             realm->_info = cachedRealm->_info.clone(cachedRealm->_realm->schema(), realm);
         }
         else if (osRealm->is_frozen()) {
-            realm->_schema = schema ?: RLMSchema.sharedSchema;
+            realm->_schema = schema ?: LEGACYSchema.sharedSchema;
             realm->_realm->set_schema_subset(realm->_schema.objectStoreCopy);
         }
         else {
-            realm->_schema = schema ?: RLMSchema.sharedSchema;
+            realm->_schema = schema ?: LEGACYSchema.sharedSchema;
             try {
                 // No migration function: currently this is only used as part of
                 // client resets on sync Realms, so none is needed. If that
@@ -366,14 +366,14 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
                 realm->_realm->update_schema(realm->_schema.objectStoreCopy, osRealm->config().schema_version);
             }
             catch (...) {
-                RLMRealmTranslateException(nil);
+                LEGACYRealmTranslateException(nil);
                 REALM_COMPILER_HINT_UNREACHABLE();
             }
         }
     }
 
     if (realm->_info.begin() == realm->_info.end()) {
-        realm->_info = RLMSchemaInfo(realm);
+        realm->_info = LEGACYSchemaInfo(realm);
     }
 
     if (freeze && !realm->_realm->is_frozen()) {
@@ -383,22 +383,22 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
     return realm;
 }
 
-+ (instancetype)realmWithConfiguration:(RLMRealmConfiguration *)configuration error:(NSError **)error {
++ (instancetype)realmWithConfiguration:(LEGACYRealmConfiguration *)configuration error:(NSError **)error {
     return autorelease([self realmWithConfiguration:configuration
-                                         confinedTo:RLMScheduler.currentRunLoop
+                                         confinedTo:LEGACYScheduler.currentRunLoop
                                               error:error]);
 }
 
-+ (instancetype)realmWithConfiguration:(RLMRealmConfiguration *)configuration
++ (instancetype)realmWithConfiguration:(LEGACYRealmConfiguration *)configuration
                                  queue:(dispatch_queue_t)queue
                                  error:(NSError **)error {
     return autorelease([self realmWithConfiguration:configuration
-                                         confinedTo:[RLMScheduler dispatchQueue:queue]
+                                         confinedTo:[LEGACYScheduler dispatchQueue:queue]
                                               error:error]);
 }
 
-+ (instancetype)realmWithConfiguration:(RLMRealmConfiguration *)configuration
-                            confinedTo:(RLMScheduler *)scheduler
++ (instancetype)realmWithConfiguration:(LEGACYRealmConfiguration *)configuration
+                            confinedTo:(LEGACYScheduler *)scheduler
                                  error:(NSError **)error {
     // First check if we already have a cached Realm for this config
     if (auto realm = getCachedRealm(configuration, scheduler)) {
@@ -414,23 +414,23 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
 
     Realm::Config config = configuration.config;
 
-    RLMRealm *realm = [[self alloc] initPrivate];
+    LEGACYRealm *realm = [[self alloc] initPrivate];
     realm->_dynamic = dynamic;
     realm->_actor = scheduler.actor;
 
     // protects the realm cache and accessors cache
-    static auto& initLock = *new RLMUnfairMutex;
+    static auto& initLock = *new LEGACYUnfairMutex;
     std::lock_guard lock(initLock);
 
     try {
         config.scheduler = scheduler.osScheduler;
         if (config.scheduler && !config.scheduler->is_on_thread()) {
-            throw RLMException(@"Realm opened from incorrect dispatch queue.");
+            throw LEGACYException(@"Realm opened from incorrect dispatch queue.");
         }
         realm->_realm = Realm::get_shared_realm(config);
     }
     catch (...) {
-        RLMRealmTranslateException(error);
+        LEGACYRealmTranslateException(error);
         return nil;
     }
 
@@ -439,7 +439,7 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
     // just grab its schema
     @autoreleasepool {
         // ensure that cachedRealm doesn't end up in this thread's autorelease pool
-        if (auto cachedRealm = RLMGetAnyCachedRealmForPath(config.path)) {
+        if (auto cachedRealm = LEGACYGetAnyCachedRealmForPath(config.path)) {
             realm->_realm->set_schema_subset(cachedRealm->_realm->schema());
             realm->_schema = cachedRealm.schema;
             realm->_info = cachedRealm->_info.clone(cachedRealm->_realm->schema(), realm);
@@ -450,31 +450,31 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
     bool isFirstOpen = false;
     if (realm->_schema) { }
     else if (dynamic) {
-        realm->_schema = [RLMSchema dynamicSchemaFromObjectStoreSchema:realm->_realm->schema()];
-        realm->_info = RLMSchemaInfo(realm);
+        realm->_schema = [LEGACYSchema dynamicSchemaFromObjectStoreSchema:realm->_realm->schema()];
+        realm->_info = LEGACYSchemaInfo(realm);
     }
     else {
         // set/align schema or perform migration if needed
-        RLMSchema *schema = configuration.customSchema ?: RLMSchema.sharedSchema;
+        LEGACYSchema *schema = configuration.customSchema ?: LEGACYSchema.sharedSchema;
 
         MigrationFunction migrationFunction;
         auto migrationBlock = configuration.migrationBlock;
         if (migrationBlock && configuration.schemaVersion > 0) {
             migrationFunction = [=](SharedRealm old_realm, SharedRealm realm, Schema& mutableSchema) {
-                RLMSchema *oldSchema = [RLMSchema dynamicSchemaFromObjectStoreSchema:old_realm->schema()];
-                RLMRealm *oldRealm = [RLMRealm realmWithSharedRealm:old_realm
+                LEGACYSchema *oldSchema = [LEGACYSchema dynamicSchemaFromObjectStoreSchema:old_realm->schema()];
+                LEGACYRealm *oldRealm = [LEGACYRealm realmWithSharedRealm:old_realm
                                                              schema:oldSchema
                                                             dynamic:true];
 
-                // The destination RLMRealm can't just use the schema from the
+                // The destination LEGACYRealm can't just use the schema from the
                 // SharedRealm because it doesn't have information about whether or
                 // not a class was defined in Swift, which effects how new objects
                 // are created
-                RLMRealm *newRealm = [RLMRealm realmWithSharedRealm:realm
+                LEGACYRealm *newRealm = [LEGACYRealm realmWithSharedRealm:realm
                                                              schema:schema.copy
                                                             dynamic:true];
 
-                [[[RLMMigration alloc] initWithRealm:newRealm oldRealm:oldRealm schema:mutableSchema]
+                [[[LEGACYMigration alloc] initWithRealm:newRealm oldRealm:oldRealm schema:mutableSchema]
                  execute:migrationBlock objectClass:configuration.migrationObjectClass];
 
                 oldRealm->_realm = nullptr;
@@ -494,37 +494,37 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
                                          std::move(migrationFunction), std::move(initializationFunction));
         }
         catch (...) {
-            RLMRealmTranslateException(error);
+            LEGACYRealmTranslateException(error);
             return nil;
         }
 
         realm->_schema = schema;
-        realm->_info = RLMSchemaInfo(realm);
-        RLMSchemaEnsureAccessorsCreated(realm.schema);
+        realm->_info = LEGACYSchemaInfo(realm);
+        LEGACYSchemaEnsureAccessorsCreated(realm.schema);
 
         if (!configuration.readOnly) {
             REALM_ASSERT(!realm->_realm->is_in_read_transaction());
 
             if (s_set_skip_backup_attribute) {
-                RLMAddSkipBackupAttributeToItemAtPath(config.path + ".management");
-                RLMAddSkipBackupAttributeToItemAtPath(config.path + ".lock");
-                RLMAddSkipBackupAttributeToItemAtPath(config.path + ".note");
+                LEGACYAddSkipBackupAttributeToItemAtPath(config.path + ".management");
+                LEGACYAddSkipBackupAttributeToItemAtPath(config.path + ".lock");
+                LEGACYAddSkipBackupAttributeToItemAtPath(config.path + ".note");
             }
         }
     }
 
     if (cache) {
-        RLMCacheRealm(configuration, scheduler, realm);
+        LEGACYCacheRealm(configuration, scheduler, realm);
     }
 
     if (!configuration.readOnly) {
-        realm->_realm->m_binding_context = RLMCreateBindingContext(realm);
+        realm->_realm->m_binding_context = LEGACYCreateBindingContext(realm);
         realm->_realm->m_binding_context->realm = realm->_realm;
     }
 
 #if REALM_ENABLE_SYNC
     if (isFirstOpen || (configuration.rerunOnOpen && !realmIsCached)) {
-        RLMSyncSubscriptionSet *subscriptions = realm.subscriptions;
+        LEGACYSyncSubscriptionSet *subscriptions = realm.subscriptions;
         [subscriptions update:^{
             configuration.initialSubscriptions(subscriptions);
         }];
@@ -538,27 +538,27 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
 }
 
 + (void)resetRealmState {
-    RLMClearRealmCache();
+    LEGACYClearRealmCache();
     realm::_impl::RealmCoordinator::clear_cache();
-    [RLMRealmConfiguration resetRealmConfigurationState];
+    [LEGACYRealmConfiguration resetRealmConfigurationState];
 }
 
 - (void)verifyNotificationsAreSupported:(bool)isCollection {
     [self verifyThread];
     if (_realm->config().immutable()) {
-        @throw RLMException(@"Read-only Realms do not change and do not have change notifications.");
+        @throw LEGACYException(@"Read-only Realms do not change and do not have change notifications.");
     }
     if (_realm->is_frozen()) {
-        @throw RLMException(@"Frozen Realms do not change and do not have change notifications.");
+        @throw LEGACYException(@"Frozen Realms do not change and do not have change notifications.");
     }
     if (_realm->config().automatic_change_notifications && !_realm->can_deliver_notifications()) {
-        @throw RLMException(@"Can only add notification blocks from within runloops.");
+        @throw LEGACYException(@"Can only add notification blocks from within runloops.");
     }
 }
 
-- (RLMNotificationToken *)addNotificationBlock:(RLMNotificationBlock)block {
+- (LEGACYNotificationToken *)addNotificationBlock:(LEGACYNotificationBlock)block {
     if (!block) {
-        @throw RLMException(@"The notification block should not be nil");
+        @throw LEGACYException(@"The notification block should not be nil");
     }
     [self verifyNotificationsAreSupported:false];
 
@@ -568,14 +568,14 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
         _notificationHandlers = [NSHashTable hashTableWithOptions:NSPointerFunctionsWeakMemory];
     }
 
-    RLMRealmNotificationToken *token = [[RLMRealmNotificationToken alloc] init];
+    LEGACYRealmNotificationToken *token = [[LEGACYRealmNotificationToken alloc] init];
     token.realm = self;
     token.block = block;
     [_notificationHandlers addObject:token];
     return token;
 }
 
-- (void)sendNotifications:(RLMNotification)notification {
+- (void)sendNotifications:(LEGACYNotification)notification {
     NSAssert(!_realm->config().immutable(), @"Read-only realms do not have notifications");
     if (_sendingNotifications) {
         return;
@@ -597,7 +597,7 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
         }
     }
     else {
-        for (RLMRealmNotificationToken *token in _notificationHandlers.allObjects) {
+        for (LEGACYRealmNotificationToken *token in _notificationHandlers.allObjects) {
             if (auto block = token.block) {
                 block(notification, self);
             }
@@ -605,8 +605,8 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
     }
 }
 
-- (RLMRealmConfiguration *)configuration {
-    RLMRealmConfiguration *configuration = [[RLMRealmConfiguration alloc] init];
+- (LEGACYRealmConfiguration *)configuration {
+    LEGACYRealmConfiguration *configuration = [[LEGACYRealmConfiguration alloc] init];
     configuration.configRef = _realm->config();
     configuration.dynamic = _dynamic;
     configuration.customSchema = _schema;
@@ -623,7 +623,7 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
         return YES;
     }
     catch (...) {
-        RLMRealmTranslateException(error);
+        LEGACYRealmTranslateException(error);
         return NO;
     }
 }
@@ -636,10 +636,10 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
     return [self commitWriteTransactionWithoutNotifying:@[] error:error];
 }
 
-- (BOOL)commitWriteTransactionWithoutNotifying:(NSArray<RLMNotificationToken *> *)tokens error:(NSError **)error {
-    for (RLMNotificationToken *token in tokens) {
+- (BOOL)commitWriteTransactionWithoutNotifying:(NSArray<LEGACYNotificationToken *> *)tokens error:(NSError **)error {
+    for (LEGACYNotificationToken *token in tokens) {
         if (token.realm != self) {
-            @throw RLMException(@"Incorrect Realm: only notifications for the Realm being modified can be skipped.");
+            @throw LEGACYException(@"Incorrect Realm: only notifications for the Realm being modified can be skipped.");
         }
         [token suppressNextNotification];
     }
@@ -649,7 +649,7 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
         return YES;
     }
     catch (...) {
-        RLMRealmTranslateException(error);
+        LEGACYRealmTranslateException(error);
         return NO;
     }
 }
@@ -662,11 +662,11 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
     return [self transactionWithoutNotifying:@[] block:block error:outError];
 }
 
-- (void)transactionWithoutNotifying:(NSArray<RLMNotificationToken *> *)tokens block:(__attribute__((noescape)) void(^)(void))block {
+- (void)transactionWithoutNotifying:(NSArray<LEGACYNotificationToken *> *)tokens block:(__attribute__((noescape)) void(^)(void))block {
     [self transactionWithoutNotifying:tokens block:block error:nil];
 }
 
-- (BOOL)transactionWithoutNotifying:(NSArray<RLMNotificationToken *> *)tokens block:(__attribute__((noescape)) void(^)(void))block error:(NSError **)error {
+- (BOOL)transactionWithoutNotifying:(NSArray<LEGACYNotificationToken *> *)tokens block:(__attribute__((noescape)) void(^)(void))block error:(NSError **)error {
     [self beginWriteTransactionWithError:error];
     block();
     if (_realm->is_in_transaction()) {
@@ -680,7 +680,7 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
         _realm->cancel_transaction();
     }
     catch (std::exception &ex) {
-        @throw RLMException(ex);
+        @throw LEGACYException(ex);
     }
 }
 
@@ -688,33 +688,33 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
     return _realm->is_in_async_transaction();
 }
 
-- (RLMAsyncTransactionId)beginAsyncWriteTransaction:(void(^)())block {
+- (LEGACYAsyncTransactionId)beginAsyncWriteTransaction:(void(^)())block {
     try {
         return _realm->async_begin_transaction(block);
     }
     catch (std::exception &ex) {
-        @throw RLMException(ex);
+        @throw LEGACYException(ex);
     }
 }
 
-- (RLMAsyncTransactionId)commitAsyncWriteTransaction {
+- (LEGACYAsyncTransactionId)commitAsyncWriteTransaction {
     try {
         return _realm->async_commit_transaction();
     }
     catch (...) {
-        RLMRealmTranslateException(nil);
+        LEGACYRealmTranslateException(nil);
         return 0;
     }
 }
 
-- (RLMAsyncWriteTask *)beginAsyncWrite {
+- (LEGACYAsyncWriteTask *)beginAsyncWrite {
     try {
-        auto write = [[RLMAsyncWriteTask alloc] initWithRealm:self];
+        auto write = [[LEGACYAsyncWriteTask alloc] initWithRealm:self];
         write.transactionId = _realm->async_begin_transaction(^{ [write complete:false]; }, true);
         return write;
     }
     catch (std::exception &ex) {
-        @throw RLMException(ex);
+        @throw LEGACYException(ex);
     }
 }
 
@@ -723,11 +723,11 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
     [self commitAsyncWriteTransaction:completion allowGrouping:allowGrouping];
 }
 
-- (RLMAsyncTransactionId)commitAsyncWriteTransaction:(void(^)(NSError *))completionBlock {
+- (LEGACYAsyncTransactionId)commitAsyncWriteTransaction:(void(^)(NSError *))completionBlock {
     return [self commitAsyncWriteTransaction:completionBlock allowGrouping:false];
 }
 
-- (RLMAsyncTransactionId)commitAsyncWriteTransaction:(nullable void(^)(NSError *))completionBlock
+- (LEGACYAsyncTransactionId)commitAsyncWriteTransaction:(nullable void(^)(NSError *))completionBlock
                                        allowGrouping:(BOOL)allowGrouping {
     try {
         auto completion = [=](std::exception_ptr err) {
@@ -742,7 +742,7 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
                     }
                     catch (...) {
                         NSError *error;
-                        RLMRealmTranslateException(&error);
+                        LEGACYRealmTranslateException(&error);
                         completionBlock(error);
                     }
                 } else {
@@ -757,21 +757,21 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
         return _realm->async_commit_transaction(nullptr, allowGrouping);
     }
     catch (...) {
-        RLMRealmTranslateException(nil);
+        LEGACYRealmTranslateException(nil);
         return 0;
     }
 }
 
-- (void)cancelAsyncTransaction:(RLMAsyncTransactionId)asyncTransactionId {
+- (void)cancelAsyncTransaction:(LEGACYAsyncTransactionId)asyncTransactionId {
     try {
         _realm->async_cancel_transaction(asyncTransactionId);
     }
     catch (std::exception &ex) {
-        @throw RLMException(ex);
+        @throw LEGACYException(ex);
     }
 }
 
-- (RLMAsyncTransactionId)asyncTransactionWithBlock:(void(^)())block onComplete:(nullable void(^)(NSError *))completionBlock {
+- (LEGACYAsyncTransactionId)asyncTransactionWithBlock:(void(^)())block onComplete:(nullable void(^)(NSError *))completionBlock {
     return [self beginAsyncWriteTransaction:^{
         block();
         if (_realm->is_in_transaction()) {
@@ -780,7 +780,7 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
     }];
 }
 
-- (RLMAsyncTransactionId)asyncTransactionWithBlock:(void(^)())block {
+- (LEGACYAsyncTransactionId)asyncTransactionWithBlock:(void(^)())block {
     return [self beginAsyncWriteTransaction:^{
         block();
         if (_realm->is_in_transaction()) {
@@ -791,23 +791,23 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
 
 - (void)invalidate {
     if (_realm->is_in_transaction()) {
-        NSLog(@"WARNING: An RLMRealm instance was invalidated during a write "
+        NSLog(@"WARNING: An LEGACYRealm instance was invalidated during a write "
               "transaction and all pending changes have been rolled back.");
     }
 
     [self detachAllEnumerators];
 
     for (auto& objectInfo : _info) {
-        for (RLMObservationInfo *info : objectInfo.second.observedObjects) {
-            info->willChange(RLMInvalidatedKey);
+        for (LEGACYObservationInfo *info : objectInfo.second.observedObjects) {
+            info->willChange(LEGACYInvalidatedKey);
         }
     }
 
     _realm->invalidate();
 
     for (auto& objectInfo : _info) {
-        for (RLMObservationInfo *info : objectInfo.second.observedObjects) {
-            info->didChange(RLMInvalidatedKey);
+        for (LEGACYObservationInfo *info : objectInfo.second.observedObjects) {
+            info->didChange(LEGACYInvalidatedKey);
         }
     }
 
@@ -816,7 +816,7 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
     }
 }
 
-- (nullable id)resolveThreadSafeReference:(RLMThreadSafeReference *)reference {
+- (nullable id)resolveThreadSafeReference:(LEGACYThreadSafeReference *)reference {
     return [reference resolveReferenceInRealm:self];
 }
 
@@ -826,7 +826,7 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
 
  Cannot be called from a write transaction.
 
- Compaction will not occur if other `RLMRealm` instances exist.
+ Compaction will not occur if other `LEGACYRealm` instances exist.
 
  While compaction is in progress, attempts by other threads or processes to open the database will
  wait.
@@ -853,7 +853,7 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
         return _realm->compact();
     }
     catch (std::exception const& ex) {
-        @throw RLMException(ex);
+        @throw LEGACYException(ex);
     }
 }
 
@@ -861,52 +861,52 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
     if (_realm) {
         if (_realm->is_in_transaction()) {
             [self cancelWriteTransaction];
-            NSLog(@"WARNING: An RLMRealm instance was deallocated during a write transaction and all "
+            NSLog(@"WARNING: An LEGACYRealm instance was deallocated during a write transaction and all "
                   "pending changes have been rolled back. Make sure to retain a reference to the "
-                  "RLMRealm for the duration of the write transaction.");
+                  "LEGACYRealm for the duration of the write transaction.");
         }
     }
 }
 
 - (BOOL)refresh {
     if (_realm->config().immutable()) {
-        @throw RLMException(@"Read-only Realms do not change and cannot be refreshed.");
+        @throw LEGACYException(@"Read-only Realms do not change and cannot be refreshed.");
     }
     try {
         return _realm->refresh();
     }
     catch (std::exception const& e) {
-        @throw RLMException(e);
+        @throw LEGACYException(e);
     }
 }
 
-- (void)addObject:(__unsafe_unretained RLMObject *const)object {
-    RLMAddObjectToRealm(object, self, RLMUpdatePolicyError);
+- (void)addObject:(__unsafe_unretained LEGACYObject *const)object {
+    LEGACYAddObjectToRealm(object, self, LEGACYUpdatePolicyError);
 }
 
 - (void)addObjects:(id<NSFastEnumeration>)objects {
-    for (RLMObject *obj in objects) {
-        if (![obj isKindOfClass:RLMObjectBase.class]) {
-            @throw RLMException(@"Cannot insert objects of type %@ with addObjects:. Only RLMObjects are supported.",
+    for (LEGACYObject *obj in objects) {
+        if (![obj isKindOfClass:LEGACYObjectBase.class]) {
+            @throw LEGACYException(@"Cannot insert objects of type %@ with addObjects:. Only LEGACYObjects are supported.",
                                 NSStringFromClass(obj.class));
         }
         [self addObject:obj];
     }
 }
 
-- (void)addOrUpdateObject:(RLMObject *)object {
+- (void)addOrUpdateObject:(LEGACYObject *)object {
     // verify primary key
     if (!object.objectSchema.primaryKeyProperty) {
-        @throw RLMException(@"'%@' does not have a primary key and can not be updated", object.objectSchema.className);
+        @throw LEGACYException(@"'%@' does not have a primary key and can not be updated", object.objectSchema.className);
     }
 
-    RLMAddObjectToRealm(object, self, RLMUpdatePolicyUpdateAll);
+    LEGACYAddObjectToRealm(object, self, LEGACYUpdatePolicyUpdateAll);
 }
 
 - (void)addOrUpdateObjects:(id<NSFastEnumeration>)objects {
-    for (RLMObject *obj in objects) {
-        if (![obj isKindOfClass:RLMObjectBase.class]) {
-            @throw RLMException(@"Cannot add or update objects of type %@ with addOrUpdateObjects:. Only RLMObjects are"
+    for (LEGACYObject *obj in objects) {
+        if (![obj isKindOfClass:LEGACYObjectBase.class]) {
+            @throw LEGACYException(@"Cannot add or update objects of type %@ with addOrUpdateObjects:. Only LEGACYObjects are"
                                 " supported.",
                                 NSStringFromClass(obj.class));
         }
@@ -914,113 +914,113 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
     }
 }
 
-- (void)deleteObject:(RLMObject *)object {
-    RLMDeleteObjectFromRealm(object, self);
+- (void)deleteObject:(LEGACYObject *)object {
+    LEGACYDeleteObjectFromRealm(object, self);
 }
 
 - (void)deleteObjects:(id<NSFastEnumeration>)objects {
     id idObjects = objects;
     if ([idObjects respondsToSelector:@selector(realm)]
         && [idObjects respondsToSelector:@selector(deleteObjectsFromRealm)]) {
-        if (self != (RLMRealm *)[idObjects realm]) {
-            @throw RLMException(@"Can only delete objects from the Realm they belong to.");
+        if (self != (LEGACYRealm *)[idObjects realm]) {
+            @throw LEGACYException(@"Can only delete objects from the Realm they belong to.");
         }
         [idObjects deleteObjectsFromRealm];
         return;
     }
 
-    if (auto array = RLMDynamicCast<RLMArray>(objects)) {
-        if (array.type != RLMPropertyTypeObject) {
-            @throw RLMException(@"Cannot delete objects from RLMArray<%@>: only RLMObjects can be deleted.",
-                                RLMTypeToString(array.type));
+    if (auto array = LEGACYDynamicCast<LEGACYArray>(objects)) {
+        if (array.type != LEGACYPropertyTypeObject) {
+            @throw LEGACYException(@"Cannot delete objects from LEGACYArray<%@>: only LEGACYObjects can be deleted.",
+                                LEGACYTypeToString(array.type));
         }
     }
-    else if (auto set = RLMDynamicCast<RLMSet>(objects)) {
-        if (set.type != RLMPropertyTypeObject) {
-            @throw RLMException(@"Cannot delete objects from RLMSet<%@>: only RLMObjects can be deleted.",
-                                RLMTypeToString(set.type));
+    else if (auto set = LEGACYDynamicCast<LEGACYSet>(objects)) {
+        if (set.type != LEGACYPropertyTypeObject) {
+            @throw LEGACYException(@"Cannot delete objects from LEGACYSet<%@>: only LEGACYObjects can be deleted.",
+                                LEGACYTypeToString(set.type));
         }
     }
-    else if (auto dictionary = RLMDynamicCast<RLMDictionary>(objects)) {
-        if (dictionary.type != RLMPropertyTypeObject) {
-            @throw RLMException(@"Cannot delete objects from RLMDictionary of type %@: only RLMObjects can be deleted.",
-                                RLMTypeToString(dictionary.type));
+    else if (auto dictionary = LEGACYDynamicCast<LEGACYDictionary>(objects)) {
+        if (dictionary.type != LEGACYPropertyTypeObject) {
+            @throw LEGACYException(@"Cannot delete objects from LEGACYDictionary of type %@: only LEGACYObjects can be deleted.",
+                                LEGACYTypeToString(dictionary.type));
         }
-        for (RLMObject *obj in dictionary.allValues) {
-            RLMDeleteObjectFromRealm(obj, self);
+        for (LEGACYObject *obj in dictionary.allValues) {
+            LEGACYDeleteObjectFromRealm(obj, self);
         }
         return;
     }
-    for (RLMObject *obj in objects) {
-        if (![obj isKindOfClass:RLMObjectBase.class]) {
-            @throw RLMException(@"Cannot delete objects of type %@ with deleteObjects:. Only RLMObjects can be deleted.",
+    for (LEGACYObject *obj in objects) {
+        if (![obj isKindOfClass:LEGACYObjectBase.class]) {
+            @throw LEGACYException(@"Cannot delete objects of type %@ with deleteObjects:. Only LEGACYObjects can be deleted.",
                                 NSStringFromClass(obj.class));
         }
-        RLMDeleteObjectFromRealm(obj, self);
+        LEGACYDeleteObjectFromRealm(obj, self);
     }
 }
 
 - (void)deleteAllObjects {
-    RLMDeleteAllObjectsFromRealm(self);
+    LEGACYDeleteAllObjectsFromRealm(self);
 }
 
-- (RLMResults *)allObjects:(NSString *)objectClassName {
-    return RLMGetObjects(self, objectClassName, nil);
+- (LEGACYResults *)allObjects:(NSString *)objectClassName {
+    return LEGACYGetObjects(self, objectClassName, nil);
 }
 
-- (RLMResults *)objects:(NSString *)objectClassName where:(NSString *)predicateFormat, ... {
+- (LEGACYResults *)objects:(NSString *)objectClassName where:(NSString *)predicateFormat, ... {
     va_list args;
     va_start(args, predicateFormat);
-    RLMResults *results = [self objects:objectClassName where:predicateFormat args:args];
+    LEGACYResults *results = [self objects:objectClassName where:predicateFormat args:args];
     va_end(args);
     return results;
 }
 
-- (RLMResults *)objects:(NSString *)objectClassName where:(NSString *)predicateFormat args:(va_list)args {
+- (LEGACYResults *)objects:(NSString *)objectClassName where:(NSString *)predicateFormat args:(va_list)args {
     return [self objects:objectClassName withPredicate:[NSPredicate predicateWithFormat:predicateFormat arguments:args]];
 }
 
-- (RLMResults *)objects:(NSString *)objectClassName withPredicate:(NSPredicate *)predicate {
-    return RLMGetObjects(self, objectClassName, predicate);
+- (LEGACYResults *)objects:(NSString *)objectClassName withPredicate:(NSPredicate *)predicate {
+    return LEGACYGetObjects(self, objectClassName, predicate);
 }
 
-- (RLMObject *)objectWithClassName:(NSString *)className forPrimaryKey:(id)primaryKey {
-    return RLMGetObject(self, className, primaryKey);
+- (LEGACYObject *)objectWithClassName:(NSString *)className forPrimaryKey:(id)primaryKey {
+    return LEGACYGetObject(self, className, primaryKey);
 }
 
 + (uint64_t)schemaVersionAtURL:(NSURL *)fileURL encryptionKey:(NSData *)key error:(NSError **)error {
-    RLMRealmConfiguration *config = [[RLMRealmConfiguration alloc] init];
+    LEGACYRealmConfiguration *config = [[LEGACYRealmConfiguration alloc] init];
     config.fileURL = fileURL;
-    config.encryptionKey = RLMRealmValidatedEncryptionKey(key);
+    config.encryptionKey = LEGACYRealmValidatedEncryptionKey(key);
 
-    uint64_t version = RLMNotVersioned;
+    uint64_t version = LEGACYNotVersioned;
     try {
         version = Realm::get_schema_version(config.configRef);
     }
     catch (...) {
-        RLMRealmTranslateException(error);
+        LEGACYRealmTranslateException(error);
         return version;
     }
 
     if (error && version == realm::ObjectStore::NotVersioned) {
         auto msg = [NSString stringWithFormat:@"Realm at path '%@' has not been initialized.", fileURL.path];
-        *error = [NSError errorWithDomain:RLMErrorDomain
-                                     code:RLMErrorInvalidDatabase
+        *error = [NSError errorWithDomain:LEGACYErrorDomain
+                                     code:LEGACYErrorInvalidDatabase
                                  userInfo:@{NSLocalizedDescriptionKey: msg,
                                             NSFilePathErrorKey: fileURL.path}];
     }
     return version;
 }
 
-+ (BOOL)performMigrationForConfiguration:(RLMRealmConfiguration *)configuration error:(NSError **)error {
-    if (RLMGetAnyCachedRealmForPath(configuration.path)) {
-        @throw RLMException(@"Cannot migrate Realms that are already open.");
++ (BOOL)performMigrationForConfiguration:(LEGACYRealmConfiguration *)configuration error:(NSError **)error {
+    if (LEGACYGetAnyCachedRealmForPath(configuration.path)) {
+        @throw LEGACYException(@"Cannot migrate Realms that are already open.");
     }
 
     NSError *localError; // Prevents autorelease
     BOOL success;
     @autoreleasepool {
-        success = [RLMRealm realmWithConfiguration:configuration error:&localError] != nil;
+        success = [LEGACYRealm realmWithConfiguration:configuration error:&localError] != nil;
     }
     if (!success && error) {
         *error = localError; // Must set outside pool otherwise will free anyway
@@ -1028,35 +1028,35 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
     return success;
 }
 
-- (RLMObject *)createObject:(NSString *)className withValue:(id)value {
-    return (RLMObject *)RLMCreateObjectInRealmWithValue(self, className, value, RLMUpdatePolicyError);
+- (LEGACYObject *)createObject:(NSString *)className withValue:(id)value {
+    return (LEGACYObject *)LEGACYCreateObjectInRealmWithValue(self, className, value, LEGACYUpdatePolicyError);
 }
 
 - (BOOL)writeCopyToURL:(NSURL *)fileURL encryptionKey:(NSData *)key error:(NSError **)error {
-    RLMRealmConfiguration *configuration = [RLMRealmConfiguration new];
+    LEGACYRealmConfiguration *configuration = [LEGACYRealmConfiguration new];
     configuration.fileURL = fileURL;
     configuration.encryptionKey = key;
     return [self writeCopyForConfiguration:configuration error:error];
 }
 
-- (BOOL)writeCopyForConfiguration:(RLMRealmConfiguration *)configuration error:(NSError **)error {
+- (BOOL)writeCopyForConfiguration:(LEGACYRealmConfiguration *)configuration error:(NSError **)error {
     try {
         _realm->convert(configuration.configRef, false);
         return YES;
     }
     catch (...) {
         if (error) {
-            RLMRealmTranslateException(error);
+            LEGACYRealmTranslateException(error);
         }
     }
     return NO;
 }
 
-+ (BOOL)fileExistsForConfiguration:(RLMRealmConfiguration *)config {
++ (BOOL)fileExistsForConfiguration:(LEGACYRealmConfiguration *)config {
     return [NSFileManager.defaultManager fileExistsAtPath:config.pathOnDisk];
 }
 
-+ (BOOL)deleteFilesForConfiguration:(RLMRealmConfiguration *)config error:(NSError **)error {
++ (BOOL)deleteFilesForConfiguration:(LEGACYRealmConfiguration *)config error:(NSError **)error {
     bool didDeleteAny = false;
     try {
         realm::Realm::delete_files(config.path, &didDeleteAny);
@@ -1070,13 +1070,13 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
                                                     NSFilePathErrorKey: @(e.get_path().data())}];
             }
             else {
-                RLMRealmTranslateException(error);
+                LEGACYRealmTranslateException(error);
             }
         }
     }
     catch (...) {
         if (error) {
-            RLMRealmTranslateException(error);
+            LEGACYRealmTranslateException(error);
         }
     }
     return didDeleteAny;
@@ -1086,32 +1086,32 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
     return _realm->is_frozen();
 }
 
-- (RLMRealm *)freeze {
+- (LEGACYRealm *)freeze {
     [self verifyThread];
-    return self.isFrozen ? self : RLMGetFrozenRealmForSourceRealm(self);
+    return self.isFrozen ? self : LEGACYGetFrozenRealmForSourceRealm(self);
 }
 
-- (RLMRealm *)thaw {
+- (LEGACYRealm *)thaw {
     [self verifyThread];
-    return self.isFrozen ? [RLMRealm realmWithConfiguration:self.configuration error:nil] : self;
+    return self.isFrozen ? [LEGACYRealm realmWithConfiguration:self.configuration error:nil] : self;
 }
 
-- (RLMRealm *)frozenCopy {
+- (LEGACYRealm *)frozenCopy {
     try {
-        RLMRealm *realm = [[RLMRealm alloc] initPrivate];
+        LEGACYRealm *realm = [[LEGACYRealm alloc] initPrivate];
         realm->_realm = _realm->freeze();
         realm->_realm->read_group();
         realm->_dynamic = _dynamic;
         realm->_schema = _schema;
-        realm->_info = RLMSchemaInfo(realm);
+        realm->_info = LEGACYSchemaInfo(realm);
         return realm;
     }
     catch (std::exception const& e) {
-        @throw RLMException(e);
+        @throw LEGACYException(e);
     }
 }
 
-- (void)registerEnumerator:(RLMFastEnumerator *)enumerator {
+- (void)registerEnumerator:(LEGACYFastEnumerator *)enumerator {
     std::lock_guard lock(_collectionEnumeratorMutex);
     if (!_collectionEnumerators) {
         _collectionEnumerators = [NSHashTable hashTableWithOptions:NSPointerFunctionsWeakMemory];
@@ -1119,14 +1119,14 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
     [_collectionEnumerators addObject:enumerator];
 }
 
-- (void)unregisterEnumerator:(RLMFastEnumerator *)enumerator {
+- (void)unregisterEnumerator:(LEGACYFastEnumerator *)enumerator {
     std::lock_guard lock(_collectionEnumeratorMutex);
     [_collectionEnumerators removeObject:enumerator];
 }
 
 - (void)detachAllEnumerators {
     std::lock_guard lock(_collectionEnumeratorMutex);
-    for (RLMFastEnumerator *enumerator in _collectionEnumerators) {
+    for (LEGACYFastEnumerator *enumerator in _collectionEnumerators) {
         [enumerator detach];
     }
     _collectionEnumerators = nil;
@@ -1140,18 +1140,18 @@ bool copySeedFile(RLMRealmConfiguration *configuration, NSError **error) {
 #endif
 }
 
-- (RLMSyncSubscriptionSet *)subscriptions {
+- (LEGACYSyncSubscriptionSet *)subscriptions {
 #if REALM_ENABLE_SYNC
     if (!self.isFlexibleSync) {
-        @throw RLMException(@"This Realm was not configured with flexible sync");
+        @throw LEGACYException(@"This Realm was not configured with flexible sync");
     }
-    return [[RLMSyncSubscriptionSet alloc] initWithSubscriptionSet:_realm->get_latest_subscription_set() realm:self];
+    return [[LEGACYSyncSubscriptionSet alloc] initWithSubscriptionSet:_realm->get_latest_subscription_set() realm:self];
 #else
-    @throw RLMException(@"Realm was not compiled with sync enabled");
+    @throw LEGACYException(@"Realm was not compiled with sync enabled");
 #endif
 }
 
-void RLMRealmSubscribeToAll(RLMRealm *realm) {
+void LEGACYRealmSubscribeToAll(LEGACYRealm *realm) {
     if (!realm.isFlexibleSync) {
         return;
     }

@@ -16,27 +16,27 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMProviderClient.h>
+#import <Realm/LEGACYProviderClient.h>
 
-@class RLMUserAPIKey, RLMObjectId;
+@class LEGACYUserAPIKey, LEGACYObjectId;
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 /// Provider client for user API keys.
-RLM_SWIFT_SENDABLE RLM_FINAL // immutable final class
-@interface RLMAPIKeyAuth : RLMProviderClient
+LEGACY_SWIFT_SENDABLE LEGACY_FINAL // immutable final class
+@interface LEGACYAPIKeyAuth : LEGACYProviderClient
 
 /// A block type used to report an error
-RLM_SWIFT_SENDABLE // invoked on a background thread
-typedef void(^RLMAPIKeyAuthOptionalErrorBlock)(NSError * _Nullable);
+LEGACY_SWIFT_SENDABLE // invoked on a background thread
+typedef void(^LEGACYAPIKeyAuthOptionalErrorBlock)(NSError * _Nullable);
 
-/// A block type used to return an `RLMUserAPIKey` on success, or an `NSError` on failure
-RLM_SWIFT_SENDABLE // invoked on a background thread
-typedef void(^RLMOptionalUserAPIKeyBlock)(RLMUserAPIKey * _Nullable, NSError * _Nullable);
+/// A block type used to return an `LEGACYUserAPIKey` on success, or an `NSError` on failure
+LEGACY_SWIFT_SENDABLE // invoked on a background thread
+typedef void(^LEGACYOptionalUserAPIKeyBlock)(LEGACYUserAPIKey * _Nullable, NSError * _Nullable);
 
-/// A block type used to return an array of `RLMUserAPIKey` on success, or an `NSError` on failure
-RLM_SWIFT_SENDABLE // invoked on a background thread
-typedef void(^RLMUserAPIKeysBlock)(NSArray<RLMUserAPIKey *> *  _Nullable, NSError * _Nullable);
+/// A block type used to return an array of `LEGACYUserAPIKey` on success, or an `NSError` on failure
+LEGACY_SWIFT_SENDABLE // invoked on a background thread
+typedef void(^LEGACYUserAPIKeysBlock)(NSArray<LEGACYUserAPIKey *> *  _Nullable, NSError * _Nullable);
 
 /**
   Creates a user API key that can be used to authenticate as the current user.
@@ -45,7 +45,7 @@ typedef void(^RLMUserAPIKeysBlock)(NSArray<RLMUserAPIKey *> *  _Nullable, NSErro
   @param completion A callback to be invoked once the call is complete.
 */
 - (void)createAPIKeyWithName:(NSString *)name
-                  completion:(RLMOptionalUserAPIKeyBlock)completion NS_SWIFT_NAME(createAPIKey(named:completion:));
+                  completion:(LEGACYOptionalUserAPIKeyBlock)completion NS_SWIFT_NAME(createAPIKey(named:completion:));
 
 /**
   Fetches a user API key associated with the current user.
@@ -53,15 +53,15 @@ typedef void(^RLMUserAPIKeysBlock)(NSArray<RLMUserAPIKey *> *  _Nullable, NSErro
   @param objectId The ObjectId of the API key to fetch.
   @param completion A callback to be invoked once the call is complete.
  */
-- (void)fetchAPIKey:(RLMObjectId *)objectId
-         completion:(RLMOptionalUserAPIKeyBlock)completion;
+- (void)fetchAPIKey:(LEGACYObjectId *)objectId
+         completion:(LEGACYOptionalUserAPIKeyBlock)completion;
 
 /**
   Fetches the user API keys associated with the current user.
  
   @param completion A callback to be invoked once the call is complete.
  */
-- (void)fetchAPIKeysWithCompletion:(RLMUserAPIKeysBlock)completion;
+- (void)fetchAPIKeysWithCompletion:(LEGACYUserAPIKeysBlock)completion;
 
 /**
   Deletes a user API key associated with the current user.
@@ -69,8 +69,8 @@ typedef void(^RLMUserAPIKeysBlock)(NSArray<RLMUserAPIKey *> *  _Nullable, NSErro
   @param objectId The ObjectId of the API key to delete.
   @param completion A callback to be invoked once the call is complete.
  */
-- (void)deleteAPIKey:(RLMObjectId *)objectId
-          completion:(RLMAPIKeyAuthOptionalErrorBlock)completion;
+- (void)deleteAPIKey:(LEGACYObjectId *)objectId
+          completion:(LEGACYAPIKeyAuthOptionalErrorBlock)completion;
 
 /**
   Enables a user API key associated with the current user.
@@ -78,8 +78,8 @@ typedef void(^RLMUserAPIKeysBlock)(NSArray<RLMUserAPIKey *> *  _Nullable, NSErro
   @param objectId The ObjectId of the  API key to enable.
   @param completion A callback to be invoked once the call is complete.
  */
-- (void)enableAPIKey:(RLMObjectId *)objectId
-          completion:(RLMAPIKeyAuthOptionalErrorBlock)completion;
+- (void)enableAPIKey:(LEGACYObjectId *)objectId
+          completion:(LEGACYAPIKeyAuthOptionalErrorBlock)completion;
 
 /**
   Disables a user API key associated with the current user.
@@ -87,9 +87,9 @@ typedef void(^RLMUserAPIKeysBlock)(NSArray<RLMUserAPIKey *> *  _Nullable, NSErro
   @param objectId The ObjectId of the API key to disable.
   @param completion A callback to be invoked once the call is complete.
  */
-- (void)disableAPIKey:(RLMObjectId *)objectId
-           completion:(RLMAPIKeyAuthOptionalErrorBlock)completion;
+- (void)disableAPIKey:(LEGACYObjectId *)objectId
+           completion:(LEGACYAPIKeyAuthOptionalErrorBlock)completion;
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

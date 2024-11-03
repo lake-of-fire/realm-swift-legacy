@@ -23,9 +23,9 @@
 #import <realm/object-store/impl/deep_change_checker.hpp>
 #import <realm/table.hpp>
 
-@class RLMObjectBase, RLMRealm, RLMSchema, RLMProperty, RLMObjectSchema;
-class RLMClassInfo;
-class RLMSchemaInfo;
+@class LEGACYObjectBase, LEGACYRealm, LEGACYSchema, LEGACYProperty, LEGACYObjectSchema;
+class LEGACYClassInfo;
+class LEGACYSchemaInfo;
 
 namespace realm {
     class History;
@@ -34,12 +34,12 @@ namespace realm {
     struct ColKey;
 }
 
-// RLMObservationInfo stores all of the KVO-related data for RLMObjectBase and
-// RLMSet/Array. There is a one-to-one relationship between observed objects and
-// RLMObservationInfo instances, so it could be folded into RLMObjectBase, and
+// LEGACYObservationInfo stores all of the KVO-related data for LEGACYObjectBase and
+// LEGACYSet/Array. There is a one-to-one relationship between observed objects and
+// LEGACYObservationInfo instances, so it could be folded into LEGACYObjectBase, and
 // is a separate class mostly to avoid making all accessor objects far larger.
 //
-// RLMClassInfo stores a vector of pointers to the first observation info
+// LEGACYClassInfo stores a vector of pointers to the first observation info
 // created for each row. If there are multiple observation infos for a single
 // row (such as if there are multiple observed objects backed by a single row,
 // or if both an object and an array property of that object are observed),
@@ -47,11 +47,11 @@ namespace realm {
 // members. This is done primarily to make it simpler and faster to loop over
 // all of the observed objects for a single row, as that needs to be done for
 // every change.
-class RLMObservationInfo {
+class LEGACYObservationInfo {
 public:
-    RLMObservationInfo(id object);
-    RLMObservationInfo(RLMClassInfo &objectSchema, realm::ObjKey row, id object);
-    ~RLMObservationInfo();
+    LEGACYObservationInfo(id object);
+    LEGACYObservationInfo(LEGACYClassInfo &objectSchema, realm::ObjKey row, id object);
+    ~LEGACYObservationInfo();
 
     realm::Obj const& getRow() const {
         return row;
@@ -68,7 +68,7 @@ public:
         return row.get_key() == key;
     }
 
-    void recordObserver(realm::Obj& row, RLMClassInfo *objectInfo, RLMObjectSchema *objectSchema, NSString *keyPath);
+    void recordObserver(realm::Obj& row, LEGACYClassInfo *objectInfo, LEGACYObjectSchema *objectSchema, NSString *keyPath);
     void removeObserver();
     bool hasObservers() const { return observerCount > 0; }
 
@@ -90,12 +90,12 @@ public:
 
 private:
     // Doubly-linked-list of observed objects for the same row as this
-    RLMObservationInfo *next = nullptr;
-    RLMObservationInfo *prev = nullptr;
+    LEGACYObservationInfo *next = nullptr;
+    LEGACYObservationInfo *prev = nullptr;
 
     // Row being observed
     realm::Obj row;
-    RLMClassInfo *objectSchema = nullptr;
+    LEGACYClassInfo *objectSchema = nullptr;
 
     // Object doing the observing
     __unsafe_unretained id object = nil;
@@ -104,7 +104,7 @@ private:
     bool invalidated = false;
     size_t observerCount = 0;
     NSString *lastKey = nil;
-    __unsafe_unretained RLMProperty *lastProp = nil;
+    __unsafe_unretained LEGACYProperty *lastProp = nil;
 
     // objects returned from valueForKey() to keep them alive in case observers
     // are added and so that they can still be accessed after row is detached
@@ -115,7 +115,7 @@ private:
     template<typename F>
     void forEach(F&& f) const {
         // The user's observation handler may release their last reference to
-        // the object being observed, which will result in the RLMObservationInfo
+        // the object being observed, which will result in the LEGACYObservationInfo
         // being destroyed. As a result, we need to retain the object which owns
         // both `this` and the current info we're looking at.
         __attribute__((objc_precise_lifetime)) id self = object, current;
@@ -131,63 +131,63 @@ private:
 
     // Default move/copy constructors don't work due to the intrusive linked
     // list and we don't need them
-    RLMObservationInfo(RLMObservationInfo const&) = delete;
-    RLMObservationInfo(RLMObservationInfo&&) = delete;
-    RLMObservationInfo& operator=(RLMObservationInfo const&) = delete;
-    RLMObservationInfo& operator=(RLMObservationInfo&&) = delete;
+    LEGACYObservationInfo(LEGACYObservationInfo const&) = delete;
+    LEGACYObservationInfo(LEGACYObservationInfo&&) = delete;
+    LEGACYObservationInfo& operator=(LEGACYObservationInfo const&) = delete;
+    LEGACYObservationInfo& operator=(LEGACYObservationInfo&&) = delete;
 };
 
 // Get the the observation info chain for the given row
 // Will simply return info if it's non-null, and will search ojectSchema's array
 // for a matching one otherwise, and return null if there are none
-RLMObservationInfo *RLMGetObservationInfo(RLMObservationInfo *info, realm::ObjKey row, RLMClassInfo& objectSchema);
+LEGACYObservationInfo *LEGACYGetObservationInfo(LEGACYObservationInfo *info, realm::ObjKey row, LEGACYClassInfo& objectSchema);
 
 // delete all objects from a single table with change notifications
-void RLMClearTable(RLMClassInfo &realm);
+void LEGACYClearTable(LEGACYClassInfo &realm);
 
-class RLMObservationTracker {
+class LEGACYObservationTracker {
 public:
-    RLMObservationTracker(RLMRealm *realm, bool trackDeletions=false);
-    ~RLMObservationTracker();
+    LEGACYObservationTracker(LEGACYRealm *realm, bool trackDeletions=false);
+    ~LEGACYObservationTracker();
 
     void trackDeletions();
 
-    void willChange(RLMObservationInfo *info, NSString *key,
+    void willChange(LEGACYObservationInfo *info, NSString *key,
                     NSKeyValueChange kind=NSKeyValueChangeSetting,
                     NSIndexSet *indexes=nil);
     void didChange();
 
 private:
-    std::vector<std::vector<RLMObservationInfo *> *> _observedTables;
-    __unsafe_unretained RLMRealm const*_realm;
+    std::vector<std::vector<LEGACYObservationInfo *> *> _observedTables;
+    __unsafe_unretained LEGACYRealm const*_realm;
     realm::Group& _group;
-    RLMObservationInfo *_info = nullptr;
+    LEGACYObservationInfo *_info = nullptr;
 
     NSString *_key;
     NSKeyValueChange _kind = NSKeyValueChangeSetting;
     NSIndexSet *_indexes;
 
     struct Change {
-        RLMObservationInfo *info;
+        LEGACYObservationInfo *info;
         __unsafe_unretained NSString *property;
         NSMutableIndexSet *indexes;
     };
     std::vector<Change> _changes;
-    std::vector<RLMObservationInfo *> _invalidated;
+    std::vector<LEGACYObservationInfo *> _invalidated;
 
     template<typename CascadeNotification>
     void cascadeNotification(CascadeNotification const&);
 };
 
-std::vector<realm::BindingContext::ObserverState> RLMGetObservedRows(RLMSchemaInfo const& schema);
-void RLMWillChange(std::vector<realm::BindingContext::ObserverState> const& observed, std::vector<void *> const& invalidated);
-void RLMDidChange(std::vector<realm::BindingContext::ObserverState> const& observed, std::vector<void *> const& invalidated);
+std::vector<realm::BindingContext::ObserverState> LEGACYGetObservedRows(LEGACYSchemaInfo const& schema);
+void LEGACYWillChange(std::vector<realm::BindingContext::ObserverState> const& observed, std::vector<void *> const& invalidated);
+void LEGACYDidChange(std::vector<realm::BindingContext::ObserverState> const& observed, std::vector<void *> const& invalidated);
 
 // Used for checking if an `Object` declared with `@StateRealmObject` needs to have
 // it's accessors temporarily removed and added back so that the `Object` can be
 // managed be the Realm.
 [[clang::objc_runtime_visible]]
-@interface RLMSwiftUIKVO : NSObject
+@interface LEGACYSwiftUIKVO : NSObject
 + (BOOL)removeObserversFromObject:(NSObject *)object;
 + (void)addObserversToObject:(NSObject *)object;
 @end

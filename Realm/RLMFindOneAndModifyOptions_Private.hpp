@@ -16,10 +16,10 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMFindOneAndModifyOptions.h>
+#import <Realm/LEGACYFindOneAndModifyOptions.h>
 
 #import <realm/object-store/sync/mongo_collection.hpp>
 
-@interface RLMFindOneAndModifyOptions ()
+@interface LEGACYFindOneAndModifyOptions ()
 - (realm::app::MongoCollection::FindOneAndModifyOptions)_findOneAndModifyOptions;
 @end

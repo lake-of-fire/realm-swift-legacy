@@ -16,27 +16,27 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMSyncTestCase.h"
+#import "LEGACYSyncTestCase.h"
 
-#import "RLMApp_Private.h"
-#import "RLMObject_Private.h"
-#import "RLMObjectSchema_Private.h"
+#import "LEGACYApp_Private.h"
+#import "LEGACYObject_Private.h"
+#import "LEGACYObjectSchema_Private.h"
 
 #pragma mark PersonAsymmetric
 
-@interface PersonAsymmetric : RLMAsymmetricObject
-@property RLMObjectId *_id;
+@interface PersonAsymmetric : LEGACYAsymmetricObject
+@property LEGACYObjectId *_id;
 @property NSString *firstName;
 @property NSString *lastName;
 @property NSInteger age;
 
-- (instancetype)initWithPrimaryKey:(RLMObjectId *)primaryKey firstName:(NSString *)firstName lastName:(NSString *)lastName age:(NSInteger)age;
+- (instancetype)initWithPrimaryKey:(LEGACYObjectId *)primaryKey firstName:(NSString *)firstName lastName:(NSString *)lastName age:(NSInteger)age;
 @end
 
 @implementation PersonAsymmetric
 
 + (NSDictionary *)defaultPropertyValues {
-    return @{@"_id": [RLMObjectId objectId]};
+    return @{@"_id": [LEGACYObjectId objectId]};
 }
 
 + (NSString *)primaryKey {
@@ -51,7 +51,7 @@
     return true;
 }
 
-- (instancetype)initWithPrimaryKey:(RLMObjectId *)primaryKey firstName:(NSString *)firstName lastName:(NSString *)lastName age:(NSInteger)age {
+- (instancetype)initWithPrimaryKey:(LEGACYObjectId *)primaryKey firstName:(NSString *)firstName lastName:(NSString *)lastName age:(NSInteger)age {
     self = [super init];
     if (self) {
         self._id = primaryKey;
@@ -65,17 +65,17 @@
 
 #pragma mark UnsupportedLinkAsymmetric
 
-RLM_COLLECTION_TYPE(PersonAsymmetric);
-@interface UnsupportedLinkAsymmetric : RLMAsymmetricObject
-@property RLMObjectId *_id;
+LEGACY_COLLECTION_TYPE(PersonAsymmetric);
+@interface UnsupportedLinkAsymmetric : LEGACYAsymmetricObject
+@property LEGACYObjectId *_id;
 @property PersonAsymmetric *object;
-@property RLM_GENERIC_ARRAY(PersonAsymmetric) *objectArray;
+@property LEGACY_GENERIC_ARRAY(PersonAsymmetric) *objectArray;
 @end
 
 @implementation UnsupportedLinkAsymmetric
 
 + (NSDictionary *)defaultPropertyValues {
-    return @{@"_id": [RLMObjectId objectId]};
+    return @{@"_id": [LEGACYObjectId objectId]};
 }
 
 + (NSString *)primaryKey {
@@ -89,16 +89,16 @@ RLM_COLLECTION_TYPE(PersonAsymmetric);
 
 #pragma mark UnsupportedObjectLinkAsymmetric
 
-@interface UnsupportedObjectLinkAsymmetric : RLMObject
-@property RLMObjectId *_id;
+@interface UnsupportedObjectLinkAsymmetric : LEGACYObject
+@property LEGACYObjectId *_id;
 @property PersonAsymmetric *object;
-@property RLM_GENERIC_ARRAY(PersonAsymmetric) *objectArray;
+@property LEGACY_GENERIC_ARRAY(PersonAsymmetric) *objectArray;
 @end
 
 @implementation UnsupportedObjectLinkAsymmetric
 
 + (NSDictionary *)defaultPropertyValues {
-    return @{@"_id": [RLMObjectId objectId]};
+    return @{@"_id": [LEGACYObjectId objectId]};
 }
 
 + (NSString *)primaryKey {
@@ -110,10 +110,10 @@ RLM_COLLECTION_TYPE(PersonAsymmetric);
 }
 @end
 
-@interface RLMAsymmetricSyncServerTests : RLMSyncTestCase
+@interface LEGACYAsymmetricSyncServerTests : LEGACYSyncTestCase
 @end
 
-@implementation RLMAsymmetricSyncServerTests
+@implementation LEGACYAsymmetricSyncServerTests
 
 #pragma mark Asymmetric Sync App
 
@@ -128,7 +128,7 @@ RLM_COLLECTION_TYPE(PersonAsymmetric);
     return @[PersonAsymmetric.self];
 }
 
-- (RLMRealmConfiguration *)configurationForUser:(RLMUser *)user {
+- (LEGACYRealmConfiguration *)configurationForUser:(LEGACYUser *)user {
     return [user flexibleSyncConfiguration];
 }
 
@@ -138,7 +138,7 @@ RLM_COLLECTION_TYPE(PersonAsymmetric);
 }
 
 - (void)checkCountInMongo:(unsigned long)expectedCount {
-    RLMMongoCollection *collection = [self.anonymousUser collectionForType:PersonAsymmetric.class app:self.app];
+    LEGACYMongoCollection *collection = [self.anonymousUser collectionForType:PersonAsymmetric.class app:self.app];
 
     __block unsigned long count = 0;
     NSDate *waitStart = [NSDate date];
@@ -159,27 +159,27 @@ RLM_COLLECTION_TYPE(PersonAsymmetric);
 }
 
 - (void)testAsymmetricObjectSchema {
-    RLMRealm *realm = [self openRealm];
+    LEGACYRealm *realm = [self openRealm];
     XCTAssertTrue(realm.schema.objectSchema[0].isAsymmetric);
 }
 
 - (void)testUnsupportedAsymmetricLinkAsymmetricThrowsError {
-    RLMUser *user = [self createUser];
-    RLMRealmConfiguration *configuration = [user flexibleSyncConfiguration];
+    LEGACYUser *user = [self createUser];
+    LEGACYRealmConfiguration *configuration = [user flexibleSyncConfiguration];
     configuration.objectClasses = @[UnsupportedLinkAsymmetric.self, PersonAsymmetric.self];
     NSError *error;
-    RLMRealm *realm = [RLMRealm realmWithConfiguration:configuration error:&error];
+    LEGACYRealm *realm = [LEGACYRealm realmWithConfiguration:configuration error:&error];
     XCTAssertNil(realm);
     XCTAssert([error.localizedDescription containsString:@"Property 'UnsupportedLinkAsymmetric.object' of type 'object' cannot be a link to an asymmetric object."]);
     XCTAssert([error.localizedDescription containsString:@"Property 'UnsupportedLinkAsymmetric.objectArray' of type 'array' cannot be a link to an asymmetric object."]);
 }
 
 - (void)testUnsupportedObjectLinksAsymmetricThrowsError  {
-    RLMUser *user = [self createUser];
-    RLMRealmConfiguration *configuration = [user flexibleSyncConfiguration];
+    LEGACYUser *user = [self createUser];
+    LEGACYRealmConfiguration *configuration = [user flexibleSyncConfiguration];
     configuration.objectClasses = @[UnsupportedObjectLinkAsymmetric.self, PersonAsymmetric.self];
     NSError *error;
-    RLMRealm *realm = [RLMRealm realmWithConfiguration:configuration error:&error];
+    LEGACYRealm *realm = [LEGACYRealm realmWithConfiguration:configuration error:&error];
     XCTAssertNil(realm);
     // This error comes from core, we are not even adding this objects to the server schema.
     XCTAssert([error.localizedDescription containsString:@"Property 'UnsupportedObjectLinkAsymmetric.object' of type 'object' cannot be a link to an asymmetric object."]);
@@ -187,32 +187,32 @@ RLM_COLLECTION_TYPE(PersonAsymmetric);
 }
 
 - (void)testOpenLocalRealmWithAsymmetricObjectError {
-    RLMRealmConfiguration *configuration = [RLMRealmConfiguration defaultConfiguration];
+    LEGACYRealmConfiguration *configuration = [LEGACYRealmConfiguration defaultConfiguration];
     configuration.objectClasses = @[PersonAsymmetric.self];
     NSError *error;
-    RLMRealm *realm = [RLMRealm realmWithConfiguration:configuration error:&error];
+    LEGACYRealm *realm = [LEGACYRealm realmWithConfiguration:configuration error:&error];
     XCTAssertNil(realm);
-    RLMValidateErrorContains(error, RLMErrorDomain, RLMErrorFail,
+    LEGACYValidateErrorContains(error, LEGACYErrorDomain, LEGACYErrorFail,
                              @"Asymmetric table 'PersonAsymmetric' not allowed in a local Realm");
 }
 
 - (void)testOpenPBSConfigurationWithAsymmetricObjectError {
-    RLMUser *user = [self createUser];
-    RLMRealmConfiguration *configuration = [user configurationWithPartitionValue:self.name];
+    LEGACYUser *user = [self createUser];
+    LEGACYRealmConfiguration *configuration = [user configurationWithPartitionValue:self.name];
     configuration.objectClasses = @[PersonAsymmetric.self];
     NSError *error;
-    RLMRealm *realm = [RLMRealm realmWithConfiguration:configuration error:&error];
+    LEGACYRealm *realm = [LEGACYRealm realmWithConfiguration:configuration error:&error];
     XCTAssertNil(realm);
-    RLMValidateErrorContains(error, RLMErrorDomain, RLMErrorFail,
+    LEGACYValidateErrorContains(error, LEGACYErrorDomain, LEGACYErrorFail,
                              @"Asymmetric table 'PersonAsymmetric' not allowed in partition based sync");
 }
 
 - (void)testCreateAsymmetricObjects {
-    RLMRealm *realm = [self openRealm];
+    LEGACYRealm *realm = [self openRealm];
 
     [realm beginWriteTransaction];
     for (int i = 1; i <= 12; ++i) {
-        RLMObjectId *oid = [RLMObjectId objectId];
+        LEGACYObjectId *oid = [LEGACYObjectId objectId];
         PersonAsymmetric *person = [PersonAsymmetric createInRealm:realm withValue:@[
             oid, [NSString stringWithFormat:@"firstname_%d", i],
             [NSString stringWithFormat:@"lastname_%d", i]
@@ -225,9 +225,9 @@ RLM_COLLECTION_TYPE(PersonAsymmetric);
 }
 
 - (void)testCreateAsymmetricSameObjectNotDuplicates {
-    RLMRealm *realm = [self openRealm];
+    LEGACYRealm *realm = [self openRealm];
 
-    RLMObjectId *oid = [RLMObjectId objectId];
+    LEGACYObjectId *oid = [LEGACYObjectId objectId];
     [realm beginWriteTransaction];
     PersonAsymmetric *person = [PersonAsymmetric createInRealm:realm withValue:@[oid, @"firstname", @"lastname", @10]];
     XCTAssertNil(person);

@@ -16,13 +16,13 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMObjectBase.h>
+#import <Realm/LEGACYObjectBase.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@class RLMObjectSchema, RLMPropertyDescriptor, RLMRealm;
+@class LEGACYObjectSchema, LEGACYPropertyDescriptor, LEGACYRealm;
 /**
- `RLMAsymmetricObject` is a base class used to define asymmetric Realm objects.
+ `LEGACYAsymmetricObject` is a base class used to define asymmetric Realm objects.
 
  Asymmetric objects can only be created using the `createInRealm:`
  function, and cannot be added, removed or queried.
@@ -31,12 +31,12 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  Linking an asymmetric object within an `Object` is not allowed and will throw an error.
 
- The property types supported on `RLMAsymmetricObject` are the same as for `RLMObject`,
- except for that asymmetric objects can only link to embedded objects, so `RLMObject`
- and `RLMArray<RLMObject>` properties are not supported (`RLMEmbeddedObject` and
- `RLMArray<RLEmbeddedObject>` *are*).
+ The property types supported on `LEGACYAsymmetricObject` are the same as for `LEGACYObject`,
+ except for that asymmetric objects can only link to embedded objects, so `LEGACYObject`
+ and `LEGACYArray<LEGACYObject>` properties are not supported (`LEGACYEmbeddedObject` and
+ `LEGACYArray<RLEmbeddedObject>` *are*).
  */
-@interface RLMAsymmetricObject : RLMObjectBase
+@interface LEGACYAsymmetricObject : LEGACYObjectBase
 
 #pragma mark - Creating & Initializing Objects
 
@@ -76,14 +76,14 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @return  Returns `nil`
  */
-+ (instancetype)createInRealm:(RLMRealm *)realm withValue:(id)value;
++ (instancetype)createInRealm:(LEGACYRealm *)realm withValue:(id)value;
 
 #pragma mark - Properties
 
 /**
  The object schema which lists the managed properties for the object.
  */
-@property (nonatomic, readonly) RLMObjectSchema *objectSchema;
+@property (nonatomic, readonly) LEGACYObjectSchema *objectSchema;
 
 #pragma mark - Dynamic Accessors
 
@@ -95,4 +95,4 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

@@ -52,7 +52,7 @@ extension ObjectKeyIdentifiable where Self: ObjectBase {
     /// value will be the same for all object instances which refer to the same
     /// object (i.e. for which `Object.isSameObject(as:)` returns true).
     public var id: UInt64 {
-        RLMObjectBaseGetCombineId(self)
+        LEGACYObjectBaseGetCombineId(self)
     }
 }
 
@@ -61,7 +61,7 @@ extension ObjectKeyIdentifiable where Self: ObjectBase {
 extension ObjectKeyIdentifiable where Self: ProjectionObservable {
     /// A stable identifier for this projection.
     public var id: UInt64 {
-        RLMObjectBaseGetCombineId(rootObject)
+        LEGACYObjectBaseGetCombineId(rootObject)
     }
 }
 
@@ -923,8 +923,8 @@ extension RealmKeyedCollection {
 /// instead use the extension methods which create them.
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public enum RealmPublishers {
-    static private func realm<S: Scheduler>(_ config: RLMRealmConfiguration, _ scheduler: S) -> RealmLegacy? {
-        try? RealmLegacy(RLMRealm(configuration: config, queue: scheduler as? DispatchQueue))
+    static private func realm<S: Scheduler>(_ config: LEGACYRealmConfiguration, _ scheduler: S) -> RealmLegacy? {
+        try? RealmLegacy(LEGACYRealm(configuration: config, queue: scheduler as? DispatchQueue))
     }
     static private func realm<S: Scheduler>(_ sourceRealm: RealmLegacy, _ scheduler: S) -> RealmLegacy? {
         return realm(sourceRealm.rlmRealm.configuration, scheduler)
@@ -963,7 +963,7 @@ public enum RealmPublishers {
 
         /// :nodoc:
         public func receive<S>(subscriber: S) where S: Subscriber, S.Failure == Failure, Output == S.Input {
-            let rlmTask = RLMRealm.asyncOpen(with: configuration.rlmConfiguration,
+            let rlmTask = LEGACYRealm.asyncOpen(with: configuration.rlmConfiguration,
                                              callbackQueue: callbackQueue) { rlmRealm, error in
                 if let realm = rlmRealm.flatMap(RealmLegacy.init) {
                     _ = subscriber.receive(realm)
@@ -1283,7 +1283,7 @@ public enum RealmPublishers {
         /// :nodoc:
         public typealias Output = Upstream.Output
 
-        private let config: RLMRealmConfiguration
+        private let config: LEGACYRealmConfiguration
         private let upstream: Upstream
         private let scheduler: S
 
@@ -1356,7 +1356,7 @@ public enum RealmPublishers {
 
         private enum Handover {
             case object(_ object: Output)
-            case tsr(_ tsr: ThreadSafeReference<Output>, config: RLMRealmConfiguration)
+            case tsr(_ tsr: ThreadSafeReference<Output>, config: LEGACYRealmConfiguration)
         }
 
         /// :nodoc:
@@ -1627,7 +1627,7 @@ public enum RealmPublishers {
             // We also hold a reference to a pinned Realm to ensure that the
             // source version remains pinned and we can deliver the object at
             // the same version as the change information.
-            case tsr(_ pin: RLMPinnedRealm, _ tsr: ThreadSafeReference<T>,
+            case tsr(_ pin: LEGACYPinnedRealm, _ tsr: ThreadSafeReference<T>,
                      _ properties: [PropertyChange])
         }
 
@@ -1638,7 +1638,7 @@ public enum RealmPublishers {
                 .map { (change: Output) -> Handover in
                     guard case .change(let obj, let properties) = change else { return .passthrough(change) }
                     guard let realm = obj.realm, !realm.isFrozen else { return .passthrough(change) }
-                    return .tsr(RLMPinnedRealm(realm: realm.rlmRealm),
+                    return .tsr(LEGACYPinnedRealm(realm: realm.rlmRealm),
                                 ThreadSafeReference(to: obj), properties)
                 }
                 .receive(on: scheduler)
@@ -2426,8 +2426,8 @@ public enum RealmPublishers {
             // to wrap the collection in a thread-safe reference and hold onto
             // a pinned Realm to ensure that the version which the change
             // information is for stays pinned until it's delivered.
-            case initial(_ pin: RLMPinnedRealm, _ tsr: ThreadSafeReference<T>)
-            case update(_ pin: RLMPinnedRealm, _ tsr: ThreadSafeReference<T>, deletions: [Int],
+            case initial(_ pin: LEGACYPinnedRealm, _ tsr: ThreadSafeReference<T>)
+            case update(_ pin: LEGACYPinnedRealm, _ tsr: ThreadSafeReference<T>, deletions: [Int],
                         insertions: [Int], modifications: [Int])
         }
 
@@ -2439,11 +2439,11 @@ public enum RealmPublishers {
                     switch change {
                     case .initial(let collection):
                         guard let realm = collection.realm, !realm.isFrozen else { return .passthrough(change) }
-                        return .initial(RLMPinnedRealm(realm: realm.rlmRealm),
+                        return .initial(LEGACYPinnedRealm(realm: realm.rlmRealm),
                                         ThreadSafeReference(to: collection))
                     case .update(let collection, deletions: let deletions, insertions: let insertions, modifications: let modifications):
                         guard let realm = collection.realm, !realm.isFrozen else { return .passthrough(change) }
-                        return .update(RLMPinnedRealm(realm: realm.rlmRealm),
+                        return .update(LEGACYPinnedRealm(realm: realm.rlmRealm),
                                        ThreadSafeReference(to: collection),
                                        deletions: deletions, insertions: insertions,
                                        modifications: modifications)
@@ -2500,8 +2500,8 @@ public enum RealmPublishers {
             // to wrap the collection in a thread-safe reference and hold onto
             // a pinned Realm to ensure that the version which the change
             // information is for stays pinned until it's delivered.
-            case initial(_ pin: RLMPinnedRealm, _ tsr: ThreadSafeReference<T>)
-            case update(_ pin: RLMPinnedRealm, _ tsr: ThreadSafeReference<T>,
+            case initial(_ pin: LEGACYPinnedRealm, _ tsr: ThreadSafeReference<T>)
+            case update(_ pin: LEGACYPinnedRealm, _ tsr: ThreadSafeReference<T>,
                         deletions: [T.Key], insertions: [T.Key], modifications: [T.Key])
         }
 
@@ -2513,11 +2513,11 @@ public enum RealmPublishers {
                     switch change {
                     case .initial(let collection):
                         guard let realm = collection.realm, !realm.isFrozen else { return .passthrough(change) }
-                        return .initial(RLMPinnedRealm(realm: realm.rlmRealm),
+                        return .initial(LEGACYPinnedRealm(realm: realm.rlmRealm),
                                         ThreadSafeReference(to: collection))
                     case .update(let collection, deletions: let deletions, insertions: let insertions, modifications: let modifications):
                         guard let realm = collection.realm, !realm.isFrozen else { return .passthrough(change) }
-                        return .update(RLMPinnedRealm(realm: realm.rlmRealm),
+                        return .update(LEGACYPinnedRealm(realm: realm.rlmRealm),
                                        ThreadSafeReference(to: collection),
                                        deletions: deletions, insertions: insertions, modifications: modifications)
                     case .error:
@@ -2557,8 +2557,8 @@ public enum RealmPublishers {
         // to wrap the collection in a thread-safe reference and hold onto
         // a pinned Realm to ensure that the version which the change
         // information is for stays pinned until it's delivered.
-        case initial(_ pin: RLMPinnedRealm, _ tsr: ThreadSafeReference<T>)
-        case update(_ pin: RLMPinnedRealm, _ tsr: ThreadSafeReference<T>,
+        case initial(_ pin: LEGACYPinnedRealm, _ tsr: ThreadSafeReference<T>)
+        case update(_ pin: LEGACYPinnedRealm, _ tsr: ThreadSafeReference<T>,
                     deletions: [IndexPath], insertions: [IndexPath], modifications: [IndexPath],
                     sectionsToInsert: IndexSet, sectionsToDelete: IndexSet)
 
@@ -2569,7 +2569,7 @@ public enum RealmPublishers {
                     self = .passthrough(change)
                     return
                 }
-                self = .initial(RLMPinnedRealm(realm: realm.rlmRealm),
+                self = .initial(LEGACYPinnedRealm(realm: realm.rlmRealm),
                                 ThreadSafeReference(to: collection))
             case .update(let collection, deletions: let deletions, insertions: let insertions,
                          modifications: let modifications,
@@ -2578,7 +2578,7 @@ public enum RealmPublishers {
                     self = .passthrough(change)
                     return
                 }
-                self = .update(RLMPinnedRealm(realm: realm.rlmRealm),
+                self = .update(LEGACYPinnedRealm(realm: realm.rlmRealm),
                                ThreadSafeReference(to: collection),
                                deletions: deletions, insertions: insertions, modifications: modifications,
                                sectionsToInsert: sectionsToInsert, sectionsToDelete: sectionsToDelete)

@@ -16,48 +16,48 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMThreadSafeReference_Private.hpp"
-#import "RLMUtil.hpp"
+#import "LEGACYThreadSafeReference_Private.hpp"
+#import "LEGACYUtil.hpp"
 
-@implementation RLMThreadSafeReference {
+@implementation LEGACYThreadSafeReference {
     realm::ThreadSafeReference _reference;
     id _metadata;
     Class _type;
 }
 
-- (instancetype)initWithThreadConfined:(id<RLMThreadConfined>)threadConfined {
+- (instancetype)initWithThreadConfined:(id<LEGACYThreadConfined>)threadConfined {
     if (!(self = [super init])) {
         return nil;
     }
 
-    REALM_ASSERT_DEBUG([threadConfined conformsToProtocol:@protocol(RLMThreadConfined)]);
-    if (![threadConfined conformsToProtocol:@protocol(RLMThreadConfined_Private)]) {
-        @throw RLMException(@"Illegal custom conformance to `RLMThreadConfined` by `%@`", threadConfined.class);
+    REALM_ASSERT_DEBUG([threadConfined conformsToProtocol:@protocol(LEGACYThreadConfined)]);
+    if (![threadConfined conformsToProtocol:@protocol(LEGACYThreadConfined_Private)]) {
+        @throw LEGACYException(@"Illegal custom conformance to `LEGACYThreadConfined` by `%@`", threadConfined.class);
     } else if (threadConfined.invalidated) {
-        @throw RLMException(@"Cannot construct reference to invalidated object");
+        @throw LEGACYException(@"Cannot construct reference to invalidated object");
     } else if (!threadConfined.realm) {
-        @throw RLMException(@"Cannot construct reference to unmanaged object, "
+        @throw LEGACYException(@"Cannot construct reference to unmanaged object, "
                             "which can be passed across threads directly");
     }
 
-    RLMTranslateError([&] {
-        _reference = [(id<RLMThreadConfined_Private>)threadConfined makeThreadSafeReference];
-        _metadata = ((id<RLMThreadConfined_Private>)threadConfined).objectiveCMetadata;
+    LEGACYTranslateError([&] {
+        _reference = [(id<LEGACYThreadConfined_Private>)threadConfined makeThreadSafeReference];
+        _metadata = ((id<LEGACYThreadConfined_Private>)threadConfined).objectiveCMetadata;
     });
     _type = threadConfined.class;
 
     return self;
 }
 
-+ (instancetype)referenceWithThreadConfined:(id<RLMThreadConfined>)threadConfined {
++ (instancetype)referenceWithThreadConfined:(id<LEGACYThreadConfined>)threadConfined {
     return [[self alloc] initWithThreadConfined:threadConfined];
 }
 
-- (id<RLMThreadConfined>)resolveReferenceInRealm:(RLMRealm *)realm {
+- (id<LEGACYThreadConfined>)resolveReferenceInRealm:(LEGACYRealm *)realm {
     if (!_reference) {
-        @throw RLMException(@"Can only resolve a thread safe reference once.");
+        @throw LEGACYException(@"Can only resolve a thread safe reference once.");
     }
-    return RLMTranslateError([&] {
+    return LEGACYTranslateError([&] {
         return [_type objectWithThreadSafeReference:std::move(_reference) metadata:_metadata realm:realm];
     });
 }

@@ -16,63 +16,63 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
+#import <Realm/LEGACYConstants.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@class RLMObjectSchema;
+@class LEGACYObjectSchema;
 
 /**
- `RLMSchema` instances represent collections of model object schemas managed by a Realm.
+ `LEGACYSchema` instances represent collections of model object schemas managed by a Realm.
 
- When using Realm, `RLMSchema` instances allow performing migrations and
+ When using Realm, `LEGACYSchema` instances allow performing migrations and
  introspecting the database's schema.
 
  Schemas map to collections of tables in the core database.
  */
-RLM_SWIFT_SENDABLE // not actually immutable, but the public API kinda is
-@interface RLMSchema : NSObject<NSCopying>
+LEGACY_SWIFT_SENDABLE // not actually immutable, but the public API kinda is
+@interface LEGACYSchema : NSObject<NSCopying>
 
 #pragma mark - Properties
 
 /**
- An `NSArray` containing `RLMObjectSchema`s for all object types in the Realm.
+ An `NSArray` containing `LEGACYObjectSchema`s for all object types in the Realm.
 
  This property is intended to be used during migrations for dynamic introspection.
 
- @see `RLMObjectSchema`
+ @see `LEGACYObjectSchema`
  */
-@property (nonatomic, readonly, copy) NSArray<RLMObjectSchema *> *objectSchema;
+@property (nonatomic, readonly, copy) NSArray<LEGACYObjectSchema *> *objectSchema;
 
 #pragma mark - Methods
 
 /**
- Returns an `RLMObjectSchema` for the given class name in the schema.
+ Returns an `LEGACYObjectSchema` for the given class name in the schema.
 
  @param className   The object class name.
- @return            An `RLMObjectSchema` for the given class in the schema.
+ @return            An `LEGACYObjectSchema` for the given class in the schema.
 
- @see               `RLMObjectSchema`
+ @see               `LEGACYObjectSchema`
  */
-- (nullable RLMObjectSchema *)schemaForClassName:(NSString *)className;
+- (nullable LEGACYObjectSchema *)schemaForClassName:(NSString *)className;
 
 /**
- Looks up and returns an `RLMObjectSchema` for the given class name in the Realm.
+ Looks up and returns an `LEGACYObjectSchema` for the given class name in the Realm.
 
  If there is no object of type `className` in the schema, an exception will be thrown.
 
  @param className   The object class name.
- @return            An `RLMObjectSchema` for the given class in this Realm.
+ @return            An `LEGACYObjectSchema` for the given class in this Realm.
 
- @see               `RLMObjectSchema`
+ @see               `LEGACYObjectSchema`
  */
-- (RLMObjectSchema *)objectForKeyedSubscript:(NSString *)className;
+- (LEGACYObjectSchema *)objectForKeyedSubscript:(NSString *)className;
 
 /**
- Returns whether two `RLMSchema` instances are equivalent.
+ Returns whether two `LEGACYSchema` instances are equivalent.
  */
-- (BOOL)isEqualToSchema:(RLMSchema *)schema;
+- (BOOL)isEqualToSchema:(LEGACYSchema *)schema;
 
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

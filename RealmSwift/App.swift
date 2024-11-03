@@ -25,17 +25,17 @@ import RealmLegacy.Private
 /**
 An object representing the Realm App configuration
 
-- see: `RLMAppConfiguration`
+- see: `LEGACYAppConfiguration`
 
 - note: `AppConfiguration` options cannot be modified once the `App` using it
          is created. App's configuration values are cached when the App is created so any modifications after it
          will not have any effect.
 */
-public typealias AppConfiguration = RLMAppConfiguration
+public typealias AppConfiguration = LEGACYAppConfiguration
 public extension AppConfiguration {
     /// :nodoc:
     @available(*, deprecated, message: "localAppName and localAppVersion are not used for anything and should not be supplied")
-    convenience init(baseURL: String? = nil, transport: RLMNetworkTransport? = nil,
+    convenience init(baseURL: String? = nil, transport: LEGACYNetworkTransport? = nil,
                      localAppName: String?, localAppVersion: String?,
                      defaultRequestTimeoutMS: UInt? = nil, enableSessionMultiplexing: Bool? = nil,
                      syncTimeouts: SyncTimeoutOptions? = nil) {
@@ -64,7 +64,7 @@ public extension AppConfiguration {
        - syncTimeouts: Timeout options for sync connections.
      */
     @_disfavoredOverload // this is ambiguous with the base init if nil is explicitly passed
-    convenience init(baseURL: String? = nil, transport: RLMNetworkTransport? = nil,
+    convenience init(baseURL: String? = nil, transport: LEGACYNetworkTransport? = nil,
                      defaultRequestTimeoutMS: UInt? = nil, enableSessionMultiplexing: Bool? = nil,
                      syncTimeouts: SyncTimeoutOptions? = nil) {
         self.init(baseURL: baseURL, transport: transport)
@@ -84,22 +84,22 @@ public extension AppConfiguration {
 An object representing a client which performs network calls on
 Realm Cloud user api keys
 
-- see: `RLMAPIKeyAuth`
+- see: `LEGACYAPIKeyAuth`
 */
-public typealias APIKeyAuth = RLMAPIKeyAuth
+public typealias APIKeyAuth = LEGACYAPIKeyAuth
 
 /**
 An object representing a client which performs network calls on
 Realm Cloud user registration & password functions
 
-- see: `RLMEmailPasswordAuth`
+- see: `LEGACYEmailPasswordAuth`
 */
-public typealias EmailPasswordAuth = RLMEmailPasswordAuth
+public typealias EmailPasswordAuth = LEGACYEmailPasswordAuth
 
 /**
  An object representing the social profile of a User.
  */
-public typealias UserProfile = RLMUserProfile
+public typealias UserProfile = LEGACYUserProfile
 
 extension UserProfile {
     /**
@@ -107,7 +107,7 @@ extension UserProfile {
      The auth provider of the user is responsible for populating this `Document`.
     */
     public var metadata: Document {
-        guard let rlmMetadata = self.__metadata as RLMBSON?,
+        guard let rlmMetadata = self.__metadata as LEGACYBSON?,
             let anyBSON = ObjectiveCSupport.convert(object: rlmMetadata),
             case let .document(metadata) = anyBSON else {
             return [:]
@@ -118,7 +118,7 @@ extension UserProfile {
 }
 
 /// A block type used to report an error
-public typealias EmailPasswordAuthOptionalErrorBlock = RLMEmailPasswordAuthOptionalErrorBlock
+public typealias EmailPasswordAuthOptionalErrorBlock = LEGACYEmailPasswordAuthOptionalErrorBlock
 extension EmailPasswordAuth {
     /// Resets the password of an email identity using the
     /// password reset function set up in the application.
@@ -132,7 +132,7 @@ extension EmailPasswordAuth {
                                           args: [AnyBSON],
                                           _ completion: @escaping EmailPasswordAuthOptionalErrorBlock) {
         let bson = ObjectiveCSupport.convert(object: .array(args))
-        __callResetPasswordFunction(email, password: password, args: bson as! [RLMBSON], completion: completion)
+        __callResetPasswordFunction(email, password: password, args: bson as! [LEGACYBSON], completion: completion)
     }
 
     /**
@@ -162,7 +162,7 @@ extension EmailPasswordAuth {
                                           password: String,
                                           args: [AnyBSON]) async throws {
         let bson = ObjectiveCSupport.convert(object: .array(args))
-        return try await __callResetPasswordFunction(email, password: password, args: bson as! [RLMBSON])
+        return try await __callResetPasswordFunction(email, password: password, args: bson as! [LEGACYBSON])
     }
 }
 
@@ -170,12 +170,12 @@ extension EmailPasswordAuth {
 An object representing a client which performs network calls on
 Realm Cloud for registering devices to push notifications
  
-- see `RLMPushClient`
+- see `LEGACYPushClient`
  */
-public typealias PushClient = RLMPushClient
+public typealias PushClient = LEGACYPushClient
 
 /// An object which is used within UserAPIKeyProviderClient
-public typealias UserAPIKey = RLMUserAPIKey
+public typealias UserAPIKey = LEGACYUserAPIKey
 extension UserAPIKey {
     /// The ObjectId of the API key.
     public var objectId: ObjectId {
@@ -217,7 +217,7 @@ let credentials = Credentials.JWT(token: myToken)
 /// The `App` has the fundamental set of methods for communicating with a Realm
 /// application backend.
 /// This interface provides access to login and authentication.
-public typealias App = RLMApp
+public typealias App = LEGACYApp
 
 public extension App {
     /**
@@ -256,7 +256,7 @@ public extension App {
 
 /// Use this delegate to be provided a callback once authentication has succeed or failed
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-public typealias ASLoginDelegate = RLMASLoginDelegate
+public typealias ASLoginDelegate = LEGACYASLoginDelegate
 
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension App {
@@ -285,8 +285,8 @@ extension App {
 /// :nodoc:
 @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 @frozen public struct AppSubscription: Subscription {
-    private let token: RLMAppSubscriptionToken
-    internal init(token: RLMAppSubscriptionToken) {
+    private let token: LEGACYAppSubscriptionToken
+    internal init(token: LEGACYAppSubscriptionToken) {
         self.token = token
     }
 

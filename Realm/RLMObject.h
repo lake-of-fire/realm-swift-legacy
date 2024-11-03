@@ -16,27 +16,27 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMConstants.h>
-#import <Realm/RLMObjectBase.h>
-#import <Realm/RLMThreadSafeReference.h>
+#import <Realm/LEGACYConstants.h>
+#import <Realm/LEGACYObjectBase.h>
+#import <Realm/LEGACYThreadSafeReference.h>
 
-RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
+LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
 
-@class RLMNotificationToken;
-@class RLMObjectSchema;
-@class RLMPropertyChange;
-@class RLMPropertyDescriptor;
-@class RLMRealm;
-@class RLMResults<RLMObjectType>;
+@class LEGACYNotificationToken;
+@class LEGACYObjectSchema;
+@class LEGACYPropertyChange;
+@class LEGACYPropertyDescriptor;
+@class LEGACYRealm;
+@class LEGACYResults<LEGACYObjectType>;
 
 /**
- `RLMObject` is a base class for model objects representing data stored in Realms.
+ `LEGACYObject` is a base class for model objects representing data stored in Realms.
 
- Define your model classes by subclassing `RLMObject` and adding properties to be managed.
- Then instantiate and use your custom subclasses instead of using the `RLMObject` class directly.
+ Define your model classes by subclassing `LEGACYObject` and adding properties to be managed.
+ Then instantiate and use your custom subclasses instead of using the `LEGACYObject` class directly.
 
      // Dog.h
-     @interface Dog : RLMObject
+     @interface Dog : LEGACYObject
      @property NSString *name;
      @property BOOL      adopted;
      @end
@@ -52,9 +52,9 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  - `BOOL` or `bool`
  - `NSDate`
  - `NSData`
- - `NSNumber<X>`, where `X` is one of `RLMInt`, `RLMFloat`, `RLMDouble` or `RLMBool`, for optional number properties
- - `RLMObject` subclasses, to model many-to-one relationships.
- - `RLMArray<X>`, where `X` is an `RLMObject` subclass, to model many-to-many relationships.
+ - `NSNumber<X>`, where `X` is one of `LEGACYInt`, `LEGACYFloat`, `LEGACYDouble` or `LEGACYBool`, for optional number properties
+ - `LEGACYObject` subclasses, to model many-to-one relationships.
+ - `LEGACYArray<X>`, where `X` is an `LEGACYObject` subclass, to model many-to-many relationships.
 
  ### Querying
 
@@ -64,7 +64,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  To search in a Realm other than the default Realm, use the `allObjectsInRealm:`, `objectsInRealm:where:`,
  and `objectsInRealm:withPredicate:` class methods.
 
- @see `RLMRealm`
+ @see `LEGACYRealm`
 
  ### Relationships
 
@@ -72,37 +72,37 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  ### Key-Value Observing
 
- All `RLMObject` properties (including properties you create in subclasses) are
+ All `LEGACYObject` properties (including properties you create in subclasses) are
  [Key-Value Observing compliant](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueObserving/KeyValueObserving.html),
  except for `realm` and `objectSchema`.
 
  Keep the following tips in mind when observing Realm objects:
 
- 1. Unlike `NSMutableArray` properties, `RLMArray` properties do not require
+ 1. Unlike `NSMutableArray` properties, `LEGACYArray` properties do not require
     using the proxy object returned from `-mutableArrayValueForKey:`, or defining
     KVC mutation methods on the containing class. You can simply call methods on
-    the `RLMArray` directly; any changes will be automatically observed by the containing
+    the `LEGACYArray` directly; any changes will be automatically observed by the containing
     object.
- 2. Unmanaged `RLMObject` instances cannot be added to a Realm while they have any
+ 2. Unmanaged `LEGACYObject` instances cannot be added to a Realm while they have any
     observed properties.
- 3. Modifying managed `RLMObject`s within `-observeValueForKeyPath:ofObject:change:context:`
+ 3. Modifying managed `LEGACYObject`s within `-observeValueForKeyPath:ofObject:change:context:`
     is not recommended. Properties may change even when the Realm is not in a write
-    transaction (for example, when `-[RLMRealm refresh]` is called after changes
+    transaction (for example, when `-[LEGACYRealm refresh]` is called after changes
     are made on a different thread), and notifications sent prior to the change
     being applied (when `NSKeyValueObservingOptionPrior` is used) may be sent at
     times when you *cannot* begin a write transaction.
  */
 
-@interface RLMObject : RLMObjectBase <RLMThreadConfined>
+@interface LEGACYObject : LEGACYObjectBase <LEGACYThreadConfined>
 
 #pragma mark - Creating & Initializing Objects
 
 /**
  Creates an unmanaged instance of a Realm object.
 
- Call `addObject:` on an `RLMRealm` instance to add an unmanaged object into that Realm.
+ Call `addObject:` on an `LEGACYRealm` instance to add an unmanaged object into that Realm.
 
- @see `[RLMRealm addObject:]`
+ @see `[LEGACYRealm addObject:]`
  */
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
@@ -112,9 +112,9 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  Pass in an `NSArray` or `NSDictionary` instance to set the values of the object's properties.
 
- Call `addObject:` on an `RLMRealm` instance to add an unmanaged object into that Realm.
+ Call `addObject:` on an `LEGACYRealm` instance to add an unmanaged object into that Realm.
 
- @see `[RLMRealm addObject:]`
+ @see `[LEGACYRealm addObject:]`
  */
 - (instancetype)initWithValue:(id)value;
 
@@ -170,7 +170,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @see   `defaultPropertyValues`
  */
-+ (instancetype)createInRealm:(RLMRealm *)realm withValue:(id)value;
++ (instancetype)createInRealm:(LEGACYRealm *)realm withValue:(id)value;
 
 /**
  Creates or updates a Realm object within the default Realm.
@@ -291,7 +291,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @see   `defaultPropertyValues`, `primaryKey`
  */
-+ (instancetype)createOrUpdateInRealm:(RLMRealm *)realm withValue:(id)value;
++ (instancetype)createOrUpdateInRealm:(LEGACYRealm *)realm withValue:(id)value;
 
 /**
  Creates or updates an Realm object within a specified Realm.
@@ -336,19 +336,19 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @see   `defaultPropertyValues`, `primaryKey`
  */
-+ (instancetype)createOrUpdateModifiedInRealm:(RLMRealm *)realm withValue:(id)value;
++ (instancetype)createOrUpdateModifiedInRealm:(LEGACYRealm *)realm withValue:(id)value;
 
 #pragma mark - Properties
 
 /**
  The Realm which manages the object, or `nil` if the object is unmanaged.
  */
-@property (nonatomic, readonly, nullable) RLMRealm *realm;
+@property (nonatomic, readonly, nullable) LEGACYRealm *realm;
 
 /**
  The object schema which lists the managed properties for the object.
  */
-@property (nonatomic, readonly) RLMObjectSchema *objectSchema;
+@property (nonatomic, readonly) LEGACYObjectSchema *objectSchema;
 
 /**
  Indicates if the object can no longer be accessed because it is now invalid.
@@ -361,7 +361,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 /**
  Indicates if this object is frozen.
 
- @see `-[RLMObject freeze]`
+ @see `-[LEGACYObject freeze]`
  */
 @property (nonatomic, readonly, getter = isFrozen) BOOL frozen;
 
@@ -387,7 +387,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 /**
  Override this method to specify the name of a property to be used as the primary key.
 
- Only properties of types `RLMPropertyTypeString` and `RLMPropertyTypeInt` can be designated as the primary key.
+ Only properties of types `LEGACYPropertyTypeString` and `LEGACYPropertyTypeInt` can be designated as the primary key.
  Primary key properties enforce uniqueness for each value whenever the property is set, which incurs minor overhead.
  Indexes are created automatically for primary key properties.
 
@@ -410,7 +410,7 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  To require that an object in a Realm always store a non-`nil` value for a property,
  add the name of the property to the array returned from this method.
 
- Properties of `RLMObject` type cannot be non-optional. Array and `NSNumber` properties
+ Properties of `LEGACYObject` type cannot be non-optional. Array and `NSNumber` properties
  can be non-optional, but there is no reason to do so: arrays do not support storing nil, and
  if you want a non-optional number you should instead use the primitive type.
 
@@ -421,36 +421,36 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 /**
  Override this method to provide information related to properties containing linking objects.
 
- Each property of type `RLMLinkingObjects` must have a key in the dictionary returned by this method consisting
- of the property name. The corresponding value must be an instance of `RLMPropertyDescriptor` that describes the class
+ Each property of type `LEGACYLinkingObjects` must have a key in the dictionary returned by this method consisting
+ of the property name. The corresponding value must be an instance of `LEGACYPropertyDescriptor` that describes the class
  and property that the property is linked to.
 
-     return @{ @"owners": [RLMPropertyDescriptor descriptorWithClass:Owner.class propertyName:@"dogs"] };
+     return @{ @"owners": [LEGACYPropertyDescriptor descriptorWithClass:Owner.class propertyName:@"dogs"] };
 
- @return     A dictionary mapping property names to `RLMPropertyDescriptor` instances.
+ @return     A dictionary mapping property names to `LEGACYPropertyDescriptor` instances.
  */
-+ (NSDictionary<NSString *, RLMPropertyDescriptor *> *)linkingObjectsProperties;
++ (NSDictionary<NSString *, LEGACYPropertyDescriptor *> *)linkingObjectsProperties;
 
 #pragma mark - Getting & Querying Objects from the Default Realm
 
 /**
  Returns all objects of this object type from the default Realm.
 
- @return    An `RLMResults` containing all objects of this type in the default Realm.
+ @return    An `LEGACYResults` containing all objects of this type in the default Realm.
  */
-+ (RLMResults *)allObjects;
++ (LEGACYResults *)allObjects;
 
 /**
  Returns all objects of this object type matching the given predicate from the default Realm.
 
  @param predicateFormat A predicate format string, optionally followed by a variable number of arguments.
 
- @return    An `RLMResults` containing all objects of this type in the default Realm that match the given predicate.
+ @return    An `LEGACYResults` containing all objects of this type in the default Realm that match the given predicate.
  */
-+ (RLMResults *)objectsWhere:(NSString *)predicateFormat, ...;
++ (LEGACYResults *)objectsWhere:(NSString *)predicateFormat, ...;
 
 /// :nodoc:
-+ (RLMResults<__kindof RLMObject *> *)objectsWhere:(NSString *)predicateFormat args:(va_list)args;
++ (LEGACYResults<__kindof LEGACYObject *> *)objectsWhere:(NSString *)predicateFormat args:(va_list)args;
 
 
 /**
@@ -458,9 +458,9 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @param predicate   The predicate with which to filter the objects.
 
- @return    An `RLMResults` containing all objects of this type in the default Realm that match the given predicate.
+ @return    An `LEGACYResults` containing all objects of this type in the default Realm that match the given predicate.
  */
-+ (RLMResults *)objectsWithPredicate:(nullable NSPredicate *)predicate;
++ (LEGACYResults *)objectsWithPredicate:(nullable NSPredicate *)predicate;
 
 /**
  Retrieves the single instance of this object type with the given primary key from the default Realm.
@@ -484,9 +484,9 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
 
  @param realm   The Realm to query.
 
- @return        An `RLMResults` containing all objects of this type in the specified Realm.
+ @return        An `LEGACYResults` containing all objects of this type in the specified Realm.
  */
-+ (RLMResults *)allObjectsInRealm:(RLMRealm *)realm;
++ (LEGACYResults *)allObjectsInRealm:(LEGACYRealm *)realm;
 
 /**
  Returns all objects of this object type matching the given predicate from the specified Realm.
@@ -494,12 +494,12 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  @param predicateFormat A predicate format string, optionally followed by a variable number of arguments.
  @param realm           The Realm to query.
 
- @return    An `RLMResults` containing all objects of this type in the specified Realm that match the given predicate.
+ @return    An `LEGACYResults` containing all objects of this type in the specified Realm that match the given predicate.
  */
-+ (RLMResults *)objectsInRealm:(RLMRealm *)realm where:(NSString *)predicateFormat, ...;
++ (LEGACYResults *)objectsInRealm:(LEGACYRealm *)realm where:(NSString *)predicateFormat, ...;
 
 /// :nodoc:
-+ (RLMResults<__kindof RLMObject *> *)objectsInRealm:(RLMRealm *)realm where:(NSString *)predicateFormat args:(va_list)args;
++ (LEGACYResults<__kindof LEGACYObject *> *)objectsInRealm:(LEGACYRealm *)realm where:(NSString *)predicateFormat args:(va_list)args;
 
 /**
  Returns all objects of this object type matching the given predicate from the specified Realm.
@@ -507,9 +507,9 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  @param predicate   A predicate to use to filter the elements.
  @param realm       The Realm to query.
 
- @return    An `RLMResults` containing all objects of this type in the specified Realm that match the given predicate.
+ @return    An `LEGACYResults` containing all objects of this type in the specified Realm that match the given predicate.
  */
-+ (RLMResults *)objectsInRealm:(RLMRealm *)realm withPredicate:(nullable NSPredicate *)predicate;
++ (LEGACYResults *)objectsInRealm:(LEGACYRealm *)realm withPredicate:(nullable NSPredicate *)predicate;
 
 /**
  Retrieves the single instance of this object type with the given primary key from the specified Realm.
@@ -523,25 +523,25 @@ RLM_HEADER_AUDIT_BEGIN(nullability, sendability)
  @return    An object of this object type, or `nil` if an object with the given primary key does not exist.
  @see       `-primaryKey`
  */
-+ (nullable instancetype)objectInRealm:(RLMRealm *)realm forPrimaryKey:(nullable id)primaryKey NS_SWIFT_NAME(object(in:forPrimaryKey:));
++ (nullable instancetype)objectInRealm:(LEGACYRealm *)realm forPrimaryKey:(nullable id)primaryKey NS_SWIFT_NAME(object(in:forPrimaryKey:));
 
 #pragma mark - Notifications
 
 /**
- A callback block for `RLMObject` notifications.
+ A callback block for `LEGACYObject` notifications.
 
  If the object is deleted from the managing Realm, the block is called with
  `deleted` set to `YES` and the other two arguments are `nil`. The block will
  never be called again after this.
 
  If the object is modified, the block will be called with `deleted` set to
- `NO`, a `nil` error, and an array of `RLMPropertyChange` objects which
+ `NO`, a `nil` error, and an array of `LEGACYPropertyChange` objects which
  indicate which properties of the objects were modified.
 
  `error` is always `nil` and will be removed in a future version.
  */
-typedef void (^RLMObjectChangeBlock)(BOOL deleted,
-                                     NSArray<RLMPropertyChange *> *_Nullable changes,
+typedef void (^LEGACYObjectChangeBlock)(BOOL deleted,
+                                     NSArray<LEGACYPropertyChange *> *_Nullable changes,
                                      NSError *_Nullable error);
 
 /**
@@ -562,7 +562,7 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
  can't be delivered instantly, multiple notifications may be coalesced into a
  single notification.
 
- Unlike with `RLMArray` and `RLMResults`, there is no "initial" callback made
+ Unlike with `LEGACYArray` and `LEGACYResults`, there is no "initial" callback made
  after you add a new notification block.
 
  Only objects which are managed by a Realm can be observed in this way. You
@@ -579,7 +579,7 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
  @param block The block to be called whenever a change occurs.
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(RLMObjectChangeBlock)block;
+- (LEGACYNotificationToken *)addNotificationBlock:(LEGACYObjectChangeBlock)block;
 
 /**
  Registers a block to be called each time the object changes.
@@ -598,7 +598,7 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
  notifications can't be delivered instantly, multiple notifications may be
  coalesced into a single notification.
 
- Unlike with `RLMArray` and `RLMResults`, there is no "initial" callback made
+ Unlike with `LEGACYArray` and `LEGACYResults`, there is no "initial" callback made
  after you add a new notification block.
 
  Only objects which are managed by a Realm can be observed in this way. You
@@ -617,7 +617,7 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
  @param queue The serial queue to deliver notifications to.
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(RLMObjectChangeBlock)block queue:(dispatch_queue_t)queue;
+- (LEGACYNotificationToken *)addNotificationBlock:(LEGACYObjectChangeBlock)block queue:(dispatch_queue_t)queue;
 
 /**
  Registers a block to be called each time the object changes.
@@ -636,7 +636,7 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
  notifications can't be delivered instantly, multiple notifications may be
  coalesced into a single notification.
 
- Unlike with `RLMArray` and `RLMResults`, there is no "initial" callback made
+ Unlike with `LEGACYArray` and `LEGACYResults`, there is no "initial" callback made
  after you add a new notification block.
 
  Only objects which are managed by a Realm can be observed in this way. You
@@ -657,7 +657,7 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
  @param queue The serial queue to deliver notifications to.
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(RLMObjectChangeBlock)block keyPaths:(NSArray<NSString *> *)keyPaths queue:(dispatch_queue_t)queue;
+- (LEGACYNotificationToken *)addNotificationBlock:(LEGACYObjectChangeBlock)block keyPaths:(NSArray<NSString *> *)keyPaths queue:(dispatch_queue_t)queue;
 
 /**
  Registers a block to be called each time the object changes.
@@ -676,7 +676,7 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
  notifications can't be delivered instantly, multiple notifications may be
  coalesced into a single notification.
 
- Unlike with `RLMArray` and `RLMResults`, there is no "initial" callback made
+ Unlike with `LEGACYArray` and `LEGACYResults`, there is no "initial" callback made
  after you add a new notification block.
 
  Only objects which are managed by a Realm can be observed in this way. You
@@ -696,7 +696,7 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
  key paths are given, notifications are delivered for every property key path.
  @return A token which must be held for as long as you want updates to be delivered.
  */
-- (RLMNotificationToken *)addNotificationBlock:(RLMObjectChangeBlock)block keyPaths:(NSArray<NSString *> *)keyPaths;
+- (LEGACYNotificationToken *)addNotificationBlock:(LEGACYObjectChangeBlock)block keyPaths:(NSArray<NSString *> *)keyPaths;
 
 
 #pragma mark - Other Instance Methods
@@ -714,7 +714,7 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
 
  @return    Whether the object represents the same object as the receiver.
  */
-- (BOOL)isEqualToObject:(RLMObject *)object;
+- (BOOL)isEqualToObject:(LEGACYObject *)object;
 
 /**
  Returns a frozen (immutable) snapshot of this object.
@@ -750,9 +750,9 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
 @end
 
 /**
- Information about a specific property which changed in an `RLMObject` change notification.
+ Information about a specific property which changed in an `LEGACYObject` change notification.
  */
-@interface RLMPropertyChange : NSObject
+@interface LEGACYPropertyChange : NSObject
 
 /**
  The name of the property which changed.
@@ -761,7 +761,7 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
 
 /**
  The value of the property before the change occurred. This will always be `nil`
- if the change happened on the same thread as the notification and for `RLMArray`
+ if the change happened on the same thread as the notification and for `LEGACYArray`
  properties.
 
  For object properties this will give the object which was previously linked to,
@@ -773,39 +773,39 @@ typedef void (^RLMObjectChangeBlock)(BOOL deleted,
 
 /**
  The value of the property after the change occurred. This will always be `nil`
- for `RLMArray` properties.
+ for `LEGACYArray` properties.
  */
 @property (nonatomic, readonly, strong, nullable) id value;
 @end
 
-#pragma mark - RLMArray Property Declaration
+#pragma mark - LEGACYArray Property Declaration
 
 /**
- Properties on `RLMObject`s of type `RLMArray` must have an associated type. A type is associated
- with an `RLMArray` property by defining a protocol for the object type that the array should contain.
- To define the protocol for an object, you can use the macro RLM_ARRAY_TYPE:
+ Properties on `LEGACYObject`s of type `LEGACYArray` must have an associated type. A type is associated
+ with an `LEGACYArray` property by defining a protocol for the object type that the array should contain.
+ To define the protocol for an object, you can use the macro LEGACY_ARRAY_TYPE:
 
-     RLM_ARRAY_TYPE(ObjectType)
+     LEGACY_ARRAY_TYPE(ObjectType)
      ...
-     @property RLMArray<ObjectType *><ObjectType> *arrayOfObjectTypes;
+     @property LEGACYArray<ObjectType *><ObjectType> *arrayOfObjectTypes;
   */
-#define RLM_ARRAY_TYPE(RLM_OBJECT_SUBCLASS)\
-__attribute__((deprecated("RLM_ARRAY_TYPE has been deprecated. Use RLM_COLLECTION_TYPE instead."))) \
-@protocol RLM_OBJECT_SUBCLASS <NSObject>  \
+#define LEGACY_ARRAY_TYPE(LEGACY_OBJECT_SUBCLASS)\
+__attribute__((deprecated("LEGACY_ARRAY_TYPE has been deprecated. Use LEGACY_COLLECTION_TYPE instead."))) \
+@protocol LEGACY_OBJECT_SUBCLASS <NSObject>  \
 @end
 
 /**
- Properties on `RLMObject`s of type `RLMSet`  /  `RLMArray` must have an associated type. A type is associated
- with an `RLMSet`  /  `RLMArray` property by defining a protocol for the object type that the array should contain.
- To define the protocol for an object, you can use the macro RLM_COLLECTION_TYPE:
+ Properties on `LEGACYObject`s of type `LEGACYSet`  /  `LEGACYArray` must have an associated type. A type is associated
+ with an `LEGACYSet`  /  `LEGACYArray` property by defining a protocol for the object type that the array should contain.
+ To define the protocol for an object, you can use the macro LEGACY_COLLECTION_TYPE:
 
-     RLM_COLLECTION_TYPE(ObjectType)
+     LEGACY_COLLECTION_TYPE(ObjectType)
      ...
-     @property RLMSet<ObjectType *><ObjectType> *setOfObjectTypes;
-     @property RLMArray<ObjectType *><ObjectType> *arrayOfObjectTypes;
+     @property LEGACYSet<ObjectType *><ObjectType> *setOfObjectTypes;
+     @property LEGACYArray<ObjectType *><ObjectType> *arrayOfObjectTypes;
   */
-#define RLM_COLLECTION_TYPE(RLM_OBJECT_SUBCLASS)\
-@protocol RLM_OBJECT_SUBCLASS <NSObject>   \
+#define LEGACY_COLLECTION_TYPE(LEGACY_OBJECT_SUBCLASS)\
+@protocol LEGACY_OBJECT_SUBCLASS <NSObject>   \
 @end
 
-RLM_HEADER_AUDIT_END(nullability, sendability)
+LEGACY_HEADER_AUDIT_END(nullability, sendability)

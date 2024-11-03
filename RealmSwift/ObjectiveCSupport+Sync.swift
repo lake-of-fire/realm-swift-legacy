@@ -22,39 +22,39 @@ import RealmLegacy
  :nodoc:
  **/
 public extension ObjectiveCSupport {
-    /// Convert a `SyncConfiguration` to a `RLMSyncConfiguration`.
-    static func convert(object: SyncConfiguration) -> RLMSyncConfiguration {
+    /// Convert a `SyncConfiguration` to a `LEGACYSyncConfiguration`.
+    static func convert(object: SyncConfiguration) -> LEGACYSyncConfiguration {
         return object.config
     }
 
-    /// Convert a `RLMSyncConfiguration` to a `SyncConfiguration`.
-    static func convert(object: RLMSyncConfiguration) -> SyncConfiguration {
+    /// Convert a `LEGACYSyncConfiguration` to a `SyncConfiguration`.
+    static func convert(object: LEGACYSyncConfiguration) -> SyncConfiguration {
         return SyncConfiguration(config: object)
     }
 
-    /// Convert a `Credentials` to a `RLMCredentials`
-    static func convert(object: Credentials) -> RLMCredentials {
+    /// Convert a `Credentials` to a `LEGACYCredentials`
+    static func convert(object: Credentials) -> LEGACYCredentials {
         switch object {
         case .facebook(let accessToken):
-            return RLMCredentials(facebookToken: accessToken)
+            return LEGACYCredentials(facebookToken: accessToken)
         case .google(let serverAuthCode):
-            return RLMCredentials(googleAuthCode: serverAuthCode)
+            return LEGACYCredentials(googleAuthCode: serverAuthCode)
         case .googleId(let token):
-            return RLMCredentials(googleIdToken: token)
+            return LEGACYCredentials(googleIdToken: token)
         case .apple(let idToken):
-            return RLMCredentials(appleToken: idToken)
+            return LEGACYCredentials(appleToken: idToken)
         case .emailPassword(let email, let password):
-            return RLMCredentials(email: email, password: password)
+            return LEGACYCredentials(email: email, password: password)
         case .jwt(let token):
-            return RLMCredentials(jwt: token)
+            return LEGACYCredentials(jwt: token)
         case .function(let payload):
-            return RLMCredentials(functionPayload: ObjectiveCSupport.convert(object: AnyBSON(payload)) as! [String: RLMBSON])
+            return LEGACYCredentials(functionPayload: ObjectiveCSupport.convert(object: AnyBSON(payload)) as! [String: LEGACYBSON])
         case .userAPIKey(let APIKey):
-            return RLMCredentials(userAPIKey: APIKey)
+            return LEGACYCredentials(userAPIKey: APIKey)
         case .serverAPIKey(let serverAPIKey):
-            return RLMCredentials(serverAPIKey: serverAPIKey)
+            return LEGACYCredentials(serverAPIKey: serverAPIKey)
         case .anonymous:
-            return RLMCredentials.anonymous()
+            return LEGACYCredentials.anonymous()
         }
     }
 }

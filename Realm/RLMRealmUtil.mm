@@ -16,14 +16,14 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import "RLMRealmUtil.hpp"
+#import "LEGACYRealmUtil.hpp"
 
-#import "RLMAsyncTask_Private.h"
-#import "RLMObservation.hpp"
-#import "RLMRealmConfiguration_Private.hpp"
-#import "RLMRealm_Private.hpp"
-#import "RLMScheduler.h"
-#import "RLMUtil.hpp"
+#import "LEGACYAsyncTask_Private.h"
+#import "LEGACYObservation.hpp"
+#import "LEGACYRealmConfiguration_Private.hpp"
+#import "LEGACYRealm_Private.hpp"
+#import "LEGACYScheduler.h"
+#import "LEGACYUtil.hpp"
 
 #import <realm/object-store/binding_context.hpp>
 #import <realm/object-store/impl/realm_coordinator.hpp>
@@ -33,13 +33,13 @@
 #import <map>
 
 // Global realm state
-static auto& s_realmCacheMutex = *new RLMUnfairMutex;
+static auto& s_realmCacheMutex = *new LEGACYUnfairMutex;
 static auto& s_realmsPerPath = *new std::map<std::string, NSMapTable *>();
 static auto& s_frozenRealms = *new std::map<std::string, NSMapTable *>();
 
-void RLMCacheRealm(__unsafe_unretained RLMRealmConfiguration *const configuration,
-                   RLMScheduler *scheduler,
-                   __unsafe_unretained RLMRealm *const realm) {
+void LEGACYCacheRealm(__unsafe_unretained LEGACYRealmConfiguration *const configuration,
+                   LEGACYScheduler *scheduler,
+                   __unsafe_unretained LEGACYRealm *const realm) {
     auto& path = configuration.path;
     auto key = scheduler.cacheKey;
     std::lock_guard lock(s_realmCacheMutex);
@@ -51,40 +51,40 @@ void RLMCacheRealm(__unsafe_unretained RLMRealmConfiguration *const configuratio
     [realms setObject:realm forKey:(__bridge id)key];
 }
 
-RLMRealm *RLMGetCachedRealm(__unsafe_unretained RLMRealmConfiguration *const configuration,
-                            RLMScheduler *scheduler) {
+LEGACYRealm *LEGACYGetCachedRealm(__unsafe_unretained LEGACYRealmConfiguration *const configuration,
+                            LEGACYScheduler *scheduler) {
     auto key = scheduler.cacheKey;
     auto& path = configuration.path;
     std::lock_guard lock(s_realmCacheMutex);
-    RLMRealm *realm = [s_realmsPerPath[path] objectForKey:(__bridge id)key];
+    LEGACYRealm *realm = [s_realmsPerPath[path] objectForKey:(__bridge id)key];
     if (realm && !realm->_realm->scheduler()->is_on_thread()) {
         // We can get here in two cases: if the user is trying to open a
         // queue-bound Realm from the wrong queue, or if we have a stale cached
         // Realm which is bound to a thread that no longer exists. In the first
         // case we'll throw an error later on; in the second we'll just create
-        // a new RLMRealm and replace the cache entry with one bound to the
+        // a new LEGACYRealm and replace the cache entry with one bound to the
         // thread that now exists.
         realm = nil;
     }
     return realm;
 }
 
-RLMRealm *RLMGetAnyCachedRealm(__unsafe_unretained RLMRealmConfiguration *const configuration) {
-    return RLMGetAnyCachedRealmForPath(configuration.path);
+LEGACYRealm *LEGACYGetAnyCachedRealm(__unsafe_unretained LEGACYRealmConfiguration *const configuration) {
+    return LEGACYGetAnyCachedRealmForPath(configuration.path);
 }
 
-RLMRealm *RLMGetAnyCachedRealmForPath(std::string const& path) {
+LEGACYRealm *LEGACYGetAnyCachedRealmForPath(std::string const& path) {
     std::lock_guard lock(s_realmCacheMutex);
     return [s_realmsPerPath[path] objectEnumerator].nextObject;
 }
 
-void RLMClearRealmCache() {
+void LEGACYClearRealmCache() {
     std::lock_guard lock(s_realmCacheMutex);
     s_realmsPerPath.clear();
     s_frozenRealms.clear();
 }
 
-RLMRealm *RLMGetFrozenRealmForSourceRealm(__unsafe_unretained RLMRealm *const sourceRealm) {
+LEGACYRealm *LEGACYGetFrozenRealmForSourceRealm(__unsafe_unretained LEGACYRealm *const sourceRealm) {
     std::lock_guard lock(s_realmCacheMutex);
     auto& r = *sourceRealm->_realm;
     auto& path = r.config().path;
@@ -95,7 +95,7 @@ RLMRealm *RLMGetFrozenRealmForSourceRealm(__unsafe_unretained RLMRealm *const so
     }
     r.read_group();
     auto version = reinterpret_cast<void *>(r.read_transaction_version().version);
-    RLMRealm *realm = [realms objectForKey:(__bridge id)version];
+    LEGACYRealm *realm = [realms objectForKey:(__bridge id)version];
     if (!realm) {
         realm = [sourceRealm frozenCopy];
         [realms setObject:realm forKey:(__bridge id)version];
@@ -112,9 +112,9 @@ void advance_to_ready(realm::Realm& realm) {
     }
 }
 
-class RLMNotificationHelper : public realm::BindingContext {
+class LEGACYNotificationHelper : public realm::BindingContext {
 public:
-    RLMNotificationHelper(RLMRealm *realm) : _realm(realm) { }
+    LEGACYNotificationHelper(LEGACYRealm *realm) : _realm(realm) { }
 
     void before_notify() override {
         @autoreleasepool {
@@ -138,7 +138,7 @@ public:
             // recursively call this function and then exit above due to
             // autorefresh being true.
             if (_refreshHandlers.empty()) {
-                [realm sendNotifications:RLMRealmRefreshRequiredNotification];
+                [realm sendNotifications:LEGACYRealmRefreshRequiredNotification];
             }
             else {
                 advance_to_ready(*realm->_realm);
@@ -150,7 +150,7 @@ public:
         @autoreleasepool {
             if (auto realm = _realm) {
                 [realm detachAllEnumerators];
-                return RLMGetObservedRows(realm->_info);
+                return LEGACYGetObservedRows(realm->_info);
             }
             return {};
         }
@@ -159,7 +159,7 @@ public:
     void will_change(std::vector<ObserverState> const& observed,
                      std::vector<void*> const& invalidated) override {
         @autoreleasepool {
-            RLMWillChange(observed, invalidated);
+            LEGACYWillChange(observed, invalidated);
         }
     }
 
@@ -168,9 +168,9 @@ public:
         @autoreleasepool {
             __strong auto realm = _realm;
             try {
-                RLMDidChange(observed, invalidated);
+                LEGACYDidChange(observed, invalidated);
                 if (version_changed) {
-                    [realm sendNotifications:RLMRealmDidChangeNotification];
+                    [realm sendNotifications:LEGACYRealmDidChangeNotification];
                 }
             }
             catch (...) {
@@ -207,31 +207,31 @@ public:
         _beforeNotify.push_back(block);
     }
 
-    void wait_for_refresh(realm::DB::version_type version, RLMAsyncRefreshCompletion completion) {
+    void wait_for_refresh(realm::DB::version_type version, LEGACYAsyncRefreshCompletion completion) {
         _refreshHandlers.emplace_back(version, completion);
     }
 
 private:
     // This is owned by the realm, so it needs to not retain the realm
-    __weak RLMRealm *const _realm;
+    __weak LEGACYRealm *const _realm;
     std::vector<dispatch_block_t> _beforeNotify;
-    std::vector<std::pair<realm::DB::version_type, RLMAsyncRefreshCompletion>> _refreshHandlers;
+    std::vector<std::pair<realm::DB::version_type, LEGACYAsyncRefreshCompletion>> _refreshHandlers;
 };
 } // anonymous namespace
 
-std::unique_ptr<realm::BindingContext> RLMCreateBindingContext(__unsafe_unretained RLMRealm *const realm) {
-    return std::unique_ptr<realm::BindingContext>(new RLMNotificationHelper(realm));
+std::unique_ptr<realm::BindingContext> LEGACYCreateBindingContext(__unsafe_unretained LEGACYRealm *const realm) {
+    return std::unique_ptr<realm::BindingContext>(new LEGACYNotificationHelper(realm));
 }
 
-void RLMAddBeforeNotifyBlock(RLMRealm *realm, dispatch_block_t block) {
-    static_cast<RLMNotificationHelper *>(realm->_realm->m_binding_context.get())->add_before_notify_block(block);
+void LEGACYAddBeforeNotifyBlock(LEGACYRealm *realm, dispatch_block_t block) {
+    static_cast<LEGACYNotificationHelper *>(realm->_realm->m_binding_context.get())->add_before_notify_block(block);
 }
 
-@implementation RLMPinnedRealm {
+@implementation LEGACYPinnedRealm {
     realm::TransactionRef _pin;
 }
 
-- (instancetype)initWithRealm:(RLMRealm *)realm {
+- (instancetype)initWithRealm:(LEGACYRealm *)realm {
     if (self = [super init]) {
         _pin = realm->_realm->duplicate();
         _configuration = realm.configuration;
@@ -244,7 +244,7 @@ void RLMAddBeforeNotifyBlock(RLMRealm *realm, dispatch_block_t block) {
 }
 @end
 
-RLMAsyncRefreshTask *RLMRealmRefreshAsync(RLMRealm *rlmRealm) {
+LEGACYAsyncRefreshTask *LEGACYRealmRefreshAsync(LEGACYRealm *rlmRealm) {
     auto& realm = *rlmRealm->_realm;
     if (realm.is_frozen() || realm.config().immutable()) {
         return nil;
@@ -265,15 +265,15 @@ RLMAsyncRefreshTask *RLMRealmRefreshAsync(RLMRealm *rlmRealm) {
     // nothing left to do
     current = realm.current_transaction_version();
     if (current && current->version >= *latest)
-        return [RLMAsyncRefreshTask completedRefresh];
-    auto refresh = [[RLMAsyncRefreshTask alloc] init];
+        return [LEGACYAsyncRefreshTask completedRefresh];
+    auto refresh = [[LEGACYAsyncRefreshTask alloc] init];
 
     // Register the continuation to be called once the new version is ready
-    auto& context = static_cast<RLMNotificationHelper&>(*realm.m_binding_context);
+    auto& context = static_cast<LEGACYNotificationHelper&>(*realm.m_binding_context);
     context.wait_for_refresh(*latest, ^(bool didRefresh) { [refresh complete:didRefresh]; });
     return refresh;
 }
 
-void RLMRunAsyncNotifiers(NSString *path) {
+void LEGACYRunAsyncNotifiers(NSString *path) {
     realm::_impl::RealmCoordinator::get_existing_coordinator(path.UTF8String)->on_change();
 }

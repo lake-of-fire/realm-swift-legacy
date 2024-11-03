@@ -16,9 +16,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/RLMCollection_Private.h>
+#import <Realm/LEGACYCollection_Private.h>
 
-#import <Realm/RLMRealm.h>
+#import <Realm/LEGACYRealm.h>
 
 #import <realm/keys.hpp>
 #import <realm/object-store/collection_notifications.hpp>
@@ -40,38 +40,38 @@ class Dictionary;
 class Set;
 }
 }
-class RLMClassInfo;
-@class RLMFastEnumerator, RLMManagedArray, RLMManagedSet, RLMManagedDictionary, RLMProperty, RLMObjectBase;
+class LEGACYClassInfo;
+@class LEGACYFastEnumerator, LEGACYManagedArray, LEGACYManagedSet, LEGACYManagedDictionary, LEGACYProperty, LEGACYObjectBase;
 
-RLM_HIDDEN_BEGIN
+LEGACY_HIDDEN_BEGIN
 
-@protocol RLMCollectionPrivate
-@property (nonatomic, readonly) RLMRealm *realm;
-@property (nonatomic, readonly) RLMClassInfo *objectInfo;
+@protocol LEGACYCollectionPrivate
+@property (nonatomic, readonly) LEGACYRealm *realm;
+@property (nonatomic, readonly) LEGACYClassInfo *objectInfo;
 @property (nonatomic, readonly) NSUInteger count;
 
 - (realm::TableView)tableView;
-- (RLMFastEnumerator *)fastEnumerator;
+- (LEGACYFastEnumerator *)fastEnumerator;
 - (realm::NotificationToken)addNotificationCallback:(id)block
 keyPaths:(std::optional<std::vector<std::vector<std::pair<realm::TableKey, realm::ColKey>>>>&&)keyPaths;
 @end
 
-// An object which encapsulates the shared logic for fast-enumerating RLMArray
-// RLMSet and RLMResults, and has a buffer to store strong references to the current
+// An object which encapsulates the shared logic for fast-enumerating LEGACYArray
+// LEGACYSet and LEGACYResults, and has a buffer to store strong references to the current
 // set of enumerated items
-RLM_DIRECT_MEMBERS
-@interface RLMFastEnumerator : NSObject
+LEGACY_DIRECT_MEMBERS
+@interface LEGACYFastEnumerator : NSObject
 - (instancetype)initWithBackingCollection:(realm::object_store::Collection const&)backingCollection
                                collection:(id)collection
-                                classInfo:(RLMClassInfo&)info;
+                                classInfo:(LEGACYClassInfo&)info;
 
 - (instancetype)initWithBackingDictionary:(realm::object_store::Dictionary const&)backingDictionary
-                               dictionary:(RLMManagedDictionary *)dictionary
-                                classInfo:(RLMClassInfo&)info;
+                               dictionary:(LEGACYManagedDictionary *)dictionary
+                                classInfo:(LEGACYClassInfo&)info;
 
 - (instancetype)initWithResults:(realm::Results&)results
                      collection:(id)collection
-                      classInfo:(RLMClassInfo&)info;
+                      classInfo:(LEGACYClassInfo&)info;
 
 // Detach this enumerator from the source collection. Must be called before the
 // source collection is changed.
@@ -80,46 +80,46 @@ RLM_DIRECT_MEMBERS
 - (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state
                                     count:(NSUInteger)len;
 @end
-NSUInteger RLMFastEnumerate(NSFastEnumerationState *state, NSUInteger len, id<RLMCollectionPrivate> collection);
+NSUInteger LEGACYFastEnumerate(NSFastEnumerationState *state, NSUInteger len, id<LEGACYCollectionPrivate> collection);
 
-@interface RLMNotificationToken ()
+@interface LEGACYNotificationToken ()
 - (void)suppressNextNotification;
-- (RLMRealm *)realm;
+- (LEGACYRealm *)realm;
 @end
 
-@interface RLMCollectionChange ()
+@interface LEGACYCollectionChange ()
 - (instancetype)initWithChanges:(realm::CollectionChangeSet)indices;
 @end
 
-realm::CollectionChangeCallback RLMWrapCollectionChangeCallback(void (^block)(id, id, NSError *),
+realm::CollectionChangeCallback LEGACYWrapCollectionChangeCallback(void (^block)(id, id, NSError *),
                                                                 id collection, bool skipFirst);
 
 template<typename Collection>
-NSArray *RLMCollectionValueForKey(Collection& collection, NSString *key, RLMClassInfo& info);
+NSArray *LEGACYCollectionValueForKey(Collection& collection, NSString *key, LEGACYClassInfo& info);
 
-std::vector<std::pair<std::string, bool>> RLMSortDescriptorsToKeypathArray(NSArray<RLMSortDescriptor *> *properties);
+std::vector<std::pair<std::string, bool>> LEGACYSortDescriptorsToKeypathArray(NSArray<LEGACYSortDescriptor *> *properties);
 
 realm::ColKey columnForProperty(NSString *propertyName,
                                 realm::object_store::Collection const& backingCollection,
-                                RLMClassInfo *objectInfo,
-                                RLMPropertyType propertyType,
-                                RLMCollectionType collectionType);
+                                LEGACYClassInfo *objectInfo,
+                                LEGACYPropertyType propertyType,
+                                LEGACYCollectionType collectionType);
 
-static inline bool canAggregate(RLMPropertyType type, bool allowDate) {
+static inline bool canAggregate(LEGACYPropertyType type, bool allowDate) {
     switch (type) {
-        case RLMPropertyTypeInt:
-        case RLMPropertyTypeFloat:
-        case RLMPropertyTypeDouble:
-        case RLMPropertyTypeDecimal128:
-        case RLMPropertyTypeAny:
+        case LEGACYPropertyTypeInt:
+        case LEGACYPropertyTypeFloat:
+        case LEGACYPropertyTypeDouble:
+        case LEGACYPropertyTypeDecimal128:
+        case LEGACYPropertyTypeAny:
             return true;
-        case RLMPropertyTypeDate:
+        case LEGACYPropertyTypeDate:
             return allowDate;
         default:
             return false;
     }
 }
 
-NSArray *RLMToIndexPathArray(realm::IndexSet const& set, NSUInteger section);
+NSArray *LEGACYToIndexPathArray(realm::IndexSet const& set, NSUInteger section);
 
-RLM_HIDDEN_END
+LEGACY_HIDDEN_END

@@ -20,7 +20,7 @@
 #import <Realm/Realm.h>
 
 // Realm model object
-@interface DemoObject : RLMObject
+@interface DemoObject : LEGACYObject
 @property NSString *phoneNumber;
 @property NSDate   *date;
 @property NSString *contactName;
@@ -35,8 +35,8 @@ static NSString * const kTableName = @"table";
 
 @interface TableViewController ()
 
-@property (nonatomic, strong) RLMSectionedResults<NSString *, DemoObject *> *sectionedResults;
-@property (nonatomic, strong) RLMNotificationToken *notification;
+@property (nonatomic, strong) LEGACYSectionedResults<NSString *, DemoObject *> *sectionedResults;
+@property (nonatomic, strong) LEGACYNotificationToken *notification;
 
 @end
 
@@ -58,8 +58,8 @@ static NSString * const kTableName = @"table";
 
     // Set realm notification block
     __weak typeof(self) weakSelf = self;
-    self.notification = [self.sectionedResults addNotificationBlock:^(RLMSectionedResults<NSString *, DemoObject *> *col,
-                                                                      RLMSectionedResultsChange *changes) {
+    self.notification = [self.sectionedResults addNotificationBlock:^(LEGACYSectionedResults<NSString *, DemoObject *> *col,
+                                                                      LEGACYSectionedResultsChange *changes) {
         if (changes) {
             [weakSelf.tableView performBatchUpdates:^{
                 [weakSelf.tableView deleteRowsAtIndexPaths:changes.deletions withRowAnimation:UITableViewRowAnimationAutomatic];
@@ -134,7 +134,7 @@ static NSString * const kTableName = @"table";
 forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        RLMRealm *realm = RLMRealm.defaultRealm;
+        LEGACYRealm *realm = LEGACYRealm.defaultRealm;
         [realm beginWriteTransaction];
         DemoObject *object = self.sectionedResults[indexPath.section][indexPath.row];
         [realm deleteObject:object];
@@ -151,7 +151,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
     dispatch_async(queue, ^{
         // Get new realm and table since we are in a new thread
         @autoreleasepool {
-            RLMRealm *realm = [RLMRealm defaultRealm];
+            LEGACYRealm *realm = [LEGACYRealm defaultRealm];
             [realm beginWriteTransaction];
             for (NSInteger index = 0; index < 5; index++) {
                 // Add row via dictionary. Order is ignored.
@@ -166,7 +166,7 @@ forRowAtIndexPath:(NSIndexPath *)indexPath
 
 - (void)add
 {
-    [[RLMRealm defaultRealm] transactionWithBlock:^{
+    [[LEGACYRealm defaultRealm] transactionWithBlock:^{
         [DemoObject createInDefaultRealmWithValue:@[[self randomContactInfo], [NSDate date], [self randomContactName]]];
     }];
 }

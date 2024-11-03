@@ -79,7 +79,7 @@ extension UUID: SchemaDiscoverable {
 
 extension AnyRealmValue: SchemaDiscoverable {
     public static var _rlmType: PropertyType { .any }
-    public static func _rlmPopulateProperty(_ prop: RLMProperty) {
+    public static func _rlmPopulateProperty(_ prop: LEGACYProperty) {
         if prop.optional {
             var type = "AnyRealmValue"
             if prop.array {
@@ -114,19 +114,19 @@ private protocol _Int: BinaryInteger, _PersistableInsideOptional, _DefaultConstr
 extension _Int {
     @inlinable
     public static func _rlmGetProperty(_ obj: ObjectBase, _ key: PropertyKey) -> Self {
-        return Self(RLMGetSwiftPropertyInt64(obj, key))
+        return Self(LEGACYGetSwiftPropertyInt64(obj, key))
     }
 
     @inlinable
     public static func _rlmGetPropertyOptional(_ obj: ObjectBase, _ key: PropertyKey) -> Self? {
         var gotValue = false
-        let ret = RLMGetSwiftPropertyInt64Optional(obj, key, &gotValue)
+        let ret = LEGACYGetSwiftPropertyInt64Optional(obj, key, &gotValue)
         return gotValue ? Self(ret) : nil
     }
 
     @inlinable
     public static func _rlmSetProperty(_ obj: ObjectBase, _ key: PropertyKey, _ value: Self) {
-        RLMSetSwiftPropertyInt64(obj, key, Int64(value))
+        LEGACYSetSwiftPropertyInt64(obj, key, Int64(value))
     }
 }
 
@@ -151,19 +151,19 @@ extension Bool: _PersistableInsideOptional, _DefaultConstructible, _PrimaryKey, 
 
     @inlinable
     public static func _rlmGetProperty(_ obj: ObjectBase, _ key: PropertyKey) -> Bool {
-        return RLMGetSwiftPropertyBool(obj, key)
+        return LEGACYGetSwiftPropertyBool(obj, key)
     }
 
     @inlinable
     public static func _rlmGetPropertyOptional(_ obj: ObjectBase, _ key: PropertyKey) -> Bool? {
         var gotValue = false
-        let ret = RLMGetSwiftPropertyBoolOptional(obj, key, &gotValue)
+        let ret = LEGACYGetSwiftPropertyBoolOptional(obj, key, &gotValue)
         return gotValue ? ret : nil
     }
 
     @inlinable
     public static func _rlmSetProperty(_ obj: ObjectBase, _ key: PropertyKey, _ value: Bool) {
-        RLMSetSwiftPropertyBool(obj, key, (value))
+        LEGACYSetSwiftPropertyBool(obj, key, (value))
     }
 }
 
@@ -172,19 +172,19 @@ extension Float: _PersistableInsideOptional, _DefaultConstructible {
 
     @inlinable
     public static func _rlmGetProperty(_ obj: ObjectBase, _ key: PropertyKey) -> Float {
-        return RLMGetSwiftPropertyFloat(obj, key)
+        return LEGACYGetSwiftPropertyFloat(obj, key)
     }
 
     @inlinable
     public static func _rlmGetPropertyOptional(_ obj: ObjectBase, _ key: PropertyKey) -> Float? {
         var gotValue = false
-        let ret = RLMGetSwiftPropertyFloatOptional(obj, key, &gotValue)
+        let ret = LEGACYGetSwiftPropertyFloatOptional(obj, key, &gotValue)
         return gotValue ? ret : nil
     }
 
     @inlinable
     public static func _rlmSetProperty(_ obj: ObjectBase, _ key: PropertyKey, _ value: Float) {
-        RLMSetSwiftPropertyFloat(obj, key, (value))
+        LEGACYSetSwiftPropertyFloat(obj, key, (value))
     }
 }
 
@@ -193,19 +193,19 @@ extension Double: _PersistableInsideOptional, _DefaultConstructible {
 
     @inlinable
     public static func _rlmGetProperty(_ obj: ObjectBase, _ key: PropertyKey) -> Double {
-        return RLMGetSwiftPropertyDouble(obj, key)
+        return LEGACYGetSwiftPropertyDouble(obj, key)
     }
 
     @inlinable
     public static func _rlmGetPropertyOptional(_ obj: ObjectBase, _ key: PropertyKey) -> Double? {
         var gotValue = false
-        let ret = RLMGetSwiftPropertyDoubleOptional(obj, key, &gotValue)
+        let ret = LEGACYGetSwiftPropertyDoubleOptional(obj, key, &gotValue)
         return gotValue ? ret : nil
     }
 
     @inlinable
     public static func _rlmSetProperty(_ obj: ObjectBase, _ key: PropertyKey, _ value: Double) {
-        RLMSetSwiftPropertyDouble(obj, key, (value))
+        LEGACYSetSwiftPropertyDouble(obj, key, (value))
     }
 }
 
@@ -214,17 +214,17 @@ extension String: _PersistableInsideOptional, _DefaultConstructible, _PrimaryKey
 
     @inlinable
     public static func _rlmGetProperty(_ obj: ObjectBase, _ key: PropertyKey) -> String {
-        return RLMGetSwiftPropertyString(obj, key)!
+        return LEGACYGetSwiftPropertyString(obj, key)!
     }
 
     @inlinable
     public static func _rlmGetPropertyOptional(_ obj: ObjectBase, _ key: PropertyKey) -> String? {
-        return RLMGetSwiftPropertyString(obj, key)
+        return LEGACYGetSwiftPropertyString(obj, key)
     }
 
     @inlinable
     public static func _rlmSetProperty(_ obj: ObjectBase, _ key: PropertyKey, _ value: String) {
-        RLMSetSwiftPropertyString(obj, key, value)
+        LEGACYSetSwiftPropertyString(obj, key, value)
     }
 }
 
@@ -233,17 +233,17 @@ extension Data: _PersistableInsideOptional, _DefaultConstructible {
 
     @inlinable
     public static func _rlmGetProperty(_ obj: ObjectBase, _ key: PropertyKey) -> Data {
-        return RLMGetSwiftPropertyData(obj, key)!
+        return LEGACYGetSwiftPropertyData(obj, key)!
     }
 
     @inlinable
     public static func _rlmGetPropertyOptional(_ obj: ObjectBase, _ key: PropertyKey) -> Data? {
-        return RLMGetSwiftPropertyData(obj, key)
+        return LEGACYGetSwiftPropertyData(obj, key)
     }
 
     @inlinable
     public static func _rlmSetProperty(_ obj: ObjectBase, _ key: PropertyKey, _ value: Data) {
-        RLMSetSwiftPropertyData(obj, key, value)
+        LEGACYSetSwiftPropertyData(obj, key, value)
     }
 }
 
@@ -252,17 +252,17 @@ extension ObjectId: _PersistableInsideOptional, _DefaultConstructible, _PrimaryK
 
     @inlinable
     public static func _rlmGetProperty(_ obj: ObjectBase, _ key: PropertyKey) -> ObjectId {
-        return RLMGetSwiftPropertyObjectId(obj, key) as! ObjectId
+        return LEGACYGetSwiftPropertyObjectId(obj, key) as! ObjectId
     }
 
     @inlinable
     public static func _rlmGetPropertyOptional(_ obj: ObjectBase, _ key: PropertyKey) -> ObjectId? {
-        return RLMGetSwiftPropertyObjectId(obj, key).flatMap(failableStaticBridgeCast)
+        return LEGACYGetSwiftPropertyObjectId(obj, key).flatMap(failableStaticBridgeCast)
     }
 
     @inlinable
     public static func _rlmSetProperty(_ obj: ObjectBase, _ key: PropertyKey, _ value: ObjectId) {
-        RLMSetSwiftPropertyObjectId(obj, key, (value))
+        LEGACYSetSwiftPropertyObjectId(obj, key, (value))
     }
 
     public static func _rlmDefaultValue() -> ObjectId {
@@ -275,17 +275,17 @@ extension Decimal128: _PersistableInsideOptional, _DefaultConstructible {
 
     @inlinable
     public static func _rlmGetProperty(_ obj: ObjectBase, _ key: PropertyKey) -> Decimal128 {
-        return RLMGetSwiftPropertyDecimal128(obj, key) as! Decimal128
+        return LEGACYGetSwiftPropertyDecimal128(obj, key) as! Decimal128
     }
 
     @inlinable
     public static func _rlmGetPropertyOptional(_ obj: ObjectBase, _ key: PropertyKey) -> Decimal128? {
-        return RLMGetSwiftPropertyDecimal128(obj, key).flatMap(failableStaticBridgeCast)
+        return LEGACYGetSwiftPropertyDecimal128(obj, key).flatMap(failableStaticBridgeCast)
     }
 
     @inlinable
     public static func _rlmSetProperty(_ obj: ObjectBase, _ key: PropertyKey, _ value: Decimal128) {
-        RLMSetSwiftPropertyDecimal128(obj, key, value)
+        LEGACYSetSwiftPropertyDecimal128(obj, key, value)
     }
 }
 
@@ -294,17 +294,17 @@ extension Date: _PersistableInsideOptional, _DefaultConstructible, _Indexable {
 
     @inlinable
     public static func _rlmGetProperty(_ obj: ObjectBase, _ key: PropertyKey) -> Date {
-        return RLMGetSwiftPropertyDate(obj, key)!
+        return LEGACYGetSwiftPropertyDate(obj, key)!
     }
 
     @inlinable
     public static func _rlmGetPropertyOptional(_ obj: ObjectBase, _ key: PropertyKey) -> Date? {
-        return RLMGetSwiftPropertyDate(obj, key)
+        return LEGACYGetSwiftPropertyDate(obj, key)
     }
 
     @inlinable
     public static func _rlmSetProperty(_ obj: ObjectBase, _ key: PropertyKey, _ value: Date) {
-        RLMSetSwiftPropertyDate(obj, key, value)
+        LEGACYSetSwiftPropertyDate(obj, key, value)
     }
 }
 
@@ -313,17 +313,17 @@ extension UUID: _PersistableInsideOptional, _DefaultConstructible, _PrimaryKey, 
 
     @inlinable
     public static func _rlmGetProperty(_ obj: ObjectBase, _ key: PropertyKey) -> UUID {
-        return RLMGetSwiftPropertyUUID(obj, key)!
+        return LEGACYGetSwiftPropertyUUID(obj, key)!
     }
 
     @inlinable
     public static func _rlmGetPropertyOptional(_ obj: ObjectBase, _ key: PropertyKey) -> UUID? {
-        return RLMGetSwiftPropertyUUID(obj, key)
+        return LEGACYGetSwiftPropertyUUID(obj, key)
     }
 
     @inlinable
     public static func _rlmSetProperty(_ obj: ObjectBase, _ key: PropertyKey, _ value: UUID) {
-        RLMSetSwiftPropertyUUID(obj, key, value)
+        LEGACYSetSwiftPropertyUUID(obj, key, value)
     }
 }
 
@@ -332,14 +332,14 @@ extension AnyRealmValue: _Persistable, _DefaultConstructible {
 
     @inlinable
     public static func _rlmGetProperty(_ obj: ObjectBase, _ key: PropertyKey) -> AnyRealmValue {
-        return ObjectiveCSupport.convert(value: RLMGetSwiftPropertyAny(obj, key))
+        return ObjectiveCSupport.convert(value: LEGACYGetSwiftPropertyAny(obj, key))
     }
 
     public static func _rlmSetProperty(_ obj: ObjectBase, _ key: PropertyKey, _ value: AnyRealmValue) {
-        RLMSetSwiftPropertyAny(obj, key, value._rlmObjcValue as! RLMValue)
+        LEGACYSetSwiftPropertyAny(obj, key, value._rlmObjcValue as! LEGACYValue)
     }
 
-    public static func _rlmSetAccessor(_ prop: RLMProperty) {
+    public static func _rlmSetAccessor(_ prop: LEGACYProperty) {
         prop.swiftAccessor = BridgedPersistedPropertyAccessor<Self>.self
     }
 }

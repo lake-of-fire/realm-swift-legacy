@@ -36,7 +36,7 @@
 // exists. This shouldn't have any impact on obj-c code other than a small
 // performance hit.
 [[clang::objc_runtime_visible]]
-@interface RealmSwiftDecimal128 : LEGACYDecimal128
+@interface RealmSwiftLegacyDecimal128 : LEGACYDecimal128
 @end
 
 @implementation LEGACYDecimal128 {
@@ -45,7 +45,7 @@
 
 - (instancetype)init {
     if (self = [super init]) {
-        if (auto cls = [RealmSwiftDecimal128 class]; cls && cls != self.class) {
+        if (auto cls = [RealmSwiftLegacyDecimal128 class]; cls && cls != self.class) {
             object_setClass(self, cls);
         }
     }

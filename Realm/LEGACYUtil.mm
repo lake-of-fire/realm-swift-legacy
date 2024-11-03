@@ -96,7 +96,7 @@ id LEGACYBridgeSwiftValue(__unsafe_unretained id value) {
 
 bool LEGACYIsSwiftObjectClass(Class cls) {
     return [cls isSubclassOfClass:RealmSwiftLegacyObject.class]
-        || [cls isSubclassOfClass:RealmSwiftEmbeddedObject.class];
+        || [cls isSubclassOfClass:RealmSwiftLegacyEmbeddedObject.class];
 }
 
 static BOOL validateValue(__unsafe_unretained id const value,

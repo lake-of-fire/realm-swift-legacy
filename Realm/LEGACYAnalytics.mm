@@ -220,7 +220,7 @@ static NSDictionary *LEGACYBaseMetrics() {
         hashedBundleID = LEGACYHashBase16Data(data.bytes, data.length);
     }
 
-    Class swiftDecimal128 = NSClassFromString(@"RealmSwiftDecimal128");
+    Class swiftDecimal128 = NSClassFromString(@"RealmSwiftLegacyDecimal128");
     BOOL isSwift = swiftDecimal128 != nil;
 
     NSString *hashedDistinctId = LEGACYMACAddress();

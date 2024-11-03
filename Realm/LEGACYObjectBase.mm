@@ -843,13 +843,13 @@ uint64_t LEGACYObjectBaseGetCombineId(__unsafe_unretained LEGACYObjectBase *cons
 }
 @end
 
-@implementation RealmSwiftEmbeddedObject
+@implementation RealmSwiftLegacyEmbeddedObject
 + (BOOL)accessInstanceVariablesDirectly {
     return NO;
 }
 @end
 
-@implementation RealmSwiftAsymmetricObject
+@implementation RealmSwiftLegacyAsymmetricObject
 + (BOOL)accessInstanceVariablesDirectly {
     return NO;
 }

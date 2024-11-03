@@ -108,7 +108,7 @@ LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
  }
  ```
  */
-@interface RealmSwiftEmbeddedObject : LEGACYObjectBase
+@interface RealmSwiftLegacyEmbeddedObject : LEGACYObjectBase
 @end
 
 /**
@@ -135,7 +135,7 @@ LEGACY_HEADER_AUDIT_BEGIN(nullability, sendability)
  }
  ```
  */
-@interface RealmSwiftAsymmetricObject : LEGACYObjectBase
+@interface RealmSwiftLegacyAsymmetricObject : LEGACYObjectBase
 @end
 
 LEGACY_HEADER_AUDIT_END(nullability, sendability)

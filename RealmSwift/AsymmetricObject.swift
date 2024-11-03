@@ -43,7 +43,7 @@ import RealmLegacy.Private
  }
  ```
  */
-public typealias AsymmetricObject = RealmSwiftAsymmetricObject
+public typealias AsymmetricObject = RealmSwiftLegacyAsymmetricObject
 extension AsymmetricObject {
     // MARK: Initializers
 

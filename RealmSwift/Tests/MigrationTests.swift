@@ -1270,7 +1270,7 @@ class MigrationTests: TestCase {
         let objectSchema = RLMObjectSchema(forObjectClass: SwiftEmployeeObject.self)
         objectSchema.properties = Array(objectSchema.properties[0..<1])
 
-        let metaClass: AnyClass = objc_getMetaClass("RLMSchema") as! AnyClass
+        let metaClass: AnyClass = objc_getMetaClass("LEGACYSchema") as! AnyClass
         let imp = imp_implementationWithBlock(unsafeBitCast({ () -> RLMSchema in
             let schema = RLMSchema()
             schema.objectSchema = [objectSchema]

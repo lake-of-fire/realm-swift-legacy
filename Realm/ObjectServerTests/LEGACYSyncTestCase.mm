@@ -20,7 +20,7 @@
 
 #import <CommonCrypto/CommonHMAC.h>
 #import <XCTest/XCTest.h>
-#import <Realm/Realm.h>
+#import <Realm/NewRealm.h>
 
 #import "LEGACYRealm_Dynamic.h"
 #import "LEGACYRealm_Private.hpp"

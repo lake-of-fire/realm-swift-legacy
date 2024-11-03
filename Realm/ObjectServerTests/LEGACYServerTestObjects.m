@@ -16,7 +16,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/Realm.h>
+#import <Realm/NewRealm.h>
 #import "LEGACYServerTestObjects.h"
 
 #pragma mark Dog

@@ -16,7 +16,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#import <Realm/Realm.h>
+#import <Realm/NewRealm.h>
 
 LEGACY_HEADER_AUDIT_BEGIN(nullability)
 

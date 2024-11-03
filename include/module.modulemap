@@ -2,7 +2,7 @@
 // Realm" rather than "framework module Realm", and the paths below have the
 // Realm/ prefix (due to not being a framework module)
 module RealmLegacy {
-    umbrella header "Realm/Realm.h"
+    umbrella header "Realm/RealmLegacy.h"
     export Foundation
 
     explicit module Private {

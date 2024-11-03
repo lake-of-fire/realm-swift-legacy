@@ -17,5 +17,5 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #import "TestUtils.h"
-#import "RLMAssertions.h"
-#import "RLMTestCase.h"
+#import "LEGACYAssertions.h"
+#import "LEGACYTestCase.h"

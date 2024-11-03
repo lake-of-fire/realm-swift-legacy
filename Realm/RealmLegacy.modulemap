@@ -1,7 +1,7 @@
 framework module RealmLegacy {
     export Foundation
 
-    umbrella header "Realm.h"
+    umbrella header "RealmLegacy.h"
 
     header "LEGACYArray.h"
     header "LEGACYAsymmetricObject.h"
